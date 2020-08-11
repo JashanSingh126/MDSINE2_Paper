@@ -1,0 +1,720 @@
+Cluster analysis
+================
+
+graph_leave_out-1
+Number of clusters
+	median: 17.0
+	mean: 16.537777777777777
+	25th percentile: 16.0
+	75th percentile: 17.0
+
+
+-----------------
+Individual cluster output
+-----------------
+Cluster 0 - 36 ASVs
+======================
+ASVs
+----
+	OTU_243 Clostridium_IV nan
+	OTU_18 Clostridium_XlVa bolteae/clostridioforme
+	OTU_263 Butyricicoccus nan
+	OTU_24 Hungatella effluvii/hathewayi
+	OTU_277 Butyricicoccus nan
+	OTU_30 Blautia obeum/wexlerae/provencensis
+	OTU_320 Clostridium_XlVa nan
+	OTU_39 Clostridium_XlVa nan
+	OTU_42 Clostridium_XlVa nan
+	OTU_43 Eisenbergiella massiliensis
+	OTU_46 Clostridium_XlVa nan
+	OTU_48 Blautia massiliensis
+	OTU_49 Blautia caecimuris
+	OTU_55 Hungatella nan
+	OTU_56 nan nan
+	OTU_74 Blautia faecis
+	OTU_76 nan nan
+	OTU_81 Clostridium_XlVa nan
+	OTU_86 Clostridium_XlVa nan
+	OTU_89 Clostridium_XlVa asparagiforme/lavalense
+	OTU_94 nan nan
+	OTU_103 Blautia nan
+	OTU_112 Anaerostipes caccae
+	OTU_116 Clostridium_XlVa citroniae
+	OTU_117 Ruminococcus nan
+	OTU_119 Clostridium_XlVa aldenense
+	OTU_127 Butyricicoccus nan
+	OTU_131 nan nan
+	OTU_134 Butyricicoccus faecihominis
+	OTU_135 nan nan
+	OTU_153 nan nan
+	OTU_156 Ruminococcus2 nan
+	OTU_161 Phascolarctobacterium nan
+	OTU_173 Clostridium_III nan
+	OTU_196 nan nan
+	OTU_199 Blautia nan
+Taxonomic coherence
+	Phylum
+		1.000: Firmicutes
+	Class
+		0.972: Clostridia
+		0.028: Negativicutes
+	Order
+		0.972: Clostridiales
+		0.028: Selenomonadales
+	Family
+		0.722: Lachnospiraceae
+		0.222: Ruminococcaceae
+		0.028: Acidaminococcaceae
+		0.028: NA
+	Genus
+		0.278: Clostridium_XlVa
+		0.194: NA
+		0.167: Blautia
+		0.111: Butyricicoccus
+		0.056: Hungatella
+		0.028: Clostridium_III
+		0.028: Phascolarctobacterium
+		0.028: Ruminococcus2
+		0.028: Ruminococcus
+		0.028: Anaerostipes
+		0.028: Eisenbergiella
+		0.028: Clostridium_IV
+Gram positive/negative coherence
+	False: 1.0
+
+
+Cluster 1 - 20 ASVs
+======================
+ASVs
+----
+	OTU_3 Bacteroides intestinalis/timonensis/cellulosilyticus
+	OTU_4 Akkermansia muciniphila
+	OTU_9 Bacteroides caccae
+	OTU_12 Bacteroides uniformis
+	OTU_259 nan nan
+	OTU_264 Odoribacter nan
+	OTU_275 Odoribacter nan
+	OTU_34 Alistipes nan
+	OTU_50 Barnesiella nan
+	OTU_58 Roseburia intestinalis
+	OTU_59 nan nan
+	OTU_64 Bacteroides uniformis
+	OTU_78 Alistipes finegoldii
+	OTU_93 Butyricimonas paravirosa
+	OTU_96 Bacteroides intestinalis
+	OTU_100 Bacteroides intestinalis
+	OTU_101 Butyricimonas faecihominis
+	OTU_126 Butyricimonas nan
+	OTU_164 Blautia nan
+	OTU_174 Odoribacter splanchnicus
+Taxonomic coherence
+	Phylum
+		0.750: Bacteroidetes
+		0.150: Firmicutes
+		0.050: Proteobacteria
+		0.050: Verrucomicrobia
+	Class
+		0.750: Bacteroidia
+		0.150: Clostridia
+		0.050: Deltaproteobacteria
+		0.050: Verrucomicrobiae
+	Order
+		0.750: Bacteroidales
+		0.150: Clostridiales
+		0.050: NA
+		0.050: Verrucomicrobiales
+	Family
+		0.350: Porphyromonadaceae
+		0.300: Bacteroidaceae
+		0.100: Lachnospiraceae
+		0.100: Rikenellaceae
+		0.100: NA
+		0.050: Verrucomicrobiaceae
+	Genus
+		0.300: Bacteroides
+		0.150: Butyricimonas
+		0.150: Odoribacter
+		0.100: Alistipes
+		0.100: NA
+		0.050: Blautia
+		0.050: Roseburia
+		0.050: Barnesiella
+		0.050: Akkermansia
+Gram positive/negative coherence
+	True: 0.85
+	False: 0.15
+
+
+Cluster 2 - 19 ASVs
+======================
+ASVs
+----
+	OTU_0 Bacteroides vulgatus/dorei
+	OTU_2 Akkermansia muciniphila
+	OTU_11 Bacteroides finegoldii/faecis/faecichinchillae/thetaiotaomicron
+	OTU_13 Parabacteroides distasonis
+	OTU_15 Parabacteroides goldsteinii
+	OTU_17 Bacteroides nordii
+	OTU_21 Parabacteroides distasonis
+	OTU_23 Bilophila wadsworthia
+	OTU_29 Bacteroides massiliensis
+	OTU_33 Parabacteroides distasonis
+	OTU_35 nan nan
+	OTU_37 Holdemania filiformis
+	OTU_47 Parabacteroides distasonis
+	OTU_60 Bacteroides nan
+	OTU_63 nan nan
+	OTU_67 Parabacteroides distasonis
+	OTU_77 Clostridium_XVIII ramosum
+	OTU_152 Clostridium_XlVa nan
+	OTU_169 Paraprevotella nan
+Taxonomic coherence
+	Phylum
+		0.632: Bacteroidetes
+		0.263: Firmicutes
+		0.053: Proteobacteria
+		0.053: Verrucomicrobia
+	Class
+		0.632: Bacteroidia
+		0.158: Erysipelotrichia
+		0.105: Clostridia
+		0.053: Deltaproteobacteria
+		0.053: Verrucomicrobiae
+	Order
+		0.632: Bacteroidales
+		0.158: Erysipelotrichales
+		0.105: Clostridiales
+		0.053: Desulfovibrionales
+		0.053: Verrucomicrobiales
+	Family
+		0.316: Porphyromonadaceae
+		0.263: Bacteroidaceae
+		0.158: Erysipelotrichaceae
+		0.105: Lachnospiraceae
+		0.053: Prevotellaceae
+		0.053: Desulfovibrionaceae
+		0.053: Verrucomicrobiaceae
+	Genus
+		0.316: Parabacteroides
+		0.263: Bacteroides
+		0.105: NA
+		0.053: Paraprevotella
+		0.053: Clostridium_XlVa
+		0.053: Clostridium_XVIII
+		0.053: Holdemania
+		0.053: Bilophila
+		0.053: Akkermansia
+Gram positive/negative coherence
+	True: 0.7368421052631579
+	False: 0.2631578947368421
+
+
+Cluster 3 - 17 ASVs
+======================
+ASVs
+----
+	OTU_209 Pseudoflavonifractor nan
+	OTU_188 Flavonifractor nan
+	OTU_83 nan nan
+	OTU_41 Ruminococcus2 nan
+	OTU_45 Subdoligranulum nan
+	OTU_51 nan nan
+	OTU_256 Murimonas nan
+	OTU_102 Clostridium_XlVa scindens
+	OTU_106 Flavonifractor nan
+	OTU_19 Murimonas intestini
+	OTU_118 nan nan
+	OTU_184 Lactococcus lactis/taiwanensis/garvieae
+	OTU_279 Ruminococcus gauvreauii
+	OTU_286 Pseudoflavonifractor nan
+	OTU_124 Catabacter nan
+	OTU_186 nan nan
+	OTU_388 Christensenella minuta
+Taxonomic coherence
+	Phylum
+		1.000: Firmicutes
+	Class
+		0.882: Clostridia
+		0.059: Bacilli
+		0.059: NA
+	Order
+		0.882: Clostridiales
+		0.059: Lactobacillales
+		0.059: NA
+	Family
+		0.471: Ruminococcaceae
+		0.294: Lachnospiraceae
+		0.059: Christensenellaceae
+		0.059: Catabacteriaceae
+		0.059: Streptococcaceae
+		0.059: NA
+	Genus
+		0.235: NA
+		0.118: Murimonas
+		0.118: Flavonifractor
+		0.118: Pseudoflavonifractor
+		0.059: Christensenella
+		0.059: Catabacter
+		0.059: Ruminococcus
+		0.059: Lactococcus
+		0.059: Clostridium_XlVa
+		0.059: Subdoligranulum
+		0.059: Ruminococcus2
+Gram positive/negative coherence
+	False: 1.0
+
+
+Cluster 4 - 12 ASVs
+======================
+ASVs
+----
+	OTU_1 Bacteroides ovatus/fragilis
+	OTU_40 Paraprevotella nan
+	OTU_5 Parasutterella excrementihominis
+	OTU_227 nan nan
+	OTU_6 Bacteroides koreensis/ovatus/kribbi/fragilis
+	OTU_7 Bacteroides ovatus
+	OTU_44 Bacteroides finegoldii
+	OTU_183 nan nan
+	OTU_65 Coprobacter nan
+	OTU_120 Anaerosporobacter nan
+	OTU_25 Paraprevotella nan
+	OTU_28 Paraprevotella nan
+Taxonomic coherence
+	Phylum
+		0.667: Bacteroidetes
+		0.250: Firmicutes
+		0.083: Proteobacteria
+	Class
+		0.667: Bacteroidia
+		0.250: Clostridia
+		0.083: Betaproteobacteria
+	Order
+		0.667: Bacteroidales
+		0.250: Clostridiales
+		0.083: Burkholderiales
+	Family
+		0.333: Bacteroidaceae
+		0.250: Lachnospiraceae
+		0.250: Prevotellaceae
+		0.083: Porphyromonadaceae
+		0.083: Sutterellaceae
+	Genus
+		0.333: Bacteroides
+		0.250: Paraprevotella
+		0.167: NA
+		0.083: Anaerosporobacter
+		0.083: Coprobacter
+		0.083: Parasutterella
+Gram positive/negative coherence
+	True: 0.75
+	False: 0.25
+
+
+Cluster 5 - 12 ASVs
+======================
+ASVs
+----
+	OTU_211 Oscillibacter nan
+	OTU_144 Pseudoflavonifractor nan
+	OTU_150 Clostridium_XlVa nan
+	OTU_151 nan nan
+	OTU_95 Blautia nan
+	OTU_257 Pseudoflavonifractor nan
+	OTU_261 Butyricicoccus nan
+	OTU_114 Faecalibacterium nan
+	OTU_178 Paraprevotella nan
+	OTU_274 Butyricicoccus nan
+	OTU_61 Flavonifractor plautii
+	OTU_182 Blautia hydrogenotrophica
+Taxonomic coherence
+	Phylum
+		0.917: Firmicutes
+		0.083: Bacteroidetes
+	Class
+		0.917: Clostridia
+		0.083: Bacteroidia
+	Order
+		0.917: Clostridiales
+		0.083: Bacteroidales
+	Family
+		0.667: Ruminococcaceae
+		0.250: Lachnospiraceae
+		0.083: Prevotellaceae
+	Genus
+		0.167: Butyricicoccus
+		0.167: Blautia
+		0.167: Pseudoflavonifractor
+		0.083: Flavonifractor
+		0.083: Paraprevotella
+		0.083: Faecalibacterium
+		0.083: NA
+		0.083: Clostridium_XlVa
+		0.083: Oscillibacter
+Gram positive/negative coherence
+	False: 0.9166666666666666
+	True: 0.08333333333333333
+
+
+Cluster 6 - 12 ASVs
+======================
+ASVs
+----
+	OTU_214 Acetitomaculum nan
+	OTU_139 Ruminococcus bromii
+	OTU_92 Faecalibacterium nan
+	OTU_231 nan nan
+	OTU_236 nan nan
+	OTU_154 Gemmiger formicilis
+	OTU_107 Ruminococcus bicirculans
+	OTU_66 Alistipes onderdonkii/finegoldii
+	OTU_27 Coprococcus nan
+	OTU_73 Clostridium_IV nan
+	OTU_203 nan nan
+	OTU_208 Clostridium_XlVa nan
+Taxonomic coherence
+	Phylum
+		0.833: Firmicutes
+		0.083: Proteobacteria
+		0.083: Bacteroidetes
+	Class
+		0.833: Clostridia
+		0.083: Betaproteobacteria
+		0.083: Bacteroidia
+	Order
+		0.833: Clostridiales
+		0.083: Burkholderiales
+		0.083: Bacteroidales
+	Family
+		0.583: Ruminococcaceae
+		0.250: Lachnospiraceae
+		0.083: Oxalobacteraceae
+		0.083: Rikenellaceae
+	Genus
+		0.250: NA
+		0.167: Ruminococcus
+		0.083: Clostridium_XlVa
+		0.083: Clostridium_IV
+		0.083: Coprococcus
+		0.083: Alistipes
+		0.083: Gemmiger
+		0.083: Faecalibacterium
+		0.083: Acetitomaculum
+Gram positive/negative coherence
+	False: 0.8333333333333334
+	True: 0.16666666666666666
+
+
+Cluster 7 - 6 ASVs
+======================
+ASVs
+----
+	OTU_216 Alistipes indistinctus
+	OTU_234 nan nan
+	OTU_125 Coprobacter fastidiosus
+	OTU_181 Butyricimonas nan
+	OTU_294 Gemmiger nan
+	OTU_198 nan nan
+Taxonomic coherence
+	Phylum
+		0.500: Bacteroidetes
+		0.333: Firmicutes
+		0.167: Proteobacteria
+	Class
+		0.500: Bacteroidia
+		0.333: Clostridia
+		0.167: Deltaproteobacteria
+	Order
+		0.500: Bacteroidales
+		0.333: Clostridiales
+		0.167: Desulfovibrionales
+	Family
+		0.333: Porphyromonadaceae
+		0.167: Desulfovibrionaceae
+		0.167: Ruminococcaceae
+		0.167: Lachnospiraceae
+		0.167: Rikenellaceae
+	Genus
+		0.333: NA
+		0.167: Gemmiger
+		0.167: Butyricimonas
+		0.167: Coprobacter
+		0.167: Alistipes
+Gram positive/negative coherence
+	True: 0.6666666666666666
+	False: 0.3333333333333333
+
+
+Cluster 8 - 5 ASVs
+======================
+ASVs
+----
+	OTU_228 nan nan
+	OTU_99 Clostridium_XlVa nan
+	OTU_160 Holdemanella nan
+	OTU_163 nan nan
+	OTU_266 Alistipes shahii
+Taxonomic coherence
+	Phylum
+		0.800: Firmicutes
+		0.200: Bacteroidetes
+	Class
+		0.600: Clostridia
+		0.200: Bacteroidia
+		0.200: Erysipelotrichia
+	Order
+		0.600: Clostridiales
+		0.200: Bacteroidales
+		0.200: Erysipelotrichales
+	Family
+		0.200: Rikenellaceae
+		0.200: Ruminococcaceae
+		0.200: Erysipelotrichaceae
+		0.200: Lachnospiraceae
+		0.200: NA
+	Genus
+		0.400: NA
+		0.200: Alistipes
+		0.200: Holdemanella
+		0.200: Clostridium_XlVa
+Gram positive/negative coherence
+	False: 0.8
+	True: 0.2
+
+
+Cluster 9 - 5 ASVs
+======================
+ASVs
+----
+	OTU_80 Holdemania nan
+	OTU_133 Holdemania massiliensis
+	OTU_235 Clostridium_XlVa nan
+	OTU_71 Coprobacillus cateniformis
+	OTU_310 nan nan
+Taxonomic coherence
+	Phylum
+		1.000: Firmicutes
+	Class
+		0.600: Erysipelotrichia
+		0.400: Clostridia
+	Order
+		0.600: Erysipelotrichales
+		0.200: NA
+		0.200: Clostridiales
+	Family
+		0.600: Erysipelotrichaceae
+		0.200: NA
+		0.200: Lachnospiraceae
+	Genus
+		0.400: Holdemania
+		0.200: NA
+		0.200: Coprobacillus
+		0.200: Clostridium_XlVa
+Gram positive/negative coherence
+	False: 1.0
+
+
+Cluster 10 - 4 ASVs
+======================
+ASVs
+----
+	OTU_16 Phascolarctobacterium faecium
+	OTU_10 Bacteroides salyersiae
+	OTU_57 Oscillibacter nan
+	OTU_20 Parabacteroides merdae
+Taxonomic coherence
+	Phylum
+		0.500: Bacteroidetes
+		0.500: Firmicutes
+	Class
+		0.500: Bacteroidia
+		0.250: Clostridia
+		0.250: Negativicutes
+	Order
+		0.500: Bacteroidales
+		0.250: Clostridiales
+		0.250: Selenomonadales
+	Family
+		0.250: Porphyromonadaceae
+		0.250: Ruminococcaceae
+		0.250: Bacteroidaceae
+		0.250: Acidaminococcaceae
+	Genus
+		0.250: Parabacteroides
+		0.250: Oscillibacter
+		0.250: Bacteroides
+		0.250: Phascolarctobacterium
+Gram positive/negative coherence
+	False: 0.5
+	True: 0.5
+
+
+Cluster 11 - 3 ASVs
+======================
+ASVs
+----
+	OTU_8 Bacteroides dorei/fragilis
+	OTU_108 Terrisporobacter othiniensis/mayombei/glycolicus
+	OTU_122 Faecalibacterium nan
+Taxonomic coherence
+	Phylum
+		0.667: Firmicutes
+		0.333: Bacteroidetes
+	Class
+		0.667: Clostridia
+		0.333: Bacteroidia
+	Order
+		0.667: Clostridiales
+		0.333: Bacteroidales
+	Family
+		0.333: Ruminococcaceae
+		0.333: Peptostreptococcaceae
+		0.333: Bacteroidaceae
+	Genus
+		0.333: Faecalibacterium
+		0.333: Terrisporobacter
+		0.333: Bacteroides
+Gram positive/negative coherence
+	True: 0.3333333333333333
+	False: 0.6666666666666666
+
+
+Cluster 12 - 3 ASVs
+======================
+ASVs
+----
+	OTU_194 nan nan
+	OTU_244 Anaerofilum nan
+	OTU_399 Bacteroides nan
+Taxonomic coherence
+	Phylum
+		0.667: Firmicutes
+		0.333: Bacteroidetes
+	Class
+		0.667: Clostridia
+		0.333: Bacteroidia
+	Order
+		0.667: Clostridiales
+		0.333: Bacteroidales
+	Family
+		0.333: Bacteroidaceae
+		0.333: Ruminococcaceae
+		0.333: Clostridiales_Incertae_Sedis_XIII
+	Genus
+		0.333: Bacteroides
+		0.333: Anaerofilum
+		0.333: NA
+Gram positive/negative coherence
+	False: 0.6666666666666666
+	True: 0.3333333333333333
+
+
+Cluster 13 - 3 ASVs
+======================
+ASVs
+----
+	OTU_241 nan nan
+	OTU_220 nan nan
+	OTU_307 Christensenella massiliensis
+Taxonomic coherence
+	Phylum
+		1.000: Firmicutes
+	Class
+		1.000: Clostridia
+	Order
+		1.000: Clostridiales
+	Family
+		0.667: Ruminococcaceae
+		0.333: Christensenellaceae
+	Genus
+		0.667: NA
+		0.333: Christensenella
+Gram positive/negative coherence
+	False: 1.0
+
+
+Cluster 14 - 1 ASVs
+======================
+ASVs
+----
+	OTU_123 Clostridium_XlVa nan
+Taxonomic coherence
+	Phylum
+		1.000: Firmicutes
+	Class
+		1.000: Clostridia
+	Order
+		1.000: Clostridiales
+	Family
+		1.000: Lachnospiraceae
+	Genus
+		1.000: Clostridium_XlVa
+
+
+Cluster 15 - 1 ASVs
+======================
+ASVs
+----
+	OTU_14 Escherichia/Shigella nan
+Taxonomic coherence
+	Phylum
+		1.000: Proteobacteria
+	Class
+		1.000: Gammaproteobacteria
+	Order
+		1.000: Enterobacteriales
+	Family
+		1.000: Enterobacteriaceae
+	Genus
+		1.000: Escherichia/Shigella
+
+
+Cluster 16 - 1 ASVs
+======================
+ASVs
+----
+	OTU_148 Clostridium_IV nan
+Taxonomic coherence
+	Phylum
+		1.000: Firmicutes
+	Class
+		1.000: Clostridia
+	Order
+		1.000: Clostridiales
+	Family
+		1.000: Ruminococcaceae
+	Genus
+		1.000: Clostridium_IV
+
+
+Max coherence stats (clusters > 1):
+	Phylum
+		median: 0.775
+		mean: 0.781
+		25th percentile: 0.667
+		75th percentile: 0.979
+	Class
+		median: 0.667
+		mean: 0.728
+		25th percentile: 0.608
+		75th percentile: 0.870
+	Order
+		median: 0.667
+		mean: 0.728
+		25th percentile: 0.608
+		75th percentile: 0.870
+	Family
+		median: 0.342
+		mean: 0.440
+		25th percentile: 0.333
+		75th percentile: 0.596
+	Genus
+		median: 0.325
+		mean: 0.328
+		25th percentile: 0.257
+		75th percentile: 0.333
+Gram coherence stats (clusters > 1)
+		median: 0.817
+		mean: 0.813
+		25th percentile: 0.684
+		75th percentile: 0.979

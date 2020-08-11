@@ -1,0 +1,40 @@
+\contentsline {section}{\numberline {1}Notation}{3}
+\contentsline {subsection}{\numberline {1.1}Index notation}{3}
+\contentsline {section}{\numberline {2}Model details}{3}
+\contentsline {subsection}{\numberline {2.1}Dirichlet process for interactions and perturbations}{3}
+\contentsline {subsection}{\numberline {2.2}Baseline logistic growth}{4}
+\contentsline {subsection}{\numberline {2.3}Process Variance}{4}
+\contentsline {subsection}{\numberline {2.4}Auxiliary Trajectory}{5}
+\contentsline {subsection}{\numberline {2.5}Perturbations}{5}
+\contentsline {subsection}{\numberline {2.6}Error model}{5}
+\contentsline {section}{\numberline {3}Model inference}{6}
+\contentsline {subsection}{\numberline {3.1}Logistic growth parameters and perturbation magnitudes}{6}
+\contentsline {subsection}{\numberline {3.2}Logistic growth prior variances}{6}
+\contentsline {subsection}{\numberline {3.3}Process variance parameters}{7}
+\contentsline {subsection}{\numberline {3.4}Latent and auxiliary trajectory}{7}
+\contentsline {subsection}{\numberline {3.5}Interaction and perturbation indicator}{9}
+\contentsline {subsection}{\numberline {3.6}Cluster assignment}{9}
+\contentsline {subsection}{\numberline {3.7}Cluster concentration}{10}
+\contentsline {subsection}{\numberline {3.8}Interaction and perturbation indicator probability}{10}
+\contentsline {section}{\numberline {4}Setting hyperparameters and initializations}{10}
+\contentsline {subsection}{\numberline {4.1}Cluster assignment and concentration}{10}
+\contentsline {subsection}{\numberline {4.2}Interactions and perturbations}{10}
+\contentsline {subsection}{\numberline {4.3}Process variance parameters}{11}
+\contentsline {subsection}{\numberline {4.4}Logistic growth parameters and prior variances}{11}
+\contentsline {subsection}{\numberline {4.5}Latent and auxiliary trajectories}{11}
+\contentsline {subsection}{\numberline {4.6}Stagged initialization}{12}
+\contentsline {subsubsection}{\numberline {4.6.1}First version}{12}
+\contentsline {subsubsection}{\numberline {4.6.2}Second (current) version}{12}
+\contentsline {section}{\numberline {5}Benchmarking}{12}
+\contentsline {subsection}{\numberline {5.1}Data simulation}{13}
+\contentsline {subsection}{\numberline {5.2}Simulating noise}{13}
+\contentsline {subsubsection}{\numberline {5.2.1}Reads}{13}
+\contentsline {subsection}{\numberline {5.3}qPCR}{13}
+\contentsline {subsection}{\numberline {5.4}Evaluation metrics}{14}
+\contentsline {section}{Appendix \numberline {A}Derivation of marginalization}{14}
+\contentsline {section}{Appendix \numberline {B}Learning negative binomial dispersion parameters}{15}
+\contentsline {subsection}{\numberline {B.1}Model Details}{15}
+\contentsline {subsection}{\numberline {B.2}Initialization}{15}
+\contentsline {subsection}{\numberline {B.3}Model Inference}{16}
+\contentsline {subsubsection}{\numberline {B.3.1}Latent and auxiliary trajectory}{16}
+\contentsline {subsubsection}{\numberline {B.3.2}Negative binomial dispersion parameters}{17}

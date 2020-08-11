@@ -1,0 +1,975 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1.2in]{geometry}
+\usepackage{amssymb, amsmath, amsthm}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage[titletoc]{appendix}
+%\usepackage{minted}
+
+\title{MDSINE 2.0 Supplement}
+%\author{David Kaplan}
+%\date{June 2019}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Commands
+
+% Reals, Ints
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+
+% Variance and standard deviation
+\newcommand{\var}{\sigma^2}
+\newcommand{\std}{\sigma}
+
+% Distributions
+\newcommand{\Normaldist}{\text{Normal}}
+\newcommand{\InvGammadist}{\text{InvGamma}}
+\newcommand{\Gammadist}{\text{Gamma}}
+\newcommand{\NegBindist}{\text{NegBin}}
+\newcommand{\Multinomialdist}{\text{Multinomial}}
+\newcommand{\Betadist}{\text{Beta}}
+\newcommand{\DPdist}{\text{DP}}
+\newcommand{\Bernoullidist}{\text{Bernoulli}}
+\newcommand{\Uniformdist}{\text{Uniform}}
+
+% Clustering
+\renewcommand{\c}{\mathbf{c}}
+\newcommand{\concc}{\mathbf{\theta}}
+\newcommand{\probc}{\mathbf{\pi_{\c}}}
+
+% growth and self interactions
+\renewcommand{\a}[2]{\mathbf{a}_{#1,#2}}
+\renewcommand{\aa}[1]{\mathbf{a}_{#1}}
+\newcommand{\vara}[1]{\mathbf{\sigma}^2_{\mathbf{a}_#1}}
+\newcommand{\stda}[1]{\mathbf{\sigma}_{\mathbf{a}_#1}}
+
+% Interactions
+\newcommand{\bc}[2]{\mathbf{b}_{\c_{#1},\c_{#2}}}
+\renewcommand{\b}{\mathbf{b}}
+\newcommand{\zbc}[2]{\mathbf{z}^{(\mathbf{b})}_{\c_{#1},\c_{#2}}}
+\newcommand{\zb}{\mathbf{z}^{(\mathbf{b})}}
+\newcommand{\probb}{\mathbf{\pi}_{\mathbf{b}}}
+\newcommand{\varb}{\mathbf{\sigma}^2_{\mathbf{b}}}
+\newcommand{\stdb}{\mathbf{\sigma}_{\mathbf{b}}}
+
+% Perturbations
+\newcommand{\pert}{\mathbf{\gamma}_j}
+\newcommand{\pertc}[1]{\mathbf{\gamma}_{j,\c_{#1}}}
+\newcommand{\zpertc}[1]{\mathbf{z}^{(\gamma_j)}_{\c_{#1}}}
+\newcommand{\varpert}{\mathbf{\sigma}^2_{\gamma_j}}
+\newcommand{\stdpert}{\sigma^2_{\gamma_j}}
+\newcommand{\pertstep}{h_j}
+\newcommand{\probpert}{\mathbf{\pi}_{\pert}}
+
+% Error Model
+\newcommand{\x}[2]{\mathbf{x}_{#2}(#1)}
+\newcommand{\xexp}[3]{\mathbf{x}^{#3}_{#2}(#1)}
+\newcommand{\q}[2]{\mathbf{q}_{#2}(#1)}
+\newcommand{\qq}{\mathbf{q}}
+\newcommand{\xx}{\mathbf{x}}
+% \newcommand{\qk}[1]{\mathbf{q}(#1)}
+\newcommand{\qexp}[3]{\mathbf{q}^{#3}_{#2}(#1)}
+\newcommand{\Q}{\mathbf{Q}}
+\newcommand{\y}[2]{\mathbf{y}_{#2}(#1)}
+\newcommand{\yy}{\mathbf{y}}
+\newcommand{\varQ}[1]{\sigma^2_{Q_s(#1)}}
+\newcommand{\varcoupling}{\var_q}
+
+% Process Variance
+\newcommand{\varw}[1]{\mathbf{\sigma}^2_{w,{}#1}}
+\newcommand{\cw}{\hat{c}_w}
+\renewcommand{\v}[1]{\mathbf{v}_{#1}}
+
+% Change with time
+\newcommand{\dt}{\Delta_{k}}
+
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Notation}
+Mersauce We parameterize the Inverse Gamma distribution with shape $\alpha$ and scale $\beta$ as
+\begin{align}
+    \InvGammadist(x ; \alpha, \beta) =
+        \frac{\beta^{\alpha}}{\Gamma({\alpha})}
+        x^{\alpha-1}
+        \exp{\Big( -\frac{\beta}{x} \Big)}
+\end{align}
+We parameterize the Gamma distribution with shape $k$ and scale $\theta$ as
+\begin{align}
+    \Gammadist(x ; k, \theta) =
+        \frac{1}{\Gamma(k)\theta^k} x^{k-1}
+        \exp{\Big( -\frac{x}{\theta} \Big)}
+\end{align}
+We parameterize the Negative Binomial distribution with mean $\phi$ and dispersion $\epsilon$ as:
+\begin{align}
+    \NegBindist(y;\phi,\epsilon) & =
+        \frac{\Gamma(r+y)}{y!\Gamma(r)}
+        \Big(
+            \frac{\phi}{r+\phi}
+        \Big)^y
+        \Big(
+            \frac{r}{r+\phi}
+        \Big)^r \\
+    r & = \frac{1}{\epsilon}
+\end{align}
+Normal distributions are written in terms of the variance $\Normaldist(\mu, \sigma^2)$.
+
+\subsection{Index notation}
+To indicate the effect from $a$ to $b$, we use the control theory notation $b_{b,a}$, not graphical notation $z_{a,b}$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Model details}
+\label{section:model details}
+
+\subsection{Dirichlet process for interactions and perturbations}
+\label{subsection:dirichlet process}
+We incorporate a Dirichlet Process (DP)-based clustering technique (\cite{cite:neal2000}, \cite{cite:ramussen2000}) to learn redundant interaction structures (interaction modules) and perturbation effects among OTUs. Let $\c_i \in \Z^+$ be the cluster assignment of OTU $i$. In the context of our dynamical systems module, only interaction coefficients between modules need to be learned ($\bc{i}{j}$), rather than interactions between each pair of OTUs ($b_{i,j}$). If OTU $i$ and OTU $j$ are in different clusters, i.e. $\c_i \neq \c_j$, then $\bc{i}{j} \in \R$ is the coefficient representing the (interaction) effect from cluster $c_j$ to cluster $\c_i$. If OTU $i$
+and OTU $j$ are in the same cluster, i.e. $\c_i = \c_j$, then we assume there is no interaction for interpretability. If OTU $l$ is in the same cluster as OTU $j$, different than OTU $i$, then $\bc{i}{l} = \bc{i}{j}$ by definition.
+
+Additionally, perturbation effects are modeled on the cluster level: $\pertc{i}$, where $\pertc{i}$ is the $j^{\text{th}}$ perturbation for the cluster assigned to OTU $i$. If OTU $i$ and OTU $l$ are in the same cluster, $\pertc{i} = \pertc{l}$. Analogously, if OTU $i$ and OTU $l$ are not in the same cluster, $\pertc{i} \neq \pertc{l}$.
+
+We generate the mixture weights $C_1, C_2,...$ from a "stick-breaking" construction with concentration parameter $\concc$:
+\begin{align}
+  V_1, V_2, ... & \sim \Betadist (1,\concc) \\
+  C_k & = V_k \prod_{j=1}^{k-1}(1-V_j)
+\end{align}
+Atom locations locations $\eta_{1}, \eta_{2}, ...$ are drawn from a base distribution $G_0$.
+\begin{align}
+  \eta_1, \eta_2,... \sim G_0 \\
+  \Theta = \sum_{k=1}^{\infty}C_k \delta_{\eta_k}
+\end{align}
+where $\Theta$ is a draw from a Dirchlet process with concentration parameter $\concc$ and base distribution $G_0$, or $\Theta \sim \DPdist(\concc, G_0)$. $\delta_{\eta_k}$ is an indicator function that is 0 everywhere, except for $\delta_{\eta_k}(C_k)=1$.
+
+To specify the dirichlet process mixture model, we specify cluster assignment variable $\c_i$ for each OTU $i$, and a density $\probc$ which takes an atom location as a parameter.
+\begin{align}
+  \c_i & \sim \Multinomialdist (C_k) \\
+  i | \c_i & \sim \probc( \cdot | \eta_{C_k})
+\end{align}
+
+
+\subsection{Baseline logistic growth}
+For the underlying dynamical systems model, we use the stochastic version of the generalized Lotka-Volterra (gLV) equations:
+\begin{align}
+  \label{eqn:mean logisitc growth}
+  \mu_{si}(k+1) & = \x{k}{si} + \x{k}{si} \Big(
+    \a{i}{1} \Big(
+      1 + \sum_j \pertc{i} \zpertc{i} \pertstep(k)
+    \Big)
+    \Big) + \a{i}{2} \x{k}{si} \\
+    & \quad \quad + \sum_{\c_i \neq \c_j}
+    \bc{i}{j}\zbc{i}{j}\x{k}{sj} \nonumber
+   \Big) \dt
+\end{align}
+\begin{equation}
+  \x{k+1}{si} \sim \Normaldist(\mu_{si}(k+1), \dt \varw{si})
+\end{equation}
+where $i \in \{1,...,n_o\}, s \in \{ 1,...,n_S \}$. $\x{k}{si} \in \R_{\ge 0}$ is the abundance of OTU $i$, subject $s$, at time $t_k, k \in \{1,...,n_T\}, \dt = t_{k+1}-t_k$. Variables $\a{1}{i}$ and $\a{2}{i}$ represent the growth an self-interaction parameters for each OTU, repectively, and are parameterized by a truncated normal:
+\begin{equation}
+  \a{i}{1} \sim \Normaldist_{(+)}(0,\vara{1})
+\end{equation}
+\begin{equation}
+  \a{i}{2} \sim \Normaldist_{(-)}(0,\vara{2})
+\end{equation}
+We place Inverse Gamma priors on the variances:
+\begin{equation}
+  \vara{1} \sim \InvGammadist(\alpha_{a_1},\beta_{a_1})
+\end{equation}
+\begin{equation}
+  \vara{2} \sim \InvGammadist(\alpha_{a_2},\beta_{a_2})
+\end{equation}
+Note that $a_1$ and $a_2$ correspond to each OTU individually and are not part of our clustering scheme.
+The variable $\bc{i}{j}$ represents the interaction coefficient from cluster $\c_i$ to cluster $\c_j$. We assume a normal prior.
+\begin{align}
+  \bc{i}{j} & \sim \Normaldist (0, \varb ) \\
+  \varb & \sim \InvGammadist (\alpha_{b}, \beta_{b})
+\end{align}
+The variable $\zbc{i}{j}$ represents the binary indicator variable that selects the interaction from $\c_j$ to $\c_i$. We assume $\zbc{i}{j}$ is Bernoulli distributed with probability $\probb$
+\begin{align}
+  \zbc{i}{j} \sim \Bernoullidist (\probb) \\
+  \probb \sim \Betadist (b_{z,1}, b_{z,2})
+\end{align}
+
+\subsection{Process Variance}
+The process variance $\varw{si}$ is heteroscedastic, scaling with the magnitude of the trajectory. The parameters controlling the scaling can be learned accoss all OTUs
+\begin{align}
+  \varw{si} = \v{1} \qexp{k}{si}{2} + \v{2} \cw^2
+\end{align}
+or be specifiec to each OTU:
+\begin{align}
+  \varw{si} = \v{1i} \qexp{k}{si}{2} + \v{2i} \cw^2
+\end{align}
+where $\cw$ is the amount of bacterial reintroduction each day. $\v{1}$ and $\v{2}$ are parameterized with truncated normal priors
+\begin{align}
+  \v{i} \sim \Normaldist_{(+)} (\mu_{\v{i}}, \sigma^2_{\v{i}})
+\end{align}
+where $i=1,2$.
+
+\subsection{Auxiliary Trajectory}
+In order to model the non-negativity of microbiome data while still maintaining inference efficiency, we apply a relaxation method which has been introduced previously for microbiome dynamics \cite{cite:gibsonICML}. We closely couple the latent dynamical trajectory $\x{k}{si}$ to an auxiliary trajectory $\q{k}{si}$ that is strictly non-negative via a normal distribution
+\begin{align}
+  \label{eqn:x_q_coupling_var}
+  ( \q{k}{si} - \x{k}{si} ) & \sim \Normaldist (0, \varcoupling) \\
+  \q{k}{si} & \sim \Uniformdist (0, \infty) \\
+  \varcoupling & = v_1^{\text{aux}}\qexp{k}{si}{2} + v_2^{\text{aux}}
+\end{align}
+where $v_1^{\text{aux}}$ and $v_2^{\text{aux}}$ are global parameters and are small.
+
+\subsection{Perturbations}
+We assume that the baseline growth rate can be modulated by a perturbation. The variable $\pertc{i}$ represents the magnitude of perturbation $j$ and has a normal prior.
+\begin{align}
+  \pertc{i} & \sim \Normaldist (0, \varpert)
+\end{align}
+Th period of time when perturbation $j$ is active is given by a step function $\pertstep(k)$
+\begin{align}
+  \pertstep(k) = \begin{cases}
+    1 & t^{\text{on}}_j < t_k \le t^{\text{off}}_j \\
+    0 & \text{otherwise}
+  \end{cases}
+\end{align}
+Additionally, there is a binary indicator variable $\zpertc{i}$ that selects whether cluster $\c_i$ is affected by perturbation $\pert$ and is parameterized by a Bernoulli.
+\begin{align}
+  \zpertc{i} \sim \Bernoullidist (\probpert) \\
+  \probpert \sim \Betadist (b_{\pert,1}, b_{\pert,2})
+\end{align}
+
+\subsection{Error model}
+\label{subsection:error model}
+The observed data are the sequencing counts $\y{k}{si}$ and qPCR measurements $\Q_s(k)$, which both depend of the auxiliary trajectory $\q{k}{si}$. We set the error model dependent on the auxiliary trajectory instead of the latent trajectory because is it strictly positive. We can model $\y{k}{si}$ by a negative binomial distribution \cite{cite:negbin}
+\begin{align}
+  \label{eqn:negbin}
+  \y{k}{si} & \sim \NegBindist (\phi_{si} (\q{k}{s}, r_s(k)), \epsilon_{si} (\q{k}{s},a_0,a_1)) \\
+  \phi_{si} (\q{k}{s}, r_s(k)) & = r_s(k) \frac{\q{k}{si}}{\sum_i \q{k}{si}} \\
+  \epsilon_{si} (\q{k}{s},a_0,a_1) & = \frac{a_0}{\q{k}{si}/\sum_i \q{k}{si}} + a_1
+\end{align}
+where $r_s(k)$ is the total number of reads at time $t_k$ for subject $s$, and $a_0$ and $a_1$ are the negative binomial dispersion scaling parameters which are pre-trained on raw reads. We can model $\Q_s(k)$ with a normal distribution with mean as the total auxiliary abundance at time $t_k$:
+\begin{align}
+  \Q_s(k) \sim \Normaldist (\sum_i \q{k}{si}, \varQ{k})
+\end{align}
+where $\varQ{k}$ is the variance over the triplicate measurements of the qPCR at time $t_k$ and subject $s$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Model inference}
+\label{section:model inference}
+Before we learn the parameters of the model, we learn the negative binomial dispersion parameters ($a_0$ and $a_1$) offline and then keep them fixed during inference. To see how inference on these parameters is performed, see appendix \ref{appendix:learningas}. Inference for all the other parameters is performed using Markcov Chain Monte Carlo (MCMC). We use Gibbs steps for variables with conjugate priors and Metropolis-Hastings (MH) steps otherwise. The order of the main sampling loop is as follows:
+\begin{enumerate}
+  \item Sample cluster interaction parameters $\b$
+  \item Sample growth and self-interaction parameters ($\aa{1}$, $\aa{2}$) by randomly choosing which one to update first
+  \item Sample logistic growth and interaction prior variance parameters $\vara{1}$, $\vara{2}$, and $\varb$
+  \item Sample perturbation indicator $\zpertc{i}$
+  \item Sample perturbation probability $\probpert$
+  \item Sample perturbation magnitude $\pertc{i}$
+  \item Sample process variance paramters $\v{1}$ and $\v{2}$
+  \item Sample latent trajectory $\x{k}{si}$ and auxiliary trajectory $\q{k}{si}$
+  \item Sample cluster assignment $\c_i$ for each OTU $i$
+  \item Sample cluster concentration $\concc$
+  \item Sample the indicator for the interactions $\zb$
+  \item Sample the probability of there being an interaction $\probb$
+
+
+\end{enumerate}
+
+\subsection{Logistic growth parameters and perturbation magnitudes}
+The variables $\a{i}{1}$, $\a{i}{2}$, $\bc{i}{j}$, and $\pertc{i}$ each have conjugate normal priors, so they can be sampled with straightforward Gibbs sampling.
+
+
+\subsection{Logistic growth prior variances}
+The variables $\vara{1}$, $\vara{2}$, and $\varb$ have conjugate Inverse Gamma priors, so they are sampled using straightforward Gibbs steps.
+
+
+\subsection{Process variance parameters}
+$\v{1}$ and $\v{2}$ are each updated with an MH step using a truncated normal proposal ($[0,\infty]$) centered on its current value. For each parameter, the proposal is
+\begin{align}
+  \v{d}^{(*)} \sim \Normaldist_{(+)} \Big( \v{d}^{(j-1)}, \var_{\text{(prop)}}(\v{d}) \Big)
+\end{align}
+for $d \in \{1,2\}$. The proposal variance $\var_{\text{(prop)}}(\v{d})$ is adjusted to $0.44$, the optimal value for a single variable MH step \cite{cite:BDA}. Every 50 MCMC iteractions during the first half of burnin, $\var_{\text{(prop)}}(\v{d})$ is tuned based on the acceptance rate of the previous 50 iterations. Once the tuning stops it is fixed for the rest of inference. Denoting the process variance computed with the proposed parameter by $\sigma_w^{2 (*)}$ and the current parameter by $\sigma_w^{2 (j-1)}$, the acceptance probability for global parameters $\v{i}$ is:
+\begin{align}
+  r^{\text{accept}}= \frac{
+    \prod_s \Big( \prod_i
+      \Normaldist \Big( \frac{\x{k}{si}-\mu_{si}(k)}{\sqrt{\dt}} ; 0,\sigma_w^{2 (*)} \Big) \Big)
+    \Normaldist_{(+)} \Big( \v{d}^{(*)} ; \mu_{\v{d}}, \var_{\v{d}} \Big)
+    \Normaldist_{(+)} \Big( \v{d}^{(j-1)} ; \v{d}^{(*)}, \var_{\v{d}} \Big)
+    }
+    {
+    \prod_s \Big( \prod_i
+      \Normaldist \Big( \frac{\x{k}{si}-\mu_{si}(k)}{\sqrt{\dt}} ; 0,\sigma_w^{2 (j-1)} \Big) \Big)
+    \Normaldist_{(+)} \Big( \v{d}^{(j-1)} ; \mu_{\v{d}}, \var_{\v{d}} \Big)
+    \Normaldist_{(+)} \Big( \v{d}^{(*)} ; \v{i}^{(j-1)}, \var_{\v{d}} \Big)
+    }
+\end{align}
+If $\v{d}$ is specific for each OTU, the acceptance probability changes to:
+\begin{align}
+  r^{\text{accept}}= \frac{
+    \prod_s \Big(
+      \Normaldist \Big( \frac{\x{k}{si}-\mu_{si}(k)}{\sqrt{\dt}} ; 0,\sigma_w^{2 (*)} \Big) \Big)
+    \Normaldist_{(+)} \Big( \v{di}^{(*)} ; \mu_{\v{di}}, \var_{\v{di}} \Big)
+    \Normaldist_{(+)} \Big( \v{di}^{(j-1)} ; \v{di}^{(*)}, \var_{\v{di}} \Big)
+    }
+    {
+    \prod_s \Big(
+      \Normaldist \Big( \frac{\x{k}{si}-\mu_{si}(k)}{\sqrt{\dt}} ; 0,\sigma_w^{2 (j-1)} \Big) \Big)
+    \Normaldist_{(+)} \Big( \v{di}^{(j-1)} ; \mu_{\v{di}}, \var_{\v{di}} \Big)
+    \Normaldist_{(+)} \Big( \v{di}^{(*)} ; \v{di}^{(j-1)}, \var_{\v{di}} \Big)
+    }
+\end{align}
+where this is calculated for each OTU $i$. In each Gibbs step, we randomly choose the order to update each OTU for each $\v{d}$.
+
+In each Gibbs step, we randomly choose whether we update $\v{1}$ or $\v{2}$ to enhance mixing.
+
+\subsection{Latent and auxiliary trajectory}
+\label{subsection:learn_latent_and_aux}
+Since the latent trajectory $\x{k}{si}$ and auxiliary trajectory $\q{k}{si}$ are tightly coupled, their joint posterior is likely highly correlated. We can achieve efficient sampling of these parameters by using a multivariate MH step with an adaptive proposal.
+
+At each time point $k$, OTU $i$, subject $s$, and MH step $j$, the following multivariate jumping proposal is used:
+\begin{align}
+	\left(
+	\begin{array}{ccc}
+		\x{k}{si}^{(*)} \\
+		\q{k}{si}^{(*)}
+	\end{array} \right)
+	\sim \Normaldist \left(
+		\left(
+		\begin{array}{ccc}
+			\x{k}{si}^{(j-1)} \\
+			\q{k}{si}^{(j-1)}
+		\end{array} \right), \Sigma_{\text{prop}}(s,k,i)
+	\right)
+\end{align}
+The proposal covariance $\Sigma_{\text{prop}}(s,k,i)$ is set equal to the empirical covariance of the accepted auxiliary and latent trajectory over all the previous MH steps at time point $k$ and OTU $i$, multiplied by a scalar $c_{si}(k)$:
+\begin{align}
+	v_x (s,k,i) & = [\x{k}{si}^{(0)}, \x{k}{si}^{(1)}, ..., \x{k}{si}^{(j-1)}] \\
+	v_q (s,k,i) & = [\q{k}{si}^{(0)}, \q{k}{si}^{(1)}, ..., \q{k}{si}^{(j-1)}] \\
+	\Sigma_{\text{prop}}(s,k,i) & = c_{si}(k) \text{Cov}(v_x (k,i), v_q (k,i))
+\end{align}
+During the first half of the burnin period, the parameter $c_{si}(k)$ is tuned to adjust the acceptance rate towards $0.234$, the optimal acceptance rate for a multivariate MH step \cite{cite:BDA}. After the tuning is finished, $c_{si}(k)$ is fixed for the rest of inference. Note that there is a separate proposal covariance for each pair of $\q{k}{si}$ and $\x{k}{si}$ for each $s$, $k$, and $i$.
+
+The data likelihood function $l$ is specified as follows:
+\begin{equation}
+	l(\y{k}{si}, \Q(k) ; \q{k}{si}) =
+		\text{NegBin} \Big( \y{k}{si}; \phi(\q{k}{s}), \epsilon(\q{k}{s}) \Big)
+		\text{Normal}\Big( \Q(k); \sum_i \q{k}{si}, \varQ{k} \Big)
+\end{equation}
+where $\phi$ and $\epsilon$ were defined in section \ref{subsection:error model}. The unnormalized target distribution conditional on all other parameters $\Omega$ is:
+\begin{align}
+\label{eqn:likelihood_aux_traj}
+	p(\x{k}{si}, \q{k}{si} ; \Omega) & \propto \text{Uniform}(\q{k}{si}; 0, \infty) \\
+		& \times l(\y{k}{si}, \Q(k) ; \q{k}{si}) \nonumber \\
+		& \times \text{Normal}(\x{k}{si} - \q{k}{si}; 0, \sigma^2_{q}) \nonumber \\
+		& \times \text{Normal}(\x{k}{si}; \mu_{si}(k), \dt \varw{si}(k)) \nonumber \\
+		& \times \text{Normal}(\x{k+1}{si}; \mu_{si}(k+1), \Delta_{k+1} \varw{si}(k+1)) \nonumber
+\end{align}
+Note that when we are sampling the last time point ($k=n_T$) we do not calculate the likelihood of the future point (set the log-likelihood to 0). When $k=0$, we cannot calculate the probability from the previous time point so we sample from the prior of $\mathbf{x}$. The acceptance probability is calculated as the ratio:
+\begin{align}
+	r^{\text{accept}} & = \frac
+		{p \Big( \xexp{k}{si}{(*)}, \qexp{k}{si}{(*)}; \Omega \Big)
+    \Normaldist \left(
+  		\left(
+  		\begin{array}{ccc}
+  			\x{k}{si}^{(j-1)} \\
+  			\q{k}{si}^{(j-1)}
+  		\end{array} \right);
+      \left( \begin{array}{ccc}
+  			\x{k}{si}^{(*)} \\
+  			\q{k}{si}^{(*)}
+  		\end{array} \right), \Sigma_{\text{prop}}(s,k,i)
+  	\right)}
+		{p \Big( \xexp{k}{si}{(j-1)}, \qexp{k}{si}{(j-1)}; \Omega \Big)
+    \Normaldist \left(
+  		\left(
+  		\begin{array}{ccc}
+  			\x{k}{si}^{(*)} \\
+  			\q{k}{si}^{(*)}
+  		\end{array} \right);
+      \left( \begin{array}{ccc}
+  			\x{k}{si}^{(j-1)} \\
+  			\q{k}{si}^{(j-1)}
+  		\end{array} \right), \Sigma_{\text{prop}}(s,k,i)
+  	\right)}
+\end{align}
+Because our proposal distribution is symmetric, the forward and reverse jumping likelihoods are equal to each other, so our acceptance probability simplifies to
+\begin{align}
+	r^{\text{accept}} & = \frac
+		{p \Big( \xexp{k}{si}{(*)}, \qexp{k}{si}{(*)}; \Omega \Big)}
+		{p \Big( \xexp{k}{si}{(j-1)}, \qexp{k}{si}{(j-1)}; \Omega \Big)}
+\end{align}
+where
+\begin{align*}
+	p \Big( \x{k}{si}, \q{k}{si}; \Omega \Big) \propto \begin{cases}
+    \begin{aligned}[c]
+      & \Big( \sigma_Q \sigma_q \std_w(k) \std_w(k+1) \sqrt{\dt \Delta_{k+1}} \Big)^{-1} \\
+      & \quad \cdot \text{exp}
+        \Big(
+        -\frac{1}{2}
+        \Big(
+            \frac{(\Q(k) - \sum_i \q{k}{si})^2}{\var_Q}
+            + \frac{(\x{k}{si} - \q{k}{si})^2}{\var_q} \\
+      & \quad +
+        \frac{(\x{k}{si} - \mu_{si}(k))^2}{\dt \varw{si}(k)}
+        + \frac{(\x{k+1}{si} - \mu_{si}(k+1))^2}{\Delta_{k+1} \varw{si}(k+1)}
+        \Big) \Big) \\
+      & \quad \cdot \frac{\Gamma(r+\y{k}{si})}{\y{k}{si}!\Gamma(r)}
+        \Big(
+            \frac{\phi(\q{k}{si})}{r+\phi(\q{k}{si})}
+        \Big)^{\y{k}{si}}
+        \Big(
+            \frac{r}{r+\phi(\q{k}{si})}
+        \Big)^{r}
+    \end{aligned} & \text{if } \q{k}{si} \ge 0 \\
+    0 & \text{otherwise}
+\end{cases}
+\end{align*}
+  where $r = 1/\epsilon(\q{k}{si})$. If we eliminate variables that are not dependent on $\x{k}{si}$ or $\q{k}{si}$, we are able to simplify  to
+  \begin{align*}
+  	p \Big( \x{k}{si}, \q{k}{si}; \Omega \Big) \propto \begin{cases}
+      \begin{aligned}[c]
+        & \Big( \sigma_q \std_w(k) \std_w(k+1) \Big)^{-1} \\
+        & \quad \cdot \text{exp}
+          \Big(
+          -\frac{1}{2}
+          \Big(
+              \frac{(\Q(k) - \sum_i \q{k}{si})^2}{\var_Q}
+              + \frac{(\x{k}{si} - \q{k}{si})^2}{\var_q} \\
+        & \quad +
+          \frac{(\x{k}{si} - \mu_{si}(k))^2}{\dt \varw{si}(k)}
+          + \frac{(\x{k+1}{si} - \mu_{si}(k+1))^2}{\Delta_{k+1} \varw{si}(k+1)}
+          \Big) \Big) \\
+        & \quad \cdot \Big(
+            \frac{\phi(\q{k}{si})}{r+\phi(\q{k}{si})}
+            \Big)^{\y{k}{si}}
+          \Big(
+              \frac{r}{r+\phi(\q{k}{si})}
+          \Big)^{r}
+      \end{aligned} & \text{if } \q{k}{si} \ge 0 \\
+      0 & \text{otherwise}
+  \end{cases}
+\end{align*}
+The next values for $\xexp{k}{si}{(j)}$ and $\qexp{k}{si}{(j)}$ are set given by:
+\begin{align}
+	\left(
+	\begin{array}{ccc}
+		\xexp{k}{si}{(j)} \\
+		\qexp{k}{si}{(j)}
+	\end{array} \right) = \begin{cases}
+		\left(
+		\begin{array}{ccc}
+			\xexp{k}{si}{(*)} \\
+			\qexp{k}{si}{(*)}
+		\end{array} \right) & \text{with probability } \min( {1,r^{\text{accept}}} ) \\
+	\left(
+	\begin{array}{ccc}
+		\xexp{k}{si}{(j-1)} \\
+		\qexp{k}{si}{(j-1)}
+	\end{array} \right) & \text{otherwise}
+	\end{cases}
+\end{align}
+
+\subsection{Interaction and perturbation indicator}
+A Gibbs step is used to update the interaction indicator $\zbc{i}{j}$ and perturbation indicator $\zpertc{i}$ variable for whether or not an interactions is present. Due to conjugacy, the interactions and perturbations ($\aa{2}$, $\bc{i}{j}$, and $\pertc{i}$) can be integrated out, conditioned on the growth rates $\aa{1}$. A derivation of this marginalization can be seen in appendix \ref{appendix:marginalization}. In the following equations, let $F_{u} \big( \zbc{i}{j} | \aa{1} \big)$, $u \in \{ 0, 1 \}$ be the marginal likelihood that $\zbc{i}{j} = u$.
+\begin{align}
+  F_{u} \big( \zbc{i}{j} | \aa{1} \big)= \int \prod_s \prod_k \Normaldist(\x{k}{si}; \mu_{si}(k,\c_i,\c_j,u), \dt \varw{si}) \text{d}(\aa{2}, \pert, \mathbf{b})
+\end{align}
+where $\mu_{si}(k,\c_i,\c_j,u)$ indicates the mean (defined in equation \ref{eqn:mean logisitc growth}) computed when $\zbc{i}{j}=u$. Let
+\begin{align}
+  P(\zbc{i}{j}=0) & = F_0 (\zbc{i,j} | \aa{1}) \Bernoullidist(0 ; \probb) \\
+  P(\zbc{i}{j}=1) & = F_1 (\zbc{i,j} | \aa{1}) \Bernoullidist(1 ; \probb)
+\end{align}
+be the posterior probabilities of assigning $\zbc{i}{j}$. Given both likelihoods, we sample $u | \Omega$.
+
+\subsection{Cluster assignment}
+The cluster assignment parameter $\c$ is sampled using Gibbs sampling according to Algorithm 8 described in \cite{cite:neal2000}. First, we sample the assignments of OTU $i$ being assigned to each cluster, marginalizing over the interactions and the perturbations. In the following equations, $F_m(\mathbf{x}_{si} | \aa{1})$ denotes marginal likelihood for OTU $i$ assigned to cluster $m$. A derivation of the marginalization can be seen in appendix \ref{appendix:marginalization}. Note that the marginalization must be conditioned on the growth rates $\aa{1}$ because they are multiplying the perturbation parameters.
+\begin{align}
+  F_m(\mathbf{x}_{i} | \aa{1}) = \int \prod_s \prod_k \Normaldist(\x{k}{si}; \mu_{si}^{(m)}(k), \dt \varw{si}) \text{d}(\aa{2}, \pert, \mathbf{b})
+\end{align}
+where $\mu_{si}^{(m)}$ indicates the mean computed with interaction and perturbatoin parameters from cluster $m$
+\begin{align}
+  \mu_{si}^{(m)}(k) & = \x{k-1}{si} +
+    \x{k-1}{si} (
+      \a{i}{1} (1 +
+        \sum_j
+        \pertstep
+        \mathbf{z}^{(\mathbf{\gamma}_j)}_m
+        \mathbf{\gamma}_{j,m}) +
+      \a{i}{2} \x{k-1}{si} \\
+    & \quad \quad + \sum_{c_j \ne m} \mathbf{z}_{m,\c_j}^{(\mathbf{b})} \mathbf{b}_{m, \c_j} \x{k-1}{sj}) \Delta_{k-1} \nonumber
+\end{align}
+Conditional on all other parameters $\Omega$, the posterior distribution for cluster assignment $\c_i$ is
+\begin{align}
+  P(m = c_i | c_{-i}, \Omega) \propto \begin{cases}
+  n_{-i,m} F_m (\mathbf{x}_{si}) & \text{for } m \in \c \\
+  \concc F_m (\mathbf{x}_{si}) & \text{for } m \text{ new cluster}
+\end{cases}
+\end{align}
+where $n_{-i,m}$ is the number of OTUs in cluster $m$ without OTU $i$, and $c_{-i}$ are all the clusters without OTU $i$ in them. Given all these likelihoods, then sample $m | \Omega$. In the case when calculating the likelihood of staying in the OTU's current cluster, if it is a singleton ($n_{-i,m} = 0$), then we set $n_{-i,m} = \concc$.
+
+
+\subsection{Cluster concentration}
+The cluster concentration prarameter $\concc$ is sampled according to the auxiliary variable method described in \cite{cite:escobarandwest1995}. Our posterior is a mixture of Gamma distributions with auxiliary variable $\eta$:
+\begin{align}
+  \label{eqn:concc mixture}
+  P(\concc | \eta , n_c) & \sim \pi_\eta \Gammadist(\alpha_\concc + n_c, \hat{\beta}_\concc) \\
+  & \quad \quad + (1-\pi_\eta) \Gammadist (\alpha_\concc + n_c - 1, \hat{\beta}_\concc) \nonumber
+\end{align}
+where $\hat{\beta}_\concc = 1/(1/\beta_\concc + \log(\eta))$, $(\pi_\eta)/(1-\pi_\eta) = (\alpha_\concc + n_c -1)/(n(\beta_\concc - \log(\eta)))$, $n_c$ are the current number of clusters, and
+\begin{align}
+  P(\eta | \concc, n_o) \sim \Betadist(\concc + 1, n_o)
+\end{align}
+where $n_o$ are the number of OTUs. At each Gibbs iteration, using the current number of clusters $n_c$ and current value of the cluster concentration $\concc$, we can draw a new value of $\concc$ by
+\begin{enumerate}
+  \item Sample $\eta$ using the beta distribution conditioned on current the current value of $\concc$
+  \item Sample a new $\concc$ from the mixture (\ref{eqn:concc mixture}) with the current mixture weights
+\end{enumerate}
+We repeat the above steps within a single Gibbs step until $\concc$ settles on a value. In MDSINE 2.0 we repeat the above steps 20 times per Gibbs step.
+
+
+\subsection{Interaction and perturbation indicator probability}
+The variables $\probc$ and $\probpert$ each have conjugate beta priors, so they can be sampled using straightforward Gibbs steps.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Setting hyperparameters and initializations}
+\label{section:setting hyperparameters and initializations}
+
+
+\subsection{Cluster assignment and concentration}
+We initialize the clusters based on taxonomic similarity, with the number of clusters set to
+the expected number of clusters using a Dirichlet Process ($\log (n_O)$). We set the prior of the concentration parameter $\concc$ to be a Gamma distribution
+\begin{align}
+  \concc \sim \Gammadist(10^{-5}, 10^5)
+\end{align}
+We set the initial value of $\concc$ to the mean of the prior.
+
+\subsection{Interactions and perturbations}
+There are three default settings for initializing the hyperparameters of the indicators, depending on the application:
+\begin{enumerate}
+  \item Weak 50/50: We set $b_{z,1} = b_{z,2}= b_{\pert,1} = b_{\pert,2} = 0.5$. These hyperparameters correspond to a weak, diffuse prior and have an equal probability of being on/off. This is useful for general, predictive applications.
+
+  \item Strong sparse: For applications where you want to push sparse interaction structure, set $b_{z,2} = N(N-1)$, $b_{\pert,2} = N$, and $b_{z,1} =b_{\pert,1} = 0.5$, where $N=\log(n_o)$, the expected number of clusters. This encodes the assumption that there are not even a single interaction or perturbation in the absence of evidence. This is a much stronger prior.
+
+  \item Strong dense: For applications where you want to push dense interaction structure and where you expect many OTUs to be affected by the perturbations, set $b_{z,1} = N(N-1)$, $b_{\pert,1} = N$, and $b_{z,2} =b_{\pert,2} = 0.5$, where $N=\log(n_o)$, which encodes the exact opposite of the prior point: In the absence of evidence it assumes that nearly all clusters interact and get affected by the perturbation.
+
+\end{enumerate}
+We then set the value of $\probb$ and $\probpert$ to the mean of the prior. We initially assume that there are no interactions ($\zbc{i}{j}=0, \forall \c_i \neq \c_j$) and no clusters are affected by the perturbations ($\zpertc{i} = 0, \forall \c{i}$). We set the perturbation magnitude prior hyperparameters to be diffuse:
+\begin{align}
+  \mu_{\pert} = 0 \\
+  \varpert = 100
+\end{align}
+
+\subsection{Process variance parameters}
+We set the initial values to $\v{1}=0.09$ and $\v{2}=1.0$. $\cw$ is set $\cw = 10^6$ so that we get $10^6$ reintroduction of bacteria each day and there is about 30\% variance on the abundances at higher abundance levels. We set the prior hyperparameters of $\v{1}$ and $\v{2}$ to be diffuse:
+\begin{align}
+  \mu_{\v{1}} & = 0.09 \\
+  \var_{\v{1}} & = 100 \\
+  \mu_{\v{2}} & = 1 \\
+  \var_{\v{2}} & = 100
+\end{align}
+The MH proposal variance is set to be $\var_{\text{(prop)}}(\v{i}) =  \mu^2_{\v{i}}$.
+
+\subsection{Logistic growth parameters and prior variances}
+Our goal is to initialize the hyperparameters of $\vara{1}$ and $\vara{2}$ such that the mean is proportional to the data. We first compute a rough estimate for the parameters $\a{i}{1}$ and $\a{i}{2}$ based on the data by solving via linear regression $f=X\mathbf{\Theta}$ using the pseudo-inverse solution, indexing out the times that there are perturbations. We enforce positive growth and negative self-interaction parameters as $\hat{\aa{1}}=|\hat{\aa{1}}|$ and $\hat{\aa{2}}=-|\hat{\aa{2}}|$. We then set the values $\vara{1} = (\frac{1}{n_o} \sum_i \hat{\aa{i1}})^2$ and $\vara{2} = (\frac{1}{n_o} \sum_i \hat{\aa{i2}})^2$,the squared empirical mean of those parameters.
+
+Depending if we want weak priors, we set the shape parameters such that $\alpha_{\vara{1}} = \alpha_{\vara{2}} = 2$. If we want strong priors, we set
+$\alpha_{\vara{1}} = \alpha_{\vara{2}} = \frac{n_o}{2}$ so that the prior has equal weight as the data during inference. We then $\beta_{\vara{1}}$ and $\beta_{\vara{2}}$ so that the expected value of the prior is equal to the initial value:
+\begin{align}
+  \mathbb{E}[\vara{l}] & = \frac{\beta_{\vara{l}}}{\alpha_{\vara{l}} - 1} = \aa{l}
+\end{align}
+for $l = 1,2$
+
+\subsection{Latent and auxiliary trajectories}
+If we are simulating intermediate time-points, we initialize the intermediate data by doing a linear interpolation from the nearest given data.
+
+
+We initialize the values of both the latent ($\mathbf{x}$) and auxiliary ($\mathbf{q}$) trajectories by sampling a truncated normal distribution ($[0,\infty)$) where the mean is the data and the variance is the coupling variance $\varcoupling$. We set the parameters for the coupling variance to be
+\begin{align}
+  v_1^{\text{aux}} & = 10\text{e}^{-3} \\
+  v_2^{\text{aux}} & = 10\text{e}^{-4}
+\end{align}
+and we fix them during inference.
+
+Additionally, we set the negative binomial dispersion scaling parameters to fixed numbers before had:
+\begin{align}
+  a_0 & = 0.0025 \\
+  a_1 & = 0.025
+\end{align}
+The priors of the latent and auxiliary trajectory are set to be diffuse:
+\begin{align}
+  \q{k}{si} & \sim \Uniformdist(0,\infty) \\
+  \x{k}{si} & \sim \Normaldist(10\text{e}^7, 10\text{e}^{20})
+\end{align}
+We initialize the the proposal corvariance for each data point to be strongly correlated matrix scaled to the squared auxiliary trajectory without a scaling:
+\begin{align}
+  \Sigma_{\text{prop}}(s,k,i) & = \frac{1}{10} \left[
+    \begin{array}{ccc}
+    \qexp{k}{si}{2} & 0.9 \qexp{k}{si}{2} \\
+    0.9 \qexp{k}{si}{2} & \qexp{k}{si}{2}
+    \end{array} \right] \\
+  c_{si}(k) & = 1
+\end{align}
+
+\subsection{Stagged initialization}
+\subsubsection{First version}
+Hold clustering Fixed for 100 Gibbs steps from initialization, hold process variance fixed for 150 Gibbs steps from initialization, hold growth and self-interactions fixed for 200 Gibbs steps from initialization. Allows interactions and perturbations to settle on decent values before we start full mixing. \newline
+\textbf{Positives:}
+\begin{itemize}
+  \item Works very well if growth and self-interactions have a good initialization
+\end{itemize}
+\textbf{Negatives:}
+\begin{itemize}
+  \item Works very bad if growth and self-interactions dont have a good initialization
+\end{itemize}
+
+\subsubsection{Second (current) version}
+Hold process variance fixed for 150 Gibb steps, hold clustering fixed for 200 Gibb steps.
+\textbf{Positives:}
+\begin{itemize}
+  \item More robust to bad initializations of the growth and self-interactions
+\end{itemize}
+\textbf{Negatives:}
+\begin{itemize}
+  \item Longer period that it is just mixing around not collapsing
+\end{itemize}
+Both methods become equivalent after ~1000 Gibb steps.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Benchmarking}
+To benchmark the predictive capabilities and test the model, ground truth information is necessary. We use simulated data from generated artificial microbial dynamical systems to benchmark MDSINE 2.0. We seek to mimic key features of real microbiome time-series data with noisy count-based and qPCR measurements, sparse temporal sampling. The simulated data was used to benchmark the performance of the model such as calculating the accuracy of the growth rates and interaction coefficient estimates, recapitulating the the underlying network structure, accuracy of noise estimates, and the accuracy of predicting trajectories given initial conditions not previously seen by the algorithm.
+
+
+  \subsection{Data simulation}
+  \label{subsection:data simulation}
+  \begin{enumerate}
+  	\item Sample each OTU steady-state with replacement from the given input vector
+  	\item Growth values sampled from $\Uniformdist(0.85, 1.5)$. Self-interactions$=-ss^{-1}$
+  	\item Specify cluster assignment for each OTU
+  	\begin{enumerate}
+  		\item Specify cluster evenness: even, user specified. (TODO: Heavy-tail?)
+  	\end{enumerate}
+  	\item Sample topology
+  		\begin{enumerate}
+  			\item Specify sparsity: dense ($p=0.75$), sparse ($p=0.25$), even ($p=0.5$)
+  			\item $z_{c_i, c_j}=$ Bernoulli($p$) for each $c_i \neq c_j$
+  		\end{enumerate}
+  	\item Sample interaction matrix with strict stability constraints. For each cluster $c$:
+  	\begin{enumerate}
+      \item Calculate the budget $\hat{v}$: The budget is the maximum allowed amount of interactions going into a cluster for the system to be strictly stable. $\hat{v} = \min_{i \in c}(|ss_i|)$
+      \item For each interaction with a positive indicator:
+        \begin{enumerate}
+          \item Sample magnitude of the interaction: $\hat{b}_{c_i,c_j} = \Uniformdist(0, \hat{v})$. If the current interaction is the last positive  interaction going into the cluster, the rest of the budget is assigned to it: $\hat{b}_{c_i,c_j} = \hat{v}$
+          \item Sample the sign of the interaction with given probability of being False $\pi_n$: $\hat{s} = (-1)^{\Bernoullidist(\pi_n)}$.
+          \item Set the interaction: $b_{c_i,c_j} = \hat{s} \hat{b}_{c_i,c_j}$
+          \item Decrease the budget for next iteration: $\hat{v} = \hat{v}-\hat{b}_{c_i,c_j}$
+        \end{enumerate}
+  		\item Optional: Scale the off diagonal interactions by a scalar to push the strict stability constraint: $b_{c_i,c_j} = m  b_{c_i,c_j}$, $m > 1$, $c_i \neq c_j$
+  	\end{enumerate}
+  	\item Validation of system: Steady state orthant check ($-A^{-1}r$). Resample if greater than 10\% negative/equal to zero
+  \end{enumerate}
+
+  \subsection{Simulating noise}
+  We simulate gLV trajectories from section \ref{subsection:data simulation} and then we need to simulate noisy reads and biomass measurements. We simulate each by the follwing:
+
+    \subsubsection{Reads}
+    We simulate the read depth $r_s(k)$ of our system with a negative binomial distribution that was fitted to real data. Reads are then sampled from effectively a Dirichlet-multinomial distribution. We calculate the relative abundance of each of the trajectories generated $\pi_{si}(k) = x_{si}(k)/\sum_i x_{si}(k)$ and then sample the concentration of each of the OTUs with a Dirichlet distribution $\hat{\pi}_{si}(k) \sim \text{Dirichlet}(\pi_{si}(k), \concc)$. The dispersion parameter $\concc$ was set to 286 as done previously in \cite{cite:MDSINE}. The reads $y_{si}(k)$ are then sampled from a multinomial with the given read depth $r_s(k)$ and concentrations $\hat{\pi}_{si}(k)$: $y_{si}(k) \sim \Multinomialdist(r_s(k), \hat{\pi}_{si}(k))$.
+
+    \subsection{qPCR}
+    Biomass data was sampled from a log-normal distribution that was fitted to a lognormal distribution, where the mean is the sum of the abundances of the trajectories generated from section \ref{subsection:data simulation}: $Q_s(k) \sim \text{Lognormal}(\sum_i x_{si}(k))$.
+
+
+  \subsection{Evaluation metrics}
+  TODO
+
+\begin{appendices}
+  \section{Derivation of marginalization}
+  \label{appendix:marginalization}
+
+Let
+\begin{align}
+  y \sim \Normaldist(Xw,\Sigma_1)
+\end{align}
+with the prior on $w$ given as
+\begin{align}
+  w \sim \Normaldist(\mu_2, \Sigma_2)
+\end{align}
+The design matrix $X$ has dimensions $n \times d$.
+\begin{align}
+  p_{y|w}p_w & =
+    \frac{1}{(2 \pi)^{n/2} |\Sigma_1|^{1/2}}
+    \frac{1}{(2 \pi)^{d/2} |\Sigma_2|^{1/2}}
+    \exp{ \Big(
+      -\frac{1}{2}(y - Xw)^T \Sigma_1^{-1} (y-Xw)
+      -\frac{1}{2}(w - \mu_2)^T \Sigma_1^{-1} (w-\mu_2) \Big)} \\
+    & = \frac{1}{(2 \pi)^{n/2} |\Sigma_1|^{1/2}}
+    \frac{1}{(2 \pi)^{d/2} |\Sigma_2|^{1/2}} \\
+    & \quad \quad \cdot \exp{\big(
+      -\frac{1}{2}(w^T(X^T \Sigma_1^{-1} X + \Sigma_2^{-1})w
+      -(y^T \Sigma_1^{-1} X + \mu_2^T \Sigma_2^{-1})w )
+    \big)} \\
+    & \quad \quad \cdot \exp{\big(
+        -\frac{1}{2}(
+          - w^T(X^T \Sigma_1^{-1}y + \Sigma_2^{-1} \mu_2)
+          + \mu_2^T \Sigma_2^{-1} \mu_2 + y^T \Sigma_1^{-1}y
+        )
+    \big)}
+\end{align}
+Using the following definitions
+\begin{align}
+  \Sigma_3^{-1} & = X^T \Sigma_1^{-1} X + \Sigma_2^{-1} \\
+  \mu_3 & = \Sigma_3 (X^T \Sigma_1^{-1}y + \Sigma_2^{-1} \mu_2)
+\end{align}
+we can simplify the above to
+\begin{align}
+    p_{y|w}p_w & =
+    \frac{1}{(2 \pi)^{n/2} |\Sigma_1|^{1/2}}
+    \frac{1}{(2 \pi)^{d/2} |\Sigma_2|^{1/2}}
+    \exp{\big(
+      -\frac{1}{2} (w^T \Sigma_3^{-1} w - \mu_3^T \Sigma_3^{-1} w - w^T \Sigma_3^{-1} \mu_3)
+    \big)} \\
+    & \quad \quad \cdot \exp{\big(
+      -\frac{1}{2} (\mu_2^T \Sigma_2^{-1} \mu_2 + y^T \Sigma^{-1} y)
+    \big)}
+\end{align}
+Completing the square on the first line exponent
+\begin{align}
+  p_{y|w}p_w & =
+    \frac{1}{(2 \pi)^{n/2} |\Sigma_1|^{1/2}}
+    \frac{1}{(2 \pi)^{d/2} |\Sigma_2|^{1/2}}
+    \exp{\big(
+      -\frac{1}{2} (w - \mu_3)^T \Sigma_3^{-1} (w - \mu_3)
+    \big)} \\
+    & \quad \quad \cdot \exp{\big(
+      -\frac{1}{2}(
+        -\mu_3^T \Sigma_3^{-1} \mu_3 + \mu_2^T \Sigma_2^{-1} \mu_2
+        + y^T \Sigma_1^{-1} y)
+    \big)}
+\end{align}
+Before we integrate out $w$, we need to multiply and divide by $|\Sigma_3|^{1/2}$ to make this normal with respect to $w$
+\begin{align}
+  p_{y|w}p_w & =
+    \frac{1}{(2 \pi)^{n/2} |\Sigma_1|^{1/2}}
+    \frac{|\Sigma_3|^{1/2}}{|\Sigma_2|^{1/2}}
+    \frac{1}{(2 \pi)^{d/2} |\Sigma_3|^{1/2}}
+    \exp{\big(-\frac{1}{2}(w-\mu_3)^T \Sigma_3^{-1} (w-\mu_3) \big)} \\
+    & \quad \quad \cdot \exp{\big(
+    -\frac{1}{2}(
+      -\mu_3^T \Sigma_3^{-1} \mu_3 + \mu_2^T \Sigma_2^{-1} \mu_2
+      + y^T \Sigma_1^{-1} y)
+    \big)}
+\end{align}
+Now we have an exact multivariate Gaussian $\frac{1}{(2 \pi)^{d/2} |\Sigma_3|^{1/2}} \exp{\big( -\frac{1}{2}(w - \mu_3)^T \Sigma_3^{-1} (w - \mu_3) \big)}$. Now if we integrate out $w$ the multivariate normal integral is 1 and
+\begin{align}
+  \label{eqn:marginalization}
+  \int p_{y|w}p_w \text{d}w =
+    \frac{1}{(2 \pi)^{n/2} | \Sigma_1 |^{1/2}}
+    \frac{| \Sigma_3 |^{1/2}}{| \Sigma_2 |^{1/2}}
+    \exp{\big(
+      -\frac{1}{2}(
+        \mu_2^T \Sigma_2^{-1} \mu_2 + y^T \Sigma_1^{-1} y - \mu_3^T \Sigma_3^{-1} \mu_3
+      )
+    \big)}
+\end{align}
+
+  \section{Learning negative binomial dispersion parameters}
+  \label{appendix:learningas}
+  We learn the negative binomial dispersion parameters $a_0$ and $a_1$ offline before we learn the other parameters of the model and keep them fixed during inference. Inference of $a_0$ and $a_1$ is done using MCMC with Metropolis-Hastings steps with the same error model that was defined in section \ref{subsection:error model}. The fundamental difference in the inference is that we assume that the latent trajectory $\xx$ was generated from the replicate data instead of dynamics. We use Metropolis-Hastings MCMC updates to update $\xx$, $\qq$, $a_0$, and $a_1$.
+
+  \subsection{Model Details}
+  We assume that the latent state $\xx_{si}$ for OTU $i$ and sample $s$ was generated from a normal distribution:
+  \begin{align}
+    \xx_{si} \sim \Normaldist(\mu_{si}, \sigma^2_{si})
+  \end{align}
+  and the auxiliary trajectory $\qq_i$ has a uniform prior and is tightly coupled to $\xx_i$ the same way as in equation \ref{eqn:x_q_coupling_var}:
+  \begin{align}
+    \qq_{si} & \sim \Uniformdist (0, \infty) \\
+    \qq_{si} \mid \xx_{si} & \sim \Normaldist (\xx_{si}, \varcoupling) \\
+    \varcoupling & = v_1^{\text{aux}}\qq_{si}^2 + v_2^{\text{aux}}
+  \end{align}
+  where $v_1^{\text{aux}}$ and $v_2^{\text{aux}}$ are small values.
+
+  We assume that the reads, $\yy_{si}$, were generated from the same negative binomial distirbution as specified in equation \ref{eqn:negbin}:
+  \begin{align}
+    \yy_{si} | \qq_{si} & \sim \NegBindist(\phi(\qq_{si}), \epsilon(\qq_{si}, a_0, a_1)) \\
+    \phi(\qq_{si}) & = r_s \frac{\qq_{si}}{\sum_{si} \qq_{si}} \\
+    \epsilon(\qq_{si}, a_0, a_1) & = \frac{a_0}{\qq_{si}/\sum_i \qq_{si}} + a_1
+  \end{align}
+  where $r_s$ is the read depth for sample $s$. We assume $a_0$ and $a_1$ have uniform priors \cite{cite:MDSINE}:
+  \begin{align}
+    a_0, a_1 \sim \Uniformdist(a_{\text{low}},a_{\text{high}})
+  \end{align}
+
+  \subsection{Initialization}
+  We set $\mu_i$ and $\sigma^2_i$ as:
+  \begin{align}
+    V_{s_ki} & = \mu_{Q_s} \frac{r_{s_k i}}{\sum_{i=1}^{n_o}r_{s_k i}} \\
+    \mu_{si} & = \text{mean}_k (V_{s_k i}) \\
+    \sigma^2_{si} & = \text{var}_k (V_{s_k i}) \\
+  \end{align}
+  where $s_k$ is the $k^{\text{th}}$ replicate of the sample $s$, $r_{s_k i}$ are the reads for OTU $i$ for sample replicate $s_k$, $n_o$ are the number of OTUs, and $\mu_{Q_s}$ is the mean of the triplicate qPCR measurements of the sample $s$. We initialize $\xx_i$ and $\qq_i$ sampling around the prior of the latent state with the coupling variance:
+  \begin{align}
+    \qq_{si} & \sim \Normaldist_{(+)} ( \mu_{si}, \varcoupling) \\
+    \xx_{si} & \sim \Normaldist_{(+)} ( \mu_{si}, \varcoupling)
+  \end{align}
+  We set $a_{\text{low}} = 0$ and $a_{\text{high}} = 10^5$, the same prior that was used in \cite{cite:MDSINE} because it is sufficiently diffuse. We set the initial value of $a_0 = 0.001$ and $a_0 = 0.01$.
+
+  \subsection{Model Inference}
+  \subsubsection{Latent and auxiliary trajectory}
+  We use a similar inference method that was used in section \ref{subsection:learn_latent_and_aux}, the major difference is that we assume the latent state is generated from replicate data instead of dynamics. Everything else is very similar but adapted to deal with replicate data instead of time series data.
+
+  For each set of samples $s$, OTU $i$, and MH step $j$, the following proposal is used:
+  \begin{align}
+  	\left(
+  	\begin{array}{ccc}
+  		\xx_{si}^{(*)} \\
+  		\qq_{si}^{(*)}
+  	\end{array} \right)
+  	\sim \Normaldist \left(
+  		\left(
+  		\begin{array}{ccc}
+  			\xx_{si}^{(j-1)} \\
+  			\qq_{si}^{(j-1)}
+  		\end{array} \right), \Sigma_{\text{prop}}(s,i)
+  	\right)
+  \end{align}
+  The proposal variance $\Sigma_{\text{prop}}(s,i)$ is set to the empirical covariance of the accepted auxiliary and latent trajectory over all the previous MH steps for sample $s$ and OTU $i$, multiplied by a scalar $c(s,i)$:
+  \begin{align}
+  	v_x (s,i) & = [\xx_{si}^{(0)}, \xx_{si}^{(1)}, ..., \xx_{si}^{(j-1)}] \\
+  	v_q (s,i) & = [\qq_{si}^{(0)}, \qq_{si}^{(1)}, ..., \qq_{si}^{(j-1)}] \\
+  	\Sigma_{\text{prop}}(s,i) & = c(s,i) \text{Cov}(v_x (s,i), v_q (s,i))
+  \end{align}
+  During the first half of the burnin period, the parameter $c(s,i)$ is tuned to adjust the acceptance rate towards $0.234$, the optimal acceptance rate for a multivariate MH step \cite{cite:BDA}. After the tuning is finished, $c(s,i)$ and $\Sigma_{\text{prop}}(s,i)$ are fixed for the rest of inference. Note that there is a separate proposal covariance for each pair of $\qq_{si}$ and $\xx_{si}$ for each $s$, and $i$. We initialize $\Sigma_{\text{prop}}(s,i)$ and $c(s,i)$ to:
+  \begin{align}
+    \Sigma_{\text{prop}}(s,i) & = \frac{1}{100} \left[
+      \begin{array}{ccc}
+      \qexp{k}{si}{2} & 0.9 \qexp{k}{si}{2} \\
+      0.9 \qexp{k}{si}{2} & \qexp{k}{si}{2}
+      \end{array} \right] \\
+    c(s,i) & = 1
+  \end{align}
+  The unormalized target distribution conditional on all other parameters $\Omega$ is:
+  \begin{align}
+  \label{eqn:likelihood_aux_traj_a0_a1}
+  	p(\xx_{si}, \qq_{si} ; \Omega) & \propto \Uniformdist(\qq_{si}; 0, \infty) \\
+  		& \times \Normaldist(\xx_{si} - \qq_{si}; 0, \varcoupling) \nonumber \\
+  		& \times \Normaldist(\xx_{si}; \mu_{si}, \sigma^2_{si}) \nonumber \\
+      & \times \prod_k^{n_{s}} \NegBindist(\yy_{s_k i}; \phi(\qq_{si}), \epsilon(\qq_{si}, a_0, a_1)) \nonumber \\
+      & \times \Normaldist(\sum_i \qq_{si}; \mu_{Q_s}, \sigma^2_{Q_s} ) \nonumber
+  \end{align}
+  where $n_s$ are the number of replicates for sample $s$. The acceptance probability is calculated as the ratio:
+  \begin{align}
+  	r^{\text{accept}} & = \frac
+  		{p \Big( \xx_{si}^{(*)}, \qq_{si}^{(*)}; \Omega \Big)
+      \Normaldist \left(
+    		\left(
+    		\begin{array}{ccc}
+    			\xx_{si}^{(j-1)} \\
+    			\qq_{si}^{(j-1)}
+    		\end{array} \right);
+        \left( \begin{array}{ccc}
+    			\xx_{si}^{(*)} \\
+    			\qq_{si}^{(*)}
+    		\end{array} \right), \Sigma_{\text{prop}}(s,i)
+    	\right)}
+  		{p \Big( \xx_{si}^{(j-1)}, \qq_{si}^{(j-1)}; \Omega \Big)
+      \Normaldist \left(
+    		\left(
+    		\begin{array}{ccc}
+    			\xx_{si}^{(*)} \\
+    			\qq_{si}^{(*)}
+    		\end{array} \right);
+        \left( \begin{array}{ccc}
+    			\xx_{si}^{(j-1)} \\
+    			\qq_{si}^{(j-1)}
+    		\end{array} \right), \Sigma_{\text{prop}}(s,i)
+    	\right)}
+  \end{align}
+  Because our proposal distribution is symmetric, the forward and reverse jumping likelihoods are equal to each other, so our acceptance probability simplifies to
+  \begin{align}
+  	r^{\text{accept}} & = \frac
+  		{p \Big( \xx_{si}^{(*)}, \qq_{si}^{(*)}; \Omega \Big)}
+  		{p \Big( \xx_{si}^{(j-1)}, \qq_{si}^{(j-1)}; \Omega \Big)}
+  \end{align}
+  The values for $\xx_{si}$ and $\qq_{si}$ at MH step $j$ are set given by:
+  \begin{align}
+  	\left(
+  	\begin{array}{ccc}
+  		\xx_{si}^{(j)} \\
+  		\qq_{si}^{(j)}
+  	\end{array} \right) = \begin{cases}
+  		\left(
+  		\begin{array}{ccc}
+  			\xx_{si}^{(*)} \\
+  			\qq_{si}^{(*)}
+  		\end{array} \right) & \text{with probability } \min( {1,r^{\text{accept}}} ) \\
+  	\left(
+  	\begin{array}{ccc}
+  		\xx_{si}^{(j-1)} \\
+  		\qq_{si}^{(j-1)}
+  	\end{array} \right) & \text{otherwise}
+  	\end{cases}
+  \end{align}
+
+  \subsubsection{Negative binomial dispersion parameters}
+  We use Metropolis-Hastings updates with an adaptive proposal to update the values of $a_0$ and $a_1$. Since the inference scheme is the same between $a_0$ and $a_1$, we will use $a_m$ to describe both.
+
+  The following jumping proposal is used at MH step $j$:
+  \begin{align}
+    a_m^{(*)} \sim \Normaldist_{(+)}(a_m^{(j-1)}, \sigma^2_{a_m})
+  \end{align}
+  The proposal variance $\sigma^2_{a_m}$ is initialized from the initial value of $a_m$
+  \begin{align}
+      \sigma^2_{a_m} = \frac{1}{10} a_m^2
+  \end{align}
+  During the first half of the burnin period, $\sigma^2_{a_m}$ is tuned to adjust the acceptance rate towards 0.44, the optimal value of a scalar MH step \cite{cite:BDA}. After the tuning is finished, $\sigma^2_{a_m}$ is fixed for the rest of inference.
+  The unnormalized target distribution conditional on all other parameters $\Omega$ is:
+  \begin{align}
+    p(a_m ; \Omega) & \propto \Uniformdist(a_m ; 0, 10^5) \\
+      & \times \prod_k^{n_{s}} \NegBindist(\yy_{s_k i}; \phi(\qq_{si}), \epsilon(\qq_{si}, a_0, a_1)) \nonumber
+  \end{align}
+  where $n_s$ are the number of replicates for sample $s$. The acceptance probability is calculated as the ratio
+  \begin{align}
+    r^{\text{accept}} = \frac{
+      p \Big( a_m^{(*)} ; \Omega) \Normaldist_{(+)}(a_m^{(j-1)};a_m^{(*)},\Sigma_{a_m} \Big)}
+    { p \Big( a_m^{(j-1)} ; \Omega) \Normaldist_{(+)}(a_m^{(*)};a_m^{(j-1)},\Sigma_{a_m} \Big)}
+  \end{align}
+  The value for $a_m$ at MH step $j$ is set by:
+  \begin{align}
+    a_m^{(j)} = \begin{cases}
+      a_m^{(*)} & \text{with probability } \min(1, r^{\text{accept}}) \\
+      a_m^{(j-1)} & \text{overwise}
+  \end{cases}
+  \end{align}
+
+\end{appendices}
+
+
+
+\bibliographystyle{plain}
+\begin{thebibliography}{}
+	\bibitem{cite:BDA}
+	A. Gelman, H. S. Stern, J. B. Carlin, D. B. Dunson, A. Vehtari, and D. B. Rubin, \textit{Bayesian Data Analysis Third Edition}. Chapman and Hall/CRC, 2013.
+
+  \bibitem{cite:neal2000}
+	R. M. Neal, "Markov chain sampling methods for dirchlet process mixture models," \textit{Journal of computational and graphical models}, 9(2):249-265, 2000.
+
+  \bibitem{cite:ramussen2000}
+	C. E. Ramussen, "The infinite gaussian mixture model," \textit{Advances in Information Processing Systems 12}, 2000.
+
+  \bibitem{cite:negbin}
+  P.J. McMurdie and S. Holmes, "Waste not, want not: why rarefying microbiome data is inadmissible," \textit{PLOS Computational Biology}, vol. 10, no. 4, p. e1003531, 2014.
+
+  \bibitem{cite:gibsonICML}
+  T. E. Gibson and G. K. Gerber, "Robust and scalable models of microbiome dynamcis", \textit{International Conference on Machine Leanring}, pp. 1758-1767, 2018.
+
+  \bibitem{cite:MDSINE}
+  B. Vanni, B. Tzen, N. Ling, M. Simmons, T. Tanoue, E. Bogart, L. Deng, V. Yeliseyev, M. L. Delaney, Q. Liu, B. Olle, R. R. Stein, K. Honda, L. Bry,G. K. Gerber, "Mdsine: Microbial dynamical systems inference engine for microbiome time-series analysis," \textit{Genome Biology}, 17(1):121, 2016.
+
+  \bibitem{cite:escobarandwest1995}
+  M. D. Escobar and M. West, "Bayesian density estimation and inference using mixtures," \textit{Journal of the American Statistical Association}, vol. 90, no. 430, pp 577-588, 1995.
+
+\end{thebibliography}
+\end{document}
