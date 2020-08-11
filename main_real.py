@@ -90,7 +90,7 @@ def parse_args():
 
 def main_leave_out_single(params, fparams, continue_inference):
     # Constants
-    ONLY_PLOT = True
+    ONLY_PLOT = False
 
     lparams = config.LoggingConfig()
     pl.seed(params.DATA_SEED)

@@ -461,19 +461,19 @@ class ClusterInteractionIndicatorProbability(pl.variables.Beta):
         self.add_prior(prior)
 
     def initialize(self, value_option, hyperparam_option, a=None, b=None, value=None,
-        delay=0):
+        N='auto', delay=0):
         '''Initialize the hyperparameters of the beta prior
 
         Parameters
         ----------
-        value_option (str)
+        value_option : str
             - Option to initialize the value by
             - Options
                 - 'manual'
                     - Set the values manually, `value` must be specified
                 - 'auto'
                     - Set to the mean of the prior
-        hyperparam_option (str)
+        hyperparam_option : str
             - If it is a string, then set it by the designated option
             - Options
                 - 'manual'
@@ -489,7 +489,11 @@ class ClusterInteractionIndicatorProbability(pl.variables.Beta):
                 - 'very-strong-sparse'
                     - a = 0.5
                     - b = n_asvs * (n_asvs-1)
-        a, b (int, float)
+        N : str, int
+            This is the number of clusters to set the hyperparam options to 
+            (if they are dependent on the number of cluster). If 'auto', set to the expected number
+            of clusters from a dirichlet process. Else use this number (must be an int).
+        a, b : int, float
             - User specified values
             - Only necessary if `hyperparam_option` == 'manual'
         '''
@@ -510,11 +514,29 @@ class ClusterInteractionIndicatorProbability(pl.variables.Beta):
             self.prior.a.override_value(0.5)
             self.prior.b.override_value(0.5)
         elif hyperparam_option == 'strong-dense':
-            N = expected_n_clusters(G=self.G)
+            if pl.isstr(N):
+                if N == 'auto':
+                    N = expected_n_clusters(G=self.G)
+                else:
+                    raise ValueError('`N` ({}) nto recognized'.format(N))
+            elif pl.isint(N):
+                if N < 0:
+                    raise ValueError('`N` ({}) must be positive'.format(N))
+            else:
+                raise TypeError('`N` ({}) type not recognized'.format(type(N)))
             self.prior.a.override_value(N * (N - 1))
             self.prior.b.override_value(0.5)
         elif hyperparam_option == 'strong-sparse':
-            N = expected_n_clusters(G=self.G)
+            if pl.isstr(N):
+                if N == 'auto':
+                    N = expected_n_clusters(G=self.G)
+                else:
+                    raise ValueError('`N` ({}) nto recognized'.format(N))
+            elif pl.isint(N):
+                if N < 0:
+                    raise ValueError('`N` ({}) must be positive'.format(N))
+            else:
+                raise TypeError('`N` ({}) type not recognized'.format(type(N)))
             self.prior.a.override_value(0.5)
             self.prior.b.override_value((N * (N - 1)))
         elif hyperparam_option == 'very-strong-sparse':

@@ -266,7 +266,7 @@ class PerturbationProbabilities(pl.Node):
         return self.perturbations[0].probability.sample_iter
 
     def initialize(self, value_option, hyperparam_option, a=None, b=None, value=None,
-        delay=0):
+        N='auto', delay=0):
         '''Initialize the hyperparameters of the prior and the value. Each
         perturbation has the same prior.
 
@@ -293,6 +293,10 @@ class PerturbationProbabilities(pl.Node):
                 'very-strong-sparse'
                     a = 0.5
                     b = N, N are the expected number of ASVs
+        N : str, int
+            This is the number of clusters to set the hyperparam options to 
+            (if they are dependent on the number of cluster). If 'auto', set to the expected number
+            of clusters from a dirichlet process. Else use this number (must be an int).
         delay : int
             How many MCMC iterations to delay starting the update of the variable
         value, a, b : int, float
@@ -316,11 +320,29 @@ class PerturbationProbabilities(pl.Node):
             a = 0.5
             b = 0.5
         elif hyperparam_option == 'strong-dense':
-            N = expected_n_clusters(G=self.G)
+            if pl.isstr(N):
+                if N == 'auto':
+                    N = expected_n_clusters(G=self.G)
+                else:
+                    raise ValueError('`N` ({}) nto recognized'.format(N))
+            elif pl.isint(N):
+                if N < 0:
+                    raise ValueError('`N` ({}) must be positive'.format(N))
+            else:
+                raise TypeError('`N` ({}) type not recognized'.format(type(N)))
             a = N
             b = 0.5
         elif hyperparam_option == 'strong-sparse':
-            N = expected_n_clusters(G=self.G)
+            if pl.isstr(N):
+                if N == 'auto':
+                    N = expected_n_clusters(G=self.G)
+                else:
+                    raise ValueError('`N` ({}) nto recognized'.format(N))
+            elif pl.isint(N):
+                if N < 0:
+                    raise ValueError('`N` ({}) must be positive'.format(N))
+            else:
+                raise TypeError('`N` ({}) type not recognized'.format(type(N)))
             a = 0.5
             b = N
         elif hyperparam_option == 'very-strong-sparse':

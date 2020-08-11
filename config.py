@@ -642,7 +642,7 @@ class ModelConfigReal(_BaseModelConfig):
             STRNAMES.PRIOR_MEAN_PERT: True,
             STRNAMES.FILTERING: True,
             STRNAMES.ZERO_INFLATION: False,
-            STRNAMES.CLUSTERING: False,
+            STRNAMES.CLUSTERING: True,
             STRNAMES.CONCENTRATION: True, 
             STRNAMES.CLUSTER_INTERACTION_INDICATOR: True,
             STRNAMES.INDICATOR_PROB: True,
@@ -702,6 +702,7 @@ class ModelConfigReal(_BaseModelConfig):
             STRNAMES.PERT_INDICATOR_PROB: {
                 'value_option': 'prior-mean',
                 'hyperparam_option': 'strong-sparse',
+                'N': 25,
                 'delay':0},
             STRNAMES.PERT_INDICATOR: {
                 'value_option': 'all-off',
@@ -782,6 +783,7 @@ class ModelConfigReal(_BaseModelConfig):
             STRNAMES.INDICATOR_PROB: {
                 'value_option': 'auto',
                 'hyperparam_option': 'strong-sparse',
+                'N': 25,
                 'delay': 0},
             STRNAMES.FILTERING: {
                 'x_value_option':  'loess',

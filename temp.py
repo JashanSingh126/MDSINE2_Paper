@@ -80,19 +80,6 @@ pl.seed(1)
 #     for j,lll in enumerate(v):
 #         if lll == 'A':
 
-M = np.arange(15).reshape(3,5)
-df = pd.DataFrame(M, index=['a', 'b', 'c'], columns=['A', 'B', 'C', 'D', 'E'])
-df['G'] = None
-print(df)
-
-df = df.loc[['c', 'b', 'a']]
-print(df)
-
-df = df.drop('T', axis=1)
-print(df)
-
-
-
 # with open('../coarsening_files/sequences_old.pkl', 'wb') as handle:
 #     pickle.dump(d, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -106,16 +93,34 @@ print(df)
 #     if i == 10:
 #         break
 
-# fnames = [
-#     'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-#     'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
-# ]
+fnames = [
+    # 'output_real/pylab24/real_runs/perts_mult/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns20000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+    'output_real/pylab24/real_runs/perts_mult/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+]
+for fname in fnames:
+    chain = pl.inference.BaseMCMC.load(fname)
 
-# for fname in fnames:
-#     print('\n\n')
-#     print(fname)
-#     chain = pl.inference.BaseMCMC.load(fname)
-#     asvs = chain.graph.data.asvs
+    interactions = chain.graph[names.STRNAMES.INTERACTIONS_OBJ]
+    clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
+    asvs = clustering.items
+
+    asv_interaction_trace = interactions.get_trace_from_disk(section='posterior')
+    asv_interactions = pl.variables.summary(asv_interaction_trace, only='mean', set_nan_to_0=True)['mean']
+    clus_interactions = main_base._condense_interactions(asv_interactions, clustering=clustering)
+
+    bf_asvs = interactions.generate_bayes_factors_posthoc(
+        prior=chain.graph[names.STRNAMES.CLUSTER_INTERACTION_INDICATOR].prior,
+        section='posterior')
+    bf_clus = main_base._condense_interactions(bf_asvs, clustering=clustering)
+
+    mask_clus = bf_clus < 10
+    clus_interactions[mask_clus] = 0
+    
+    names = ['Cluster {}'.format(cidx + 1) for cidx in range(mask_clus.shape[0])]
+    df = pd.DataFrame(clus_interactions, columns=names, index=names)
+    df.to_csv('raw_data/diffuse_uc_cluster_interactions.tsv', sep='\t' )
+
+
 
 #     n = 0
 #     for asv in asvs:
