@@ -60,18 +60,46 @@ logging.basicConfig(level=logging.INFO)
 pl.seed(1)
 
 
-# subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
+# # subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
-# fname = 'raw_data/seqs_temp/RDP_trunc_alignments/aligned_seqs_trunc1600.fa'
-# # fname = 'raw_data/align_seqs.sto'
+# # fname = 'raw_data/seqs_temp/RDP_trunc_alignments/aligned_seqs_trunc1600.fa'
+# fname = 'raw_data/seqs_temp/RDP_trunc_alignments/asv_alignments/align_seqs_2200.sto'
 
-# seqs = SeqIO.parse(fname, 'fasta')
+# seqs = SeqIO.parse(fname, 'stockholm')
 # d = {}
 # # lengths = []
 # l = None
+
+
+
 # for record in seqs:
-#     d[record.id] = str(record.seq)
 #     l = len(record.seq)
+#     print(record.seq)
+#     break
+
+
+# arrs = []
+# for record in seqs:
+#     if 'OTU_' not in record.id:
+#         arr = np.zeros(l, dtype=int)
+#         seq = str(record.seq)
+#         for i,a in enumerate(seq):
+#             if a not in d:
+#                 d[a] = len(d)
+#             arr[i] = d[a]
+#         arrs.append(arr)
+
+# M = np.asarray(arrs)
+# print(M.shape)
+
+# num = d['-']
+# mask = M == num
+# # print(mask[0,:])
+# # print(num)
+# # print(M[0,:])
+# percent = np.sum(mask, axis=0) / mask.shape[0]
+# print(percent)
+
 
 # print(d)
 
@@ -93,32 +121,35 @@ pl.seed(1)
 #     if i == 10:
 #         break
 
-fnames = [
-    # 'output_real/pylab24/real_runs/perts_mult/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns20000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
-    'output_real/pylab24/real_runs/perts_mult/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
-]
-for fname in fnames:
-    chain = pl.inference.BaseMCMC.load(fname)
+# ####################################################
+# # Make df of the cluster interactions
+# ###################################################
+# fnames = [
+#     # 'output_real/pylab24/real_runs/perts_mult/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns20000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+#     'output_real/pylab24/real_runs/perts_mult/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+# ]
+# for fname in fnames:
+#     chain = pl.inference.BaseMCMC.load(fname)
 
-    interactions = chain.graph[names.STRNAMES.INTERACTIONS_OBJ]
-    clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
-    asvs = clustering.items
+#     interactions = chain.graph[names.STRNAMES.INTERACTIONS_OBJ]
+#     clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
+#     asvs = clustering.items
 
-    asv_interaction_trace = interactions.get_trace_from_disk(section='posterior')
-    asv_interactions = pl.variables.summary(asv_interaction_trace, only='mean', set_nan_to_0=True)['mean']
-    clus_interactions = main_base._condense_interactions(asv_interactions, clustering=clustering)
+#     asv_interaction_trace = interactions.get_trace_from_disk(section='posterior')
+#     asv_interactions = pl.variables.summary(asv_interaction_trace, only='mean', set_nan_to_0=True)['mean']
+#     clus_interactions = main_base._condense_interactions(asv_interactions, clustering=clustering)
 
-    bf_asvs = interactions.generate_bayes_factors_posthoc(
-        prior=chain.graph[names.STRNAMES.CLUSTER_INTERACTION_INDICATOR].prior,
-        section='posterior')
-    bf_clus = main_base._condense_interactions(bf_asvs, clustering=clustering)
+#     bf_asvs = interactions.generate_bayes_factors_posthoc(
+#         prior=chain.graph[names.STRNAMES.CLUSTER_INTERACTION_INDICATOR].prior,
+#         section='posterior')
+#     bf_clus = main_base._condense_interactions(bf_asvs, clustering=clustering)
 
-    mask_clus = bf_clus < 10
-    clus_interactions[mask_clus] = 0
+#     mask_clus = bf_clus < 10
+#     clus_interactions[mask_clus] = 0
     
-    names = ['Cluster {}'.format(cidx + 1) for cidx in range(mask_clus.shape[0])]
-    df = pd.DataFrame(clus_interactions, columns=names, index=names)
-    df.to_csv('raw_data/diffuse_uc_cluster_interactions.tsv', sep='\t' )
+#     names = ['Cluster {}'.format(cidx + 1) for cidx in range(mask_clus.shape[0])]
+#     df = pd.DataFrame(clus_interactions, columns=names, index=names)
+#     df.to_csv('raw_data/diffuse_uc_cluster_interactions.tsv', sep='\t' )
 
 
 
@@ -227,7 +258,7 @@ for fname in fnames:
 
 # for i in range(len(initial_conditions)):
 #     if initial_conditions[i] == 0:
-#         initial_conditions[i] = pl.random.normal.sample(mean=5e5, std=1e5)
+#         initial_conditions[i] = pl.random.truncnormal.sample(mean=1e5, std=1e5, low=1e2)
 
 # days = 20
 # BASE_CONCENTRATIONS = pl.dynamics.integrate(dyn, initial_conditions=initial_conditions.reshape(-1,1), 
@@ -235,6 +266,7 @@ for fname in fnames:
 
 
 # dists = np.zeros(len(BASE_CONCENTRATIONS))
+# conc_d = {}
 
 # for aidx in range(len(BASE_CONCENTRATIONS)):
 #     # Take out asv aidx and do the forward simulation
@@ -251,24 +283,110 @@ for fname in fnames:
 #     dyn.interactions = np.delete(dyn.interactions, aidx, 1)
 #     init_conc = initial_conditions[mask]
 
-#     concentrations = pl.dynamics.integrate(dyn, initial_conditions=init_conc.reshape(-1,1), 
-#         dt=0.01, n_days=days, times=np.arange(days), subsample=True)['X'][:, -1]
+#     iii = pl.dynamics.integrate(dyn, initial_conditions=init_conc.reshape(-1,1), 
+#         dt=0.01, n_days=days, times=np.arange(days), subsample=True)
+#     conc_d[aidx] = iii
+#     concentrations = iii['X'][:, -1]
 
 #     dists[aidx] = np.sqrt(np.sum(np.square(concentrations - BASE_CONCENTRATIONS[mask])))
 #     # print('aidx', aidx, ':', dists[aidx])
 
 # idxs = np.argsort(dists)[::-1]
-# for idx in idxs:
-#     print()
+# clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
+# f = open('keystoneness_healthy.txt', 'w')
+# f.write('1 Based indexing for clusters\n')
+# for i, idx in enumerate(idxs):
 #     asv = subjset.asvs[idx]
-#     print(asv.name)
-#     print(asv.taxonomy['genus'], asv.taxonomy['species'])
-#     print('{:.4E}'.format(dists[idx]))
+#     cid = clustering.idx2cid[idx]
+
+#     f.write('\n{}\n'.format(i))
+#     f.write('\tMicrobe name: {}\n\tTaxonomy: {}' \
+#         '\n\tCluster assignment: {}\n\tEffect: {:.4E}\n'.format(
+#             asv.name,
+#             pl.asvname_formatter(format='%(genus)s %(species)s', 
+#                 asv=asv, asvs=subjset.asvs, lca=False),
+#             clustering.cid2cidx[cid]+1,
+#             dists[idx]
+#         ))
+
+#     # plt.figure()
+#     # M = conc_d[idx]['X']
+#     # times = conc_d[idx]['times']
+
+#     # for i in range(M.shape[0]):
+#     #     plt.plot(times, M[i,:])
+#     # plt.yscale('log')
+#     # plt.show()
+# f.close()
 
 
-    
+# ###########################################
+# # Net repression/promotion
+# ####################################################
 
-    
+# subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
+
+# fnames = [
+#     'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+# ]
+
+# net_effects = []
+# asv_set = []
+
+# for fname in fnames:
+#     chain = pl.inference.BaseMCMC.load(fname)
+
+#     interactions = chain.graph[names.STRNAMES.INTERACTIONS_OBJ]
+#     clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
+#     asvs = clustering.items
+
+#     asv_interactions = pl.variables.summary(interactions, only='mean', set_nan_to_0=True)['mean']
+#     bf_asvs = interactions.generate_bayes_factors_posthoc(
+#         prior=chain.graph[names.STRNAMES.CLUSTER_INTERACTION_INDICATOR].prior,
+#         section='posterior')
+#     mask_asvs = bf_asvs < 10
+#     asv_interactions[mask_asvs] = 0
+
+#     df = np.sum(asv_interactions, axis=1)
+#     df = pd.DataFrame(df, index=asvs.names.order)
+
+#     net_effects.append(df)
+#     asv_set.append(asvs.names.order)
+
+# # Condense to only the shared asvs
+# asvs1 = set(list(asv_set[0]))
+# asvs2 = set(list(asv_set[1]))
+# asvs_both = list(asvs1.intersection(asvs2))
+
+# asvs_both_idx = []
+# for asv in asvs_both:
+#     asvs_both_idx.append(subjset_real.asvs[asv].idx)
+# idxs = np.argsort(asvs_both_idx)
+# asvs_both = np.asarray(asvs_both)[idxs]
+
+
+
+# df_healthy = net_effects[0]
+# df_uc = net_effects[1]
+
+# df_healthy = df_healthy.loc[asvs_both]
+# df_uc = df_uc.loc[asvs_both]
+
+# M_healthy = df_healthy.values.ravel()
+# M_uc = df_uc.values.ravel()
+
+# asvs = subjset_real.asvs
+# f = open('sparse_net_effects.txt', 'w')
+# for i, aname in enumerate(df_healthy.index):
+#     asv = asvs[aname]
+#     f.write('\n')
+#     f.write(pl.asvname_formatter('%(name)s %(genus)s %(species)s', asv=asv, asvs=asvs))
+#     f.write('\n-----------------------------\n')
+#     f.write('healthy: {:.3E}\nulcerative colitis: {:.3E}\n'.format(
+#         M_healthy[i], M_uc[i]))
+
+# f.close()
 
 
 # ####################################################
@@ -825,42 +943,42 @@ clusterings = []
 
 # graph = chain.graph[names.STRNAMES.GROWTH_VALUE].get_trace_from_disk
 
-# ####################################################
-# # Test semisynthetic
-# ####################################################
-# chainname = 'output_real/pylab24/real_runs/perts_mult/fixed_top/healthy1_5_0.0001_rel_2_5/' \
-#     'ds0_is0_b5000_ns20000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+####################################################
+# Test semisynthetic
+####################################################
+chainname = 'output_real/pylab24/real_runs/perts_mult/fixed_top/healthy1_5_0.0001_rel_2_5/' \
+    'ds0_is0_b5000_ns20000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
 
-# chain = pl.inference.BaseMCMC.load(chainname)
-# real_subjectset = chain.graph.data.subjects
+chain = pl.inference.BaseMCMC.load(chainname)
+real_subjectset = chain.graph.data.subjects
 
-# synth = synthetic.make_semisynthetic(chain=chainname, min_bayes_factor=10, 
-#     init_dist_timepoint=1.5)
+synth = synthetic.make_semisynthetic(chain=chainname, min_bayes_factor=10, 
+    init_dist_timepoint=1.5)
 
-# times = synth.master_times
-# required = [times[0], times[-1]]
-# for perturbation in synth.dynamics.perturbations:
-#     required.append(perturbation.start)
-#     required.append(perturbation.end)
-# synth.set_timepoints(synthetic.subsample_timepoints(times, int(0.6*len(times)),required))
+times = synth.master_times
+required = [times[0], times[-1]]
+for perturbation in synth.dynamics.perturbations:
+    required.append(perturbation.start)
+    required.append(perturbation.end)
+synth.set_timepoints(synthetic.subsample_timepoints(times, int(0.6*len(times)),required))
 
-# pv = model.MultiplicativeGlobal(asvs=synth.asvs)
-# pv.value = 0.2**2
+pv = model.MultiplicativeGlobal(asvs=synth.asvs)
+pv.value = 0.2**2
 
-# synth.generate_trajectories(dt=0.005, processvar=pv)
-# synth.generate_trajectories(dt=0.005, processvar=pv)
-# subjset = synth.simulateRealRegressionDataNegBinMD(a0=config.NEGBIN_A0, 
-#     a1=config.NEGBIN_A1, qpcr_noise_scale=0.34, subjset=real_subjectset)
+synth.generate_trajectories(dt=0.005, processvar=pv)
+synth.generate_trajectories(dt=0.005, processvar=pv)
+subjset = synth.simulateRealRegressionDataNegBinMD(a0=config.NEGBIN_A0, 
+    a1=config.NEGBIN_A1, qpcr_noise_scale=0.34, subjset=real_subjectset)
 
-# pl.visualization.abundance_over_time(subjset.iloc(0), dtype='abs', yscale_log=True,
-#     legend=False, clustering=synth.dynamics.clustering, color_code_clusters=True)
-# pl.visualization.abundance_over_time(subjset.iloc(1), dtype='abs', yscale_log=True,
-#     legend=False, clustering=synth.dynamics.clustering, color_code_clusters=True)
-# pl.visualization.abundance_over_time(real_subjectset.iloc(0), dtype='abs', yscale_log=True,
-#     legend=False, clustering=synth.dynamics.clustering, color_code_clusters=True)
-# pl.visualization.abundance_over_time(real_subjectset.iloc(1), dtype='abs', yscale_log=True,
-#     legend=False, clustering=synth.dynamics.clustering, color_code_clusters=True)
-# plt.show()
+pl.visualization.abundance_over_time(subjset.iloc(0), dtype='abs', yscale_log=True,
+    legend=False, clustering=synth.dynamics.clustering, color_code_clusters=True)
+pl.visualization.abundance_over_time(subjset.iloc(1), dtype='abs', yscale_log=True,
+    legend=False, clustering=synth.dynamics.clustering, color_code_clusters=True)
+pl.visualization.abundance_over_time(real_subjectset.iloc(0), dtype='abs', yscale_log=True,
+    legend=False, clustering=synth.dynamics.clustering, color_code_clusters=True)
+pl.visualization.abundance_over_time(real_subjectset.iloc(1), dtype='abs', yscale_log=True,
+    legend=False, clustering=synth.dynamics.clustering, color_code_clusters=True)
+plt.show()
 
 # ####################################################
 # # Phylogeny

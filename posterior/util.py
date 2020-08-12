@@ -125,7 +125,8 @@ def expected_n_clusters(G):
     int
         Expected number of clusters
     '''
-    return np.log(G.data.n_asvs)/math.log(2)
+    conc = G[STRNAMES.CONCENTRATION].prior.mean()
+    return conc * np.log((G.data.n_asvs + conc) / conc)
 
 def build_prior_covariance(G, cov, order, sparse=True, diag=False, cuda=False):
     '''Build basic prior covariance or precision for the variables
