@@ -49,7 +49,7 @@ def parse_args():
         help='Folder to save the output', default='output_ICML/',
         dest='basepath')
     parser.add_argument('--n-asvs', '-n', type=int,
-        help='Number of ASVs', default=150,
+        help='Number of ASVs', default=13,
         dest='n_asvs')
     parser.add_argument('--n-samples', '-ns', type=int,
         help='Total number of Gibbs steps to do',
@@ -255,7 +255,7 @@ if __name__ == '__main__':
 
             # Generate the trajectories
             print('N times', synparams.TIMES)
-            syndata.set_times(N=synparams.TIMES)
+            syndata.set_timepoints(np.arange(65))
             print('master times', syndata.master_times)
             # syndata.master_times = np.arange(0, syndata.n_days, step=0.1)
             syndata.save(syndata_filename)

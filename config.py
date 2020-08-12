@@ -410,7 +410,7 @@ class ModelConfigICML(_BaseModelConfig):
             STRNAMES.CLUSTERING: {
                 'value_option': 'spearman',
                 'delay': 2,
-                'n_clusters': 30,
+                'n_clusters': 10,
                 'percent_mix': self.PERCENT_CHANGE_CLUSTERING,
                 'run_every_n_iterations': 4},
             STRNAMES.REGRESSCOEFF: {
