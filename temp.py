@@ -946,14 +946,17 @@ clusterings = []
 ####################################################
 # Test semisynthetic
 ####################################################
-chainname = 'output_real/pylab24/real_runs/perts_mult/fixed_top/healthy1_5_0.0001_rel_2_5/' \
-    'ds0_is0_b5000_ns20000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+# chainname = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/' \
+#     'ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
 
-chain = pl.inference.BaseMCMC.load(chainname)
-real_subjectset = chain.graph.data.subjects
+# chain = pl.inference.BaseMCMC.load(chainname)
+# real_subjectset = chain.graph.data.subjects
 
-synth = synthetic.make_semisynthetic(chain=chainname, min_bayes_factor=10, 
-    init_dist_timepoint=1.5)
+# synth = synthetic.make_semisynthetic(chain=chainname, min_bayes_factor=10, 
+#     init_dist_timepoint=1.5)
+
+# synth.save('raw_data/temp_semi_synth.pkl')
+synth = synthetic.SyntheticData.load('raw_data/temp_semi_synth.pkl')
 
 times = synth.master_times
 required = [times[0], times[-1]]
