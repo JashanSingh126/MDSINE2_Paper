@@ -112,13 +112,13 @@ for mesh in meshes:
     clustering_ons = mesh[6]
     uniform_sampling = mesh[7]
     boxplot_type = mesh[8]
-
-    for nr in n_replicates:
-        for nt in n_timepoints:
-            for mn in measurement_noises:
-                for pv in process_variances:
-                    for d in range(n_data_seeds):
-                        for i in range(n_init_seeds):
+    for d in range(n_data_seeds):
+        for i in range(n_init_seeds):
+            for nr in n_replicates:
+                for nt in n_timepoints:
+                    for mn in measurement_noises:
+                        for pv in process_variances:
+                    
                             for co in clustering_ons:
                                 # Make name
                                 if boxplot_type == 0:
