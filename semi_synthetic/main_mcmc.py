@@ -271,46 +271,46 @@ if __name__ == '__main__':
         chain_result.save(chain_result_filename)
         params.save(params_filename)
 
-    params = config.ModelConfigICML.load(params_filename)
-    main_base.readify_chain(
-        src_basepath=basepath, 
-        params=params,
-        yscale_log=params.DATA_LOGSCALE, 
-        center_color_for_strength=True,
-        run_on_copy=True,
-        plot_filtering_thresh=False,
-        exact_filename=exact_filename,
-        syndata=syndata_filename)
+    params = config.ModelConfigMCMC.load(params_filename)
+    # main_base.readify_chain(
+    #     src_basepath=basepath, 
+    #     params=params,
+    #     yscale_log=params.DATA_LOGSCALE, 
+    #     center_color_for_strength=True,
+    #     run_on_copy=True,
+    #     plot_filtering_thresh=False,
+    #     exact_filename=exact_filename,
+    #     syndata=syndata_filename)
     
-    chain_result = pl.inference.BaseMCMC.load(chain_result_filename)
+    # chain_result = pl.inference.BaseMCMC.load(chain_result_filename)
 
-    noise_subjset = pl.base.SubjectSet.load(config.make_val_subjset_name(
-        basepath=params.DATA_PATH, ds=params.DATA_SEED, 
-        pv=args.process_variance_level, mn=args.measurement_noise_level,
-        nt=args.n_times, uniform_sampling_timepoints=args.uniform_sampling))
-    exact_subjset = pl.base.SubjectSet.load(config.make_val_subjset_name(
-        basepath=params.DATA_PATH, ds=params.DATA_SEED, 
-        pv=args.process_variance_level))
-    noise_subjset.save(basepath + config.VALIDATION_SUBJSET_FILENAME)
-    comparison = make_comparison(syndata_filename=syndata_filename, 
-        exact_subjset=exact_subjset)
+    # noise_subjset = pl.base.SubjectSet.load(config.make_val_subjset_name(
+    #     basepath=params.DATA_PATH, ds=params.DATA_SEED, 
+    #     pv=args.process_variance_level, mn=args.measurement_noise_level,
+    #     nt=args.n_times, uniform_sampling_timepoints=args.uniform_sampling))
+    # exact_subjset = pl.base.SubjectSet.load(config.make_val_subjset_name(
+    #     basepath=params.DATA_PATH, ds=params.DATA_SEED, 
+    #     pv=args.process_variance_level))
+    # noise_subjset.save(basepath + config.VALIDATION_SUBJSET_FILENAME)
+    # comparison = make_comparison(syndata_filename=syndata_filename, 
+    #     exact_subjset=exact_subjset)
 
-    main_base.validate(
-        src_basepath=basepath, model=chain_result, 
-        forward_sims=['sim-full'],
-        yscale_log=True, run_on_copy=True,
-        asv_prefix_formatter='%(index)s: (%(name)s)',
-        yticklabels='(%(name)s): %(index)s',
-        mp=5, comparison=comparison, 
-        perturbations_additive=params.PERTURBATIONS_ADDITIVE,
+    # main_base.validate(
+    #     src_basepath=basepath, model=chain_result, 
+    #     forward_sims=['sim-full'],
+    #     yscale_log=True, run_on_copy=True,
+    #     asv_prefix_formatter='%(index)s: (%(name)s)',
+    #     yticklabels='(%(name)s): %(index)s',
+    #     mp=5, comparison=comparison, 
+    #     perturbations_additive=params.PERTURBATIONS_ADDITIVE,
 
-        traj_error_metric=pl.metrics.logPE,
-        pert_error_metric=pl.metrics.RMSE,
-        interaction_error_metric=pl.metrics.RMSE,
-        growth_error_metric=pl.metrics.logPE,
-        si_error_metric=pl.metrics.logPE,
-        traj_fillvalue=params.C_M/2,
-        clus_error_metric=pl.metrics.variation_of_information)
+    #     traj_error_metric=pl.metrics.logPE,
+    #     pert_error_metric=pl.metrics.RMSE,
+    #     interaction_error_metric=pl.metrics.RMSE,
+    #     growth_error_metric=pl.metrics.logPE,
+    #     si_error_metric=pl.metrics.logPE,
+    #     traj_fillvalue=params.C_M/2,
+    #     clus_error_metric=pl.metrics.variation_of_information)
 
     # Delete the large files 
     # os.remove(chain_result_filename)

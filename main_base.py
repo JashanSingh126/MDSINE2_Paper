@@ -2847,18 +2847,18 @@ def validate(src_basepath, model, forward_sims,
     read_depthses = [subj.read_depth() for subj in subjset]
     qpcrses = [np.sum(subj.matrix()['abs'], axis=0) for subj in subjset]
 
-    # Plot the subject data in a pool
-    logging.info('Starting plotting base data')
-    for asv in subjset.asvs:
-        fig = plt.figure(figsize=(20,10))
-        fig = filtering.plot_asv(
-            subjset=subjset, asv=asv, fparams=fparams, fig=fig,
-            legend=True, title_format='Subject %(sname)s',
-            suptitle_format='%(name)s\n%(order)s, %(family)s, %(genus)s',
-            yscale_log=True, matrixes=matrixes, read_depthses=read_depthses, 
-            qpcrses=qpcrses)
-        plt.savefig(subjplotpath + '{}.pdf'.format(asv.name))
-        plt.close()
+    # # Plot the subject data in a pool
+    # logging.info('Starting plotting base data')
+    # for asv in subjset.asvs:
+    #     fig = plt.figure(figsize=(20,10))
+    #     fig = filtering.plot_asv(
+    #         subjset=subjset, asv=asv, fparams=fparams, fig=fig,
+    #         legend=True, title_format='Subject %(sname)s',
+    #         suptitle_format='%(name)s\n%(order)s, %(family)s, %(genus)s',
+    #         yscale_log=True, matrixes=matrixes, read_depthses=read_depthses, 
+    #         qpcrses=qpcrses)
+    #     plt.savefig(subjplotpath + '{}.pdf'.format(asv.name))
+    #     plt.close()
 
     # Plot the learned parameters
     logging.info('Start plotting parameters')

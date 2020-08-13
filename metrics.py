@@ -100,8 +100,8 @@ class Metrics(pl.Saveable):
 
         # Set inference section
         if pl.isMCMC(self.model):
-            if self.model.sample_iter < 100:
-                raise ValueError('Not enough samples in chain for forward simulation')
+            # if self.model.sample_iter < 100:
+            #     raise ValueError('Not enough samples in chain for forward simulation')
             if self.model.sample_iter <= self.model.burnin:
                 self._INF_SECTION = 'burnin'
             else:
@@ -180,7 +180,7 @@ class Metrics(pl.Saveable):
                 f.write('Mean {} Error ASVs\n'.format(error_name))
                 for oidx in range(len(subject.asvs)):
                     if pl.isMCMC(self.model):
-                        err = np.mean(temp['error-asvs'][oidx])
+                        err = np.mean(temp['error-asvs'][:,oidx])
                     else:
                         err = temp['error-asvs'][oidx]
                     if temp['error-metric'] == pl.metrics.PE:
@@ -920,7 +920,7 @@ class Metrics(pl.Saveable):
                     ax.set_xlabel('Days')
 
                     if pl.isMCMC(self.model):
-                        err = np.mean(error_asvs[oidx])
+                        err = np.mean(error_asvs[:, oidx])
                     else:
                         err = error_asvs[oidx]
 

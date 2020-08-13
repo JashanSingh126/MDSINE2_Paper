@@ -225,7 +225,7 @@ class ModelConfigMCMC(_BaseModelConfig):
         self.DATA_FILENAME = '../pickles/real_subjectset.pkl'
         self.BURNIN = burnin
         self.N_SAMPLES = n_samples
-        self.CHECKPOINT = 100
+        self.CHECKPOINT = 50
         self.ADD_MIN_REL_ABUNDANCE = False
         self.PROCESS_VARIANCE_TYPE = 'multiplicative-global'
         self.DATA_DTYPE = 'abs'
@@ -240,7 +240,7 @@ class ModelConfigMCMC(_BaseModelConfig):
 
         # This is whether to use the log-scale dynamics or not
         self.DATA_LOGSCALE = True
-        self.PERTURBATIONS_ADDITIVE = True
+        self.PERTURBATIONS_ADDITIVE = False
 
         self.MP_FILTERING = 'full'
         self.MP_INDICATORS = None
@@ -329,7 +329,7 @@ class ModelConfigMCMC(_BaseModelConfig):
                 'delay':0},
             STRNAMES.PERT_INDICATOR_PROB: {
                 'value_option': 'prior-mean',
-                'hyperparam_option': 'weak-agnostic',
+                'hyperparam_option': 'strong-sparse',
                 'delay':0},
             STRNAMES.PERT_INDICATOR: {
                 'value_option': 'all-off',
@@ -409,7 +409,7 @@ class ModelConfigMCMC(_BaseModelConfig):
                 'run_every_n_iterations': 1},
             STRNAMES.INDICATOR_PROB: {
                 'value_option': 'auto',
-                'hyperparam_option': 'weak-agnostic',
+                'hyperparam_option': 'strong-sparse',
                 'delay': 0},
             STRNAMES.FILTERING: {
                 'x_value_option': 'loess',
@@ -617,7 +617,7 @@ class SimulationConfigBoxplots(_BaseModelConfig):
     def __init__(self, times, n_replicates, n_asvs, healthy,
         process_variance_levels, measurement_noise_levels, dataset):
         self.PV_VALUES = [pv**2 for pv in process_variance_levels]
-        self.SIMULATION_DT = 0.005
+        self.SIMULATION_DT = 0.01
         self.N_DAYS = 65
         self.TIMES = times
         self.N_REPLICATES = n_replicates
@@ -710,7 +710,7 @@ class SimulationConfig(_BaseModelConfig):
     def __init__(self, times, n_replicates, n_asvs, healthy, uniform_sampling_timepoints,
         process_variance_level, measurement_noise_level):
         self.PV_VALUE = process_variance_level**2
-        self.SIMULATION_DT = 0.005
+        self.SIMULATION_DT = 0.01
         self.N_DAYS = 65
         self.TIMES = times
         self.N_REPLICATES = n_replicates
