@@ -86,7 +86,7 @@ echo $TMPDIR
 module load anaconda
 source activate dispatcher
 
-cd /data/cctm/darpa_perturbation_mouse_study/perturbation_study/semi_synthetic/
+cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2/semi_synthetic/
 python main_mcmc.py -m {4} -p {5} -d {6} -i {7} -b {8} -n {9} -nb {10} -ns {11} -nr {12} -c {13} -nt {14} -db {15} -us {16}
 '''
 os.makedirs(basepath, exist_ok=True)
