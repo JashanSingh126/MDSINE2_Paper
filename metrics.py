@@ -435,7 +435,7 @@ class Metrics(pl.Saveable):
                 pred_pnt_ = pred_pnt
                 pred_pnt_[pred_pnt_ == 0] = self.traj_fillvalue
 
-                err = error_metric(data_pnt_, pred_pnt_)
+                err = error_metric(data_pnt_, pred_pnt_)[0]
                 logging.info('{}: {}'.format(tla, err))
                 tidx_master = rev_idx_master[t]
                 self.time_lookaheads[subject.name]['lookaheads'][tla]['pred'][tidx_master] = err
@@ -448,9 +448,9 @@ class Metrics(pl.Saveable):
                     low_M_[low_M_ == 0] = self.traj_fillvalue
 
                     self.time_lookaheads[subject.name]['lookaheads'][tla]['high'][tidx_master] = \
-                        error_metric(data_pnt_, high_M_)
+                        error_metric(data_pnt_, high_M_)[0]
                     self.time_lookaheads[subject.name]['lookaheads'][tla]['low'][tidx_master] = \
-                        error_metric(data_pnt_, low_M_)
+                        error_metric(data_pnt_, low_M_)[0]
 
     def _sim(self, subject, dtype, start, n_days, simtype, percentile, truth, error_metric, 
         save_at_finish, skip_if_start_dne):
@@ -614,16 +614,16 @@ class Metrics(pl.Saveable):
 
             # If truth is supplied, then use that for the error metric
             if truth is not None:
-                error_total = error_metric(M_truth_, given_times_pred_traj_)
+                error_total = np.mean(error_metric(M_truth_, given_times_pred_traj_, axis=1)[0])
                 error_ASVs = []
                 for oidx in range(len(subject.asvs)):
-                    error_ASVs.append(error_metric(M_truth_[oidx,:], given_times_pred_traj_[oidx,:]))
+                    error_ASVs.append(error_metric(M_truth_[oidx,:], given_times_pred_traj_[oidx,:])[0])
 
             else:
-                error_total = error_metric(M_, given_times_pred_traj_)
+                error_total = np.mean(error_metric(M_, given_times_pred_traj_,axis=1)[0])
                 error_ASVs = []
                 for oidx in range(len(subject.asvs)):
-                    error_ASVs.append(error_metric(M_[oidx,:], given_times_pred_traj_[oidx,:]))
+                    error_ASVs.append(error_metric(M_[oidx,:], given_times_pred_traj_[oidx,:])[0])
 
         else:
             # Using a bayesian model, integrate over the posterior
@@ -710,13 +710,13 @@ class Metrics(pl.Saveable):
             error_ASVs = np.zeros(shape=(X_pred.shape[0],X_pred.shape[1]), dtype=float)
             for i in range(len(error_total)):
                 if truth is not None:
-                    error_total[i] = error_metric(M_truth_, given_times_pred_traj_[i])
+                    error_total[i] = np.mean(error_metric(M_truth_, given_times_pred_traj_[i], axis=1)[0])
                     for oidx in range(len(subject.asvs)):
-                        error_ASVs[i,oidx] = error_metric(M_truth_[oidx,:], given_times_pred_traj_[i,oidx,:])
+                        error_ASVs[i,oidx] = error_metric(M_truth_[oidx,:], given_times_pred_traj_[i,oidx,:])[0]
                 else:
-                    error_total[i] = error_metric(M_, given_times_pred_traj_[i])
+                    error_total[i] = np.mean(error_metric(M_, given_times_pred_traj_[i], axis=1)[0])
                     for oidx in range(len(subject.asvs)):
-                        error_ASVs[i,oidx] = error_metric(M_[oidx,:], given_times_pred_traj_[i,oidx,:])
+                        error_ASVs[i,oidx] = error_metric(M_[oidx,:], given_times_pred_traj_[i,oidx,:])[0]
 
         ret = {}
         if simtype == 'sim-days':

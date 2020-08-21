@@ -7,3 +7,4 @@ __pycache__
 *.cpython*
 .vscode*
 *.lprof
+raw_data/seqs_temp/

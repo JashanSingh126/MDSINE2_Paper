@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 import scipy.stats
+from sklearn.metrics import normalized_mutual_info_score
 
 import pylab as pl
 import config
@@ -159,7 +160,7 @@ if __name__ == '__main__':
             args.n_samples, args.burnin))
 
     # Constants
-    ONLY_PLOT = False
+    ONLY_PLOT = True
     
     # Start
     ##############################
@@ -413,15 +414,15 @@ if __name__ == '__main__':
 
     # Plot the chain
     params = config.ModelConfigICML.load(params_filename)
-    main_base.readify_chain(
-        src_basepath=basepath,
-        params=params,
-        yscale_log=params.DATA_LOGSCALE, 
-        center_color_for_strength=True,
-        run_on_copy=True,
-        plot_filtering_thresh=False,
-        exact_filename=exact_subjset_filename,
-        syndata=syndata_filename)
+    # main_base.readify_chain(
+    #     src_basepath=basepath,
+    #     params=params,
+    #     yscale_log=params.DATA_LOGSCALE, 
+    #     center_color_for_strength=True,
+    #     run_on_copy=True,
+    #     plot_filtering_thresh=False,
+    #     exact_filename=exact_subjset_filename,
+    #     syndata=syndata_filename)
     
     main_base.validate(
         src_basepath=basepath, model=chain_result, 
@@ -431,12 +432,12 @@ if __name__ == '__main__':
         yticklabels='(%(name)s): %(index)s',
         mp=5, comparison=comparison,
         output_dt=1/8, perturbations_additive=params.PERTURBATIONS_ADDITIVE,
-        traj_error_metric=pl.metrics.PE,
+        traj_error_metric=scipy.stats.spearmanr,
         pert_error_metric=pl.metrics.RMSE,
         interaction_error_metric=pl.metrics.RMSE,
         growth_error_metric=pl.metrics.PE,
         si_error_metric=pl.metrics.PE,
-        clus_error_metric=pl.metrics.variation_of_information)
+        clus_error_metric=normalized_mutual_info_score)
 
     # Delete the large files 
     # os.remove(chain_result_filename)

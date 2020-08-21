@@ -41,7 +41,6 @@ import names
 import main_base
 
 import ete3
-from ete3 import TreeStyle
 import Bio
 from Bio import Phylo
 from Bio import SeqIO, AlignIO
@@ -62,73 +61,166 @@ pl.seed(1)
 
 # # subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
-# # fname = 'raw_data/seqs_temp/RDP_trunc_alignments/aligned_seqs_trunc1600.fa'
-# fname = 'raw_data/seqs_temp/RDP_trunc_alignments/asv_alignments/align_seqs_2200.sto'
+# fname = 'raw_data/seqs_temp/align_seqs_rdp_reference.sto'
+# # fname = 'raw_data/seqs_temp/ecoli_align.sto'
+# fname_all = 'raw_data/seqs_temp/unaligned RDP seqs/rdp_reference_unaligned_seqs.fa'
+# # fname = 'raw_data/seqs_temp/RDP_aligned_200_seqs.sto'
+# ecoli_fname = 'raw_data/seqs_temp/ECOLI/arb-silva.de_2020-08-05_id864569.fasta'
+# from Bio import SeqIO
+# from Bio import pairwise2
+# seqs = SeqIO.parse(fname_all, 'fasta')
+# ecoli = SeqIO.parse(ecoli_fname, 'fasta')
 
-# seqs = SeqIO.parse(fname, 'stockholm')
-# d = {}
-# # lengths = []
-# l = None
-
-
-
-# for record in seqs:
-#     l = len(record.seq)
+# for i,record in enumerate(seqs):
+#     if i == 2:
+#         sys.exit()
+#     print()
+#     print(record.id)
+#     print(len(record.seq))
 #     print(record.seq)
-#     break
+
+# for i,record in enumerate(seqs):
+#     if i == 0:
+#         continue
+#     print()
+#     print(record.id)
+#     print(len(record.seq))
+#     print(record.seq)
 
 
-# arrs = []
-# for record in seqs:
-#     if 'OTU_' not in record.id:
-#         arr = np.zeros(l, dtype=int)
-#         seq = str(record.seq)
-#         for i,a in enumerate(seq):
-#             if a not in d:
-#                 d[a] = len(d)
-#             arr[i] = d[a]
-#         arrs.append(arr)
-
-# M = np.asarray(arrs)
-# print(M.shape)
-
-# num = d['-']
-# mask = M == num
-# # print(mask[0,:])
-# # print(num)
-# # print(M[0,:])
-# percent = np.sum(mask, axis=0) / mask.shape[0]
-# print(percent)
-
-
-# print(d)
-
-# M = np.zeros(shape(len(d), l), dtype=int)
-# for i, (k,v) in enumerate(d.items()):
-#     for j,lll in enumerate(v):
-#         if lll == 'A':
-
-# with open('../coarsening_files/sequences_old.pkl', 'wb') as handle:
-#     pickle.dump(d, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-# with open('../coarsening_files/sequences_old.pkl', 'rb') as handle:
-#     seqs = pickle.load(handle)
+# seqs_to_save = []
+# for i, record in enumerate(seqs):
+#     if i == 1000:
+#         break
+#     seqs_to_save.append(record)
+# SeqIO.write(sequences=seqs_to_save, handle='raw_data/seqs_temp/RDP_unaligned_1000seqs.fa', format='fasta')
+# sys.exit()
+# percent_overlap = {}
 
 # for i, record in enumerate(seqs):
-#     print()
-#     print('>', record)
-#     print(seqs[record])
-#     if i == 10:
-#         break
+#     if i == 0:
+#         ecoli_seq = np.asarray(list(str(record.seq)), dtype=str)
+#         ecoli_neq_gap = ecoli_seq != '-'
+
+#     else:
+#         seq = np.asarray(list(str(record.seq)), dtype=str)
+#         seq_neq_gap = (seq != '-')
+
+#         a = ecoli_neq_gap.reshape(-1,1)
+#         b = seq_neq_gap.reshape(-1,1)
+
+#         percent_overlap[record.id] = np.sum(ecoli_neq_gap == seq_neq_gap) / len(seq_neq_gap)
+
+# for k,v in percent_overlap.items():
+#     print(k,v)
+
+# vals = np.array(list(percent_overlap.values()))
+# keys = np.array(list(percent_overlap.keys()))
+
+# plt.hist(vals, bins=20)
+# plt.yscale('log')
+# plt.show()
+
+# # Get the keys that are above 90% overlap
+# keys_to_keep = keys[vals >= 0.9]
+# keys_to_keep = set(list(keys_to_keep))
+# seqs_to_keep = []
+# seqs = SeqIO.parse(fname_all, 'fasta')
+# for record in seqs:
+#     if record.id in keys_to_keep:
+#         seqs_to_keep.append(record)
+
+# SeqIO.write(sequences=seqs_to_keep, handle='raw_data/seqs_temp/RDP_unaligned_overlap_seqs.fa', format='fasta')
+# sys.exit()
+
+
+####################################################
+# Make table of gaps of sequences
+###################################################
+fname = 'raw_data/seqs_temp/RDP_typed_cultured.fa'
+seqs = SeqIO.parse(fname, 'fasta')
+seqs = SeqIO.to_dict(seqs)
+
+i = 0
+ret = []
+for k,record in seqs.items():
+    if len(record.seq) <= 1600:
+        ret.append(record)
+
+print('Before number: {}'.format(len(seqs)))
+print('After number: {}'.format(len(ret)))
+
+SeqIO.write(ret, 'raw_data/seqs_temp/RDP_typed_cultured_trunc1600.fa', 'fasta')
+
+# print(seqs['S000614200'])
+sys.exit()
+
+# i = 0
+# names_dict = {}
+# for record in seqs.values():
+#     width = len(record.seq)
+#     names_dict[record.id] = i
+#     i += 1
+# print('here')
+# M = np.zeros(shape=(len(names_dict), width), dtype=str)
+
+# for i, record in enumerate(seqs.values()):
+#     # print('here')
+#     M[i] = np.asarray(list(str(record.seq)))
+
+
+# X = M == '.'
+# Y = M == '-'
+# M = X | Y
+
+# trim_num = 4
+
+# sums = len(seqs) - np.sum(M, axis=0)
+# keys = list(seqs.keys())
+# rets = {}
+# for col in range(len(sums)):
+#     if sums[col] <= trim_num:
+#         idxs = np.where(~M[:, col])[0]
+#         for idx in idxs:
+#             key = keys[idx]
+#             if key not in rets:
+#                 rets[key] = 0
+#             rets[key] += 1
+
+# # print(sums)
+# # for k,v in rets.items():
+# #     print(k,v)
+# # print(len(rets))
+
+# rets = set(list(rets.keys()))
+
+# seqs = SeqIO.parse('raw_data/seqs_temp/unaligned RDP seqs/seqs_trunc1600.fa', 'fasta')
+# ret = []
+# for record in seqs:
+#     if record.id not in rets:
+#         ret.append(record)
+# print('Number of sequences: {}'.format(len(ret)))
+# SeqIO.write(ret, 'raw_data/seqs_temp/seqs_trunc1600_python_trim{}.fa'.format(trim_num), format='fasta')
+
+
+
+# print(np.sum(M, axis=0))
+
 
 # ####################################################
 # # Make df of the cluster interactions
 # ###################################################
 # fnames = [
-#     # 'output_real/pylab24/real_runs/perts_mult/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns20000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
-#     'output_real/pylab24/real_runs/perts_mult/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+#     # 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
 # ]
-# for fname in fnames:
+# names_loop = [
+#     'healthy',
+#     'ulcerative_colitis'
+# ]
+
+# for i, fname in enumerate(fnames):
+#     print('here')
 #     chain = pl.inference.BaseMCMC.load(fname)
 
 #     interactions = chain.graph[names.STRNAMES.INTERACTIONS_OBJ]
@@ -136,20 +228,27 @@ pl.seed(1)
 #     asvs = clustering.items
 
 #     asv_interaction_trace = interactions.get_trace_from_disk(section='posterior')
-#     asv_interactions = pl.variables.summary(asv_interaction_trace, only='mean', set_nan_to_0=True)['mean']
-#     clus_interactions = main_base._condense_interactions(asv_interactions, clustering=clustering)
+#     # clus_interactions = main_base._condense_interactions(asv_interaction_trace, clustering=clustering)
+#     expected_interactions = pl.variables.summary(asv_interaction_trace, only='mean', set_nan_to_0=True)['mean']
 
 #     bf_asvs = interactions.generate_bayes_factors_posthoc(
 #         prior=chain.graph[names.STRNAMES.CLUSTER_INTERACTION_INDICATOR].prior,
 #         section='posterior')
 #     bf_clus = main_base._condense_interactions(bf_asvs, clustering=clustering)
 
-#     mask_clus = bf_clus < 10
-#     clus_interactions[mask_clus] = 0
+#     np.save('interactions_over_gibbs_{}.npy'.format(names_loop[i]), asv_interaction_trace)
+#     np.save('bayes_factors_{}.npy'.format(names_loop[i]), bf_asvs)
+#     np.save('expected_interactions_{}.npy'.format(names_loop[i]), expected_interactions)
+
+
+#     # mask_clus = bf_clus < 5
+#     # clus_interactions[mask_clus] = 0
     
-#     names = ['Cluster {}'.format(cidx + 1) for cidx in range(mask_clus.shape[0])]
-#     df = pd.DataFrame(clus_interactions, columns=names, index=names)
-#     df.to_csv('raw_data/diffuse_uc_cluster_interactions.tsv', sep='\t' )
+#     # cluster_names = ['Cluster {}'.format(cidx + 1) for cidx in range(clus_interactions.shape[-1])]
+#     # df = pd.DataFrame(clus_interactions, columns=cluster_names, index=cluster_names)
+#     # df.to_csv('raw_data/diffuse_uc_cluster_interactions_bf5{}.tsv'.format(i), sep='\t' )
+
+# sys.exit()
 
 
 

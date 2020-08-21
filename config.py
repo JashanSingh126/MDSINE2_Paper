@@ -198,7 +198,7 @@ class ModelConfigICML(_BaseModelConfig):
         self.DATA_FILENAME = 'pickles/real_subjectset.pkl'
         self.BURNIN = burnin
         self.N_SAMPLES = n_samples
-        self.CHECKPOINT = 100
+        self.CHECKPOINT = 100 #50
         self.ADD_MIN_REL_ABUNDANCE = False
         self.PROCESS_VARIANCE_TYPE = 'multiplicative-global'
         self.DATA_DTYPE = 'abs'
@@ -617,7 +617,7 @@ class ModelConfigReal(_BaseModelConfig):
 
         self.MP_FILTERING = 'full'
         self.MP_INDICATORS = None
-        self.MP_CLUSTERING = None #'full-8'
+        self.MP_CLUSTERING = 'full-8'
         self.MP_ZERO_INFLATION = None
         self.RELATIVE_LOG_MARGINAL_INDICATORS = True
         self.RELATIVE_LOG_MARGINAL_PERT_INDICATORS = True
@@ -1438,9 +1438,9 @@ class SimulationConfig(_BaseModelConfig):
         self.N_DAYS = 'from-data'
         self.TIMES = times
         self.N_REPLICATES = n_replicates
-        self.INIT_LOW = 1e5 #5e6
-        self.INIT_HIGH = 1e7 #5e7
-        self.MAX_ABUNDANCE = 1e8
+        self.INIT_LOW = 3 #1e5 #5e6
+        self.INIT_HIGH = 10 #1e7 #5e7
+        self.MAX_ABUNDANCE = None #1e8
         self.N_ASVS = n_asvs
         self.HEALTHY_PATIENTS = healthy
         self.PROCESS_VARIANCE_LEVEL = process_variance_level

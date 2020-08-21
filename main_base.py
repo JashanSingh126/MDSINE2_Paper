@@ -3297,13 +3297,20 @@ def validate(src_basepath, model, forward_sims,
                         asvs=ASVS)
                     f.write('\t- {}\n'.format(label))
             ca_truth = cluster_assignments
+            ca_truth_array = np.zeros(len(ASVS), dtype=int)
+            for idx in range(len(ca_truth)):
+                ca_truth_array[ca_truth[idx]] = idx
+
 
             if model.is_in_inference_order(STRNAMES.CLUSTERING):
                 cocluster_trace = CLUSTERING.coclusters.get_trace_from_disk()
                 vi = np.zeros(cocluster_trace.shape[0], dtype=float)
                 for i in range(cocluster_trace.shape[0]):
                     ca_pred = pl.cluster.toarray_from_cocluster(cocluster_trace[i])
-                    vi[i] = clus_error_metric(ca_truth, ca_pred, n=len(ASVS))
+                    ca_pred_array = np.zeros(len(ASVS), dtype=int)
+                    for idx in range(len(ca_pred)):
+                        ca_pred_array[ca_pred[idx]] = idx
+                    vi[i] = clus_error_metric(ca_truth_array, ca_pred_array)
 
                 comparison_results['error-clustering'] = vi
                 summ = pl.variables.summary(vi)
