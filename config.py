@@ -617,7 +617,7 @@ class ModelConfigReal(_BaseModelConfig):
 
         self.MP_FILTERING = 'full'
         self.MP_INDICATORS = None
-        self.MP_CLUSTERING = 'full-8'
+        self.MP_CLUSTERING = 'full-4'
         self.MP_ZERO_INFLATION = None
         self.RELATIVE_LOG_MARGINAL_INDICATORS = True
         self.RELATIVE_LOG_MARGINAL_PERT_INDICATORS = True
