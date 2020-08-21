@@ -702,7 +702,6 @@ class ModelConfigReal(_BaseModelConfig):
             STRNAMES.PERT_INDICATOR_PROB: {
                 'value_option': 'prior-mean',
                 'hyperparam_option': 'strong-sparse',
-                'N': 25,
                 'delay':0},
             STRNAMES.PERT_INDICATOR: {
                 'value_option': 'all-off',
