@@ -3,7 +3,7 @@ FROM python:3.7.3
 WORKDIR /usr/src/app
 
 COPY ./PyLab ./PyLab
-COPY requirements.txt .
+COPY MDSINE2/requirements.txt ./requirements.txt
 COPY ./MDSINE2 ./MDSINE2
 
 RUN pip install --no-cache-dir -r requirements.txt
