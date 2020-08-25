@@ -68,7 +68,7 @@ pl.seed(1)
 # ecoli_fname = 'raw_data/seqs_temp/ECOLI/arb-silva.de_2020-08-05_id864569.fasta'
 # from Bio import SeqIO
 # from Bio import pairwise2
-# seqs = SeqIO.parse(fname_all, 'fasta')
+seqs = SeqIO.parse(fname_all, 'fasta')
 # ecoli = SeqIO.parse(ecoli_fname, 'fasta')
 
 # for i,record in enumerate(seqs):
@@ -134,95 +134,170 @@ pl.seed(1)
 # sys.exit()
 
 
-####################################################
-# Make table of gaps of sequences
-###################################################
-fname = 'raw_data/seqs_temp/RDP_typed_cultured.fa'
-seqs = SeqIO.parse(fname, 'fasta')
-seqs = SeqIO.to_dict(seqs)
-
-i = 0
-ret = []
-for k,record in seqs.items():
-    if len(record.seq) <= 1600:
-        ret.append(record)
-
-print('Before number: {}'.format(len(seqs)))
-print('After number: {}'.format(len(ret)))
-
-SeqIO.write(ret, 'raw_data/seqs_temp/RDP_typed_cultured_trunc1600.fa', 'fasta')
-
-# print(seqs['S000614200'])
-sys.exit()
-
-# i = 0
-# names_dict = {}
-# for record in seqs.values():
-#     width = len(record.seq)
-#     names_dict[record.id] = i
-#     i += 1
-# print('here')
-# M = np.zeros(shape=(len(names_dict), width), dtype=str)
-
-# for i, record in enumerate(seqs.values()):
-#     # print('here')
-#     M[i] = np.asarray(list(str(record.seq)))
-
-
-# X = M == '.'
-# Y = M == '-'
-# M = X | Y
-
-# trim_num = 4
-
-# sums = len(seqs) - np.sum(M, axis=0)
-# keys = list(seqs.keys())
-# rets = {}
-# for col in range(len(sums)):
-#     if sums[col] <= trim_num:
-#         idxs = np.where(~M[:, col])[0]
-#         for idx in idxs:
-#             key = keys[idx]
-#             if key not in rets:
-#                 rets[key] = 0
-#             rets[key] += 1
-
-# # print(sums)
-# # for k,v in rets.items():
-# #     print(k,v)
-# # print(len(rets))
-
-# rets = set(list(rets.keys()))
-
-# seqs = SeqIO.parse('raw_data/seqs_temp/unaligned RDP seqs/seqs_trunc1600.fa', 'fasta')
-# ret = []
-# for record in seqs:
-#     if record.id not in rets:
-#         ret.append(record)
-# print('Number of sequences: {}'.format(len(ret)))
-# SeqIO.write(ret, 'raw_data/seqs_temp/seqs_trunc1600_python_trim{}.fa'.format(trim_num), format='fasta')
-
-
-
-# print(np.sum(M, axis=0))
-
-
 # ####################################################
-# # Make df of the cluster interactions
+# # Make table of gaps of sequences
 # ###################################################
+# fname = 'raw_data/seqs_temp/RDP_typed_cultured_trunc1600_aligned.fa'
+# fname_to_use = 'raw_data/seqs_temp/RDP_typed_cultured_trunc1600.fa'
+# fprefix = 'raw_data/seqs_temp/RDP_typed_cultured_trunc1600_'
+# fsuffix = '.fa'
+# seqs = SeqIO.parse(fname, 'fasta')
+# seqs_to_use = SeqIO.parse(fname_to_use, 'fasta')
+# seqs = SeqIO.to_dict(seqs)
+# seqs_to_use = SeqIO.to_dict(seqs_to_use)
+
+# def get_seqs_gaps(seqs, min_gap_length, max_num_seqs_in_gap, repeats_only=False):
+#     '''Return the sequences to be that have base pairs in gaps of at least
+#     length `min_gap_length` for `max_num_seqs_in_gap` sequences or less.
+
+#     Parameters
+#     ----------
+#     seqs : dict (str -> Record)
+#         maps the ID of the sequence to the record
+#     min_gap_length : int
+#         Minimum spance of the gap that we are looking at
+#     max_num_seqs_in_gap : int
+#         Maximum number of subjects that we should count as an insertion
+#     repeats_only : bool
+#         If True, only returns the sequences that come up in more than 1 distict
+#         insertion regions
+
+#     Returns
+#     -------
+#     list(str)
+#     '''
+#     i = 0
+#     for record in seqs.values():
+#         width = len(record.seq)
+#     M = np.zeros(shape=(len(seqs), width), dtype=str)
+
+#     for i, record in enumerate(seqs.values()):
+#         # print('here')
+#         M[i] = np.asarray(list(str(record.seq)))
+
+#     X = M != '.'
+#     Y = M != '-'
+#     M = X & Y
+
+#     # `M` : places where there are not gaps
+#     num_seqs_no_gaps = np.sum(M, axis=0)
+#     insertions = num_seqs_no_gaps <= max_num_seqs_in_gap
+
+#     # Get the set of ranges that satify the gap criteria
+#     cols = []
+#     curr_cols = []
+#     for col, val in enumerate(insertions):
+#         if val:
+#             curr_cols.append(col)
+#         else:
+#             if len(curr_cols) >= min_gap_length:
+#                 cols.append(curr_cols)
+#             curr_cols = []
+
+#     # Get the sequence ids that satisfy the gap criteria
+#     names = list(seqs.keys())
+#     cnt = {}
+#     for curr_cols in cols:
+#         sums_for_rows = np.sum(M[:, curr_cols], axis=1)
+#         rows = np.where(sums_for_rows > 0)[0]
+#         curr_names = list(set([names[row] for row in rows]))
+
+#         for name in curr_names:
+#             if name not in cnt:
+#                 cnt[name] = 0
+#             cnt[name] += 1
+
+#     names_to_ret = []
+#     for k,v in cnt.items():
+#         if repeats_only and v == 1:
+#             continue
+#         names_to_ret.append(k)
+
+#     return names_to_ret
+
+# gaps10_1 = get_seqs_gaps(seqs, 10, 1)
+# print(2, len(gaps10_1))
+# gaps1_1_repeat = get_seqs_gaps(seqs, 1, 1, repeats_only=True)
+# print(3, len(gaps1_1_repeat))
+# gaps1_1_all = get_seqs_gaps(seqs, 1, 1)
+# print(4, len(gaps1_1_all))
+# gaps1_5 = get_seqs_gaps(seqs, 1, 5)
+# print(5, len(gaps1_5))
+
+# # Most conservative, gaps length 10 for only a single sequence
+# seqs_to_delete = set(gaps10_1)
+# ret = []
+# for k,v in seqs_to_use.items():
+#     if k not in seqs_to_delete:
+#         ret.append(v)
+# SeqIO.write(ret, fprefix + 'mingaplen10' + fsuffix, 'fasta')
+
+# # gaps length 10 for only a single sequence and singletons repeat offenders
+# seqs_to_delete = set(gaps10_1 + gaps1_1_repeat)
+# ret = []
+# for k,v in seqs_to_use.items():
+#     if k not in seqs_to_delete:
+#         ret.append(v)
+# SeqIO.write(ret, fprefix + 'mingaplen10_and_singleton_repeats' + fsuffix, 'fasta')
+
+# # singletons repeat offenders
+# seqs_to_delete = set(gaps1_1_repeat)
+# ret = []
+# for k,v in seqs_to_use.items():
+#     if k not in seqs_to_delete:
+#         ret.append(v)
+# SeqIO.write(ret, fprefix + 'singleton_repeat_offenders' + fsuffix, 'fasta')
+
+# # singletons
+# seqs_to_delete = set(gaps1_1_all)
+# ret = []
+# for k,v in seqs_to_use.items():
+#     if k not in seqs_to_delete:
+#         ret.append(v)
+# SeqIO.write(ret, fprefix + 'singletons' + fsuffix, 'fasta')
+
+# # singletons for 5 or less occurances
+# seqs_to_delete = set(gaps1_5)
+# ret = []
+# for k,v in seqs_to_use.items():
+#     if k not in seqs_to_delete:
+#         ret.append(v)
+# SeqIO.write(ret, fprefix + 'singletons_5_of_less_occurances' + fsuffix, 'fasta')
+
+
+# sys.exit()
+
+
+# # ####################################################
+# # # Make df of the cluster interactions
+# # ###################################################
 # fnames = [
-#     # 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+# #     # 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
 #     'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
 # ]
-# names_loop = [
-#     'healthy',
-#     'ulcerative_colitis'
-# ]
+# # names_loop = [
+# #     'healthy',
+# #     'ulcerative_colitis'
+# # ]
 
 # for i, fname in enumerate(fnames):
 #     print('here')
 #     chain = pl.inference.BaseMCMC.load(fname)
+#     tracer = chain.tracer
 
+#     tracer.open()
+#     for name in tracer.f:
+#         print(tracer.f[name].attrs['end_iter'])
+
+#     # chain.sample_iter = 15000
+#     # ind = chain.graph[names.STRNAMES.INDICATOR_PROB].get_trace_from_disk()
+#     # ind = ind[-2000:]
+#     # print(ind)
+#     # print(len(ind))
+    
+
+
+# sys.exit()
 #     interactions = chain.graph[names.STRNAMES.INTERACTIONS_OBJ]
 #     clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
 #     asvs = clustering.items

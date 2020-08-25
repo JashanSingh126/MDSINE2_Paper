@@ -11,4 +11,4 @@ RUN pip install ./PyLab/.
 WORKDIR MDSINE2
 RUN python make_real_subjset.py
 
-CMD ["python", "main_real.py", "-d", "5", "-i", "0", "-ns", "200", "-nb", "100", "-b", "output/" ]
+CMD ["python", "main_real.py", "-d", "5", "-i", "0", "-ns", "400", "-nb", "200", "-b", "output/" ]

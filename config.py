@@ -615,9 +615,9 @@ class ModelConfigReal(_BaseModelConfig):
         self.GROWTH_TRUNCATION_SETTINGS = 'positive'
         self.SELF_INTERACTIONS_TRUNCATION_SETTINGS = 'positive'
 
-        self.MP_FILTERING = 'full'
+        self.MP_FILTERING = 'debug' #'full'
         self.MP_INDICATORS = None
-        self.MP_CLUSTERING = 'full-4'
+        self.MP_CLUSTERING = 'debug' #'full-8'
         self.MP_ZERO_INFLATION = None
         self.RELATIVE_LOG_MARGINAL_INDICATORS = True
         self.RELATIVE_LOG_MARGINAL_PERT_INDICATORS = True
