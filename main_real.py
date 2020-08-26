@@ -331,7 +331,7 @@ def dispatch_docker(params, fparams, mntpath, baseimgname, pylabdir):
         fname = path + 'Dockerfile'
         os.makedirs(path, exist_ok=True)
         f = open(fname, 'w')
-        f.write(f.format(d, pylabdir))
+        f.write(my_str.format(d, pylabdir))
         f.close()
         imgname = baseimgname+'{}'.format(d)
         os.system('docker build -t {} {}'.format(fname, imgname))
