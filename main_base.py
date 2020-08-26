@@ -91,11 +91,12 @@ def run(params, graph_name, data_filename, tracer_filename,
     # If we are continuing the chain, then we dont have to do the initialization, we can
     # just load the chain and then set the inference starting
     if continue_inference is not None:
+        raise NotImplementedError('Not finished implementing yet')
         if not pl.isint(continue_inference):
             raise TypeError('`continue_inference` ({}) must be None or an int'.format(
                 type(continue_inference)))
-            if continue_inference < 0:
-                raise ValueError('`continue_inference` ({}) must be  > 0'.format(continue_inference))
+        if continue_inference < 0:
+            raise ValueError('`continue_inference` ({}) must be  > 0'.format(continue_inference))
         REPRNAMES.set(G=GRAPH)
         logging.info('Continuing inference at Gibb step {}'.format(continue_inference))
         mcmc = pl.inference.BaseMCMC.load(mcmc_filename)
@@ -143,7 +144,6 @@ def run(params, graph_name, data_filename, tracer_filename,
         return run_inference(mcmc=mcmc, crash_if_error=crash_if_error, 
             cluster_assignments=cluster_assignments, filtering=filtering, Z=Z,
             subjset=subjset, data_filename=data_filename)
-
 
     params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['h5py_filename'] = hdf5_filename
 

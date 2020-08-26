@@ -68,7 +68,7 @@ pl.seed(1)
 # ecoli_fname = 'raw_data/seqs_temp/ECOLI/arb-silva.de_2020-08-05_id864569.fasta'
 # from Bio import SeqIO
 # from Bio import pairwise2
-seqs = SeqIO.parse(fname_all, 'fasta')
+# seqs = SeqIO.parse(fname_all, 'fasta')
 # ecoli = SeqIO.parse(ecoli_fname, 'fasta')
 
 # for i,record in enumerate(seqs):
@@ -137,9 +137,9 @@ seqs = SeqIO.parse(fname_all, 'fasta')
 # ####################################################
 # # Make table of gaps of sequences
 # ###################################################
-# fname = 'raw_data/seqs_temp/RDP_typed_cultured_trunc1600_aligned.fa'
+# fname = 'raw_data/seqs_temp/aligned_RDP_typed_cultured_trunc1600_singletons_5_of_less_occurances.fa'
 # fname_to_use = 'raw_data/seqs_temp/RDP_typed_cultured_trunc1600.fa'
-# fprefix = 'raw_data/seqs_temp/RDP_typed_cultured_trunc1600_'
+# fprefix = 'raw_data/seqs_temp/RDP_typed_cultured_trunc1600_second_'
 # fsuffix = '.fa'
 # seqs = SeqIO.parse(fname, 'fasta')
 # seqs_to_use = SeqIO.parse(fname_to_use, 'fasta')
@@ -215,12 +215,13 @@ seqs = SeqIO.parse(fname_all, 'fasta')
 
 #     return names_to_ret
 
-# gaps10_1 = get_seqs_gaps(seqs, 10, 1)
-# print(2, len(gaps10_1))
-# gaps1_1_repeat = get_seqs_gaps(seqs, 1, 1, repeats_only=True)
-# print(3, len(gaps1_1_repeat))
-# gaps1_1_all = get_seqs_gaps(seqs, 1, 1)
-# print(4, len(gaps1_1_all))
+# # gaps10_1 = get_seqs_gaps(seqs, 10, 1)
+# # print(2, len(gaps10_1))
+# # gaps1_1_repeat = get_seqs_gaps(seqs, 1, 1, repeats_only=True)
+# # print(3, len(gaps1_1_repeat))
+# # gaps1_1_all = get_seqs_gaps(seqs, 1, 1)
+# # print(4, len(gaps1_1_all))
+# print(len(seqs))
 # gaps1_5 = get_seqs_gaps(seqs, 1, 5)
 # print(5, len(gaps1_5))
 
@@ -259,9 +260,13 @@ seqs = SeqIO.parse(fname_all, 'fasta')
 # # singletons for 5 or less occurances
 # seqs_to_delete = set(gaps1_5)
 # ret = []
-# for k,v in seqs_to_use.items():
-#     if k not in seqs_to_delete:
-#         ret.append(v)
+# for k in seqs:
+#     try:
+#         v = seqs_to_use[k]
+#         if k not in seqs_to_delete:
+#             ret.append(v)
+#     except:
+#         print('{} not found'.format(k))
 # SeqIO.write(ret, fprefix + 'singletons_5_of_less_occurances' + fsuffix, 'fasta')
 
 

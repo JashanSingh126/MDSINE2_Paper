@@ -82,6 +82,9 @@ def parse_args():
     parser.add_argument('--use-bsub', '-cvbsub', type=int,
         help='Necessary if cross_validate is True. If True, use bsub to do the dispatching. ' \
             'Else just run the jobs sequentially.', default=0, dest='use_bsub')
+    parser.add_argument('--use-docker', type=int,
+        help='Necessary if cross_validate is True. If True, use bsub to do the dispatching. ' \
+            'Else just run the jobs sequentially.', default=0, dest='use_docker')
     parser.add_argument('--continue', '-cont', type=int,
         help='Continue the inference at a specified Gibbs step', default=None, dest='continue_inference')
     
@@ -302,6 +305,39 @@ def _make_basepath(params, fparams):
     return {'graph_name':graph_name, 'output_basepath':basepath, 
         'basepath': graph_path}
 
+def dispatch_docker(params, fparams, mntpath, baseimgname):
+
+    my_str = '''
+    FROM python:3.7.3
+
+    WORKDIR /usr/src/app
+
+    COPY ../../PyLab ./PyLab
+    COPY ../../MDSINE2/requirements.txt ./requirements.txt
+    COPY ../../MDSINE2 ./MDSINE2
+
+    RUN pip install --no-cache-dir -r requirements.txt
+    RUN pip install ./PyLab/.
+    WORKDIR MDSINE2
+    RUN python make_real_subjset.py
+    RUN mkdir output
+
+    CMD ["python", "main_real.py", "-d", "{0}", "-i", "0", "-ns", "400", "-nb", "200", "-b", "output/" ]
+    '''
+    os.makedirs('dockers/', exist_ok=True)
+    basepath = 'dockers/'
+    for d in range(4):
+        path = basepath + 'd{}/'.format(d)
+        fname = path + 'Dockerfile'
+        os.makedirs(path, exist_ok=True)
+        f = open(fname, 'w')
+        f.write(f.format(d))
+        f.close()
+        imgname = baseimgname+'{}'.format(d)
+        os.system('docker build -t {} {}'.format(fname, imgname))
+        os.system('docker run -d -v {}:/usr/src/app/MDSINE2/output {}'.format(
+            mntpath, imgname))
+
 def dispatch_bsub(params, fparams, seeddispatch=None, continue_inference=None):
     '''Use the parameters in `params` and `fparams` to parallelize
     leaving out each one of the subjects 
@@ -460,6 +496,11 @@ if __name__ == '__main__':
         leave_out=args.leave_out, max_n_asvs=args.max_n_asvs, cross_validate=args.cross_validate,
         use_bsub=args.use_bsub)
     fparams = config.FilteringConfig(healthy=args.healthy)
+
+    if args.use_docker:
+        dispatch_docker(params=params, fparams=fparams, mntpath='/mnt/disks/data', 
+            baseimgname='real-test-dispatch-')
+        sys.exit()
 
     if params.CROSS_VALIDATE == 1:
         # Do cross validation.
