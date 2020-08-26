@@ -499,7 +499,7 @@ if __name__ == '__main__':
 
     if args.use_docker:
         dispatch_docker(params=params, fparams=fparams, mntpath='/mnt/disks/data', 
-            baseimgname='real-test-dispatch-')
+            baseimgname='real-test-dispatch-', pylabdir='../PyLab')
         sys.exit()
 
     if params.CROSS_VALIDATE == 1:
