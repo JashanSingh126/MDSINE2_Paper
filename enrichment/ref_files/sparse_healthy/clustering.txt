@@ -1,0 +1,192 @@
+Cluster 0
+	- : (OTU_220) nan nan
+	- : (OTU_148) Clostridium_IV nan
+	- : (OTU_99) Clostridium_XlVa nan
+	- : (OTU_243) Clostridium_IV nan
+	- : (OTU_244) Anaerofilum nan
+	- : (OTU_160) Holdemanella nan
+	- : (OTU_263) Butyricicoccus nan
+	- : (OTU_277) Butyricicoccus nan
+Cluster 1
+	- : (OTU_17) Bacteroides nordii
+	- : (OTU_29) Bacteroides massiliensis
+	- : (OTU_14) Escherichia/Shigella nan
+	- : (OTU_23) Bilophila wadsworthia
+Cluster 2
+	- : (OTU_40) Paraprevotella nan
+	- : (OTU_3) Bacteroides cellulosilyticus/timonensis/intestinalis
+	- : (OTU_5) Parasutterella excrementihominis
+	- : (OTU_6) Bacteroides koreensis/ovatus/fragilis/kribbi
+	- : (OTU_12) Bacteroides uniformis
+	- : (OTU_13) Parabacteroides distasonis
+	- : (OTU_275) Odoribacter nan
+	- : (OTU_183) nan nan
+	- : (OTU_120) Anaerosporobacter nan
+	- : (OTU_25) Paraprevotella nan
+	- : (OTU_28) Paraprevotella nan
+Cluster 3
+	- : (OTU_67) Parabacteroides distasonis
+	- : (OTU_33) Parabacteroides distasonis
+Cluster 4
+	- : (OTU_188) Flavonifractor nan
+	- : (OTU_41) Ruminococcus2 nan
+	- : (OTU_150) Clostridium_XlVa nan
+	- : (OTU_106) Flavonifractor nan
+	- : (OTU_56) nan nan
+	- : (OTU_57) Oscillibacter nan
+	- : (OTU_61) Flavonifractor plautii
+	- : (OTU_182) Blautia hydrogenotrophica
+	- : (OTU_286) Pseudoflavonifractor nan
+	- : (OTU_307) Christensenella massiliensis
+Cluster 5
+	- : (OTU_47) Parabacteroides distasonis
+	- : (OTU_21) Parabacteroides distasonis
+Cluster 6
+	- : (OTU_1) Bacteroides ovatus/fragilis
+	- : (OTU_7) Bacteroides ovatus
+	- : (OTU_236) nan nan
+	- : (OTU_11) Bacteroides faecis/faecichinchillae/finegoldii/thetaiotaomicron
+	- : (OTU_18) Clostridium_XlVa bolteae/clostridioforme
+	- : (OTU_264) Odoribacter nan
+	- : (OTU_42) Clostridium_XlVa nan
+	- : (OTU_44) Bacteroides finegoldii
+	- : (OTU_46) Clostridium_XlVa nan
+	- : (OTU_48) Blautia massiliensis
+	- : (OTU_50) Barnesiella nan
+	- : (OTU_86) Clostridium_XlVa nan
+	- : (OTU_89) Clostridium_XlVa asparagiforme/lavalense
+	- : (OTU_96) Bacteroides intestinalis
+	- : (OTU_116) Clostridium_XlVa citroniae
+	- : (OTU_119) Clostridium_XlVa aldenense
+	- : (OTU_131) nan nan
+	- : (OTU_134) Butyricicoccus faecihominis
+	- : (OTU_135) nan nan
+	- : (OTU_173) Clostridium_III nan
+	- : (OTU_174) Odoribacter splanchnicus
+Cluster 7
+	- : (OTU_209) Pseudoflavonifractor nan
+	- : (OTU_39) Clostridium_XlVa nan
+	- : (OTU_83) nan nan
+	- : (OTU_95) Blautia nan
+	- : (OTU_102) Clostridium_XlVa scindens
+	- : (OTU_51) nan nan
+	- : (OTU_55) Hungatella nan
+	- : (OTU_19) Murimonas intestini
+	- : (OTU_114) Faecalibacterium nan
+	- : (OTU_118) nan nan
+	- : (OTU_184) Lactococcus lactis/taiwanensis/garvieae
+	- : (OTU_186) nan nan
+	- : (OTU_76) nan nan
+Cluster 8
+	- : (OTU_80) Holdemania nan
+	- : (OTU_108) Terrisporobacter othiniensis/mayombei/glycolicus
+	- : (OTU_124) Catabacter nan
+	- : (OTU_256) Murimonas nan
+Cluster 9
+	- : (OTU_216) Alistipes indistinctus
+	- : (OTU_154) Gemmiger formicilis
+	- : (OTU_125) Coprobacter fastidiosus
+	- : (OTU_181) Butyricimonas nan
+	- : (OTU_198) nan nan
+	- : (OTU_399) Bacteroides nan
+Cluster 10
+	- : (OTU_37) Holdemania filiformis
+	- : (OTU_45) Subdoligranulum nan
+	- : (OTU_100) Bacteroides intestinalis
+	- : (OTU_15) Parabacteroides goldsteinii
+	- : (OTU_16) Phascolarctobacterium faecium
+	- : (OTU_60) Bacteroides nan
+	- : (OTU_20) Parabacteroides merdae
+	- : (OTU_64) Bacteroides uniformis
+	- : (OTU_71) Coprobacillus cateniformis
+	- : (OTU_77) Clostridium_XVIII ramosum
+Cluster 11
+	- : (OTU_4) Akkermansia muciniphila
+	- : (OTU_34) Alistipes nan
+	- : (OTU_78) Alistipes finegoldii
+Cluster 12
+	- : (OTU_259) nan nan
+	- : (OTU_59) nan nan
+	- : (OTU_93) Butyricimonas paravirosa
+Cluster 13
+	- : (OTU_169) Paraprevotella nan
+	- : (OTU_178) Paraprevotella nan
+Cluster 14
+	- : (OTU_81) Clostridium_XlVa nan
+	- : (OTU_153) nan nan
+	- : (OTU_112) Anaerostipes caccae
+	- : (OTU_117) Ruminococcus nan
+	- : (OTU_27) Coprococcus nan
+	- : (OTU_294) Gemmiger nan
+	- : (OTU_196) nan nan
+	- : (OTU_199) Blautia nan
+	- : (OTU_127) Butyricicoccus nan
+Cluster 15
+	- : (OTU_241) nan nan
+	- : (OTU_388) Christensenella minuta
+	- : (OTU_257) Pseudoflavonifractor nan
+Cluster 16
+	- : (OTU_194) nan nan
+	- : (OTU_63) nan nan
+	- : (OTU_35) nan nan
+Cluster 17
+	- : (OTU_144) Pseudoflavonifractor nan
+	- : (OTU_151) nan nan
+	- : (OTU_94) nan nan
+	- : (OTU_163) nan nan
+	- : (OTU_274) Butyricicoccus nan
+	- : (OTU_279) Ruminococcus gauvreauii
+	- : (OTU_203) nan nan
+Cluster 18
+	- : (OTU_139) Ruminococcus bromii
+	- : (OTU_231) nan nan
+	- : (OTU_152) Clostridium_XlVa nan
+	- : (OTU_66) Alistipes onderdonkii/finegoldii
+	- : (OTU_122) Faecalibacterium nan
+Cluster 19
+	- : (OTU_0) Bacteroides vulgatus/dorei
+	- : (OTU_2) Akkermansia muciniphila
+	- : (OTU_227) nan nan
+	- : (OTU_228) nan nan
+	- : (OTU_156) Ruminococcus2 nan
+Cluster 20
+	- : (OTU_58) Roseburia intestinalis
+	- : (OTU_24) Hungatella hathewayi/effluvii
+Cluster 21
+	- : (OTU_107) Ruminococcus bicirculans
+	- : (OTU_49) Blautia caecimuris
+	- : (OTU_320) Clostridium_XlVa nan
+	- : (OTU_103) Blautia nan
+Cluster 22
+	- : (OTU_235) Clostridium_XlVa nan
+	- : (OTU_310) nan nan
+Cluster 23
+	- : (OTU_211) Oscillibacter nan
+	- : (OTU_101) Butyricimonas faecihominis
+Cluster 24
+	- : (OTU_133) Holdemania massiliensis
+	- : (OTU_9) Bacteroides caccae
+	- : (OTU_261) Butyricicoccus nan
+	- : (OTU_161) Phascolarctobacterium nan
+Cluster 25
+	- : (OTU_214) Acetitomaculum nan
+	- : (OTU_73) Clostridium_IV nan
+	- : (OTU_74) Blautia faecis
+	- : (OTU_30) Blautia wexlerae/provencensis/obeum
+Cluster 26
+	- : (OTU_123) Clostridium_XlVa nan
+	- : (OTU_126) Butyricimonas nan
+Cluster 27
+	- : (OTU_208) Clostridium_XlVa nan
+	- : (OTU_43) Eisenbergiella massiliensis
+	- : (OTU_164) Blautia nan
+Cluster 28
+	- : (OTU_234) nan nan
+	- : (OTU_92) Faecalibacterium nan
+Cluster 29
+	- : (OTU_65) Coprobacter nan
+Cluster 30
+	- : (OTU_10) Bacteroides salyersiae
+	- : (OTU_266) Alistipes shahii
+Cluster 31
+	- : (OTU_8) Bacteroides dorei/fragilis
