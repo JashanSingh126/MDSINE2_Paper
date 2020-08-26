@@ -22,6 +22,41 @@ from names import STRNAMES
 import preprocess_filtering as filtering
 from preprocess_filtering import HEALTHY_SUBJECTS, UNHEALTHY_SUBJECTS
 
+def dispatch_docker(params, fparams, mntpath, baseimgname):
+
+    my_str = '''
+    FROM python:3.7.3
+
+    WORKDIR /usr/src/app
+
+    COPY ./MDSINE2 ./MDSINE2/
+    COPY ./PyLab ./PyLab
+    RUN pip install PyLab/.
+
+    WORKDIR MDSINE2
+    
+    RUN pip install --no-cache-dir -r requirements.txt
+    RUN python make_real_subjset.py
+    RUN mkdir output
+
+    CMD ["python", "main_real.py", "-d", "{0}", "-i", "0", "-ns", "400", "-nb", "200", "-b", "output/" ]
+    '''
+    os.makedirs('dockers/', exist_ok=True)
+    basepath = 'dockers/'
+    for d in range(4):
+        path = basepath + 'd{}/'.format(d)
+        fname = path + 'Dockerfile'
+        os.makedirs(path, exist_ok=True)
+        f = open('../Dockerfile', 'w')
+        f.write(my_str.format(d))
+        f.close()
+        os.system('more Dockerfile')
+        imgname = baseimgname+'{}'.format(d)
+        os.system('docker build -t {} ../'.format(imgname))
+        os.rename('../Dockerfile', fname)
+        os.system('docker run -d -v {}:/usr/src/app/MDSINE2/output {}'.format(
+            mntpath, imgname))
+
 def get_top(subjset, max_n_asvs):
     '''Delete all ASVs besides the top `MAX_N_ASVS`
     '''
@@ -304,40 +339,6 @@ def _make_basepath(params, fparams):
 
     return {'graph_name':graph_name, 'output_basepath':basepath, 
         'basepath': graph_path}
-
-def dispatch_docker(params, fparams, mntpath, baseimgname):
-
-    my_str = '''
-    FROM python:3.7.3
-
-    WORKDIR /usr/src/app
-
-    COPY ./* ./MDSINE2
-    COPY requirements.txt ./requirements.txt
-
-    RUN pip install ./MDSINE2/PyLab/.
-    RUN pip install --no-cache-dir -r requirements.txt
-    WORKDIR MDSINE2
-    RUN python make_real_subjset.py
-    RUN mkdir output
-
-    CMD ["python", "main_real.py", "-d", "{0}", "-i", "0", "-ns", "400", "-nb", "200", "-b", "output/" ]
-    '''
-    os.makedirs('dockers/', exist_ok=True)
-    basepath = 'dockers/'
-    for d in range(4):
-        path = basepath + 'd{}/'.format(d)
-        fname = path + 'Dockerfile'
-        os.makedirs(path, exist_ok=True)
-        f = open('Dockerfile', 'w')
-        f.write(my_str.format(d))
-        f.close()
-        os.system('more Dockerfile')
-        imgname = baseimgname+'{}'.format(d)
-        os.system('docker build -t {} .'.format(imgname))
-        sys.exit()
-        # os.system('docker run -d -v {}:/usr/src/app/MDSINE2/output {}'.format(
-        #     mntpath, imgname))
 
 def dispatch_bsub(params, fparams, seeddispatch=None, continue_inference=None):
     '''Use the parameters in `params` and `fparams` to parallelize
