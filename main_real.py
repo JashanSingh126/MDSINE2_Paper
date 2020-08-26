@@ -305,16 +305,16 @@ def _make_basepath(params, fparams):
     return {'graph_name':graph_name, 'output_basepath':basepath, 
         'basepath': graph_path}
 
-def dispatch_docker(params, fparams, mntpath, baseimgname):
+def dispatch_docker(params, fparams, mntpath, baseimgname, pylabdir):
 
     my_str = '''
     FROM python:3.7.3
 
     WORKDIR /usr/src/app
 
-    COPY ../../PyLab ./PyLab
-    COPY ../../MDSINE2/requirements.txt ./requirements.txt
-    COPY ../../MDSINE2 ./MDSINE2
+    COPY {1} ./PyLab
+    COPY requirements.txt ./requirements.txt
+    COPY ./* ./MDSINE2
 
     RUN pip install --no-cache-dir -r requirements.txt
     RUN pip install ./PyLab/.
@@ -331,7 +331,7 @@ def dispatch_docker(params, fparams, mntpath, baseimgname):
         fname = path + 'Dockerfile'
         os.makedirs(path, exist_ok=True)
         f = open(fname, 'w')
-        f.write(f.format(d))
+        f.write(f.format(d, pylabdir))
         f.close()
         imgname = baseimgname+'{}'.format(d)
         os.system('docker build -t {} {}'.format(fname, imgname))

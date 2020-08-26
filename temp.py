@@ -68,8 +68,21 @@ pl.seed(1)
 # ecoli_fname = 'raw_data/seqs_temp/ECOLI/arb-silva.de_2020-08-05_id864569.fasta'
 # from Bio import SeqIO
 # from Bio import pairwise2
-# seqs = SeqIO.parse(fname_all, 'fasta')
+
 # ecoli = SeqIO.parse(ecoli_fname, 'fasta')
+
+# asv_names = []
+# seqs = SeqIO.parse(file_name, 'stockhold')
+# seqs = SeqIO.to_dict(seqs)
+# temp = {}
+
+# for k,v in seqs.items():
+#     if k in asv_names:
+#         temp[k] = str(v.seq)
+# seq = temp
+
+
+
 
 # for i,record in enumerate(seqs):
 #     if i == 2:
