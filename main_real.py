@@ -334,7 +334,7 @@ def dispatch_docker(params, fparams, mntpath, baseimgname, pylabdir):
         f.write(my_str.format(d, pylabdir))
         f.close()
         imgname = baseimgname+'{}'.format(d)
-        os.system('docker build -t {} .'.format(imgname))
+        os.system('docker build -t {} {}.'.format(imgname, path))
         os.system('docker run -d -v {}:/usr/src/app/MDSINE2/output {}'.format(
             mntpath, imgname))
 
