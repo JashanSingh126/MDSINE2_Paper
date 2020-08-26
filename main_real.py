@@ -305,19 +305,18 @@ def _make_basepath(params, fparams):
     return {'graph_name':graph_name, 'output_basepath':basepath, 
         'basepath': graph_path}
 
-def dispatch_docker(params, fparams, mntpath, baseimgname, pylabdir):
+def dispatch_docker(params, fparams, mntpath, baseimgname):
 
     my_str = '''
     FROM python:3.7.3
 
     WORKDIR /usr/src/app
 
-    COPY {1} ./PyLab
-    COPY requirements.txt ./requirements.txt
     COPY ./* ./MDSINE2
+    COPY requirements.txt ./requirements.txt
 
+    RUN pip install ./MDSINE2/PyLab/.
     RUN pip install --no-cache-dir -r requirements.txt
-    RUN pip install ./PyLab/.
     WORKDIR MDSINE2
     RUN python make_real_subjset.py
     RUN mkdir output
@@ -330,13 +329,15 @@ def dispatch_docker(params, fparams, mntpath, baseimgname, pylabdir):
         path = basepath + 'd{}/'.format(d)
         fname = path + 'Dockerfile'
         os.makedirs(path, exist_ok=True)
-        f = open(fname, 'w')
-        f.write(my_str.format(d, pylabdir))
+        f = open('Dockerfile', 'w')
+        f.write(my_str.format(d))
         f.close()
+        os.system('more Dockerfile')
         imgname = baseimgname+'{}'.format(d)
-        os.system('docker build -t {} {}.'.format(imgname, path))
-        os.system('docker run -d -v {}:/usr/src/app/MDSINE2/output {}'.format(
-            mntpath, imgname))
+        os.system('docker build -t {} .'.format(imgname))
+        sys.exit()
+        # os.system('docker run -d -v {}:/usr/src/app/MDSINE2/output {}'.format(
+        #     mntpath, imgname))
 
 def dispatch_bsub(params, fparams, seeddispatch=None, continue_inference=None):
     '''Use the parameters in `params` and `fparams` to parallelize
@@ -499,7 +500,7 @@ if __name__ == '__main__':
 
     if args.use_docker:
         dispatch_docker(params=params, fparams=fparams, mntpath='/mnt/disks/data', 
-            baseimgname='real-test-dispatch-', pylabdir='../PyLab')
+            baseimgname='real-test-dispatch-')
         sys.exit()
 
     if params.CROSS_VALIDATE == 1:
