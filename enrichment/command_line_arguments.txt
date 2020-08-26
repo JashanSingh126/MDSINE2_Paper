@@ -1,0 +1,6 @@
+select_gene_families.py 
+python select_gene_family.py -c clustering.txt -p "/Users/sawal386/Desktop/enrichment_" -pt "EC_predicted.tsv" -o EC_sparse_uc -ct sparse_uc
+
+
+enrichment
+python perform_enrichment.py -l "/Users/sawal386/Desktop/enrichment_" -c clustering.txt -p perturbation_heatmap.pkl -a cluster_heatmap_abundance_d.pkl -f0 True -f1 0.75 -f2 2 -f3 2 -ti "Enrichment Analysis" -fr enrichment -ty kegg_pathways -fc pathway_categories.txt -t KO_healthy.tsv -m kegg_pathways.txt -ct healthy 
