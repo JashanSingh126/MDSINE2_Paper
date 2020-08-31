@@ -27,7 +27,7 @@ if args.mesh_type not in ['time', 'noise', 'replicates']:
     raise ValueError('Must specify the mesh type')
 
 meshes = { 
-    'time': ([4], [35, 45, 55, 65], 3, 1, [0.3], [0.1], [1], 1, 2),
+    'time': ([4], [35, 45, 55, 65], 1, 1, [0.3], [0.1], [1], 1, 2),
     'noise': ([5], [55], 10, 1, [0.1, 0.2, 0.3, 0.4], [0.1], [1], 0, 0),
     'replicates': ([3,4,5], [55], 10, 1, [0.3], [0.1], [1], 0, 1)}
 mesh = meshes[args.mesh_type]
@@ -40,16 +40,17 @@ FROM python:3.7.3
 
 WORKDIR /usr/src/app
 
-COPY ./MDSINE2 ./MDSINE2/
 COPY ./PyLab ./PyLab
 RUN pip install PyLab/.
 
+COPY ./MDSINE2 ./MDSINE2/
 WORKDIR MDSINE2
 
 RUN pip install --no-cache-dir -r requirements.txt
 RUN python make_real_subjset.py
 
 WORKDIR semi_synthetic
+RUN mkdir output
 CMD python main_mcmc -m {} -p {} -d {} -i {} -b {} -nb {} -ns {} -nr {} -c {} -nt {} -db {} -us {}
 '''
 
@@ -99,14 +100,21 @@ for d in range(n_data_seeds):
                             f.close()
 
                             command = 'more ../../Dockerfile'
+                            print('\n\n\n\n\n\n')
                             print(command)
+                            print('\n\n\n\n')
                             os.system(command)
                             command = 'docker build -t {} ../../'.format(jobname)
+                            print('\n\n\n\n\n\n')
                             print(command)
+                            print('\n\n\n\n')
                             os.system(command)
                             os.rename('../../Dockerfile', fname)
 
                             command = 'docker run --detach --name {} --cpus 1 -volume {}:' \
                                 '/usr/src/app/MDSINE2/semi_synthetic/output {}'.format(
                                     jobname, args.mount_path, jobname)
+                            print('\n\n\n\n\n\n')
+                            print(command)
+                            print('\n\n\n\n')
                             os.system(command)
