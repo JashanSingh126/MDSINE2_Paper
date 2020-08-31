@@ -367,8 +367,16 @@ class ClusterAssignments(pl.graph.Node):
                             asv.name, ASVS2.names.order))
 
             # Get the most likely cluster configuration and set as the value for the passed in cluster
-            CLUSTERING2.generate_cluster_assignments_posthoc(n_clusters='mode', set_as_value=True)
-
+            ret = CLUSTERING2.generate_cluster_assignments_posthoc(n_clusters='mode', set_as_value=True)
+            ca = {}
+            for aidx, cidx in enumerate(ret):
+                if cidx not in ca:
+                    ca[cidx] = []
+                ca[cidx].append(aidx)
+            ret = []
+            for v in ca.values():
+                ret.append(v)
+            CLUSTERING2.from_array(ret)
             logging.info('Clustering set to:\n{}'.format(str(CLUSTERING2)))
 
             # Set the passed in cluster assignment as the current cluster assignment

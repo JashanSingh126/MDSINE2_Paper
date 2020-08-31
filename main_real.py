@@ -192,6 +192,13 @@ def main_leave_out_single(params, fparams, continue_inference):
                 colonization_time=fparams.COLONIZATION_TIME,
                 min_num_subjects=fparams.MIN_NUM_SUBJECTS)
 
+            f = open(basepath + 'filtering_output.txt', 'w')
+            for asv in subjset.asvs:
+                f.write('Index: {}\n\tName: {}\n\tTaxonomy: {}\n\tSequence: {}\n'.format(asv.idx, asv.name, 
+                    pl.asvname_formatter(format='%(order)s %(family)s, %(genus)s, %(species)s',
+                        asv=asv, asvs=subjset.asvs),asv.sequence))
+            f.close()
+
             # f = open('healthy_{}_asvs.txt'.format(fparams.HEALTHY), 'w')
             # for asv in subjset.asvs:
             #     f.write('{}\n'.format(asv.name))

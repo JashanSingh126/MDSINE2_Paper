@@ -10,6 +10,7 @@ import scipy.sparse
 import scipy.spatial
 from scipy.cluster.hierarchy import linkage
 import scipy
+import sklearn
 import numba
 import time
 import collections
@@ -59,7 +60,7 @@ logging.basicConfig(level=logging.INFO)
 pl.seed(1)
 
 
-# # subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
+subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
 # fname = 'raw_data/seqs_temp/align_seqs_rdp_reference.sto'
 # # fname = 'raw_data/seqs_temp/ecoli_align.sto'
@@ -70,19 +71,7 @@ pl.seed(1)
 # from Bio import pairwise2
 
 # ecoli = SeqIO.parse(ecoli_fname, 'fasta')
-
-# asv_names = []
-# seqs = SeqIO.parse(file_name, 'stockhold')
-# seqs = SeqIO.to_dict(seqs)
-# temp = {}
-
-# for k,v in seqs.items():
-#     if k in asv_names:
-#         temp[k] = str(v.seq)
-# seq = temp
-
-
-
+    
 
 # for i,record in enumerate(seqs):
 #     if i == 2:
@@ -146,6 +135,128 @@ pl.seed(1)
 # SeqIO.write(sequences=seqs_to_keep, handle='raw_data/seqs_temp/RDP_unaligned_overlap_seqs.fa', format='fasta')
 # sys.exit()
 
+# ####################################################
+# # Percent Identity
+# ###################################################
+
+# chains = [
+#     'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+# ]
+
+# def combine_asvs_union(chains):
+#     asvs_total = set([])
+#     for chain in chains:
+        
+#         chain = pl.inference.BaseMCMC.load(chain)
+#         subjset = chain.graph.data.subjects
+
+#         asvs = []
+#         for asv in subjset.asvs:
+#             asvs.append(asv.name)
+#         asvs = set(asvs)
+#         asvs_total = asvs_total.union(asvs)
+#     return asvs_total
+
+# asvs = combine_asvs_union(chains)
+
+# seqs = SeqIO.parse('raw_data/seqs_temp/RDP_trim1600_mingaplen1_noccur5_aligned_align_seqs.sto', 'stockholm')
+# seqs = SeqIO.to_dict(seqs)
+# temp = {}
+
+# for k,v in seqs.items():
+#     if k in asvs:
+#         temp[k] = str(v.seq)
+# seqs = temp
+# print(seqs.keys())
+
+# l = len(seqs['OTU_0'])
+# M = np.zeros(shape=(len(seqs), l), dtype=bool)
+# seqs_arr = np.zeros(shape=(len(seqs), l), dtype=str)
+# for i, (k,v) in enumerate(seqs.items()):
+#     seqs_arr[i] = np.array(list(v)) 
+#     M[i] = seqs_arr[i] != '-'
+
+# sums = np.sum(M, axis=0)
+# print(sums)
+# cols_keep = sums > 0
+# M = M[:, cols_keep]
+# seqs_arr = seqs_arr[:, cols_keep]
+# print(M.shape)
+
+# def percent_identity(seq1, seq2):
+#     return np.sum(seq1 == seq2)/len(seq1)
+
+# def print_clustering(labels, asvs):
+#     d = {}
+#     for i,label in enumerate(labels):
+#         a = pl.asvname_formatter(asv=i, asvs=subjset_real.asvs, 
+#             format='%(name)s %(order)s %(family)s %(genus)s %(species)s')
+#         a = a.replace('OTU', 'ASV')
+#         if label not in d:
+#             d[label] = [a]
+#         else:
+#             d[label].append(a)
+#     for i,v in enumerate(d.values()):
+#         print(i)
+#         for ele in v:
+#             print('\t{}'.format(ele))
+
+# print('seq1\n{}'.format(seqs_arr[0]))
+# print('seq2\n{}'.format(seqs_arr[1]))
+# print(percent_identity(seqs_arr[0], seqs_arr[1]))
+
+# PI = np.diag(np.ones(len(seqs), dtype=float))
+# for i in range(PI.shape[0]):
+#     for j in range(i):
+#         PI[i,j] = percent_identity(seqs_arr[i], seqs_arr[j])
+#         PI[j,i] = PI[i,j]
+
+# n_clusters = []
+# vals = []
+# step = 0.0001
+# distances = np.arange(step, 1, step)
+
+# for i in distances:
+#     c = sklearn.cluster.AgglomerativeClustering(n_clusters=None, distance_threshold=i, affinity='precomputed',
+#         linkage='average').fit(PI)
+#     n_clusters.append(c.n_clusters_)
+#     vals.append(i)
+#     if n_clusters[-1] == 1:
+#         break
+# # print(c)
+# # print(c.labels_)
+# # keys = list(seqs.keys())
+# print_clustering(sklearn.cluster.AgglomerativeClustering(n_clusters=None, distance_threshold=0.1, affinity='precomputed',
+#         linkage='average').fit(1-PI).labels_, subjset_real.asvs)
+
+# plt.plot(vals, n_clusters)
+# plt.xlabel('Distance Threshold')
+# plt.ylabel('Number of Clusters')
+# plt.title('Agglomerative Clustering')
+# plt.show()
+
+
+# percentiles = [0.99, 0.98, 0.97, 0.96, 0.95, 0.94, 0.93, 0.92]
+# clus99th = int(.99*PI.shape[0])
+
+
+# print(np.nanmin(PI))
+# print(np.nanmax(PI))
+# # print(PI)
+# asvs = chain.graph.data.subjects.asvs
+# keys = np.random.permutation(np.array(list(seqs.keys())))[:10]
+# for i,seqi in enumerate(keys):
+#     for j,seqj in enumerate(keys):
+#         if i == j:
+#             continue
+#         print()
+#         print(pl.asvname_formatter(asv=i, asvs=asvs, 
+#             format='%(order)s %(family)s %(genus)s %(species)s'))
+        # print(pl.asvname_formatter(asv=j, asvs=asvs, 
+        #     format='%(order)s %(family)s %(genus)s %(species)s'))
+#         print(PI[i,j])
+# sys.exit()
 
 # ####################################################
 # # Make table of gaps of sequences
@@ -286,62 +397,48 @@ pl.seed(1)
 # sys.exit()
 
 
-# # ####################################################
-# # # Make df of the cluster interactions
-# # ###################################################
-# fnames = [
-# #     # 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-#     'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
-# ]
-# # names_loop = [
-# #     'healthy',
-# #     'ulcerative_colitis'
-# # ]
+# ####################################################
+# # Make df of the cluster interactions
+# ###################################################
+fnames = [
+#     # 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+]
+names_loop = [
+    # 'healthy',
+    'ulcerative_colitis'
+]
 
-# for i, fname in enumerate(fnames):
-#     print('here')
-#     chain = pl.inference.BaseMCMC.load(fname)
-#     tracer = chain.tracer
-
-#     tracer.open()
-#     for name in tracer.f:
-#         print(tracer.f[name].attrs['end_iter'])
-
-#     # chain.sample_iter = 15000
-#     # ind = chain.graph[names.STRNAMES.INDICATOR_PROB].get_trace_from_disk()
-#     # ind = ind[-2000:]
-#     # print(ind)
-#     # print(len(ind))
+for i, fname in enumerate(fnames):
+    print('here')
+    chain = pl.inference.BaseMCMC.load(fname)
     
+    interactions = chain.graph[names.STRNAMES.INTERACTIONS_OBJ]
+    clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
+    asvs = clustering.items
+
+    asv_interaction_trace = interactions.get_trace_from_disk(section='posterior')
+    clus_interactions = main_base._condense_interactions(asv_interaction_trace, clustering=clustering)
+    expected_interactions = pl.variables.summary(clus_interactions, only='mean', set_nan_to_0=True)['mean']
+
+    bf_asvs = interactions.generate_bayes_factors_posthoc(
+        prior=chain.graph[names.STRNAMES.CLUSTER_INTERACTION_INDICATOR].prior,
+        section='posterior')
+    bf_clus = main_base._condense_interactions(bf_asvs, clustering=clustering)
+
+    np.save('interactions_over_gibbs_{}.npy'.format(names_loop[i]), clus_interactions)
+    np.save('bayes_factors_{}.npy'.format(names_loop[i]), bf_clus)
+    np.save('expected_interactions_{}.npy'.format(names_loop[i]), expected_interactions)
 
 
-# sys.exit()
-#     interactions = chain.graph[names.STRNAMES.INTERACTIONS_OBJ]
-#     clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
-#     asvs = clustering.items
-
-#     asv_interaction_trace = interactions.get_trace_from_disk(section='posterior')
-#     # clus_interactions = main_base._condense_interactions(asv_interaction_trace, clustering=clustering)
-#     expected_interactions = pl.variables.summary(asv_interaction_trace, only='mean', set_nan_to_0=True)['mean']
-
-#     bf_asvs = interactions.generate_bayes_factors_posthoc(
-#         prior=chain.graph[names.STRNAMES.CLUSTER_INTERACTION_INDICATOR].prior,
-#         section='posterior')
-#     bf_clus = main_base._condense_interactions(bf_asvs, clustering=clustering)
-
-#     np.save('interactions_over_gibbs_{}.npy'.format(names_loop[i]), asv_interaction_trace)
-#     np.save('bayes_factors_{}.npy'.format(names_loop[i]), bf_asvs)
-#     np.save('expected_interactions_{}.npy'.format(names_loop[i]), expected_interactions)
-
-
-#     # mask_clus = bf_clus < 5
-#     # clus_interactions[mask_clus] = 0
+    # mask_clus = bf_clus < 5
+    # clus_interactions[mask_clus] = 0
     
-#     # cluster_names = ['Cluster {}'.format(cidx + 1) for cidx in range(clus_interactions.shape[-1])]
-#     # df = pd.DataFrame(clus_interactions, columns=cluster_names, index=cluster_names)
-#     # df.to_csv('raw_data/diffuse_uc_cluster_interactions_bf5{}.tsv'.format(i), sep='\t' )
+    # cluster_names = ['Cluster {}'.format(cidx + 1) for cidx in range(clus_interactions.shape[-1])]
+    # df = pd.DataFrame(clus_interactions, columns=cluster_names, index=cluster_names)
+    # df.to_csv('raw_data/diffuse_uc_cluster_interactions_bf5{}.tsv'.format(i), sep='\t' )
 
-# sys.exit()
+sys.exit()
 
 
 
