@@ -50,7 +50,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN python make_real_subjset.py
 
 WORKDIR semi_synthetic
-CMD python main_mcmc -m {} -p {} -d {} -i {} -b {} -nb {} -ns {} -nr {} -c {} -nt {} -db {} -us {}
+CMD python main_mcmc.py -m {} -p {} -d {} -i {} -b {} -nb {} -ns {} -nr {} -c {} -nt {} -db {} -us {}
 '''
 
 os.makedirs(basepath, exist_ok=True)

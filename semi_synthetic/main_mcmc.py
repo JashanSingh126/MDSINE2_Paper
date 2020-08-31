@@ -155,7 +155,7 @@ if __name__ == '__main__':
             args.n_samples, args.burnin))
 
     # Constants
-    ONLY_PLOT = True
+    ONLY_PLOT = False
     
     # Start
     ##############################
