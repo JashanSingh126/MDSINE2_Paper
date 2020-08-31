@@ -111,7 +111,7 @@ for d in range(n_data_seeds):
                             os.system(command)
                             os.rename('../../Dockerfile', fname)
 
-                            command = 'docker run --detach --name {} --cpus 1 -volume {}:' \
+                            command = 'docker run --detach --name {} --cpus 1 --volume {}:' \
                                 '/usr/src/app/MDSINE2/semi_synthetic/output {}'.format(
                                     jobname, args.mount_path, jobname)
                             print('\n\n\n\n\n\n')
