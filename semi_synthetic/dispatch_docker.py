@@ -54,7 +54,7 @@ CMD python main_mcmc -m {} -p {} -d {} -i {} -b {} -nb {} -ns {} -nr {} -c {} -n
 '''
 
 os.makedirs(basepath, exist_ok=True)
-dockerdir = basepath + 'dockers/'
+dockerdir = '../../dockers/'
 os.makedirs(dockerdir, exist_ok=True)
 
 n_replicates = mesh[0]
