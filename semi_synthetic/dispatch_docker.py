@@ -50,10 +50,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN python make_real_subjset.py
 
 WORKDIR semi_synthetic
-RUN mkdir output
 CMD python main_mcmc -m {} -p {} -d {} -i {} -b {} -nb {} -ns {} -nr {} -c {} -nt {} -db {} -us {}
 '''
 
+os.makedirs(basepath, exist_ok=True)
+basepath = basepath + mesh + '/'
 os.makedirs(basepath, exist_ok=True)
 dockerdir = '../../dockers/'
 os.makedirs(dockerdir, exist_ok=True)
@@ -111,7 +112,7 @@ for d in range(n_data_seeds):
                             os.system(command)
                             os.rename('../../Dockerfile', fname)
 
-                            command = 'docker run --detach --name {} --cpus 1 --volume {}:' \
+                            command = 'docker run --name {} --cpus 1 -v {}:' \
                                 '/usr/src/app/MDSINE2/semi_synthetic/output {}'.format(
                                     jobname, args.mount_path, jobname)
                             print('\n\n\n\n\n\n')
