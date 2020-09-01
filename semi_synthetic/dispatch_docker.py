@@ -22,6 +22,8 @@ parser.add_argument('--mesh', type=str,
     dest='mesh_type', default=None)
 parser.add_argument('--mnt-path', '-mnt', type=str,
     help='Mount path', dest='mount_path', default='/mnt/disks/data')
+parser.add_argument('--cpus', type=int, 
+    help='Number of cpus', dest='cpus', default=None)
 args = parser.parse_args()
 if args.mesh_type not in ['time', 'noise', 'replicates']:
     raise ValueError('Must specify the mesh type')
@@ -112,9 +114,14 @@ for d in range(n_data_seeds):
                             os.system(command)
                             os.rename('../../Dockerfile', fname)
 
-                            command = 'docker run --name {} --cpus 2 --detach --volume {}:' \
+                            if args.cpus is None:
+                                cpus = ''
+                            else:
+                                cpus = ' --cpus {}'.format(args.cpus)
+
+                            command = 'docker run --name {}{} --detach --volume {}:' \
                                 '/usr/src/app/MDSINE2/semi_synthetic/output {}'.format(
-                                    jobname, args.mount_path, jobname)
+                                    jobname, cpus, args.mount_path, jobname)
                             print('\n\n\n\n\n\n')
                             os.system(command)
                             sys.exit()
