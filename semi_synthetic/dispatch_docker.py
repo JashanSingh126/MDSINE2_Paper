@@ -27,9 +27,9 @@ if args.mesh_type not in ['time', 'noise', 'replicates']:
     raise ValueError('Must specify the mesh type')
 
 meshes = { 
-    'time': ([4], [35, 45, 55, 65], 1, 1, [0.3], [0.1], [1], 1, 2),
-    'noise': ([5], [55], 10, 1, [0.1, 0.2, 0.3, 0.4], [0.1], [1], 0, 0),
-    'replicates': ([3,4,5], [55], 10, 1, [0.3], [0.1], [1], 0, 1)}
+    'time': ([4], [35, 45, 55, 65], 1, 1, [0.3], [0.05], [1], 1, 2),
+    'noise': ([5], [55], 10, 1, [0.1, 0.2, 0.3, 0.4], [0.05], [1], 0, 0),
+    'replicates': ([3,4,5], [55], 10, 1, [0.3], [0.1], [0.05], 0, 1)}
 mesh = meshes[args.mesh_type]
 
 
@@ -54,8 +54,8 @@ CMD python main_mcmc.py -m {} -p {} -d {} -i {} -b {} -nb {} -ns {} -nr {} -c {}
 '''
 
 os.makedirs(basepath, exist_ok=True)
-basepath = basepath + mesh + '/'
-os.makedirs(basepath, exist_ok=True)
+#basepath = basepath + mesh + '/'
+#os.makedirs(basepath, exist_ok=True)
 dockerdir = '../../dockers/'
 os.makedirs(dockerdir, exist_ok=True)
 
@@ -112,10 +112,10 @@ for d in range(n_data_seeds):
                             os.system(command)
                             os.rename('../../Dockerfile', fname)
 
-                            command = 'docker run --name {} --cpus 1 -v {}:' \
+                            command = 'docker run --name {} --cpus 2 --detach --volume {}:' \
                                 '/usr/src/app/MDSINE2/semi_synthetic/output {}'.format(
                                     jobname, args.mount_path, jobname)
                             print('\n\n\n\n\n\n')
-                            print(command)
-                            print('\n\n\n\n')
+                            os.system(command)
+                            sys.exit()
                             os.system(command)
