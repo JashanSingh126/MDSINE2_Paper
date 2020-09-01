@@ -124,5 +124,3 @@ for d in range(n_data_seeds):
                                     jobname, cpus, args.mount_path, jobname)
                             print('\n\n\n\n\n\n')
                             os.system(command)
-                            sys.exit()
-                            os.system(command)
