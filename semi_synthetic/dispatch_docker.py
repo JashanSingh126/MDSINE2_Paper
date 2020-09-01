@@ -4,6 +4,7 @@ import numpy as np
 import os
 import shutil
 import argparse
+import sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--n-samples', '-ns', type=int,
@@ -70,7 +71,7 @@ process_variances = mesh[5]
 clustering_ons = mesh[6]
 uniform_sampling = mesh[7]
 boxplot_type = mesh[8]
-
+num_of_ind = 0
 for d in range(n_data_seeds):
     for i in range(n_init_seeds):
         for nr in n_replicates:
@@ -124,3 +125,8 @@ for d in range(n_data_seeds):
                                     jobname, cpus, args.mount_path, jobname)
                             print('\n\n\n\n\n\n')
                             os.system(command)
+
+                            num_of_ind += 1
+                            if num_of_ind == 10:
+                                sys.exit()
+                            
