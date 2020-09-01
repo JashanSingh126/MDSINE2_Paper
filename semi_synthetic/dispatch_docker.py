@@ -30,7 +30,7 @@ if args.mesh_type not in ['time', 'noise', 'replicates']:
     raise ValueError('Must specify the mesh type')
 
 meshes = { 
-    'time': ([4], [35, 45, 55, 65], 1, 1, [0.3], [0.05], [1], 1, 2),
+    'time': ([4], [35, 45, 55, 65], 5, 1, [0.3], [0.05], [1], 1, 2),
     'noise': ([5], [55], 10, 1, [0.1, 0.2, 0.3, 0.4], [0.05], [1], 0, 0),
     'replicates': ([3,4,5], [55], 10, 1, [0.3], [0.1], [0.05], 0, 1)}
 mesh = meshes[args.mesh_type]

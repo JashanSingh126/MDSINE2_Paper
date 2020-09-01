@@ -242,9 +242,9 @@ class ModelConfigMCMC(_BaseModelConfig):
         self.DATA_LOGSCALE = True
         self.PERTURBATIONS_ADDITIVE = False
 
-        self.MP_FILTERING = 'full'
+        self.MP_FILTERING = 'debug' #'full'
         self.MP_INDICATORS = None
-        self.MP_CLUSTERING = 'full-5'
+        self.MP_CLUSTERING = 'debug' #'full-5'
         self.MP_ZERO_INFLATION = None
         self.RELATIVE_LOG_MARGINAL_INDICATORS = True
         self.RELATIVE_LOG_MARGINAL_PERT_INDICATORS = True
