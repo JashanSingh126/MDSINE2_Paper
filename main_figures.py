@@ -569,9 +569,9 @@ def phylogenetic_heatmap(healthy):
         # treename = 'raw_data/phylogenetic_tree_branch_len_preserved.nhx'
     else:
         chainname = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/' \
-            'ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+            'ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
         # treename = 'raw_data/phylogenetic_tree_branch_len_preserved.nhx'
-    treename = 'raw_data/seqs_temp/RDP_alignment/newick_tree.nhx'
+    treename = 'raw_data/phylogenetic_tree_branch_len_preserved.nhx'
 
     fig = plt.figure(figsize=(12,20))
     gs = fig.add_gridspec(5,2)
@@ -2470,7 +2470,7 @@ def species_heatmap_single(subjset, df, ax, display_ylabels=True, cbar=False):
 
 # temp()
 
-phylogenetic_heatmap(True)
+phylogenetic_heatmap(False)
 
 
 # figure1()
