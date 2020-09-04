@@ -524,7 +524,7 @@ def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig):
         tick.label.set_rotation(0)
     return ax
 
-def _make_phylogenetic_tree(treename, chainname, ax):
+def _make_phylogenetic_tree(treename, chainname, ax, fig):
     chain = pl.inference.BaseMCMC.load(chainname)
     asvs = chain.graph.data.asvs
     names = [str(name) for name in asvs.names.order]
@@ -533,7 +533,9 @@ def _make_phylogenetic_tree(treename, chainname, ax):
     tree.prune(names, True)
     tree.write(outfile='temp.nhx')
 
-
+    taxonomies = ['family', 'order', 'class', 'phylum', 'kingdom']
+    suffix_taxa = {'family': '*', 'order': '**', 'class': '***', 'phylum': '****', 'kingdom': '*****'}
+    extra_taxa_added = set([])
 
     tree = Phylo.read('temp.nhx', format='newick')
     Phylo.draw(tree, axes=ax, do_show=False, show_confidence=False)
@@ -543,21 +545,41 @@ def _make_phylogenetic_tree(treename, chainname, ax):
         # Substitute the name of the asv with the species/genus if possible
         asvname = str(text._text).replace(' ','')
         asv = asvs[asvname]
+        suffix = '' # for defining taxonomic level outside genus
         if asv.tax_is_defined('genus'):
             asvname = ' ' + asv.taxonomy['genus']
             if asv.tax_is_defined('species'):
                 spec = asv.taxonomy['species']
                 l = spec.split('/')
                 if len(l) <= 3:
-                    spec = '/'.join(l[:3])
+                    spec = '/'.join(l)
                     asvname = asvname + ' {}'.format(spec)
-            
-            text._text = asvname
+        else:
+            found = False
+            for taxa in taxonomies:
+                if found:
+                    break
+                if asv.tax_is_defined(taxa):
+                    found = True
+                    asvname = ' ' + asv.taxonomy[taxa]
+                    suffix = suffix_taxa[taxa]
+                    extra_taxa_added.add(taxa)
 
-        text._text = str(text._text).replace('OTU_', 'ASV_')
-        
+            if not found:
+                asvname = '#'*80
+
+        asvname += ' ' + asv.name
+        asvname = ' ' + suffix + asvname
+        text._text = str(asvname.replace('OTU_', 'ASV_'))        
         text._text = text._text + '- ' * 75
         text.set_fontsize(6)
+
+    # Make the taxnonmic key on the right hand side
+    text = 'Taxonomy Key\n'
+    for taxa in taxonomies:
+        text += '{} - {}\n'.format(suffix_taxa[taxa], taxa)
+    fig.text(0.88, 0.3, text, fontsize=12)
+    
 
     return ax, asv_order
 
@@ -581,7 +603,8 @@ def phylogenetic_heatmap(healthy):
 
 
 
-    ax_phyl, order = _make_phylogenetic_tree(treename=treename, chainname=chainname, ax=ax_phyl)
+    ax_phyl, order = _make_phylogenetic_tree(treename=treename, chainname=chainname, ax=ax_phyl, 
+        fig=fig)
     ax_clus, colorder = _make_cluster_membership_heatmap(chainname=chainname, ax=ax_clus, 
         order=order, binary=False, fig=fig)
     ax_pert = _make_perturbation_heatmap(chainname=chainname, min_bayes_factor=10, 
@@ -2470,7 +2493,7 @@ def species_heatmap_single(subjset, df, ax, display_ylabels=True, cbar=False):
 
 # temp()
 
-phylogenetic_heatmap(False)
+phylogenetic_heatmap(True)
 
 
 # figure1()

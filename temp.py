@@ -156,6 +156,101 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 # sys.exit()
 
 # ####################################################
+# # 16S v4 gapless sequences and taxonomy
+# ###################################################
+
+# seqs = SeqIO.parse('raw_data/align_seqs_v4.sto', 'stockholm')
+# seqs = SeqIO.to_dict(seqs)
+
+# asvs = {}
+# chains = [
+#     'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
+# for fname in chains:
+#     chain = pl.inference.BaseMCMC.load(fname)
+#     for asvname in chain.graph.data.asvs.names:
+#         if asvname not in asvs:
+#             asvs[asvname] = None
+
+# print(len(asvs))
+# d = {}
+# l = None
+# for k,v in seqs.items():
+#     if k in asvs:
+#         d[k] = v
+#     l = len(v.seq)
+# seqs = d
+
+# asvs = list(asvs.keys())
+
+# M = np.zeros(shape=(len(seqs), l), dtype=bool)
+# Mseqs = np.zeros(shape=(len(seqs), l), dtype=str)
+# for i, (k,v) in enumerate(seqs.items()):
+#     Mseqs[i] = np.asarray(list(str(v.seq)))
+#     M[i] = Mseqs[i] == '-'
+#     # print(str)
+
+# cols_to_keep = []
+# for col in range(M.shape[1]):
+#     n = np.sum(M[:, col])
+#     if n == 0:
+#         cols_to_keep.append(col)
+#     else:
+#         print('column {} has {} gaps'.format(col, n))
+
+# print('{}/{} left'.format(len(cols_to_keep), M.shape[1]))
+
+# Mseqs = Mseqs[:, cols_to_keep]
+# # print(Mseqs)
+# # print(Mseqs.shape)
+
+# lll = []
+# taxonomies = ['kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species']
+# d = {}
+# for tax in taxonomies:
+#     d[tax] = []
+# asvset = subjset_real.asvs
+# for i in range(Mseqs.shape[0]):
+#     # print()
+#     # print(asvs[i])
+#     asvname = asvs[i]
+#     asv = asvset[asvname]
+#     for taxa in taxonomies:
+#         d[taxa].append('NA')
+#         if asv.tax_is_defined(taxa):
+#             if taxa == 'species':
+#                 p = asv.taxonomy[taxa].split('/')
+#                 if len(p) > 3:
+#                     continue
+#                 else:
+#                     d[taxa][-1] = asv.taxonomy[taxa]
+#             else:
+#                 d[taxa][-1] = asv.taxonomy[taxa]
+#     lll.append(''.join(list(Mseqs[i])))
+
+# ddd = [d[taxa] for taxa in taxonomies]
+# df = pd.DataFrame([asvs,lll] + ddd).T
+# df.columns=['name', 'sequences'] + taxonomies
+# df = df.set_index('name')
+# print(df)
+# print(df.shape)
+# df.to_csv('16S_v4_aligned_gapless_sequences_and_taxonomy.tsv', sep='\t')
+# # print(df)
+# # print(df.T)
+
+# ####################################################
+# # Coclustering trace save
+# ###################################################
+# chains = 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+# mcmc = pl.inference.BaseMCMC.load(chains)
+# clustering = mcmc.graph[names.STRNAMES.CLUSTERING_OBJ]
+# coclusters = clustering.coclusters.get_trace_from_disk(section='posterior')
+# np.save('coclusters_trace.npy', coclusters)
+
+# print(coclusters.shape)
+# sys.exit()
+
+# ####################################################
 # # Percent Identity
 # ###################################################
 
@@ -1151,6 +1246,11 @@ clusterings = []
 # chain = pl.inference.BaseMCMC.load(chainname)
 
 # clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
+# clustering.generate_cluster_assignments_posthoc(n_clusters=23)
+
+# print('number of clusters', len(clustering))
+# print(clustering)
+
 # asvs = chain.graph.data.asvs
 
 # # Get the abunances (oidx -> abundance)
