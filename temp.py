@@ -62,6 +62,10 @@ pl.seed(1)
 
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
+
+gcloud beta compute --project=sinuous-mind-277319 instances create-with-container instance-template-1 --zone=us-central1-a --machine-type=n2-standard-2 --subnet=default --network-tier=PREMIUM --metadata=^,@^google-logging-enabled=true,@startup-script=sudo\ mkfs.ext4\ -m\ 0\ -F\ -E\ lazy_itable_init=0,lazy_journal_init=0,discard\ /dev/sdb$'\n'sudo\ mkdir\ -p\ /mnt/disks/data$'\n'sudo\ mount\ -o\ discard,defaults\ /dev/sdb\ /mnt/disks/data$'\n'sudo\ chmod\ a\+w\ /mnt/disks/data/ --maintenance-policy=MIGRATE --service-account=56612871331-compute@developer.gserviceaccount.com --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --tags=http-server,https-server --image=cos-stable-81-12871-1196-0 --image-project=cos-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=instance-template-1 --create-disk=mode=rw,size=100,type=projects/sinuous-mind-277319/zones/us-central1-a/diskTypes/pd-ssd,device-name=persistent-disk-1 --container-image=us.gcr.io/sinuous-mind-277319/test-semi-synth --container-restart-policy=never --container-command="python dispatch_gcloud.py --option 0" --container-mount-host-path=mount-path=usr/src/app/MDSINE2/output,host-path=/mnt/disks/data,mode=rw --labels=container-vm=cos-stable-81-12871-1196-0
+
+
 # fname1 = 'raw_data/seqs_temp/final/src_data/rdp_archaea_509seqs.fa'
 # fname2 = 'raw_data/seqs_temp/final/src_data/rdp_bacteria_12227seqs.fa'
 # fname3 = 'raw_data/seqs_temp/final/src_data/rdp_combined.fa'
