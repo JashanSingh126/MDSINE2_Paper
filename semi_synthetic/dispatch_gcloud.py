@@ -218,7 +218,7 @@ boxplot_type = mesh[7]
 # Make the base data
 base_data_path = 'output/base_data/'
 command = 'python make_subjects.py -b {} -nr 3 4 5 -m 0.1 0.15 0.2 0.3 0.4 -p 0.05 -d 10 -dset semi-synth -nt 35 45 50 55 65'.format(base_data_path)
-# os.system(command)
+os.system(command)
 print(command)
 
 # Run the docker
@@ -226,5 +226,5 @@ output_path = 'output/'
 command = 'python main_mcmc.py -d {} -i {} -m {} -p {} -b {} -db {} -ns {} -nb {} -nt {} -nr {} -us {}'.format(
     data_seed, init_seed, measurement_noise, process_variance, output_path, base_data_path,
     15000, 5000, n_timepoints, n_replicates, uniform_sampling)
-# os.system(command)
+os.system(command)
 print(command)
