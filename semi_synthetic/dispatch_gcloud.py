@@ -213,23 +213,10 @@ process_variance = mesh[5]
 uniform_sampling = mesh[6]
 boxplot_type = mesh[7]
 
-# # Mount the external disk
-# command = 'sudo mkfs.ext4 -m 0 -F -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/sdb'
-# # os.system(command)
-# print(command)
-# command = 'sudo mkdir -p /mnt/disks/data'
-# # os.system(command)
-# print(command)
-# command = 'sudo mount -o discard,defaults /dev/sdb /mnt/disks/data'
-# # os.system(command)
-# print(command)
-# command = 'sudo chmod a+w /mnt/disks/data/'
-# # os.system(command)
-# print(command)
 
 # Make the base data
-base_data_path = 'base_data/'
-command = 'python make_subjsets.py -b {} -nr 3 4 5 -m 0.1 0.15 0.2 0.3 0.4 -p 0.05 -d 2 -dset semi-synthetic -nt 35 45 50 55 65'.format(base_data_path)
+base_data_path = 'output/base_data/'
+command = 'python make_subjsets.py -b {} -nr 3 4 5 -m 0.1 0.15 0.2 0.3 0.4 -p 0.05 -d 10 -dset semi-synthetic -nt 35 45 50 55 65'.format(base_data_path)
 print('EXECUTING:', command)
 os.system(command)
 
