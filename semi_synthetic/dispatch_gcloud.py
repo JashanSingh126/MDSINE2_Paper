@@ -198,6 +198,7 @@ arguments_global = [
     # [5, 55, 8, 0, 0.3, 0.05, 0, 1],
     # [5, 55, 9, 0, 0.3, 0.05, 0, 1]
 ]
+print(len(arguments_global))
 
 if argument_option >= len(arguments_global):
     raise ValueError('`argument_option` ({}) too large. {} max'.format(
@@ -216,7 +217,7 @@ boxplot_type = mesh[7]
 
 # Make the base data
 base_data_path = 'output/base_data/'
-command = 'python make_subjsets.py -b {} -nr 3 4 5 -m 0.1 0.15 0.2 0.3 0.4 -p 0.05 -d 10 -dset semi-synthetic -nt 35 45 50 55 65'.format(base_data_path)
+command = 'python make_subjsets.py -b {} -nr 2 3 4 5 -m 0.1 0.15 0.2 0.3 0.4 -p 0.05 -d 10 -dset semi-synthetic -nt 35 45 50 55 65'.format(base_data_path)
 print('EXECUTING:', command)
 os.system(command)
 
