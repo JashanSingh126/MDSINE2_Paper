@@ -6,14 +6,19 @@ import os
 import argparse
 import sys
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--option', '-o', type=int,
-        help='What set of arguments to do',
-        dest='argument_option', default=None)
-args = parser.parse_args()
+# parser = argparse.ArgumentParser()
+# parser.add_argument('--option', '-o', type=int,
+#         help='What set of arguments to do',
+#         dest='argument_option', default=None)
+# args = parser.parse_args()
 
-if args.argument_option is None:
-    raise ValueError('No arguemnt passsed')
+# if args.argument_option is None:
+#     raise ValueError('No arguemnt passsed')
+
+f = open('output/args.txt', 'r')
+argument_option = int(f.read())
+f.close()
+
 
 # [
 #   N replicates,
@@ -182,11 +187,11 @@ arguments_global = [
     # [5, 55, 9, 0, 0.3, 0.05, 0, 1]
 ]
 
-if args.argument_option >= len(arguments_global):
+if argument_option >= len(arguments_global):
     raise ValueError('`argument_option` ({}) too large. {} max'.format(
-        args.argument_option, len(arguments_global)-1))
+        argument_option, len(arguments_global)-1))
 
-mesh = arguments_global[args.argument_option]
+mesh = arguments_global[argument_option]
 n_replicates = mesh[0]
 n_timepoints = mesh[1]
 data_seed = mesh[2]
