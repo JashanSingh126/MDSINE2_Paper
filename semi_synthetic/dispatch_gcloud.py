@@ -66,17 +66,17 @@ arguments_global = [
     [5, 50, 8, 0, 0.3, 0.05, 1, 2],
     [5, 50, 9, 0, 0.3, 0.05, 1, 2],
 
-    # # Times 55
-    # [5, 55, 0, 0, 0.3, 0.05, 1, 2],
-    # [5, 55, 1, 0, 0.3, 0.05, 1, 2],
-    # [5, 55, 2, 0, 0.3, 0.05, 1, 2],
-    # [5, 55, 3, 0, 0.3, 0.05, 1, 2],
-    # [5, 55, 4, 0, 0.3, 0.05, 1, 2],
-    # [5, 55, 5, 0, 0.3, 0.05, 1, 2],
-    # [5, 55, 6, 0, 0.3, 0.05, 1, 2],
-    # [5, 55, 7, 0, 0.3, 0.05, 1, 2],
-    # [5, 55, 8, 0, 0.3, 0.05, 1, 2],
-    # [5, 55, 9, 0, 0.3, 0.05, 1, 2],
+    # Times 55
+    [5, 55, 0, 0, 0.3, 0.05, 1, 2],
+    [5, 55, 1, 0, 0.3, 0.05, 1, 2],
+    [5, 55, 2, 0, 0.3, 0.05, 1, 2],
+    [5, 55, 3, 0, 0.3, 0.05, 1, 2],
+    [5, 55, 4, 0, 0.3, 0.05, 1, 2],
+    [5, 55, 5, 0, 0.3, 0.05, 1, 2],
+    [5, 55, 6, 0, 0.3, 0.05, 1, 2],
+    [5, 55, 7, 0, 0.3, 0.05, 1, 2],
+    [5, 55, 8, 0, 0.3, 0.05, 1, 2],
+    [5, 55, 9, 0, 0.3, 0.05, 1, 2],
 
     # Times 65
     [5, 65, 0, 0, 0.3, 0.05, 1, 2],
@@ -150,6 +150,18 @@ arguments_global = [
     [5, 55, 8, 0, 0.4, 0.05, 0, 0],
     [5, 55, 9, 0, 0.4, 0.05, 0, 0],
 
+    # Replicates 2
+    [2, 55, 0, 0, 0.3, 0.05, 0, 1],
+    [2, 55, 1, 0, 0.3, 0.05, 0, 1],
+    [2, 55, 2, 0, 0.3, 0.05, 0, 1],
+    [2, 55, 3, 0, 0.3, 0.05, 0, 1],
+    [2, 55, 4, 0, 0.3, 0.05, 0, 1],
+    [2, 55, 5, 0, 0.3, 0.05, 0, 1],
+    [2, 55, 6, 0, 0.3, 0.05, 0, 1],
+    [2, 55, 7, 0, 0.3, 0.05, 0, 1],
+    [2, 55, 8, 0, 0.3, 0.05, 0, 1],
+    [2, 55, 9, 0, 0.3, 0.05, 0, 1],
+
     # Replicates 3
     [3, 55, 0, 0, 0.3, 0.05, 0, 1],
     [3, 55, 1, 0, 0.3, 0.05, 0, 1],
@@ -216,15 +228,17 @@ boxplot_type = mesh[7]
 # print(command)
 
 # Make the base data
-base_data_path = 'output/base_data/'
-command = 'python make_subjects.py -b {} -nr 3 4 5 -m 0.1 0.15 0.2 0.3 0.4 -p 0.05 -d 10 -dset semi-synth -nt 35 45 50 55 65'.format(base_data_path)
+base_data_path = 'base_data/'
+command = 'python make_subjsets.py -b {} -nr 3 4 5 -m 0.1 0.15 0.2 0.3 0.4 -p 0.05 -d 2 -dset semi-synthetic -nt 35 45 50 55 65'.format(base_data_path)
+print('EXECUTING:', command)
 os.system(command)
-print(command)
+
+print('Arguments: {}'.format(arguments_global[argument_option]))
 
 # Run the docker
 output_path = 'output/'
 command = 'python main_mcmc.py -d {} -i {} -m {} -p {} -b {} -db {} -ns {} -nb {} -nt {} -nr {} -us {}'.format(
     data_seed, init_seed, measurement_noise, process_variance, output_path, base_data_path,
-    15000, 5000, n_timepoints, n_replicates, uniform_sampling)
+    100, 50, n_timepoints, n_replicates, uniform_sampling)
+print('EXECUTING:', command)
 os.system(command)
-print(command)

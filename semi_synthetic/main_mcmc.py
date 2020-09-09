@@ -175,7 +175,10 @@ if __name__ == '__main__':
     logging.info('Init seed: {}'.format(args.init_seed))
     logging.info('measurement noise level: {}'.format(args.measurement_noise_level))
     logging.info('process variance level: {}'.format(args.process_variance_level))
+    logging.info('Number of time points: {}'.format(args.n_times))
+    logging.info('Number of replicates: {}'.format(args.n_replicates))
     logging.info('basepath: {}'.format(args.basepath))
+    logging.info('Uniform sampling: {}'.format(args.uniform_sampling))
     logging.info('n_asvs: {}'.format(args.n_asvs))
 
     pl.seed(params.DATA_SEED)    
