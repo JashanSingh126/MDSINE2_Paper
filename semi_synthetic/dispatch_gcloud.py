@@ -6,199 +6,80 @@ import os
 import argparse
 import sys
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument('--option', '-o', type=int,
-#         help='What set of arguments to do',
-#         dest='argument_option', default=None)
-# args = parser.parse_args()
+from pprint import pprint
+import requests
+from googleapiclient import discovery
+from oauth2client.client import GoogleCredentials
 
-# if args.argument_option is None:
-#     raise ValueError('No arguemnt passsed')
+def StopVm():
+    credentials = GoogleCredentials.get_application_default()
+
+    service = discovery.build('compute', 'v1', credentials=credentials)
+    metadata_server = "http://metadata/computeMetadata/v1/instance/"
+    metadata_flavor = {'Metadata-Flavor' : 'Google'}
+    res =(requests.get(metadata_server + 'hostname', headers = metadata_flavor).text).split('.')
+    # Project ID for this request.
+    project = res[3]
+
+    # The name of the zone for this request.
+    zone = res[1]
+
+    # Name of the instance resource to stop.
+    instance = res[0]  
+
+    request = service.instances().stop(project=project, zone=zone, instance=instance)
+    response = request.execute()
+
+    pprint(response)
 
 f = open('output/args.txt', 'r')
 argument_option = int(f.read())
 f.close()
 
+meshes = [
+    ([5], [55], 10, 1, [0.1, 0.2, 0.25, 0.3, 0.4], [0.1], [1], 0, 0),    
+    ([2,3,4], [55], 10, 1, [0.3], [0.1], [1], 0, 1), # 5 replicates is included in the measurement noise one
+    ([4], [35, 45, 50, 55, 65], 10, 1, [0.3], [0.1], [1], 1, 2)]
 
-# [
-#   N replicates,
-#   N times,
-#   Data Seed,
-#   Init Seed,
-#   Measurement noise,
-#   Process variance,
-#   Uniform_sampling,
-#   Boxplot type]
-arguments_global = [
-    # Times 35
-    [5, 35, 0, 0, 0.3, 0.05, 1, 2],
-    [5, 35, 1, 0, 0.3, 0.05, 1, 2],
-    [5, 35, 2, 0, 0.3, 0.05, 1, 2],
-    [5, 35, 3, 0, 0.3, 0.05, 1, 2],
-    [5, 35, 4, 0, 0.3, 0.05, 1, 2],
-    [5, 35, 5, 0, 0.3, 0.05, 1, 2],
-    [5, 35, 6, 0, 0.3, 0.05, 1, 2],
-    [5, 35, 7, 0, 0.3, 0.05, 1, 2],
-    [5, 35, 8, 0, 0.3, 0.05, 1, 2],
-    [5, 35, 9, 0, 0.3, 0.05, 1, 2],
+arguments_global = []
 
-    # Times 45
-    [5, 45, 0, 0, 0.3, 0.05, 1, 2],
-    [5, 45, 1, 0, 0.3, 0.05, 1, 2],
-    [5, 45, 2, 0, 0.3, 0.05, 1, 2],
-    [5, 45, 3, 0, 0.3, 0.05, 1, 2],
-    [5, 45, 4, 0, 0.3, 0.05, 1, 2],
-    [5, 45, 5, 0, 0.3, 0.05, 1, 2],
-    [5, 45, 6, 0, 0.3, 0.05, 1, 2],
-    [5, 45, 7, 0, 0.3, 0.05, 1, 2],
-    [5, 45, 8, 0, 0.3, 0.05, 1, 2],
-    [5, 45, 9, 0, 0.3, 0.05, 1, 2],
+agg_repliates = set([])
+agg_times = set([])
+agg_measurement_noise = set([])
+max_dataseeds = -1
+agg_process_variances = set([])
 
-    # Times 50
-    [5, 50, 0, 0, 0.3, 0.05, 1, 2],
-    [5, 50, 1, 0, 0.3, 0.05, 1, 2],
-    [5, 50, 2, 0, 0.3, 0.05, 1, 2],
-    [5, 50, 3, 0, 0.3, 0.05, 1, 2],
-    [5, 50, 4, 0, 0.3, 0.05, 1, 2],
-    [5, 50, 5, 0, 0.3, 0.05, 1, 2],
-    [5, 50, 6, 0, 0.3, 0.05, 1, 2],
-    [5, 50, 7, 0, 0.3, 0.05, 1, 2],
-    [5, 50, 8, 0, 0.3, 0.05, 1, 2],
-    [5, 50, 9, 0, 0.3, 0.05, 1, 2],
+for mesh in meshes:
+    n_replicates = mesh[0]
+    n_timepoints = mesh[1]
+    n_data_seeds = mesh[2]
+    n_init_seeds = mesh[3]
+    measurement_noises = mesh[4]
+    process_variances = mesh[5]
+    clustering_ons = mesh[6]
+    uniform_sampling = mesh[7]
+    boxplot_type = mesh[8]
 
-    # Times 55
-    [5, 55, 0, 0, 0.3, 0.05, 1, 2],
-    [5, 55, 1, 0, 0.3, 0.05, 1, 2],
-    [5, 55, 2, 0, 0.3, 0.05, 1, 2],
-    [5, 55, 3, 0, 0.3, 0.05, 1, 2],
-    [5, 55, 4, 0, 0.3, 0.05, 1, 2],
-    [5, 55, 5, 0, 0.3, 0.05, 1, 2],
-    [5, 55, 6, 0, 0.3, 0.05, 1, 2],
-    [5, 55, 7, 0, 0.3, 0.05, 1, 2],
-    [5, 55, 8, 0, 0.3, 0.05, 1, 2],
-    [5, 55, 9, 0, 0.3, 0.05, 1, 2],
+    for d in range(n_data_seeds):
+        if d < max_dataseeds:
+            max_dataseeds = d
+        for i in range(n_init_seeds):
+            for nr in n_replicates:
+                agg_repliates.add(str(nr))
+                for nt in n_timepoints:
+                    agg_times.add(str(nt))
+                    for mn in measurement_noises:
+                        agg_measurement_noise.add(str(mn))
+                        for pv in process_variances:
+                            agg_process_variances.add(str(pv))
+                            for co in clustering_ons:
+                                arr = [nr, nt, d, i, mn, pv, uniform_sampling, boxplot_type]
+                                arguments_global.append(arr)
 
-    # Times 65
-    [5, 65, 0, 0, 0.3, 0.05, 1, 2],
-    [5, 65, 1, 0, 0.3, 0.05, 1, 2],
-    [5, 65, 2, 0, 0.3, 0.05, 1, 2],
-    [5, 65, 3, 0, 0.3, 0.05, 1, 2],
-    [5, 65, 4, 0, 0.3, 0.05, 1, 2],
-    [5, 65, 5, 0, 0.3, 0.05, 1, 2],
-    [5, 65, 6, 0, 0.3, 0.05, 1, 2],
-    [5, 65, 7, 0, 0.3, 0.05, 1, 2],
-    [5, 65, 8, 0, 0.3, 0.05, 1, 2],
-    [5, 65, 9, 0, 0.3, 0.05, 1, 2],
-
-    # Noise 0.1
-    [5, 55, 0, 0, 0.1, 0.05, 0, 0],
-    [5, 55, 1, 0, 0.1, 0.05, 0, 0],
-    [5, 55, 2, 0, 0.1, 0.05, 0, 0],
-    [5, 55, 3, 0, 0.1, 0.05, 0, 0],
-    [5, 55, 4, 0, 0.1, 0.05, 0, 0],
-    [5, 55, 5, 0, 0.1, 0.05, 0, 0],
-    [5, 55, 6, 0, 0.1, 0.05, 0, 0],
-    [5, 55, 7, 0, 0.1, 0.05, 0, 0],
-    [5, 55, 8, 0, 0.1, 0.05, 0, 0],
-    [5, 55, 9, 0, 0.1, 0.05, 0, 0],
-
-    # Noise 0.15
-    [5, 55, 0, 0, 0.15, 0.05, 0, 0],
-    [5, 55, 1, 0, 0.15, 0.05, 0, 0],
-    [5, 55, 2, 0, 0.15, 0.05, 0, 0],
-    [5, 55, 3, 0, 0.15, 0.05, 0, 0],
-    [5, 55, 4, 0, 0.15, 0.05, 0, 0],
-    [5, 55, 5, 0, 0.15, 0.05, 0, 0],
-    [5, 55, 6, 0, 0.15, 0.05, 0, 0],
-    [5, 55, 7, 0, 0.15, 0.05, 0, 0],
-    [5, 55, 8, 0, 0.15, 0.05, 0, 0],
-    [5, 55, 9, 0, 0.15, 0.05, 0, 0],
-
-    # Noise 0.2
-    [5, 55, 0, 0, 0.2, 0.05, 0, 0],
-    [5, 55, 1, 0, 0.2, 0.05, 0, 0],
-    [5, 55, 2, 0, 0.2, 0.05, 0, 0],
-    [5, 55, 3, 0, 0.2, 0.05, 0, 0],
-    [5, 55, 4, 0, 0.2, 0.05, 0, 0],
-    [5, 55, 5, 0, 0.2, 0.05, 0, 0],
-    [5, 55, 6, 0, 0.2, 0.05, 0, 0],
-    [5, 55, 7, 0, 0.2, 0.05, 0, 0],
-    [5, 55, 8, 0, 0.2, 0.05, 0, 0],
-    [5, 55, 9, 0, 0.2, 0.05, 0, 0],
-
-    # Noise 0.3
-    [5, 55, 0, 0, 0.3, 0.05, 0, 0],
-    [5, 55, 1, 0, 0.3, 0.05, 0, 0],
-    [5, 55, 2, 0, 0.3, 0.05, 0, 0],
-    [5, 55, 3, 0, 0.3, 0.05, 0, 0],
-    [5, 55, 4, 0, 0.3, 0.05, 0, 0],
-    [5, 55, 5, 0, 0.3, 0.05, 0, 0],
-    [5, 55, 6, 0, 0.3, 0.05, 0, 0],
-    [5, 55, 7, 0, 0.3, 0.05, 0, 0],
-    [5, 55, 8, 0, 0.3, 0.05, 0, 0],
-    [5, 55, 9, 0, 0.3, 0.05, 0, 0],
-
-    # Noise 0.4
-    [5, 55, 0, 0, 0.4, 0.05, 0, 0],
-    [5, 55, 1, 0, 0.4, 0.05, 0, 0],
-    [5, 55, 2, 0, 0.4, 0.05, 0, 0],
-    [5, 55, 3, 0, 0.4, 0.05, 0, 0],
-    [5, 55, 4, 0, 0.4, 0.05, 0, 0],
-    [5, 55, 5, 0, 0.4, 0.05, 0, 0],
-    [5, 55, 6, 0, 0.4, 0.05, 0, 0],
-    [5, 55, 7, 0, 0.4, 0.05, 0, 0],
-    [5, 55, 8, 0, 0.4, 0.05, 0, 0],
-    [5, 55, 9, 0, 0.4, 0.05, 0, 0],
-
-    # Replicates 2
-    [2, 55, 0, 0, 0.3, 0.05, 0, 1],
-    [2, 55, 1, 0, 0.3, 0.05, 0, 1],
-    [2, 55, 2, 0, 0.3, 0.05, 0, 1],
-    [2, 55, 3, 0, 0.3, 0.05, 0, 1],
-    [2, 55, 4, 0, 0.3, 0.05, 0, 1],
-    [2, 55, 5, 0, 0.3, 0.05, 0, 1],
-    [2, 55, 6, 0, 0.3, 0.05, 0, 1],
-    [2, 55, 7, 0, 0.3, 0.05, 0, 1],
-    [2, 55, 8, 0, 0.3, 0.05, 0, 1],
-    [2, 55, 9, 0, 0.3, 0.05, 0, 1],
-
-    # Replicates 3
-    [3, 55, 0, 0, 0.3, 0.05, 0, 1],
-    [3, 55, 1, 0, 0.3, 0.05, 0, 1],
-    [3, 55, 2, 0, 0.3, 0.05, 0, 1],
-    [3, 55, 3, 0, 0.3, 0.05, 0, 1],
-    [3, 55, 4, 0, 0.3, 0.05, 0, 1],
-    [3, 55, 5, 0, 0.3, 0.05, 0, 1],
-    [3, 55, 6, 0, 0.3, 0.05, 0, 1],
-    [3, 55, 7, 0, 0.3, 0.05, 0, 1],
-    [3, 55, 8, 0, 0.3, 0.05, 0, 1],
-    [3, 55, 9, 0, 0.3, 0.05, 0, 1],
-
-    # Replicates 4
-    [4, 55, 0, 0, 0.3, 0.05, 0, 1],
-    [4, 55, 1, 0, 0.3, 0.05, 0, 1],
-    [4, 55, 2, 0, 0.3, 0.05, 0, 1],
-    [4, 55, 3, 0, 0.3, 0.05, 0, 1],
-    [4, 55, 4, 0, 0.3, 0.05, 0, 1],
-    [4, 55, 5, 0, 0.3, 0.05, 0, 1],
-    [4, 55, 6, 0, 0.3, 0.05, 0, 1],
-    [4, 55, 7, 0, 0.3, 0.05, 0, 1],
-    [4, 55, 8, 0, 0.3, 0.05, 0, 1],
-    [4, 55, 9, 0, 0.3, 0.05, 0, 1]
-
-    # # Replicates 5
-    # [5, 55, 0, 0, 0.3, 0.05, 0, 1],
-    # [5, 55, 1, 0, 0.3, 0.05, 0, 1],
-    # [5, 55, 2, 0, 0.3, 0.05, 0, 1],
-    # [5, 55, 3, 0, 0.3, 0.05, 0, 1],
-    # [5, 55, 4, 0, 0.3, 0.05, 0, 1],
-    # [5, 55, 5, 0, 0.3, 0.05, 0, 1],
-    # [5, 55, 6, 0, 0.3, 0.05, 0, 1],
-    # [5, 55, 7, 0, 0.3, 0.05, 0, 1],
-    # [5, 55, 8, 0, 0.3, 0.05, 0, 1],
-    # [5, 55, 9, 0, 0.3, 0.05, 0, 1]
-]
-print(len(arguments_global))
+lst_replicates = ' '.join(agg_repliates)
+lst_measurement_noises = ' '.join(agg_measurement_noise)
+lst_times = ' '.join(agg_times)
+lst_process_variances = ' '.join(agg_process_variances)
 
 if argument_option >= len(arguments_global):
     raise ValueError('`argument_option` ({}) too large. {} max'.format(
@@ -217,9 +98,11 @@ boxplot_type = mesh[7]
 
 # Make the base data
 base_data_path = 'output/base_data/'
-command = 'python make_subjsets.py -b {} -nr 2 3 4 5 -m 0.1 0.15 0.2 0.3 0.4 -p 0.05 -d 10 -dset semi-synthetic -nt 35 45 50 55 65'.format(base_data_path)
+command = 'python make_subjsets.py -b {basepath} -nr {nrs} -m {mns} -p {pvs} -d {nd} -dset semi-synthetic -nt {nts}'.format(
+    basepath=base_data_path, nrs=lst_replicates, mns=lst_measurement_noises,
+    pvs=lst_process_variances, nd=max_dataseeds, nts=lst_times)
 print('EXECUTING:', command)
-os.system(command)
+# os.system(command)
 
 print('Arguments: {}'.format(arguments_global[argument_option]))
 
@@ -229,4 +112,7 @@ command = 'python main_mcmc.py -d {} -i {} -m {} -p {} -b {} -db {} -ns {} -nb {
     data_seed, init_seed, measurement_noise, process_variance, output_path, base_data_path,
     100, 50, n_timepoints, n_replicates, uniform_sampling)
 print('EXECUTING:', command)
-os.system(command)
+# os.system(command)
+
+# Kill the vm
+StopVm()
