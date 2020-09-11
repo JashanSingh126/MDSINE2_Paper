@@ -225,7 +225,7 @@ class ModelConfigMCMC(_BaseModelConfig):
         self.DATA_FILENAME = '../pickles/real_subjectset.pkl'
         self.BURNIN = burnin
         self.N_SAMPLES = n_samples
-        self.CHECKPOINT = 50
+        self.CHECKPOINT = 200
         self.ADD_MIN_REL_ABUNDANCE = False
         self.PROCESS_VARIANCE_TYPE = 'multiplicative-global'
         self.DATA_DTYPE = 'abs'
@@ -259,8 +259,8 @@ class ModelConfigMCMC(_BaseModelConfig):
 
         self.LEARN = {
             STRNAMES.REGRESSCOEFF: True,
-            STRNAMES.PRIOR_VAR_GROWTH: True,
-            STRNAMES.PRIOR_VAR_SELF_INTERACTIONS: True,
+            STRNAMES.PRIOR_VAR_GROWTH: False,
+            STRNAMES.PRIOR_VAR_SELF_INTERACTIONS: False,
             STRNAMES.PRIOR_VAR_INTERACTIONS: True,
             STRNAMES.PRIOR_VAR_PERT: True,
             STRNAMES.PRIOR_MEAN_GROWTH: True,

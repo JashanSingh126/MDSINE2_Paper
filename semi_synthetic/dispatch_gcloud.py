@@ -6,31 +6,34 @@ import os
 import argparse
 import sys
 
-from pprint import pprint
-import requests
-from googleapiclient import discovery
-from oauth2client.client import GoogleCredentials
+# import logging
+# from pprint import pprint
+# import requests
+# from googleapiclient import discovery
+# from oauth2client.client import GoogleCredentials
 
-def StopVm():
-    credentials = GoogleCredentials.get_application_default()
+# logging.basicConfig(level=logging.DEBUG)
 
-    service = discovery.build('compute', 'v1', credentials=credentials)
-    metadata_server = "http://metadata/computeMetadata/v1/instance/"
-    metadata_flavor = {'Metadata-Flavor' : 'Google'}
-    res =(requests.get(metadata_server + 'hostname', headers = metadata_flavor).text).split('.')
-    # Project ID for this request.
-    project = res[3]
+# def StopVm():
+#     credentials = GoogleCredentials.get_application_default()
 
-    # The name of the zone for this request.
-    zone = res[1]
+#     service = discovery.build('compute', 'v1', credentials=credentials)
+#     metadata_server = "http://metadata/computeMetadata/v1/instance/"
+#     metadata_flavor = {'Metadata-Flavor' : 'Google'}
+#     res =(requests.get(metadata_server + 'hostname', headers = metadata_flavor).text).split('.')
+#     # Project ID for this request.
+#     project = res[3]
 
-    # Name of the instance resource to stop.
-    instance = res[0]  
+#     # The name of the zone for this request.
+#     zone = res[1]
 
-    request = service.instances().stop(project=project, zone=zone, instance=instance)
-    response = request.execute()
+#     # Name of the instance resource to stop.
+#     instance = res[0]  
 
-    pprint(response)
+#     request = service.instances().stop(project=project, zone=zone, instance=instance)
+#     response = request.execute()
+
+#     pprint(response)
 
 f = open('output/args.txt', 'r')
 argument_option = int(f.read())
@@ -61,7 +64,7 @@ for mesh in meshes:
     boxplot_type = mesh[8]
 
     for d in range(n_data_seeds):
-        if d < max_dataseeds:
+        if d > max_dataseeds:
             max_dataseeds = d
         for i in range(n_init_seeds):
             for nr in n_replicates:
@@ -80,6 +83,8 @@ lst_replicates = ' '.join(agg_repliates)
 lst_measurement_noises = ' '.join(agg_measurement_noise)
 lst_times = ' '.join(agg_times)
 lst_process_variances = ' '.join(agg_process_variances)
+
+print(len(arguments_global))
 
 if argument_option >= len(arguments_global):
     raise ValueError('`argument_option` ({}) too large. {} max'.format(
@@ -102,17 +107,18 @@ command = 'python make_subjsets.py -b {basepath} -nr {nrs} -m {mns} -p {pvs} -d 
     basepath=base_data_path, nrs=lst_replicates, mns=lst_measurement_noises,
     pvs=lst_process_variances, nd=max_dataseeds, nts=lst_times)
 print('EXECUTING:', command)
-# os.system(command)
+os.system(command)
 
 print('Arguments: {}'.format(arguments_global[argument_option]))
 
 # Run the docker
 output_path = 'output/'
-command = 'python main_mcmc.py -d {} -i {} -m {} -p {} -b {} -db {} -ns {} -nb {} -nt {} -nr {} -us {}'.format(
-    data_seed, init_seed, measurement_noise, process_variance, output_path, base_data_path,
-    100, 50, n_timepoints, n_replicates, uniform_sampling)
+command = 'python main_mcmc.py -d {d} -i {i} -m {m} -p {p} -b {b} -db {db} -ns {ns} -nb {nb} -nt {nt} -nr {nr} -us {us}'.format(
+    d=data_seed, i=init_seed, m=measurement_noise, p=process_variance, 
+    b=output_path, db=base_data_path, ns=15000, nb=5000, nt=n_timepoints, 
+    nr=n_replicates, us=uniform_sampling)
 print('EXECUTING:', command)
-# os.system(command)
+os.system(command)
 
-# Kill the vm
-StopVm()
+# # Kill the vm
+# StopVm()
