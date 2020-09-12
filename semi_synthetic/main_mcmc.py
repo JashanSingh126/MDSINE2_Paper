@@ -159,7 +159,6 @@ if __name__ == '__main__':
     
     # Start
     ##############################
-    config.LoggingConfig()
     synparams = config.SimulationConfig(times=args.n_times, n_replicates=args.n_replicates,
         n_asvs=args.n_asvs, healthy=args.healthy, uniform_sampling_timepoints=args.uniform_sampling,
         process_variance_level=args.process_variance_level,
@@ -169,6 +168,10 @@ if __name__ == '__main__':
         init_seed=args.init_seed, a0=synparams.NEGBIN_A0, a1=synparams.NEGBIN_A1,
         n_samples=args.n_samples, burnin=args.burnin, pcc=args.percent_change_clustering,
         clustering_on=args.clustering_on)
+
+    basepath = params.OUTPUT_BASEPATH + graph_name + '/'
+    os.makedirs(basepath, exist_ok=True) # Make the folder
+    config.LoggingConfig(basepath=basepath)
 
     logging.info('Init settings')
     logging.info('Data seed: {}'.format(args.data_seed))
@@ -183,9 +186,6 @@ if __name__ == '__main__':
 
     pl.seed(params.DATA_SEED)    
     graph_name = 'graph'+ params.suffix() + synparams.suffix()
-    basepath = params.OUTPUT_BASEPATH + graph_name + '/'
-    
-    os.makedirs(basepath, exist_ok=True) # Make the folder
     
     chain_result_filename = basepath + config.MCMC_FILENAME
     subjset_filename = basepath + config.SUBJSET_FILENAME

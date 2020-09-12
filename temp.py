@@ -27,6 +27,8 @@ import itertools
 import re
 import pickle
 
+from multiprocessing import Pool
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.ticker as plticker
@@ -159,6 +161,141 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
 # SeqIO.write(sequences=seqs_to_keep, handle='raw_data/seqs_temp/RDP_unaligned_overlap_seqs.fa', format='fasta')
 # sys.exit()
+
+####################################################
+# Make family level plots of the ASVs in the phylogenetic trees
+####################################################
+chain_locs = [
+    'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
+
+tree_loc = 'raw_data/phylogenetic_tree_w_reference_seq.nhx'
+
+asvnames = set([])
+for chainloc in chain_locs:
+    chain = pl.inference.BaseMCMC.load(chainloc)
+    asvs = chain.graph.data.asvs
+
+    for asv in asvs:
+        asvnames.add(asv.name)
+
+asvnames = list(asvnames)
+# totalnames = copy.deepcopy(asvnames)
+# tree = ete3.Tree(tree_loc)
+
+# for name in tree.get_leaf_names():
+#     if 'OTU_' not in name:
+#         totalnames.append(name)
+
+# print(totalnames)
+
+# tree.prune(totalnames, preserve_branch_length=True)
+# tree.write(outfile='tree_temp.nhx')
+# sys.exit()
+tree = ete3.Tree('tree_temp.nhx')
+tree_name = 'tree_temp.nhx'
+# Make the distance matrix
+print(len(tree))
+names = tree.get_leaf_names()
+
+names.sort()
+
+arr = np.zeros(shape=(len(names), len(names)), dtype=float)
+
+rng = np.arange(len(names)) #np.arange(len(names)-1, -1, -1)
+
+for i in rng:
+    namei = names[i]
+    # treei = tree.get_leaves_by_name(namei)[0]
+
+    print('row {} out of {}'.format(i, len(names)))
+    st = time.time()
+    for j in range(i):
+        arr[i,j] = tree.get_distance(namei, names[j]) #treei.get_distance(names[j])
+
+    print('\t{} seconds'.format(time.time()-st))
+        
+
+
+
+
+sys.exit()
+
+
+
+i = 0
+for asvname in asvnames:
+    asv = subjset_real.asvs[asvname]
+    if not asv.tax_is_defined('species'):
+        print('\n\nLooking at {}, {}'.format(i,asv))
+        print('-------------------------')
+
+
+        leaf = tree.get_leaves_by_name(name=asv.name)[0]
+        print(leaf)
+        A = leaf.up.up.up
+        print(len(A))
+
+        print(A)
+
+
+
+
+        i += 1
+        sys.exit()
+
+
+
+# ####################################################
+# # Make plots of the ASVs
+# ####################################################
+# chain_locs = [
+#     'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
+# folder_base = ['./healthy/', './unhealthy/']
+
+# for iii, chain_loc in enumerate(chain_locs):
+
+#     basepath = folder_base[iii]
+#     os.makedirs(basepath, exist_ok=True)
+    
+
+#     chain = pl.inference.BaseMCMC.load(chain_loc)
+#     subjset = chain.graph.data.subjects
+#     asvs = subjset.asvs
+
+#     subj_matrices = [subj.matrix()['abs'] for subj in subjset]
+#     subj_times = [subj.times for subj in subjset]
+#     subjnames = [subj.name for subj in subjset]
+
+#     titlefmt = '%(name)s\n%(family)s, %(genus)s, %(species)s'
+
+#     for asv in asvs:
+#         aidx = asv.idx
+
+#         print('{}/{}'.format(aidx,len(asvs)))
+
+#         fig = plt.figure()
+#         ax = fig.add_subplot(111)
+#         for i, M in enumerate(subj_matrices):
+#             times = subj_times[i]
+            
+#             ax.plot(times, M[aidx,:], marker='o', label=subjnames[i])
+
+#         pl.visualization.shade_in_perturbations(ax, perturbations=subjset.perturbations)
+        
+#         ax.set_yscale('log')
+#         title = pl.asvname_formatter(titlefmt, asv=asv, asvs=asvs, lca=False).replace('OTU', 'ASV')
+#         ax.set_title(title, fontsize=15, fontweight='bold')
+#         ax.set_xlabel('Days', fontsize=12)
+#         ax.set_ylabel('CFUs/g', fontsize=12)
+#         fig.tight_layout()
+
+#         name = asv.name.replace('OTU', 'ASV')
+
+#         plt.savefig(basepath + name + '.pdf')
+#         plt.close()
+    
 
 # ####################################################
 # # 16S v4 gapless sequences and taxonomy

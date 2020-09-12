@@ -827,12 +827,29 @@ class LoggingConfig(pl.Saveable):
         This is the level to log at for stdout
     NUMPY_PRINTOPTIONS : dict
         These are the printing options for numpy.
+
+    Parameters
+    ----------
+    basepath : str
+        If this is specified, then we also want to log to a file. Set up a
+        steam and a file
     '''
-    def __init__(self):
+    def __init__(self, basepath=None):
         self.FORMAT = '%(levelname)s:%(module)s.%(lineno)s: %(message)s'
         self.LEVEL = logging.INFO
         self.NUMPY_PRINTOPTIONS = {
             'threshold': sys.maxsize, 'linewidth': sys.maxsize}
 
-        logging.basicConfig(format=self.FORMAT, level=self.LEVEL)
+        if basepath is not None:
+            path = basepath + 'logging.log'
+            self.PATH = path
+            handlers = [
+                logging.FileHandler(self.PATH, mode='w'),
+                logging.StreamHandler()]
+            logging.basicConfig(level=self.LEVEL, format=self.FORMAT, handlers=handlers)
+        else:
+            self.PATH = None
+            logging.basicConfig(format=self.FORMAT, level=self.LEVEL)
+        
         np.set_printoptions(**self.NUMPY_PRINTOPTIONS)
+        pd.set_option('display.max_columns', None)

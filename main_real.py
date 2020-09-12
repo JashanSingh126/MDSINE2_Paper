@@ -130,13 +130,20 @@ def main_leave_out_single(params, fparams, continue_inference):
     # Constants
     ONLY_PLOT = False
 
-    lparams = config.LoggingConfig()
     pl.seed(params.DATA_SEED)
 
     ddd = _make_basepath(params=params, fparams=fparams)
     params.OUTPUT_BASEPATH = ddd['output_basepath']
     basepath = ddd['basepath']
     graph_name = ddd['graph_name']
+
+    if continue_inference:
+        if not os.path.isdir(basepath):
+            raise ValueError('You want to continue inference at GIbb step {} but the path ' \
+                '{} does not exist'.format(continue_inference, basepath))
+    else:
+        os.makedirs(basepath, exist_ok=True) # Make the folder
+    config.LoggingConfig(basepath=basepath)
 
     chain_result_filename = basepath + config.MCMC_FILENAME
     subjset_filename = basepath + config.SUBJSET_FILENAME
@@ -167,13 +174,6 @@ def main_leave_out_single(params, fparams, continue_inference):
         if params.LEAVE_OUT >= len(subjset):
             # Out of range, dont do anything
             return
-
-    if continue_inference:
-        if not os.path.isdir(basepath):
-            raise ValueError('You want to continue inference at GIbb step {} but the path ' \
-                '{} does not exist'.format(continue_inference, basepath))
-    else:
-        os.makedirs(basepath, exist_ok=True) # Make the folder
 
     if not ONLY_PLOT:
 
