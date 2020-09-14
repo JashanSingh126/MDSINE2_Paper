@@ -6,34 +6,9 @@ import os
 import argparse
 import sys
 
-# import logging
-# from pprint import pprint
-# import requests
-# from googleapiclient import discovery
-# from oauth2client.client import GoogleCredentials
-
-# logging.basicConfig(level=logging.DEBUG)
-
-# def StopVm():
-#     credentials = GoogleCredentials.get_application_default()
-
-#     service = discovery.build('compute', 'v1', credentials=credentials)
-#     metadata_server = "http://metadata/computeMetadata/v1/instance/"
-#     metadata_flavor = {'Metadata-Flavor' : 'Google'}
-#     res =(requests.get(metadata_server + 'hostname', headers = metadata_flavor).text).split('.')
-#     # Project ID for this request.
-#     project = res[3]
-
-#     # The name of the zone for this request.
-#     zone = res[1]
-
-#     # Name of the instance resource to stop.
-#     instance = res[0]  
-
-#     request = service.instances().stop(project=project, zone=zone, instance=instance)
-#     response = request.execute()
-
-#     pprint(response)
+from pprint import pprint
+from googleapiclient import discovery
+from oauth2client.client import GoogleCredentials
 
 f = open('output/args.txt', 'r')
 argument_option = int(f.read())
@@ -41,7 +16,7 @@ f.close()
 
 meshes = [
     ([5], [55], 10, 1, [0.1, 0.2, 0.25, 0.3, 0.4], [0.1], [1], 0, 0),    
-    ([2,3,4], [55], 10, 1, [0.3], [0.1], [1], 0, 1), # 5 replicates is included in the measurement noise one
+    ([2,3,4,5], [55], 10, 1, [0.3], [0.1], [1], 0, 1), # 5 replicates is included in the measurement noise one
     ([4], [35, 45, 50, 55, 65], 10, 1, [0.3], [0.1], [1], 1, 2)]
 
 arguments_global = []
@@ -120,5 +95,39 @@ command = 'python main_mcmc.py -d {d} -i {i} -m {m} -p {p} -b {b} -db {db} -ns {
 print('EXECUTING:', command)
 os.system(command)
 
-# # Kill the vm
-# StopVm()
+# Kill the vm
+os.system('bash get_instance_details.sh')
+
+credentials = GoogleCredentials.get_application_default()
+service = discovery.build('compute', 'v1', credentials=credentials)
+
+# Project ID for this request.
+f = open('output/project_id.txt', 'r')
+project = f.read().replace('\n','')
+f.close()
+print(project)
+
+# The name of the zone for this request.
+f = open('output/zone.txt', 'r')
+zone = f.read().replace('\n','')
+zone = zone.split('/')[-1] # Only get the last part
+f.close()
+print(zone)
+
+# Name of the instance resource to delete.
+f = open('output/hostname.txt', 'r')
+instance = f.read().replace('\n','')
+f.close()
+print(instance)
+
+
+try:
+    request = service.instances().stop(project=project, zone=zone, instance=instance)
+except Exception as e:
+    print(e)
+    print('FAILED')
+    raise e
+response = request.execute()
+
+# TODO: Change code below to process the `response` dict:
+pprint(response)

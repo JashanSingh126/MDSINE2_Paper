@@ -1564,6 +1564,8 @@ class LoggingConfig(pl.Saveable):
             handlers = [
                 logging.FileHandler(self.PATH, mode='w'),
                 logging.StreamHandler()]
+            for handler in logging.root.handlers[:]:
+                logging.root.removeHandler(handler)
             logging.basicConfig(level=self.LEVEL, format=self.FORMAT, handlers=handlers)
         else:
             self.PATH = None

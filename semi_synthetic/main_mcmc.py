@@ -169,6 +169,9 @@ if __name__ == '__main__':
         n_samples=args.n_samples, burnin=args.burnin, pcc=args.percent_change_clustering,
         clustering_on=args.clustering_on)
 
+    pl.seed(params.DATA_SEED)    
+    graph_name = 'graph'+ params.suffix() + synparams.suffix()
+
     basepath = params.OUTPUT_BASEPATH + graph_name + '/'
     os.makedirs(basepath, exist_ok=True) # Make the folder
     config.LoggingConfig(basepath=basepath)
@@ -183,9 +186,6 @@ if __name__ == '__main__':
     logging.info('basepath: {}'.format(args.basepath))
     logging.info('Uniform sampling: {}'.format(args.uniform_sampling))
     logging.info('n_asvs: {}'.format(args.n_asvs))
-
-    pl.seed(params.DATA_SEED)    
-    graph_name = 'graph'+ params.suffix() + synparams.suffix()
     
     chain_result_filename = basepath + config.MCMC_FILENAME
     subjset_filename = basepath + config.SUBJSET_FILENAME
