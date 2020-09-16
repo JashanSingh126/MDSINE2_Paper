@@ -143,7 +143,6 @@ def make_full_objects_single_data_seed(data_seed, val_seed, params, basepath):
                 set_times=False)
         
         init_dist = syndata_base.init_dist
-
     else:
         raise ValueError('`dataset` ({}) not recognized'.format(params.DATASET))
         
@@ -326,7 +325,7 @@ if __name__ == '__main__':
         process_variance_levels=args.process_variances, 
         measurement_noise_levels=args.measurement_noises, dataset=args.dataset)
     for ds in range(args.n_data_seeds):
-        logging.info('Data seed {}/{}'.format(ds, args.n_data_seeds))
+        logging.info('\n\n\nData seed {}/{}'.format(ds, args.n_data_seeds))
 
         make_full_objects_single_data_seed(data_seed=ds, params=params, 
             val_seed=args.validation_data_seed, basepath=args.save_path)

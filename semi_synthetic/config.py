@@ -243,9 +243,9 @@ class ModelConfigMCMC(_BaseModelConfig):
         self.DATA_LOGSCALE = True
         self.PERTURBATIONS_ADDITIVE = False
 
-        self.MP_FILTERING = 'debug' #'full'
+        self.MP_FILTERING = 'full'
         self.MP_INDICATORS = None
-        self.MP_CLUSTERING = 'debug' #'full-5'
+        self.MP_CLUSTERING = 'full-5'
         self.MP_ZERO_INFLATION = None
         self.RELATIVE_LOG_MARGINAL_INDICATORS = True
         self.RELATIVE_LOG_MARGINAL_PERT_INDICATORS = True
@@ -271,7 +271,7 @@ class ModelConfigMCMC(_BaseModelConfig):
             STRNAMES.PROCESSVAR: True,
             STRNAMES.FILTERING: True,
             STRNAMES.ZERO_INFLATION: False,
-            STRNAMES.CLUSTERING: clustering_on,
+            STRNAMES.CLUSTERING: True, #clustering_on,
             STRNAMES.CONCENTRATION: clustering_on,
             STRNAMES.CLUSTER_INTERACTION_INDICATOR: True,
             STRNAMES.INDICATOR_PROB: True,
@@ -425,7 +425,7 @@ class ModelConfigMCMC(_BaseModelConfig):
                 'intermediate_interpolation': 'linear-interpolation',
                 'intermediate_step': None, #('step', (1, None)), 
                 'essential_timepoints': 'union',
-                'delay': 1,
+                'delay': 100000,
                 'window': 6,
                 'plot_initial': False,
                 'target_acceptance_rate': 0.44},

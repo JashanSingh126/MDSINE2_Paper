@@ -346,7 +346,7 @@ class ClusterAssignments(pl.graph.Node):
                         oidx, value))
             # Now everything is checked and valid
 
-        if value_option == 'fixed-topology':
+        elif value_option == 'fixed-topology':
             logging.info('Fixed topology initialization')
             if not pl.isstr(value):
                 raise TypeError('`value` ({}) must be a str'.format(value))

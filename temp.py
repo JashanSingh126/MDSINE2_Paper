@@ -165,6 +165,21 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 ####################################################
 # Make family level plots of the ASVs in the phylogenetic trees
 ####################################################
+# chain_loc = 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+chain_loc = 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+
+chain = pl.inference.BaseMCMC.load(chain_loc)
+interactions = chain.graph[names.STRNAMES.INTERACTIONS_OBJ]
+
+arr = interactions.get_trace_from_disk()
+np.save('asv_asv_interactions.npy', arr)
+
+
+sys.exit()
+
+####################################################
+# Make family level plots of the ASVs in the phylogenetic trees
+####################################################
 chain_locs = [
     'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
     'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']

@@ -203,6 +203,16 @@ if __name__ == '__main__':
         n_times=args.n_times, exact=True)
 
     if not ONLY_PLOT:
+        if params.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value_option'] == 'manual':
+            syn = synthetic.SyntheticData.load(config.make_syndata_base_name(
+                basepath=params.DATA_PATH, dset=synparams.DSET, ds=params.DATA_SEED))
+            clustering = syn.dynamics.clustering
+            arr = clustering.toarray()
+
+            logging.warning('Fixed clustering set:')
+            logging.warning('array: {}'.format(arr))
+
+            params.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value'] = arr
         params.save(params_filename)
         synparams.save(synparams_filename)
         

@@ -90,7 +90,7 @@ print('Arguments: {}'.format(arguments_global[argument_option]))
 output_path = 'output/'
 command = 'python main_mcmc.py -d {d} -i {i} -m {m} -p {p} -b {b} -db {db} -ns {ns} -nb {nb} -nt {nt} -nr {nr} -us {us}'.format(
     d=data_seed, i=init_seed, m=measurement_noise, p=process_variance, 
-    b=output_path, db=base_data_path, ns=15000, nb=5000, nt=n_timepoints, 
+    b=output_path, db=base_data_path, ns=100, nb=50, nt=n_timepoints, 
     nr=n_replicates, us=uniform_sampling)
 print('EXECUTING:', command)
 os.system(command)

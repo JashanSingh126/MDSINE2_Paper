@@ -943,34 +943,34 @@ def readify_chain(src_basepath, params, dst_basepath=None, plot_diagnostic_varia
         f.write('\t{}\n'.format(str(ele)))
     f.close()
 
-    # Calculate the stability - save as a npy array
-    logging.info('Calculating the stability')
-    growth = chain.graph[STRNAMES.GROWTH_VALUE]
-    if chain.tracer.is_being_traced(STRNAMES.GROWTH_VALUE):
-        growth_values = growth.get_trace_from_disk(section=SECTION)
-    else:
-        growth_values = growth.value
-        growth_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS))) + growth_values.reshape(-1,1)
+    # # Calculate the stability - save as a npy array
+    # logging.info('Calculating the stability')
+    # growth = chain.graph[STRNAMES.GROWTH_VALUE]
+    # if chain.tracer.is_being_traced(STRNAMES.GROWTH_VALUE):
+    #     growth_values = growth.get_trace_from_disk(section=SECTION)
+    # else:
+    #     growth_values = growth.value
+    #     growth_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS))) + growth_values.reshape(-1,1)
 
-    si = chain.graph[STRNAMES.SELF_INTERACTION_VALUE]
-    if chain.tracer.is_being_traced(STRNAMES.SELF_INTERACTION_VALUE):
-        si_values = si.get_trace_from_disk(section=SECTION)
-    else:
-        si_values = si.value
-        si_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS))) + si_values.reshape(-1,1)
+    # si = chain.graph[STRNAMES.SELF_INTERACTION_VALUE]
+    # if chain.tracer.is_being_traced(STRNAMES.SELF_INTERACTION_VALUE):
+    #     si_values = si.get_trace_from_disk(section=SECTION)
+    # else:
+    #     si_values = si.value
+    #     si_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS))) + si_values.reshape(-1,1)
 
-    interactions = chain.graph[STRNAMES.INTERACTIONS_OBJ]
-    if chain.tracer.is_being_traced(STRNAMES.INTERACTIONS_OBJ):
-        interaction_values = interactions.get_trace_from_disk(section=SECTION)
-        interaction_values[np.isnan(interaction_values)] = 0
-    else:
-        interactions = interactions.get_datalevel_value_matrix(set_neg_indicators_to_nan=False)
-        interaction_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS), len(ASVS))) + interactions
+    # interactions = chain.graph[STRNAMES.INTERACTIONS_OBJ]
+    # if chain.tracer.is_being_traced(STRNAMES.INTERACTIONS_OBJ):
+    #     interaction_values = interactions.get_trace_from_disk(section=SECTION)
+    #     interaction_values[np.isnan(interaction_values)] = 0
+    # else:
+    #     interactions = interactions.get_datalevel_value_matrix(set_neg_indicators_to_nan=False)
+    #     interaction_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS), len(ASVS))) + interactions
 
-    stabil = np.zeros(shape=(LEN_POSTERIOR, len(ASVS), len(ASVS)))
-    stabil = calc_eigan_over_gibbs(ret=stabil, growth=growth_values, si=si_values, 
-        interactions=interaction_values)
-    np.save(basepath + 'stability.npy', stabil)
+    # stabil = np.zeros(shape=(LEN_POSTERIOR, len(ASVS), len(ASVS)))
+    # stabil = calc_eigan_over_gibbs(ret=stabil, growth=growth_values, si=si_values, 
+    #     interactions=interaction_values)
+    # np.save(basepath + 'stability.npy', stabil)
 
     # Plot growth parameters
     growthpath = basepath + 'growth/'
@@ -1103,9 +1103,16 @@ def readify_chain(src_basepath, params, dst_basepath=None, plot_diagnostic_varia
         for idx in range(ASVS.n_asvs):
             fig = plt.figure()
             ax_posterior = fig.add_subplot(1,2,1)
-            pl.visualization.render_trace(var=growth, idx=idx, plt_type='hist',
-                label=SECTION, color='blue', ax=ax_posterior, section=SECTION,
-                include_burnin=True, rasterized=True)
+            try:
+                pl.visualization.render_trace(var=growth, idx=idx, plt_type='hist',
+                    label=SECTION, color='blue', ax=ax_posterior, section=SECTION,
+                    include_burnin=True, rasterized=True)
+            except:
+                arr = growth.get_trace_from_disk(section='entire')
+                print(arr.shape)
+                print(arr[:,140])
+
+                raise
 
             # Get the limits and only look at the posterior within 20% range +- of
             # this number
