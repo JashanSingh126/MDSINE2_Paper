@@ -19,8 +19,8 @@ mystr = '''
 source activate dispatcher
 module load gcloud/default
 
-cd /data/cctm/darpa_perturbation_mouse_study/data/cctm/darpa_perturbation_mouse_study/perturbation_study_old/
-python pull_dispatcher_gcloud.py --bottom {} --top {}
+cd /data/cctm/darpa_perturbation_mouse_study/data/cctm/darpa_perturbation_mouse_study/semi_synthetic_output/
+python pull_dispatcher_gcloud.py
 '''
 
 i = 13
@@ -42,7 +42,7 @@ while i < most:
     command = 'bsub < ' + fname
     # command = 'python pull_dispatcher_gcloud.py --bottom {} --top {}'.format(bottom,top)
     os.system(command)
+    sys.exit()
 
 
-    i += num
 

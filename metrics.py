@@ -543,6 +543,8 @@ class Metrics(pl.Saveable):
 
         n_days_total = given_times[-1] - given_times[0]
         end = given_times[-1]
+        sim_times = np.arange(0, n_days_total + self.output_dt, step=self.output_dt)
+        sim_times = np.sort(np.unique(np.append(sim_times, given_times)))
 
         # Get the parameters
         if pl.isML(self.model):
@@ -556,7 +558,7 @@ class Metrics(pl.Saveable):
                 perturbations = []
                 for pert in self.model.graph.perturbations:
                     perturbations.append((pert.start, pert.end, pert.magnitude.value))
-            pred_shape = (len(subject.asvs), len(given_times))
+            pred_shape = (len(subject.asvs), len(sim_times))
         else:
             # MCMC chain
             growth = self.model.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk(
@@ -571,11 +573,9 @@ class Metrics(pl.Saveable):
                 for pert in self.model.graph.perturbations:
                     perturbations.append((pert.start, pert.end, 
                         pert.get_trace_from_disk(section=self._INF_SECTION)))
-            pred_shape = (growth.shape[0], len(subject.asvs), len(given_times))
+            pred_shape = (growth.shape[0], len(subject.asvs), len(sim_times))
 
         X_pred = np.zeros(shape=pred_shape)
-        sim_times = np.arange(0, n_days_total + self.output_dt, step=self.output_dt)
-        sim_times = np.sort(np.unique(np.append(sim_times, given_times)))
 
         if pl.isML(self.model):
             # Using a maximum likelihood model, generate a point estimate
@@ -678,16 +678,31 @@ class Metrics(pl.Saveable):
                 pool.kill()
                 X_pred = np.asarray(ret, dtype=float)
 
+            # print('\n\n\n\nX_pred shape')
+            # print(X_pred.shape)
+            # # sys.exit()
+
             # Calculate error and record
             # --------------------------
             # If it is an mcmc model, we predict the errors over the whole posterior
             pred_traj = np.nanpercentile(a=X_pred, q=50, axis=0)
+            # print('pred_traj shape', pred_traj.shape)
             pred_traj_high = np.nanpercentile(a=X_pred, q=100-percentile, axis=0)
+            # print('pred_traj_high shape', pred_traj_high.shape)
             pred_traj_low = np.nanpercentile(a=X_pred, q=percentile, axis=0)
-            colidxs = []
+            # print('pred_traj_low shape', pred_traj_low.shape)
 
             # undo offset for simulation times
             sim_times = sim_times + given_times[0]
+
+            # print('sim times')
+            # print(len(sim_times))
+            # # print(sim_times)
+            # print('given times')
+            # print(len(given_times))
+            # print(given_times)
+
+            colidxs = []
             for t in given_times:
                 found = False
                 for i,_t in enumerate(sim_times):
@@ -697,6 +712,8 @@ class Metrics(pl.Saveable):
                         break
                 if not found:
                     raise ValueError('`time {} not found in {}'.format(t, sim_times))
+            # print('colidxs')
+            # print(colidxs)
             try:
                 given_times_pred_traj = X_pred[:,:,colidxs]
             except:
@@ -708,6 +725,13 @@ class Metrics(pl.Saveable):
 
             error_total = np.zeros(X_pred.shape[0], dtype=float)
             error_ASVs = np.zeros(shape=(X_pred.shape[0],X_pred.shape[1]), dtype=float)
+
+            # print('error_total', error_total.shape)
+            # print('error_asvs', error_ASVs.shape)
+            # print('truth.shape', M_truth_.shape)
+            # print('given_times_pred_traj_', given_times_pred_traj_.shape)
+
+
             for i in range(len(error_total)):
                 if truth is not None:
                     error_total[i] = np.mean(error_metric(M_truth_, given_times_pred_traj_[i], axis=1)[0])
@@ -740,6 +764,9 @@ class Metrics(pl.Saveable):
         if truth is not None:
             ret['truth-traj'] = M_truth
             ret['truth-times'] = _end_truth_times
+
+        # for k,v in ret.items():
+        #     print('{}:{}'.format(k,v))
 
         if save_at_finish:
             if subject.name not in self.results:

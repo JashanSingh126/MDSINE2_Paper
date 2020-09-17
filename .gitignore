@@ -10,3 +10,4 @@ __pycache__
 raw_data/seqs_temp/
 PyLab
 dockers/
+tmp*

@@ -226,7 +226,7 @@ class ModelConfigMCMC(_BaseModelConfig):
         self.DATA_FILENAME = '../pickles/real_subjectset.pkl'
         self.BURNIN = burnin
         self.N_SAMPLES = n_samples
-        self.CHECKPOINT = 200
+        self.CHECKPOINT = 50
         self.ADD_MIN_REL_ABUNDANCE = False
         self.PROCESS_VARIANCE_TYPE = 'multiplicative-global'
         self.DATA_DTYPE = 'abs'

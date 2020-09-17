@@ -314,9 +314,8 @@ if __name__ == '__main__':
         yscale_log=True, run_on_copy=True,
         asv_prefix_formatter='%(index)s: (%(name)s)',
         yticklabels='(%(name)s): %(index)s',
-        mp=5, comparison=comparison, 
+        mp=None, comparison=comparison, 
         perturbations_additive=params.PERTURBATIONS_ADDITIVE,
-
         traj_error_metric=scipy.stats.spearmanr,
         pert_error_metric=pl.metrics.RMSE,
         interaction_error_metric=pl.metrics.RMSE,

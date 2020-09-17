@@ -64,11 +64,6 @@ pl.seed(1)
 
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
-
-# gcloud beta compute --project=sinuous-mind-277319 instances create-with-container semi-synth-dispatch-gcloud-test-final-1 --zone=us-central1-a --machine-type=n1-standard-1 --subnet=default --network-tier=PREMIUM --metadata=^,@^google-logging-enabled=true,@startup-script=sudo\ mkfs.ext4\ -m\ 0\ -F\ -E\ lazy_itable_init=0,lazy_journal_init=0,discard\ /dev/sdb$'\n'sudo\ mkdir\ -p\ /mnt/disks/data$'\n'sudo\ mount\ -o\ discard,defaults\ /dev/sdb\ /mnt/disks/data$'\n'sudo\ chmod\ a\+w\ /mnt/disks/data/$'\n'echo\ \"0\"\ \>\>\ /mnt/disks/data/args.txt --maintenance-policy=MIGRATE --service-account=56612871331-compute@developer.gserviceaccount.com --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --tags=http-server,https-server --image=cos-stable-81-12871-1196-0 --image-project=cos-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=semi-synth-dispatch-gcloud-test-final-1 --create-disk=mode=rw,size=100,type=projects/sinuous-mind-277319/zones/us-central1-a/diskTypes/pd-ssd,device-name=persistent-disk-1 --container-image=us.gcr.io/sinuous-mind-277319/semi-synth-dispatch-gcloud-test-final --container-restart-policy=never --container-privileged --container-command=python --container-arg=dispatch_gcloud.py --container-mount-host-path=mount-path=/usr/src/app/MDSINE2/semi_synthetic/output,host-path=/mnt/disks/data,mode=rw --labels=container-vm=cos-stable-81-12871-1196-0
-
-
-
 # fname1 = 'raw_data/seqs_temp/final/src_data/rdp_archaea_509seqs.fa'
 # fname2 = 'raw_data/seqs_temp/final/src_data/rdp_bacteria_12227seqs.fa'
 # fname3 = 'raw_data/seqs_temp/final/src_data/rdp_combined.fa'
@@ -162,20 +157,20 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 # SeqIO.write(sequences=seqs_to_keep, handle='raw_data/seqs_temp/RDP_unaligned_overlap_seqs.fa', format='fasta')
 # sys.exit()
 
-####################################################
-# Make family level plots of the ASVs in the phylogenetic trees
-####################################################
-# chain_loc = 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
-chain_loc = 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+# ####################################################
+# # Get interaction traces
+# ####################################################
+# # chain_loc = 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+# chain_loc = 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
 
-chain = pl.inference.BaseMCMC.load(chain_loc)
-interactions = chain.graph[names.STRNAMES.INTERACTIONS_OBJ]
+# chain = pl.inference.BaseMCMC.load(chain_loc)
+# interactions = chain.graph[names.STRNAMES.INTERACTIONS_OBJ]
 
-arr = interactions.get_trace_from_disk()
-np.save('asv_asv_interactions.npy', arr)
+# arr = interactions.get_trace_from_disk()
+# np.save('asv_asv_interactions.npy', arr)
 
 
-sys.exit()
+# sys.exit()
 
 ####################################################
 # Make family level plots of the ASVs in the phylogenetic trees
@@ -186,6 +181,9 @@ chain_locs = [
 
 tree_loc = 'raw_data/phylogenetic_tree_w_reference_seq.nhx'
 
+os.makedirs('tmp', exist_ok=True)
+os.makedirs('tmp/subtrees', exist_ok=True)
+
 asvnames = set([])
 for chainloc in chain_locs:
     chain = pl.inference.BaseMCMC.load(chainloc)
@@ -195,9 +193,10 @@ for chainloc in chain_locs:
         asvnames.add(asv.name)
 
 asvnames = list(asvnames)
-# totalnames = copy.deepcopy(asvnames)
-# tree = ete3.Tree(tree_loc)
+set_asvnames = set(asvnames)
 
+totalnames = copy.deepcopy(asvnames)
+# tree = ete3.Tree(tree_loc)
 # for name in tree.get_leaf_names():
 #     if 'OTU_' not in name:
 #         totalnames.append(name)
@@ -205,61 +204,73 @@ asvnames = list(asvnames)
 # print(totalnames)
 
 # tree.prune(totalnames, preserve_branch_length=True)
-# tree.write(outfile='tree_temp.nhx')
-# sys.exit()
-tree = ete3.Tree('tree_temp.nhx')
-tree_name = 'tree_temp.nhx'
+# tree.write(outfile='tmp/tree_temp.nhx')
+# # sys.exit()
+tree_name = 'tmp/tree_temp.nhx'
+tree = ete3.Tree(tree_name)
+
+
 # Make the distance matrix
 print(len(tree))
 names = tree.get_leaf_names()
-
 names.sort()
 
-arr = np.zeros(shape=(len(names), len(names)), dtype=float)
-
-rng = np.arange(len(names)) #np.arange(len(names)-1, -1, -1)
-
-for i in rng:
-    namei = names[i]
-    # treei = tree.get_leaves_by_name(namei)[0]
-
-    print('row {} out of {}'.format(i, len(names)))
-    st = time.time()
-    for j in range(i):
-        arr[i,j] = tree.get_distance(namei, names[j]) #treei.get_distance(names[j])
-
-    print('\t{} seconds'.format(time.time()-st))
-        
-
-
-
-
-sys.exit()
-
+with open('raw_data/phylo_dist.pkl', 'rb') as handle:
+    df = pickle.load(handle)
 
 
 i = 0
+f = open('tmp/subtrees/table.tsv', 'w')
 for asvname in asvnames:
     asv = subjset_real.asvs[asvname]
     if not asv.tax_is_defined('species'):
+        i += 1
         print('\n\nLooking at {}, {}'.format(i,asv))
         print('-------------------------')
 
+        row = df[asv.name].to_numpy()
+        idxs = np.argsort(row)
 
-        leaf = tree.get_leaves_by_name(name=asv.name)[0]
-        print(leaf)
-        A = leaf.up.up.up
-        print(len(A))
+        iii = 0
+        for idx in idxs:
+            if names[idx] not in set_asvnames:
+                iii = idx 
+                break
 
-        print(A)
+        cnr = names[iii]
+        f.write('{}\t{}\n'.format(asv.name, cnr))
 
+        # tree = ete3.Tree(tree_name)
+        # # Get the 10 closest relatives that are not asvnames
+        # row = df[asv.name].to_numpy()
+        # idxs = np.argsort(row)
+        # iii = 0
+        # names_to_keep = []
+        # cnr = None
+        # for idx in idxs:
+        #     if iii > 10:
+        #         break
+        #     if names[idx] not in set_asvnames:
+        #         names_to_keep.append(names[idx])
+        #         if iii == 0:
+        #             cnr = names[idx]
+        #         iii += 1
 
+        # print(names_to_keep)
 
+        # # Make subtree of just these names
+        # names_to_keep.append(asv.name)
+        # tree.prune(names_to_keep, preserve_branch_length=False)
 
-        i += 1
-        sys.exit()
+        # for node in tree.traverse():
+        #     node.name = node.name.replace('OTU','ASV')
 
-
+        # ts = ete3.TreeStyle()
+        # ts.title.add_face(ete3.TextFace('{} CNR {}'.format(
+        #     asv.name.replace('OTU', 'ASV'), cnr), fsize=15), column=1)
+        # tree.render('tmp/subtrees/{}.pdf'.format(asv.name.replace('OTU','ASV')), tree_style=ts)
+f.close()
+sys.exit()
 
 # ####################################################
 # # Make plots of the ASVs

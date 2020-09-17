@@ -76,7 +76,7 @@ uniform_sampling = mesh[6]
 boxplot_type = mesh[7]
 
 
-# Make the base data
+# # Make the base data
 base_data_path = 'output/base_data/'
 command = 'python make_subjsets.py -b {basepath} -nr {nrs} -m {mns} -p {pvs} -d {nd} -dset semi-synthetic -nt {nts}'.format(
     basepath=base_data_path, nrs=lst_replicates, mns=lst_measurement_noises,
@@ -87,7 +87,7 @@ os.system(command)
 print('Arguments: {}'.format(arguments_global[argument_option]))
 
 # Run the docker
-output_path = 'output/'
+output_path = 'output/run/'
 command = 'python main_mcmc.py -d {d} -i {i} -m {m} -p {p} -b {b} -db {db} -ns {ns} -nb {nb} -nt {nt} -nr {nr} -us {us}'.format(
     d=data_seed, i=init_seed, m=measurement_noise, p=process_variance, 
     b=output_path, db=base_data_path, ns=100, nb=50, nt=n_timepoints, 

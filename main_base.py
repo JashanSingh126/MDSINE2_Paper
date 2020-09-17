@@ -892,10 +892,10 @@ def readify_chain(src_basepath, params, dst_basepath=None, plot_diagnostic_varia
             raise TypeError('`syndata` ({}) must be type synthetic.SyntheticData'.format(type(syndata)))
 
     # # Check if we have an entire chain, partial train, or only burnin
-    if chain.sample_iter < 100:
-        logging.critical('There are too few samples to find the posterior ({} samples)'.format(
-            chain.sample_iter))
-        return
+    # if chain.sample_iter < 100:
+    #     logging.critical('There are too few samples to find the posterior ({} samples)'.format(
+    #         chain.sample_iter))
+    #     return
     if chain.sample_iter > chain.burnin:
         SECTION = 'posterior'
         LEN_POSTERIOR = chain.sample_iter+1 - chain.burnin
@@ -943,34 +943,34 @@ def readify_chain(src_basepath, params, dst_basepath=None, plot_diagnostic_varia
         f.write('\t{}\n'.format(str(ele)))
     f.close()
 
-    # # Calculate the stability - save as a npy array
-    # logging.info('Calculating the stability')
-    # growth = chain.graph[STRNAMES.GROWTH_VALUE]
-    # if chain.tracer.is_being_traced(STRNAMES.GROWTH_VALUE):
-    #     growth_values = growth.get_trace_from_disk(section=SECTION)
-    # else:
-    #     growth_values = growth.value
-    #     growth_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS))) + growth_values.reshape(-1,1)
+    # Calculate the stability - save as a npy array
+    logging.info('Calculating the stability')
+    growth = chain.graph[STRNAMES.GROWTH_VALUE]
+    if chain.tracer.is_being_traced(STRNAMES.GROWTH_VALUE):
+        growth_values = growth.get_trace_from_disk(section=SECTION)
+    else:
+        growth_values = growth.value
+        growth_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS))) + growth_values.reshape(-1,1)
 
-    # si = chain.graph[STRNAMES.SELF_INTERACTION_VALUE]
-    # if chain.tracer.is_being_traced(STRNAMES.SELF_INTERACTION_VALUE):
-    #     si_values = si.get_trace_from_disk(section=SECTION)
-    # else:
-    #     si_values = si.value
-    #     si_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS))) + si_values.reshape(-1,1)
+    si = chain.graph[STRNAMES.SELF_INTERACTION_VALUE]
+    if chain.tracer.is_being_traced(STRNAMES.SELF_INTERACTION_VALUE):
+        si_values = si.get_trace_from_disk(section=SECTION)
+    else:
+        si_values = si.value
+        si_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS))) + si_values.reshape(-1,1)
 
-    # interactions = chain.graph[STRNAMES.INTERACTIONS_OBJ]
-    # if chain.tracer.is_being_traced(STRNAMES.INTERACTIONS_OBJ):
-    #     interaction_values = interactions.get_trace_from_disk(section=SECTION)
-    #     interaction_values[np.isnan(interaction_values)] = 0
-    # else:
-    #     interactions = interactions.get_datalevel_value_matrix(set_neg_indicators_to_nan=False)
-    #     interaction_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS), len(ASVS))) + interactions
+    interactions = chain.graph[STRNAMES.INTERACTIONS_OBJ]
+    if chain.tracer.is_being_traced(STRNAMES.INTERACTIONS_OBJ):
+        interaction_values = interactions.get_trace_from_disk(section=SECTION)
+        interaction_values[np.isnan(interaction_values)] = 0
+    else:
+        interactions = interactions.get_datalevel_value_matrix(set_neg_indicators_to_nan=False)
+        interaction_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS), len(ASVS))) + interactions
 
-    # stabil = np.zeros(shape=(LEN_POSTERIOR, len(ASVS), len(ASVS)))
-    # stabil = calc_eigan_over_gibbs(ret=stabil, growth=growth_values, si=si_values, 
-    #     interactions=interaction_values)
-    # np.save(basepath + 'stability.npy', stabil)
+    stabil = np.zeros(shape=(LEN_POSTERIOR, len(ASVS), len(ASVS)))
+    stabil = calc_eigan_over_gibbs(ret=stabil, growth=growth_values, si=si_values, 
+        interactions=interaction_values)
+    np.save(basepath + 'stability.npy', stabil)
 
     # Plot growth parameters
     growthpath = basepath + 'growth/'
@@ -2798,12 +2798,6 @@ def validate(src_basepath, model, forward_sims,
     basepath = dst_basepath
     results_filename = basepath + 'results.pkl'
 
-    # if pl.isMCMC(model):
-    #     if model.sample_iter < 100:
-    #         logging.critical('There are too few samples ({} samples)'.format(
-    #             model.sample_iter))
-    #         return
-
     if os.path.isdir(basepath):
         shutil.rmtree(basepath, ignore_errors=True)
     os.makedirs(basepath, mode=0o777, exist_ok=True)
@@ -2854,18 +2848,18 @@ def validate(src_basepath, model, forward_sims,
     read_depthses = [subj.read_depth() for subj in subjset]
     qpcrses = [np.sum(subj.matrix()['abs'], axis=0) for subj in subjset]
 
-    # # Plot the subject data in a pool
-    # logging.info('Starting plotting base data')
-    # for asv in subjset.asvs:
-    #     fig = plt.figure(figsize=(20,10))
-    #     fig = filtering.plot_asv(
-    #         subjset=subjset, asv=asv, fparams=fparams, fig=fig,
-    #         legend=True, title_format='Subject %(sname)s',
-    #         suptitle_format='%(name)s\n%(order)s, %(family)s, %(genus)s',
-    #         yscale_log=True, matrixes=matrixes, read_depthses=read_depthses, 
-    #         qpcrses=qpcrses)
-    #     plt.savefig(subjplotpath + '{}.pdf'.format(asv.name))
-    #     plt.close()
+    # Plot the subject data in a pool
+    logging.info('Starting plotting base data')
+    for asv in subjset.asvs:
+        fig = plt.figure(figsize=(20,10))
+        fig = filtering.plot_asv(
+            subjset=subjset, asv=asv, fparams=fparams, fig=fig,
+            legend=True, title_format='Subject %(sname)s',
+            suptitle_format='%(name)s\n%(order)s, %(family)s, %(genus)s',
+            yscale_log=True, matrixes=matrixes, read_depthses=read_depthses, 
+            qpcrses=qpcrses)
+        plt.savefig(subjplotpath + '{}.pdf'.format(asv.name))
+        plt.close()
 
     # Plot the learned parameters
     logging.info('Start plotting parameters')
@@ -3355,7 +3349,7 @@ def validate(src_basepath, model, forward_sims,
     logging.info('Starting forward sims')
     results = metrics.Metrics(model=model, limit_of_detection=1e5, simulation_dt=sim_dt, 
         output_dt=output_dt, log_integration=True, traj_fillvalue=traj_fillvalue,
-        perturbations_additive=perturbations_additive, mp=10)
+        perturbations_additive=perturbations_additive, mp=None)
     if comparison is not None:
         results.add_truth_metrics(comparison_results)
     for subject in val_subjset:
