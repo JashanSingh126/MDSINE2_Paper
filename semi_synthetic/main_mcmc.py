@@ -183,7 +183,7 @@ if __name__ == '__main__':
     logging.info('process variance level: {}'.format(args.process_variance_level))
     logging.info('Number of time points: {}'.format(args.n_times))
     logging.info('Number of replicates: {}'.format(args.n_replicates))
-    logging.info('basepath: {}'.format(args.basepath))
+    logging.info('basepath: {}'.format(basepath))
     logging.info('Uniform sampling: {}'.format(args.uniform_sampling))
     logging.info('n_asvs: {}'.format(args.n_asvs))
     
@@ -203,6 +203,7 @@ if __name__ == '__main__':
         n_times=args.n_times, exact=True)
 
     if not ONLY_PLOT:
+        os.makedirs(basepath, exist_ok=True) # Make the folder
         if params.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value_option'] == 'manual':
             syn = synthetic.SyntheticData.load(config.make_syndata_base_name(
                 basepath=params.DATA_PATH, dset=synparams.DSET, ds=params.DATA_SEED))
@@ -286,15 +287,17 @@ if __name__ == '__main__':
         params.save(params_filename)
 
     params = config.ModelConfigMCMC.load(params_filename)
-    main_base.readify_chain(
-        src_basepath=basepath, 
-        params=params,
-        yscale_log=params.DATA_LOGSCALE, 
-        center_color_for_strength=True,
-        run_on_copy=False,
-        plot_filtering_thresh=False,
-        exact_filename=exact_filename,
-        syndata=syndata_filename)
+    # main_base.readify_chain(
+    #     src_basepath=basepath, 
+    #     params=params,
+    #     yscale_log=params.DATA_LOGSCALE, 
+    #     center_color_for_strength=True,
+    #     run_on_copy=False,
+    #     plot_filtering_thresh=False,
+    #     exact_filename=exact_filename,
+    #     syndata=syndata_filename)
+
+    logging.info('here')
     
     chain_result = pl.inference.BaseMCMC.load(chain_result_filename)
     noise_subjset = pl.base.SubjectSet.load(config.make_val_subjset_name(
@@ -308,6 +311,8 @@ if __name__ == '__main__':
     comparison = make_comparison(syndata_filename=syndata_filename, 
         exact_subjset=exact_subjset)
 
+    logging.info('here2')
+
     main_base.validate(
         src_basepath=basepath, model=chain_result, 
         forward_sims=['sim-full'],
@@ -317,6 +322,10 @@ if __name__ == '__main__':
         mp=None, comparison=comparison, 
         perturbations_additive=params.PERTURBATIONS_ADDITIVE,
         traj_error_metric=scipy.stats.spearmanr,
+        network_topology_metric=pl.metrics.rocauc_posterior_interactions,
+        network_topology_metric_kwargs={
+            'signed': synparams.TOPOLOGY_METRIC_SIGNED,
+            'average': synparams.TOPOLOGY_METRIC_AVERAGE},
         pert_error_metric=pl.metrics.RMSE,
         interaction_error_metric=pl.metrics.RMSE,
         growth_error_metric=pl.metrics.logPE,

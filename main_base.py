@@ -2574,6 +2574,7 @@ def validate(src_basepath, model, forward_sims,
     mp=None, sim_dt=0.001, output_dt=1/8, 
     bayes_factor_cutoff=10, comparison=None, traj_error_metric=None,
     growth_error_metric=None, si_error_metric=None, interaction_error_metric=None,
+    network_topology_metric=None, network_topology_metric_kwargs=None,
     pert_error_metric=None, clus_error_metric=None, traj_fillvalue=None, lookaheads=[1,2,3,7]):
     '''
     Plot the interaction matrix, data, and forward simulate the model. 
@@ -2999,6 +3000,31 @@ def validate(src_basepath, model, forward_sims,
             fig.tight_layout()
             plt.savefig(errorpath + 'interactions.pdf')
             plt.close()
+
+            # Calculate the topology error for every sample
+            comparison_results['error-topology'] = network_topology_metric(pred=A_predicted, 
+                truth=A_comparison, per_gibb=True, **network_topology_metric_kwargs)
+            summ = pl.variables.summary(comparison_results['error-topology'])
+            f.write('Error Type: {}\n'.format(network_topology_metric.__name__))
+            for key,val in summ.items():
+                f.write('\t{}: {}\n'.format(key,val))
+
+            # Plot the error
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            xs = np.arange(len(comparison_results['error-topology']))
+            ys = np.squeeze(comparison_results['error-topology'])
+
+            ax.plot(xs, ys, alpha=0.5)
+            ax.set_xlabel('Sample')
+            ax.set_ylabel(network_topology_metric.__name__)
+            ax.set_title('Interaction Topology {}\nmean={}'.format(network_topology_metric.__name__, summ['mean']))
+            
+            fig.tight_layout()
+            plt.savefig(errorpath + 'topology.pdf')
+            plt.close()
+
+
                     
         else:
             A_predicted = model.graph[STRNAMES.CLUSTER_INTERACTION_VALUE].value
@@ -3009,6 +3035,13 @@ def validate(src_basepath, model, forward_sims,
 
             f.write('Error {}: {}\n'.format(interaction_error_metric.__name__, 
                 comparison_results['error-interactions']))
+
+            # Topology
+            comparison_results['error-topology'] = network_topology_metric(pred=A_predicted,
+                truth=A_comparison, per_gibb=False, **network_topology_metric_kwargs)
+            f.write('Error {}: {}\n'.format(network_topology_metric.__name__, 
+                comparison_results['error-topology']))
+            
 
 
     # Write the expcted value of growth, self-interactions, and perturbations

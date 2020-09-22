@@ -3,7 +3,26 @@
 import os
 import sys
 
-my_str = '''gcloud beta compute --project=sinuous-mind-277319 instances create-with-container {name} --zone={zone} --machine-type=n1-standard-1 --subnet=default --network-tier=PREMIUM --metadata=^,@^google-logging-enabled=true,@startup-script=\#\!/usr/bin/env\ bash$'\n'$'\n'\#\ Mount\ disk$'\n'sudo\ mkfs.ext4\ -m\ 0\ -F\ -E\ lazy_itable_init=0,lazy_journal_init=0,discard\ /dev/sdb$'\n'sudo\ mkdir\ -p\ /mnt/disks/data$'\n'sudo\ mount\ -o\ discard,defaults\ /dev/sdb\ /mnt/disks/data$'\n'sudo\ chmod\ a\+w\ /mnt/disks/data/$'\n'echo\ \"{mesh_n}\"\ \>\>\ /mnt/disks/data/args.txt$'\n'$'\n'gcloud\ beta\ auth\ application-default\ login --no-restart-on-failure --maintenance-policy=MIGRATE --service-account=56612871331-compute@developer.gserviceaccount.com --scopes=https://www.googleapis.com/auth/cloud-platform --tags=http-server,https-server --image=cos-stable-81-12871-1196-0 --image-project=cos-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name={name}-boot --create-disk=mode=rw,size=200,type=projects/sinuous-mind-277319/zones/{zone}/diskTypes/pd-ssd,device-name={name}-data --container-image=us.gcr.io/sinuous-mind-277319/test-auto-kill-full --container-restart-policy=never --container-command=python --container-arg=dispatch_gcloud.py --container-mount-host-path=mount-path=/usr/src/app/MDSINE2/semi_synthetic/output,host-path=/mnt/disks/data,mode=rw --labels=container-vm=cos-stable-81-12871-1196-0'''
+# import googleapiclient.discovery
+# from six.moves import input
+
+my_str = '''gcloud compute instances create-with-container {name} \
+--zone {zone} \
+--project=sinuous-mind-277319 \
+--machine-type=custom-{n_cpus}-{ram_mem} \
+--container-image=us.gcr.io/sinuous-mind-277319/test-auto-kill \
+--container-restart-policy=never \
+--container-command=python \
+--container-arg=dispatch_gcloud.py \
+--container-mount-host-path=mount-path=/usr/src/app/MDSINE2/semi_synthetic/output,host-path=/mnt/disks/data,mode=rw \
+--no-restart-on-failure \
+--labels=container-vm=cos-stable-81-12871-1196-0 \
+--metadata-from-file=startup-script=startup_script.sh \
+--service-account=56612871331-compute@developer.gserviceaccount.com \
+--scopes=https://www.googleapis.com/auth/cloud-platform \
+--tags=http-server,https-server \
+--boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name={name}-boot \
+--create-disk=mode=rw,size=100,type=projects/sinuous-mind-277319/zones/{zone}/diskTypes/pd-ssd,device-name={name}-data'''
 
 meshes = [
     ([5], [55], 10, 1, [0.1, 0.2, 0.25, 0.3, 0.4], [0.1], [1], 0, 0),    
@@ -47,7 +66,11 @@ for mesh in meshes:
 
 
 boxplot_names = ['noise{n}-{seed}', 'replicates{n}-{seed}', 'times{n}-{seed}']
-zones = ['us-central1-a', 'us-east1-b', 'us-west1-a', 'northamerica-northeast1-a']
+n_cpus = 2
+ram_mem = 6656
+zones = ['us-central1-a', 'us-east1-b', 'us-west1-a', 'us-west2-a', 'us-west3-a', 'us-east4-a']
+n_zone = 0
+i_zone = 0
 
 
 for mesh_n in range(len(arguments_global)):
@@ -61,7 +84,12 @@ for mesh_n in range(len(arguments_global)):
     uniform_sampling = mesh[6]
     boxplot_type = mesh[7]
 
-    zone = zones[mesh_n // 70]
+    if n_zone+n_cpus > 69:
+        i_zone += 1
+        n_zone = 0
+    
+    zone = zones[i_zone]
+    n_zone += n_cpus
 
     if boxplot_type == 0:
         ns = measurement_noise
@@ -77,10 +105,10 @@ for mesh_n in range(len(arguments_global)):
         namefmt = boxplot_names[2]
 
     name = namefmt.format(n=ns, seed=data_seed)
-    command = my_str.format(name=name, zone=zone, mesh_n=mesh_n)
-    print()
+    command = my_str.format(name=name, zone=zone, mesh_n=mesh_n, n_cpus=n_cpus, 
+        ram_mem=ram_mem)
     print(name)
+    print(zone)
     print(mesh)
+    print(command)
     os.system(command)
-    # sys.exit()
-

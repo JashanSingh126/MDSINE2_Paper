@@ -745,7 +745,7 @@ class ClusterAssignments(pl.graph.Node):
         oidxs = npr.permutation(np.arange(len(self.G.data.asvs)))
         iii = 0
         for oidx in oidxs:
-            print('{}/{}: {}'.format(iii, len(oidxs), oidx))
+            logging.info('{}/{}: {}'.format(iii, len(oidxs), oidx))
             self.gibbs_update_single_asv_slow_fast(oidx=oidx)
             iii += 1
         self._strtime = time.time() - start_time

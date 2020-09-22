@@ -243,9 +243,9 @@ class ModelConfigMCMC(_BaseModelConfig):
         self.DATA_LOGSCALE = True
         self.PERTURBATIONS_ADDITIVE = False
 
-        self.MP_FILTERING = 'full'
+        self.MP_FILTERING = 'debug'
         self.MP_INDICATORS = None
-        self.MP_CLUSTERING = 'full-5'
+        self.MP_CLUSTERING = 'debug'
         self.MP_ZERO_INFLATION = None
         self.RELATIVE_LOG_MARGINAL_INDICATORS = True
         self.RELATIVE_LOG_MARGINAL_PERT_INDICATORS = True
@@ -732,6 +732,9 @@ class SimulationConfig(_BaseModelConfig):
         self.DSET = 'semi-synthetic'
         self.NEGBIN_A0, self.NEGBIN_A1 = calculate_reads_a0a1(measurement_noise_level)
         self.QPCR_NOISE_SCALE = measurement_noise_level
+
+        self.TOPOLOGY_METRIC_SIGNED = True
+        self.TOPOLOGY_METRIC_AVERAGE = 'weighted'
 
     def suffix(self):
         max_abund = self.MAX_ABUNDANCE

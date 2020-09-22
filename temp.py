@@ -64,6 +64,26 @@ pl.seed(1)
 
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
+
+truth = np.array([[1,0],[-1,0]])
+
+pred = np.array([[[1,0],[1,0]],
+                 [[0,0],[-1,0]],
+                 [[1,1],[-1,0]],
+                 [[1,0],[-1,1]]])
+
+print(truth)
+print(pred)
+
+print()
+
+auc = pl.metrics.rocauc_posterior_interactions(pred, truth, signed=True) #, per_gibb=False)
+
+print('auc')
+print(auc)
+
+sys.exit()
+
 # fname1 = 'raw_data/seqs_temp/final/src_data/rdp_archaea_509seqs.fa'
 # fname2 = 'raw_data/seqs_temp/final/src_data/rdp_bacteria_12227seqs.fa'
 # fname3 = 'raw_data/seqs_temp/final/src_data/rdp_combined.fa'
