@@ -278,15 +278,19 @@ def main_leave_out_single(params, continue_inference):
         main_base.validate(
             src_basepath=basepath, model=chain_result,
             forward_sims=['sim-full'],
-            yscale_log=True, run_on_copy=True,
-            asv_prefix_formatter='%(index)s: (%(name)s) %(genus)s %(species2)s ',
-            yticklabels='(%(name)s) %(genus)s %(species2)s: %(index)s',
+            yscale_log=True, run_on_copy=False,
+            asv_prefix_formatter='%(index)s: (%(name)s)',
+            yticklabels='(%(name)s): %(index)s',
             mp=5, output_dt=1/8, perturbations_additive=params.PERTURBATIONS_ADDITIVE,
+            network_topology_metric=pl.metrics.rocauc_posterior_interactions,
+            network_topology_metric_kwargs={
+                'signed': False,
+                'average': 'weighted'},
             traj_error_metric=pl.metrics.logPE,
             pert_error_metric=pl.metrics.RMSE,
             interaction_error_metric=pl.metrics.RMSE,
-            growth_error_metric=pl.metrics.PE,
-            si_error_metric=pl.metrics.PE,
+            growth_error_metric=pl.metrics.RMSE,
+            si_error_metric=pl.metrics.RMSE,
             clus_error_metric=pl.metrics.variation_of_information)
 
 def _make_basepath(params):

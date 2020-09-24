@@ -177,6 +177,149 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 # SeqIO.write(sequences=seqs_to_keep, handle='raw_data/seqs_temp/RDP_unaligned_overlap_seqs.fa', format='fasta')
 # sys.exit()
 
+####################################################
+# Calculate keystoneness
+####################################################
+# Get the growth rates
+
+
+chains = {
+    'healthy': 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    'uc': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
+
+fnames = {
+    'healthy': [
+        'tmp/keystone_proposal/healthy_chain_2.txt',
+        'tmp/keystone_proposal/healthy_chain_3.txt',
+        'tmp/keystone_proposal/healthy_cycle_2.txt',
+        'tmp/keystone_proposal/healthy_cycle_3.txt'],
+    'uc': [
+        'tmp/keystone_proposal/uc_chain_2.txt',
+        'tmp/keystone_proposal/uc_chain_3.txt',
+        'tmp/keystone_proposal/uc_cycle_2.txt',
+        'tmp/keystone_proposal/uc_cycle_3.txt']}
+
+def keystoneness(chain_fname, fname, outfile):
+    '''The file(s) show a list of asvs to delete, comma separated
+
+    All of the asvs on a single line should be deleted at once
+    '''
+
+    chain = pl.inference.BaseMCMC.load(chain_fname)
+    subjset = chain.graph.data.subjects
+
+    SECTION = 'posterior'
+    growth_master = pl.variables.summary(
+        chain.graph[names.STRNAMES.GROWTH_VALUE],
+        section=SECTION)['mean']
+    si_master = pl.variables.summary(
+        chain.graph[names.STRNAMES.SELF_INTERACTION_VALUE],
+        section=SECTION)['mean']
+    A_master = pl.variables.summary(
+        chain.graph[names.STRNAMES.INTERACTIONS_OBJ], set_nan_to_0=True,
+        section=SECTION, only='mean')['mean']
+
+    dyn = model.gLVDynamicsSingleClustering(asvs=subjset.asvs, log_dynamics=True, 
+        perturbations_additive=False)
+    dyn.growth = growth_master
+    dyn.self_interactions = si_master
+    dyn.interactions = A_master
+
+    df = subjset.df(dtype='abs', agg='mean', times='union')
+    initial_conditions = df[0.5].to_numpy()
+
+    for i in range(len(initial_conditions)):
+        if initial_conditions[i] == 0:
+            initial_conditions[i] = pl.random.truncnormal.sample(mean=1e5, std=1e5, low=1e2)
+
+    days = 20
+    BASE_CONCENTRATIONS = pl.dynamics.integrate(dyn, initial_conditions=initial_conditions.reshape(-1,1), 
+        dt=0.01, n_days=days, times=np.arange(days), subsample=True)['X'][:, -1]
+
+
+    dists = {}
+    conc_d = {}
+
+    f = open(fname, 'r')
+    args = f.read().split('\n')
+    f.close()
+
+    names_to_del_lst = []
+    for arg in args:
+        # Get rid of replicates
+        lst_ = arg.split(',')
+        lst = []
+        for ele in lst_:
+            if ele not in lst:
+                lst.append(ele)
+        names_to_del_lst.append(tuple(lst))
+
+    
+    
+    for names_to_del in names_to_del_lst:
+        idxs_to_del = [subjset.asvs[name].idx for name in names_to_del]
+        # Take out asv aidxs and do the forward simulation
+        print('{}/{}'.format(names_to_del, len(args)))
+        dyn = model.gLVDynamicsSingleClustering(asvs=subjset.asvs, log_dynamics=True, 
+            perturbations_additive=False)
+
+        mask = np.ones(len(BASE_CONCENTRATIONS), dtype=bool)
+        mask[idxs_to_del] = False
+
+        dyn.growth = growth_master[mask]
+        dyn.self_interactions = si_master[mask]
+        dyn.interactions = np.delete(A_master, idxs_to_del, 0)
+        dyn.interactions = np.delete(dyn.interactions, idxs_to_del, 1)
+        init_conc = initial_conditions[mask]
+
+        iii = pl.dynamics.integrate(dyn, initial_conditions=init_conc.reshape(-1,1), 
+            dt=0.01, n_days=days, times=np.arange(days), subsample=True)
+        conc_d[names_to_del] = iii
+        concentrations = iii['X'][:, -1]
+
+        dists[names_to_del] = np.sqrt(np.sum(np.square(concentrations - BASE_CONCENTRATIONS[mask])))
+
+    idxs = (np.argsort(list(dists.values())))[::-1]
+    keys = list(dists.keys())
+
+    f = open(outfile, 'w')
+
+    f.write('Concise results\n')
+    for i, idx in enumerate(idxs):
+        f.write('{}: {} (was {} on bfs)\n'.format(i+1, keys[idx], idx+1))
+
+    f.write('Spearman correlation on ranking: {}\n'.format(
+        scipy.stats.spearmanr(idxs, np.arange(len(idxs)))[0]))
+
+
+
+    f.write('expanded results')
+    for i, idx in enumerate(idxs):
+        
+        names_ = keys[idx]
+        f.write('\n\n---------------------------------------------\n{}\n'.format(names_))
+        temp_asvs = [subjset.asvs[name] for name in names_]
+        for asv in temp_asvs:
+            f.write('{}\n'.format(str(asv)))
+
+        f.write('Effect: {:.4E}\n'.format(dists[names_]))
+
+    # plt.figure()
+    # M = conc_d[idx]['X']
+    # times = conc_d[idx]['times']
+
+    # for i in range(M.shape[0]):
+    #     plt.plot(times, M[i,:])
+    # plt.yscale('log')
+    # plt.show()
+    f.close()
+
+
+for key in chains.keys():
+    fnames_temp = fnames[key]
+    for fname in fnames_temp:
+        keystoneness(chains[key], fname=fname, outfile=fname.replace('.txt', '_keystoneness.txt'))
+
 # ####################################################
 # # Get interaction traces
 # ####################################################
@@ -818,103 +961,6 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
 # f = 'raw_data/seqs_temp/RDP_alignment/align_seqs.sto'
 # seqs = SeqIO.parse(hmm_f, 'stockholm')
-
-# ####################################################
-# # Calculate keystoneness
-# ####################################################
-# # Get the growth rates
-
-# fname = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
-
-
-# def keystoneness(chain_fname, sets_to_remove):
-
-#     chain = pl.inference.BaseMCMC.load(chain_fname)
-#     subjset = chain.graph.data.subjects
-
-#     SECTION = 'posterior'
-#     growth_master = pl.variables.summary(
-#         chain.graph[names.STRNAMES.GROWTH_VALUE],
-#         section=SECTION)['mean']
-#     si_master = pl.variables.summary(
-#         chain.graph[names.STRNAMES.SELF_INTERACTION_VALUE],
-#         section=SECTION)['mean']
-#     A_master = pl.variables.summary(
-#         chain.graph[names.STRNAMES.INTERACTIONS_OBJ], set_nan_to_0=True,
-#         section=SECTION, only='mean')['mean']
-
-#     dyn = model.gLVDynamicsSingleClustering(asvs=subjset.asvs, log_dynamics=True, 
-#         perturbations_additive=False)
-#     dyn.growth = growth_master
-#     dyn.self_interactions = si_master
-#     dyn.interactions = A_master
-
-#     df = subjset.df(dtype='abs', agg='mean', times='union')
-#     initial_conditions = df[0.5].to_numpy()
-
-#     for i in range(len(initial_conditions)):
-#         if initial_conditions[i] == 0:
-#             initial_conditions[i] = pl.random.truncnormal.sample(mean=1e5, std=1e5, low=1e2)
-
-#     days = 20
-#     BASE_CONCENTRATIONS = pl.dynamics.integrate(dyn, initial_conditions=initial_conditions.reshape(-1,1), 
-#         dt=0.01, n_days=days, times=np.arange(days), subsample=True)['X'][:, -1]
-
-
-#     dists = np.zeros(len(BASE_CONCENTRATIONS))
-#     conc_d = {}
-
-#     for aidx in range(len(BASE_CONCENTRATIONS)):
-#         # Take out asv aidx and do the forward simulation
-#         print('{}/{}'.format(aidx, len(BASE_CONCENTRATIONS)))
-#         dyn = model.gLVDynamicsSingleClustering(asvs=subjset.asvs, log_dynamics=True, 
-#             perturbations_additive=False)
-
-#         mask = np.ones(len(BASE_CONCENTRATIONS), dtype=bool)
-#         mask[aidx] = False
-
-#         dyn.growth = growth_master[mask]
-#         dyn.self_interactions = si_master[mask]
-#         dyn.interactions = np.delete(A_master, aidx, 0)
-#         dyn.interactions = np.delete(dyn.interactions, aidx, 1)
-#         init_conc = initial_conditions[mask]
-
-#         iii = pl.dynamics.integrate(dyn, initial_conditions=init_conc.reshape(-1,1), 
-#             dt=0.01, n_days=days, times=np.arange(days), subsample=True)
-#         conc_d[aidx] = iii
-#         concentrations = iii['X'][:, -1]
-
-#         dists[aidx] = np.sqrt(np.sum(np.square(concentrations - BASE_CONCENTRATIONS[mask])))
-#         # print('aidx', aidx, ':', dists[aidx])
-
-#     idxs = np.argsort(dists)[::-1]
-#     clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
-#     f = open('keystoneness_healthy.txt', 'w')
-#     f.write('1 Based indexing for clusters\n')
-#     for i, idx in enumerate(idxs):
-#         asv = subjset.asvs[idx]
-#         cid = clustering.idx2cid[idx]
-
-#         f.write('\n{}\n'.format(i))
-#         f.write('\tMicrobe name: {}\n\tTaxonomy: {}' \
-#             '\n\tCluster assignment: {}\n\tEffect: {:.4E}\n'.format(
-#                 asv.name,
-#                 pl.asvname_formatter(format='%(genus)s %(species)s', 
-#                     asv=asv, asvs=subjset.asvs, lca=False),
-#                 clustering.cid2cidx[cid]+1,
-#                 dists[idx]
-#             ))
-
-#     # plt.figure()
-#     # M = conc_d[idx]['X']
-#     # times = conc_d[idx]['times']
-
-#     # for i in range(M.shape[0]):
-#     #     plt.plot(times, M[i,:])
-#     # plt.yscale('log')
-#     # plt.show()
-#     f.close()
-
 
 # ###########################################
 # # Net repression/promotion
