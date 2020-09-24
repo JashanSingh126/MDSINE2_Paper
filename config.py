@@ -598,7 +598,7 @@ class ModelConfigReal(_BaseModelConfig):
         self.DATA_FILENAME = 'pickles/real_subjectset.pkl'
         self.BURNIN = burnin
         self.N_SAMPLES = n_samples
-        self.CHECKPOINT = 100
+        self.CHECKPOINT = 2
         self.ADD_MIN_REL_ABUNDANCE = False
         self.PROCESS_VARIANCE_TYPE = 'multiplicative-global'
         self.DATA_DTYPE = 'abs'
@@ -701,7 +701,7 @@ class ModelConfigReal(_BaseModelConfig):
                 'delay':0},
             STRNAMES.PERT_INDICATOR_PROB: {
                 'value_option': 'prior-mean',
-                'hyperparam_option': 'strong-sparse',
+                'hyperparam_option': 'weak-agnostic',
                 'delay':0},
             STRNAMES.PERT_INDICATOR: {
                 'value_option': 'all-off',
@@ -781,7 +781,7 @@ class ModelConfigReal(_BaseModelConfig):
                 'run_every_n_iterations': 1},
             STRNAMES.INDICATOR_PROB: {
                 'value_option': 'auto',
-                'hyperparam_option': 'strong-sparse',
+                'hyperparam_option': 'weak-agnostic',
                 'N': 25,
                 'delay': 0},
             STRNAMES.FILTERING: {
@@ -1018,7 +1018,9 @@ class ModelConfigMDSINE1(_BaseModelConfig):
         self.N_CPUS = 12
         self.N_GBS = 10000
 
+        self.ZERO_INFLATION_TRANSITION_POLICY = 'ignore'
         self.DATA_FILENAME = 'pickles/subjset_cdiff.pkl'
+        self.DATASET = 'cdiff'
         self.BURNIN = burnin
         self.N_SAMPLES = n_samples
         self.CHECKPOINT = 100
@@ -1066,8 +1068,8 @@ class ModelConfigMDSINE1(_BaseModelConfig):
             STRNAMES.PRIOR_MEAN_PERT: True,
             STRNAMES.FILTERING: True,
             STRNAMES.ZERO_INFLATION: False,
-            STRNAMES.CLUSTERING: False,
-            STRNAMES.CONCENTRATION: False, 
+            STRNAMES.CLUSTERING: True,
+            STRNAMES.CONCENTRATION: True, 
             STRNAMES.CLUSTER_INTERACTION_INDICATOR: True,
             STRNAMES.INDICATOR_PROB: True,
             STRNAMES.PERT_INDICATOR: True,
@@ -1227,7 +1229,7 @@ class ModelConfigMDSINE1(_BaseModelConfig):
                 'plot_initial': False,
                 'target_acceptance_rate': 0.44},
             STRNAMES.ZERO_INFLATION: {
-                'value_option': 'manual',
+                'value_option': 'mdsine-cdiff-dataset',
                 'delay': 0},
             STRNAMES.CONCENTRATION: {
                 'value_option': 'prior-mean',

@@ -148,6 +148,44 @@ def main_leave_out_single(params, continue_inference):
                 # Out of range, dont do anything
                 return
 
+        # Filter asvs
+        if params.DATASET == 'cdiff':
+            # Delete the required ASVs
+            asvs_to_keep = [
+                'Clostridium-hiranonis',
+                'Proteus-mirabilis',
+                'Bacteroides-ovatus',
+                'Bacteroides-vulgatus',
+                'Roseburia-hominis',
+                'Parabacteroides-distasonis',
+                'Akkermansia-muciniphila',
+                'Clostridium-difficile',
+                'Bacteroides-fragilis',
+                'Klebsiella-oxytoca',
+                'Clostridium-ramosum',
+                'Escherichia-coli',
+                'Ruminococcus-obeum',
+                'Clostridium-scindens']
+
+            to_delete = []
+            for asv in subjset.asvs:
+                if asv.name not in asvs_to_keep:
+                    to_delete.append(asv.name)
+            subjset.pop_asvs(to_delete)
+
+            cdiff = subjset.asvs['Clostridium-difficile']
+            cdiff_aidx = cdiff.idx
+
+            # Set the abundance of C. Diff to 0 before day 28 in all of the subjects
+            for subj in subjset:
+                for t in subj.times:
+                    if t < 28:
+                        subj.reads[t][cdiff_aidx] = 0
+                    print(t, subj.reads[t][cdiff_aidx])
+
+        else:
+            raise NotImplementedError('filtering for `{}` not recognized'.format(params.DATASET))
+
         # Remove subjects if necessary
         if params.LEAVE_OUT != -1:
             if continue_inference:
@@ -159,47 +197,48 @@ def main_leave_out_single(params, continue_inference):
             validate_subjset = None
 
         if continue_inference is None:
-            # Plot data
-            logging.info('Plotting Data')
-            for asv in subjset.asvs:
-                fig = plt.figure()
-                ax = fig.add_subplot(111)
 
-                for sidx, subj in enumerate(subjset):
-                    if sidx == 0:
-                        perts = True
-                    else:
-                        perts = False
-                    pl.visualization.abundance_over_time(subj=subj, dtype='abs', legend=False,
-                        title=asv.name, plot_specific=asv,
-                        set_0_to_nan=False, yscale_log=True, ax=ax, shade_perturbations=perts)
-                plt.savefig(basepath + 'valid_strains/{}.pdf'.format(asv.name))
-                plt.close()
+            # # Plot data
+            # logging.info('Plotting Data')
+            # for asv in subjset.asvs:
+            #     fig = plt.figure()
+            #     ax = fig.add_subplot(111)
 
-            pl.visualization.abundance_over_time(subj=subjset, dtype='read-depth', yscale_log=False, grid=True)
-            plt.savefig(basepath + 'read_depths.pdf')
-            plt.close()
+            #     for sidx, subj in enumerate(subjset):
+            #         if sidx == 0:
+            #             perts = True
+            #         else:
+            #             perts = False
+            #         pl.visualization.abundance_over_time(subj=subj, dtype='abs', legend=False,
+            #             title=asv.name, plot_specific=asv,
+            #             set_0_to_nan=False, yscale_log=True, ax=ax, shade_perturbations=perts)
+            #     plt.savefig(basepath + 'valid_strains/{}.pdf'.format(asv.name))
+            #     plt.close()
 
-            pl.visualization.abundance_over_time(subj=subjset, dtype='qpcr', include_errorbars=False, grid=True)
-            fig = plt.gcf()
-            fig.tight_layout()
-            plt.savefig(basepath + 'qpcr_data.pdf')
-            plt.close()
+            # pl.visualization.abundance_over_time(subj=subjset, dtype='read-depth', yscale_log=False, grid=True)
+            # plt.savefig(basepath + 'read_depths.pdf')
+            # plt.close()
 
-            # if params.QPCR_NORMALIZATION_MAX_VALUE is not None:
-            #     subjset.normalize_qpcr(max_value=params.QPCR_NORMALIZATION_MAX_VALUE)
-            #     logging.info('Normalizing qPCR values. Normalization constant: {:.3E}'.format(
-            #         subjset.qpcr_normalization_factor))
-            #     old_c_m = params.C_M
-            #     old_v2 = params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2']
-            #     params.C_M = params.C_M * subjset.qpcr_normalization_factor
-            #     params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2'] *= subjset.qpcr_normalization_factor
-            #     logging.info('Old `c_m`: {:.2E}. New `c_m`: {:.2E}'.format(
-            #         old_c_m, params.C_M))
-            #     logging.info('Old `v_2`: {:.2E}. New `v2`: {:.2E}'.format(
-            #         old_v2, params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2']))
-            #     params.INITIALIZATION_KWARGS[STRNAMES.SELF_INTERACTION_VALUE]['rescale_value'] = \
-            #         subjset.qpcr_normalization_factor
+            # pl.visualization.abundance_over_time(subj=subjset, dtype='qpcr', include_errorbars=False, grid=True)
+            # fig = plt.gcf()
+            # fig.tight_layout()
+            # plt.savefig(basepath + 'qpcr_data.pdf')
+            # plt.close()
+
+            if params.QPCR_NORMALIZATION_MAX_VALUE is not None:
+                subjset.normalize_qpcr(max_value=params.QPCR_NORMALIZATION_MAX_VALUE)
+                logging.info('Normalizing qPCR values. Normalization constant: {:.3E}'.format(
+                    subjset.qpcr_normalization_factor))
+                old_c_m = params.C_M
+                old_v2 = params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2']
+                params.C_M = params.C_M * subjset.qpcr_normalization_factor
+                params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2'] *= subjset.qpcr_normalization_factor
+                logging.info('Old `c_m`: {:.2E}. New `c_m`: {:.2E}'.format(
+                    old_c_m, params.C_M))
+                logging.info('Old `v_2`: {:.2E}. New `v2`: {:.2E}'.format(
+                    old_v2, params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2']))
+                params.INITIALIZATION_KWARGS[STRNAMES.SELF_INTERACTION_VALUE]['rescale_value'] = \
+                    subjset.qpcr_normalization_factor
 
             subjset.save(subjset_filename)
 
@@ -234,8 +273,6 @@ def main_leave_out_single(params, continue_inference):
         plot_filtering_thresh=False,
         plot_gif_filtering=False)
 
-
-    
     # If the validation subjset exists, run the validation function
     if os.path.isfile(validate_subjset_filename):
         main_base.validate(

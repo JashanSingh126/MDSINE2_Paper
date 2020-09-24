@@ -48,14 +48,25 @@ class Data(DataNode):
     Parameters
     ----------
     asvs : pl.base.ASVSet
-        - This is the ASVSet that we use
+        This is the ASVSet that we use
     subjects : pl.base.SubjectSet
-        - These are a list of the subjects that we are going to get
-            data from
+        These are a list of the subjects that we are going to get data from
+    zero_inflation_transition_policy : str
+        How we handle the transitions from a structural zero to a non-structural zero.
+        If None then we do not assume any zero-inflation. Options:
+        'sample'
+            Intermediate timepoint is uniformly sampled between the structural zero and 
+            non-strctural zero and set at that point.
+        'half-way'
+            Intermediate timepoint is set to half-way between the structural-zero and
+            non-structural zero
+        'ignore'
+            We ignore the change from not being there to being there and vice versa.
     **kwargs
         - These are the extra arguments for DataNode
     '''
-    def __init__(self, asvs, subjects, data_logscale, min_rel_abund=None, **kwargs):
+    def __init__(self, asvs, subjects, data_logscale, min_rel_abund=None, 
+        zero_inflation_transition_policy=None, **kwargs):
         if 'name' not in kwargs:
             kwargs['name'] = 'data'
         DataNode.__init__(self, **kwargs)
@@ -73,6 +84,7 @@ class Data(DataNode):
         self.asvs = asvs
         self.subjects = subjects
         self.data_logscale = data_logscale
+        self.zero_inflation_transition_policy = zero_inflation_transition_policy
 
         self.raw_data = []
         self.rel_data = []
@@ -186,6 +198,14 @@ class Data(DataNode):
                         self.tidxs_in_perturbation[ridx].append((start_idx, start_idx+1))
                     else:
                         self.tidxs_in_perturbation[ridx].append((start_idx, end_idx))
+        
+        # Set structural zeros - everything is set to non-structural zero initially
+        if self.zero_inflation_transition_policy is not None:
+            self._structural_zeros = []
+            for ridx in range(self.n_replicates):
+                self._structural_zeros.append(np.zeros(
+                    shape=(len(self.asvs), self.n_timepoints_for_replicate[ridx]), dtype=bool))
+            self._setrows_to_include_zero_inflation()
 
     def iter_for_building(self):
         for ridx in range(self.n_replicates):
@@ -464,6 +484,118 @@ class Data(DataNode):
                     else:
                         self.tidxs_in_perturbation[ridx].append((start_idx, end_idx))
 
+    def set_zero_inflation(self, turn_on=None, turn_off=None):
+        '''Set which timepoints asvs are set to be turned off. Any asv, timepoints tuple
+        not in `d` is assumed to be "present" (a nonn-structural zero). `d` is an array
+        of 3-tuples, where:
+            (ridx, tidx, aidx)
+                ridx: replicate index (not the same as replicate name)
+                tidx: timepoint index (not the same as timepoint)
+                aidx: ASV index (not the same as ASV name)
+        
+        Parameters
+        ----------
+        turn_on : list(3-tuple)
+            A list of ridx, tidx, aidx to set to being present
+        turn_on : list(3-tuple)
+            A list of ridx, tidx, aidx to set to a structural zero
+        '''
+        if self.zero_inflation_transition_policy is None:
+            raise ValueError('Cannot set set the zero infation if `zero_inflation_transition_policy` ' \
+                'is not set during initialization')
+        if turn_on is not None:
+            for i, (ridx,tidx,aidx) in enumerate(turn_on):
+                if ridx > self.n_replicates or ridx < 0:
+                    raise ValueError('ridx ({}) in index `{}` ({}) is out of range. Only {} replicates'.format(
+                        ridx, i, (ridx,tidx,aidx), self.n_replicates))
+                if tidx > self.n_timepoints_for_replicate[ridx] or tidx < 0:
+                    raise ValueError('tidx ({}) in index `{}` ({}) is out of range. Only {} timepoints in replicate {}'.format(
+                        tidx, i, (ridx,tidx,aidx), self.n_timepoints_for_replicate[ridx], ridx))
+                if aidx > len(self.asvs) or aidx < 0:
+                    raise ValueError('aidx ({}) in index `{}` ({}) is out of range. Only {} ASVs'.format(
+                        aidx, i, (ridx,tidx,aidx), len(self.asvs)))
+
+                self._structural_zeros[ridx][aidx,tidx] = False
+
+        if turn_off is not None:
+            for i, (ridx,tidx,aidx) in enumerate(turn_off):
+                if ridx > self.n_replicates or ridx < 0:
+                    raise ValueError('ridx ({}) in index `{}` ({}) is out of range. Only {} replicates'.format(
+                        ridx, i, (ridx,tidx,aidx), self.n_replicates))
+                if tidx > self.n_timepoints_for_replicate[ridx] or tidx < 0:
+                    raise ValueError('tidx ({}) in index `{}` ({}) is out of range. Only {} timepoints in replicate {}'.format(
+                        tidx, i, (ridx,tidx,aidx), self.n_timepoints_for_replicate[ridx], ridx))
+                if aidx > len(self.asvs) or aidx < 0:
+                    raise ValueError('aidx ({}) in index `{}` ({}) is out of range. Only {} ASVs'.format(
+                        aidx, i, (ridx,tidx,aidx), len(self.asvs)))
+
+                self._structural_zeros[ridx][aidx,tidx] = True
+        self._setrows_to_include_zero_inflation()
+
+    def is_timepoint_structural_zero(self, ridx, tidx, aidx):
+        '''Returns True if the replicate index `ridx`, timepoint index `tidx`, and
+        ASV index `aidx` is a structural zero or not
+        '''
+        if self.zero_inflation_transition_policy is None:
+            raise ValueError('Cannot set set the zero infation if `zero_inflation_transition_policy` ' \
+                'is not set during initialization')
+        return self._structural_zeros[ridx][aidx, tidx]
+
+    def _setrows_to_include_zero_inflation(self):
+        '''Make a rows matrix for what to include based on `self._structural_zeros`
+        '''
+        if self.zero_inflation_transition_policy is None:
+            raise ValueError('Cannot set set the zero infation if `zero_inflation_transition_policy` ' \
+                'is not set during initialization')
+
+        iii = 0
+
+        l = len(self.asvs) * self.total_n_dts_per_asv
+        self.rows_to_include_zero_inflation = np.zeros(l, dtype=bool)
+        iii = 0
+        for ridx in range(self.n_replicates):
+            curr_structural_zero = self._structural_zeros[ridx]
+            for dtidx in range(self.n_dts_for_replicate[ridx]):
+                # we look at timepoint indices `dtidx` and `dtidx+1`
+
+                tidxstart = dtidx
+                tidxend = dtidx
+
+                for aidx in range(len(self.asvs)):
+
+                    structzero_start = curr_structural_zero[aidx, tidxstart]
+                    structzero_end = curr_structural_zero[aidx, tidxend]
+                    
+                    if structzero_start and structzero_end:
+                        # If both are not there, exclude
+                        self.rows_to_include_zero_inflation[iii] = False
+                    
+                    elif (not structzero_end) and (not structzero_start):
+                        # If both are there, include
+                        self.rows_to_include_zero_inflation[iii] = True
+
+                    else:
+                        # Else we are in a transition and we must use a policy
+                        if self.zero_inflation_transition_policy == 'ignore':
+                            # don't include it
+                            self.rows_to_include_zero_inflation[iii] = False
+                        elif self.zero_inflation_transition_policy == 'half-way':
+                            raise NotImplementedError('Not implemented')
+                        elif self.zero_inflation_transition_policy == 'sample':
+                            raise NotImplementedError('Not implemented')
+                        else:
+                            raise ValueError('`zero_inflation_transition_policy` ({}) not recognized'.format(
+                                self.zero_inflation_transition_policy))
+
+                    iii += 1
+
+        self.off_previously_arr_zero_inflation = np.zeros(l, dtype=int)
+        n_off_prev = 0
+        for i in range(1, l):
+            if not self.rows_to_include_zero_inflation[i-1]:
+                n_off_prev += 1
+            self.off_previously_arr_zero_inflation[i] = n_off_prev
+
     def _get_non_pert_rows_of_regress_matrices(self):
         '''This will get the rows where there are no perturbations in the
         regressor matrices
@@ -488,6 +620,9 @@ class Data(DataNode):
 
         ret = np.ones(len(self.lhs), dtype=bool)
         ret[ridxs] = False
+
+        if self.zero_inflation_transition_policy is not None:
+            ret = ret[self.rows_to_include_zero_inflation]
 
         return ret
 
@@ -748,6 +883,9 @@ class LHSVector(ObservationVector):
                     n_ts=self.G.data.n_dts_for_replicate[ridx],
                     n_asvs=self.G.data.n_asvs)
             i += l
+
+        if self.G.data.zero_inflation_transition_policy is not None:
+            self.vector = self.vector[self.G.data.rows_to_include_zero_inflation]
         self.vector = self.vector.reshape(-1,1)
 
     def __len__(self):
@@ -809,12 +947,11 @@ class SelfInteractionDesignMatrix(DesignMatrix):
             raise TypeError('`data_logscale` ({}) must be a bool'.format(
                 type(data_logscale)))
         self.data_logscale = data_logscale
-        self.n_cols = self.G.data.n_asvs
+        self.n_cols_master = self.G.data.n_asvs
         total_n_dts = self.G.data.total_n_dts_per_asv
-        self.n_rows = self.n_cols * total_n_dts
-        self.rows = np.arange(self.n_rows, dtype=int)
-        self.shape = (self.n_rows, self.n_cols)
-        self.cols = np.kron(
+        self.n_rows_master = self.n_cols_master * total_n_dts
+        self.master_rows = np.arange(self.n_rows_master, dtype=int)
+        self.master_cols = np.kron(
                 np.ones(total_n_dts, dtype=int),
                 np.arange(self.G.data.n_asvs,dtype=int))
         logging.info('Initializing self-interactions design matrix')
@@ -822,12 +959,14 @@ class SelfInteractionDesignMatrix(DesignMatrix):
     def build(self, override_logscale=None):
         '''Builds the matrix. Flatten Fortran style
         '''
+        self.rows = self.master_rows
+        self.cols = self.master_cols
         if override_logscale is not None:
             log = override_logscale
         else:
             log = self.data_logscale
 
-        self.data = np.zeros(self.n_rows, dtype=float)
+        self.data = np.zeros(self.n_rows_master, dtype=float)
         data = self.G.data.data
         i = 0
         for ridx in range(self.G.data.n_replicates):
@@ -837,9 +976,13 @@ class SelfInteractionDesignMatrix(DesignMatrix):
             else:
                 self.data[i:i+l] = -np.square(data[ridx][:,:-1].ravel('F'))
             i += l
-
+            
+        shape = (self.n_rows_master, self.n_cols_master)
         self.matrix = scipy.sparse.coo_matrix(
-            (self.data,(self.rows,self.cols)), shape=self.shape).tocsc()
+            (self.data,(self.rows,self.cols)), shape=shape).tocsc()
+        if self.G.data.zero_inflation_transition_policy is not None:
+            self.matrix = self.matrix[self.G.data.rows_to_include_zero_inflation, :]
+
 
     def set_to_lhs(self):
         '''Multiply self.matrix by the current value of
@@ -897,12 +1040,11 @@ class GrowthDesignMatrix(DesignMatrix):
                 type(data_logscale)))
         self.data_logscale = data_logscale
         self.perturbations_additive = perturbations_additive
-        self.n_cols = self.G.data.n_asvs
+        self.n_cols_master = self.G.data.n_asvs
         total_n_dts = self.G.data.total_n_dts_per_asv
-        self.n_rows = self.n_cols * total_n_dts
-        self.rows = np.arange(self.n_rows, dtype=int)
-        self.shape = (self.n_rows, self.n_cols)
-        self.cols = np.kron(
+        self.n_rows_master = self.n_cols_master * total_n_dts
+        self.master_rows = np.arange(self.n_rows_master, dtype=int)
+        self.master_cols = np.kron(
                 np.ones(total_n_dts, dtype=int),
                 np.arange(self.G.data.n_asvs,dtype=int))
         logging.info('Initializing growth design matrix')
@@ -918,11 +1060,13 @@ class GrowthDesignMatrix(DesignMatrix):
         '''builds the matrix without perturbations factored in.
         Flatten fortran style
         '''
+        self.cols = self.master_cols
+        self.rows = self.master_rows
         if override_logscale is not None:
             log = override_logscale
         else:
             log = self.data_logscale
-        self.data = np.ones(self.n_rows, dtype=float)
+        self.data = np.ones(self.n_rows_master, dtype=float)
         if not log:
             data = self.G.data.data
             i = 0
@@ -931,8 +1075,13 @@ class GrowthDesignMatrix(DesignMatrix):
                 self.data[i:i+l] = data[ridx][:,:-1].ravel('F')
                 i += l
 
+        shape = (self.n_rows_master, self.n_cols_master)
+
         self.matrix_without_perturbations = scipy.sparse.coo_matrix(
-            (self.data,(self.rows,self.cols)), shape=self.shape).tocsc()
+            (self.data,(self.rows,self.cols)), shape=shape).tocsc()
+        
+        if self.G.data.zero_inflation_transition_policy is not None:
+            self.matrix_without_perturbations = self.matrix_without_perturbations[self.G.data.rows_to_include_zero_inflation, :]
 
     def build_with_perturbations(self, override_logscale=None):
         '''Incorporate perturbation factors while building the data structure.
@@ -968,6 +1117,8 @@ class GrowthDesignMatrix(DesignMatrix):
             - The first day is inclusive
             - Last day is exclusive
         '''
+        self.cols = self.master_cols
+        self.rows = self.master_rows
         if override_logscale is not None:
             log = override_logscale
         else:
@@ -1002,8 +1153,13 @@ class GrowthDesignMatrix(DesignMatrix):
             self.data_w_perts[i:i+l] = d[ridx][:,:-1].ravel('F')
             i += l
 
+        shape = (self.n_rows_master, self.n_cols_master)
         self.matrix_with_perturbations = scipy.sparse.coo_matrix(
             (self.data_w_perts,(self.rows,self.cols)), shape=self.shape).tocsc()
+        if self.G.data.zero_inflation_transition_policy is not None:
+            self.matrix_with_perturbations = \
+                self.matrix_with_perturbations[self.G.data.rows_to_include_zero_inflation, :]
+            self.matrix_with_perturbations = self.matrix_with_perturbations.tocsc()
 
     def set_to_lhs(self, with_perturbations):
         '''Multiply the design matrix by the current value of
@@ -1091,6 +1247,10 @@ class PerturbationBaseDesignMatrix(DesignMatrix):
         if not pl.isbool(perturbations_additive):
             raise TypeError('`perturbations_additive` ({}) must be a bool'.format(
                 type(perturbations_additive)))
+        
+        if self.G.data.zero_inflation_transition_policy is not None:
+            raise NotImplementedError('Not Implemented')
+
         self.data_logscale = data_logscale
         self.perturbations = self.G.perturbations
         self.n_perturbations = len(self.perturbations)
@@ -1434,10 +1594,10 @@ class InteractionsBaseDesignMatrix(DesignMatrix):
         self.n_cols = int(n_asvs * (n_asvs - 1))
         self.shape = (self.n_rows, self.n_cols)
 
-        self.rows = np.kron(
+        self.master_rows = np.kron(
                 np.arange(self.n_rows, dtype=int),
                 np.ones(n_asvs-1, dtype=int))
-        self.cols = np.kron(
+        self.master_cols = np.kron(
             np.ones(total_n_dts, dtype=int),
             np.arange(self.n_cols, dtype=int))
 
@@ -1446,7 +1606,7 @@ class InteractionsBaseDesignMatrix(DesignMatrix):
         #     np.vstack((self.rows.reshape(1,-1), self.cols.reshape(1,-1)))).to(_COMPUTE_DEVICE)
         # self.device_shape = torch.Size([self.n_rows, self.n_cols])
 
-        self.data = np.zeros(len(self.cols))
+        self.master_data = np.zeros(len(self.master_cols))
         logging.info('Initializing interactions base design matrix')
 
     # @profile
@@ -1465,27 +1625,31 @@ class InteractionsBaseDesignMatrix(DesignMatrix):
 
         i = 0
         for ridx in range(self.G.data.n_replicates):
-            l = self.G.data.n_dts_for_replicate[ridx]*n_asvs*(n_asvs-1)
-            InteractionsBaseDesignMatrix._fast_build(
-                ret=self.data[i:i+l], data=data[ridx], n_asvs=n_asvs,
-                n_times=self.G.data.n_dts_for_replicate[ridx], log=log)
-            i += l
-
-        # if cuda:
-        #     dd = torch.DoubleTensor(self.data).to(_COMPUTE_DEVICE)
-        #     self.matrix = torch.sparse.DoubleTensor(self.device_ind, dd, 
-        #         self.device_shape).to_dense()
-        # else:
+            i = InteractionsBaseDesignMatrix._fast_build(
+                ret=self.master_data, data=data[ridx], n_asvs=n_asvs,
+                n_dts=self.G.data.n_dts_for_replicate[ridx], log=log, i=i)
+            
+        if self.G.data.zero_inflation_transition_policy is not None:
+            # All of the rows that need to be taken out will be taken out. All of the 
+            # remaining nans in the matrix are effects of a structural zero on a non-structural
+            # zero - making a nan. We can set this to zero because if this is the case we can say 
+            # this means "no effect"
+            self.master_data[np.isnan(self.master_data)] = 0
+        else:
+            if np.any(np.isnan(self.master_data)):
+                raise ValueError('nans in matrix, this should not happen. check the values')
         self.matrix = scipy.sparse.coo_matrix(
-            (self.data,(self.rows,self.cols)),shape=self.shape).tocsc()
+            (self.master_data,(self.master_rows,self.master_cols)),shape=self.shape).tocsc()
+        
+        if self.G.data.zero_inflation_transition_policy is not None:
+            self.matrix = self.matrix[self.G.data.rows_to_include_zero_inflation, :]
 
     @staticmethod
     @numba.jit(nopython=True, cache=True, fastmath=True)
-    def _fast_build(ret, data, n_times, n_asvs, log):
+    def _fast_build(ret, data, n_dts, n_asvs, log, i):
         '''About 99.5% faster than regular python looping
         '''
-        i = 0
-        for tidx in range(n_times):
+        for tidx in range(n_dts):
             for toidx in range(n_asvs):
                 for soidx in range(n_asvs):
                     if toidx == soidx:
@@ -1496,6 +1660,34 @@ class InteractionsBaseDesignMatrix(DesignMatrix):
                         ret[i] = data[toidx,tidx] * data[soidx, tidx]
                     
                     i = i + 1
+        return i
+
+    @staticmethod
+    @numba.jit(nopython=True, cache=True, fastmath=True)
+    def _fast_build_zi_ignore(ret, data, n_dts, n_asvs, log, i, zero_inflation, zi_mask):
+        '''About 99.5% faster than regular python looping
+
+        Only set to include if target asv current timepoint and future timepoint are there and
+        if the source asv timepoint is there
+        '''
+        for tidx in range(n_dts):
+            for toidx in range(n_asvs):
+                for soidx in range(n_asvs):
+                    if toidx == soidx:
+                        continue
+
+                    if not (zero_inflation[soidx, tidx] and zero_inflation[toidx, tidx] and \
+                        zero_inflation[toidx, tidx+1]):
+                        zi_mask[i] = False
+                    elif log:
+                        ret[i] = data[soidx, tidx]
+                        zi_mask[i] = True
+                    else:
+                        ret[i] = data[toidx,tidx] * data[soidx, tidx]
+                        zi_mask[i] = True
+                    
+                    i = i + 1
+        return i
 
     def update_value(self):
         self.build()

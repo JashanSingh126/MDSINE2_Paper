@@ -41,6 +41,13 @@ def _normal_logpdf(value, mean, std):
 
 class TrajectorySet(pl.graph.Node):
     '''This aggregates a set of trajectories from each set
+
+    Parameters
+    ----------
+    name : str
+        Name of the object
+    G : pylab.graph.Graph
+        Graph object to attach it to
     '''
     def __init__(self, name, G, **kwargs):
         pl.graph.Node.__init__(self, name=name, G=G)
@@ -104,6 +111,8 @@ class TrajectorySet(pl.graph.Node):
 
     def add_trace(self):
         for ridx in range(len(self.value)):
+            # Set the zero inflation values to nans
+            self.value[ridx].value[~self.G[REPRNAMES.ZERO_INFLATION].value[ridx]] = np.nan
             self.value[ridx].add_trace()
 
     def add_init_value(self):
@@ -129,7 +138,7 @@ class FilteringLogMP(pl.graph.Node):
 
     This assumes that we are using the log model
     '''
-    def __init__(self, mp, perturbations_additive, **kwargs):
+    def __init__(self, mp, perturbations_additive, zero_inflation_transition_policy,**kwargs):
         '''
         Parameters
         ----------
@@ -139,12 +148,15 @@ class FilteringLogMP(pl.graph.Node):
                 want to debug and/or benchmark
             'full'
                 Send each replicate to a processor each
+        zero_inflation_transition_policy : None, str
+            Type of zero inflation to do. If None then there is no zero inflation
         '''
         kwargs['name'] = STRNAMES.FILTERING
         pl.graph.Node.__init__(self, **kwargs)
         self.x = TrajectorySet(name=STRNAMES.LATENT_TRAJECTORY, G=self.G)
         self.mp = mp
         self.perturbations_additive = perturbations_additive
+        self.zero_inflation_transition_policy = zero_inflation_transition_policy
 
         self.print_vals = False
         self._strr = 'parallel'
@@ -457,6 +469,7 @@ class FilteringLogMP(pl.graph.Node):
 
             worker = SubjectLogTrajectorySetMP()
             worker.initialize(
+                zero_inflation_transition_policy=self.zero_inflation_transition_policy,
                 times=self.G.data.times[ridx],
                 qpcr_log_measurements=qpcr_log_measurements,
                 reads=reads,
@@ -617,7 +630,7 @@ class FilteringLogMP(pl.graph.Node):
                 perts.append(perturbation.item_array().reshape(-1,1))
             perts = np.hstack(perts)
 
-        zero_inflation = self.G[REPRNAMES.ZERO_INFLATION].value
+        zero_inflation = [self.G[REPRNAMES.ZERO_INFLATION].value[ridx] for ridx in range(self.G.data.n_replicates)]
         qpcr_vars = []
         for aaa in self.G[REPRNAMES.QPCR_VARIANCES].value:
             qpcr_vars.append(aaa.value)
@@ -625,19 +638,19 @@ class FilteringLogMP(pl.graph.Node):
         
         kwargs = {'growth':growth, 'self_interactions':self_interactions,
             'pv':pv, 'interactions':interactions, 'perturbations':perts, 
-            'zero_inflation': zero_inflation, 'qpcr_variances':qpcr_vars}
+            'zero_inflation_data': zero_inflation, 'qpcr_variances':qpcr_vars}
 
         str_acc = [None]*self.G.data.n_replicates
         if self.mp == 'debug':
+
             for ridx in range(self.G.data.n_replicates):
-                kwargs['zero_inflation'] = zero_inflation
-                kwargs['qpcr_variances'] = qpcr_vars
                 _, x, acc_rate = self.pool[ridx].persistent_run(**kwargs)
                 self.x[ridx].value = x
                 str_acc[ridx] = '{:.3f}'.format(acc_rate)
 
         else:
-            kwargs['zero_inflation'] = None
+            raise NotImplementedError('Multiprocessing for filtering with zero inflation ' \
+                'is not implemented')
             ret = self.pool.map(func='persistent_run', args=kwargs)
             for ridx, x, acc_rate in ret:
                 self.x[ridx].value = x
@@ -746,7 +759,8 @@ class SubjectLogTrajectorySetMP(pl.multiprocessing.PersistentWorker):
     def initialize(self, times, qpcr_log_measurements, reads, there_are_intermediate_timepoints,
         there_are_perturbations, pv_global, x_prior_mean, perturbations_additive,
         x_prior_std, tune, delay, end_iter, proposal_init_scale, a0, a1, x, calculate_qpcr_loglik,
-        pert_starts, pert_ends, ridx, h5py_filename, h5py_xname, target_acceptance_rate):
+        pert_starts, pert_ends, ridx, h5py_filename, h5py_xname, target_acceptance_rate,
+        zero_inflation_transition_policy):
         '''Initialize the object at the beginning of the inference
 
         n_o = Number of ASVs
@@ -811,6 +825,7 @@ class SubjectLogTrajectorySetMP(pl.multiprocessing.PersistentWorker):
         self.h5py_xname = h5py_xname
         self.target_acceptance_rate = target_acceptance_rate
         self.perturbations_additive = perturbations_additive
+        self.zero_inflation_transition_policy = zero_inflation_transition_policy
 
         self.times = times
         self.qpcr_log_measurements = qpcr_log_measurements
@@ -958,7 +973,7 @@ class SubjectLogTrajectorySetMP(pl.multiprocessing.PersistentWorker):
     
     # @profile
     def persistent_run(self, growth, self_interactions, pv, interactions,
-        perturbations, zero_inflation, qpcr_variances):
+        perturbations, qpcr_variances, zero_inflation_data):
         '''Run an update of the values for a single gibbs step for all of the data points
         in this replicate
 
@@ -988,7 +1003,6 @@ class SubjectLogTrajectorySetMP(pl.multiprocessing.PersistentWorker):
             3 This is the acceptance rate for this past update.
         '''
         self.master_growth_rate = growth
-        # self.zero_inflation = zero_inflation[self.ridx]
 
         if self.sample_iter < self.delay:
             self.sample_iter += 1
@@ -1000,6 +1014,7 @@ class SubjectLogTrajectorySetMP(pl.multiprocessing.PersistentWorker):
         self.pv_std = np.sqrt(pv)
         self.qpcr_stds = np.sqrt(qpcr_variances[self.ridx])
         self.qpcr_stds_d = {}
+        self.zero_inflation_data = zero_inflation_data[self.ridx]
 
         for tidx,t in enumerate(self.qpcr_log_measurements):
             self.qpcr_stds_d[t] = self.qpcr_stds[tidx]
@@ -1037,11 +1052,7 @@ class SubjectLogTrajectorySetMP(pl.multiprocessing.PersistentWorker):
             self.forward_loglik = self.default_forward_loglik
             self.reverse_loglik = self.first_timepoint_reverse
             # Calculate A matrix for forward
-            # print(self.curr_interactions.reshape(-1,1))
-            # print('\n')
-            # print(self.x[:, self.tidx].reshape(-1,1))
-            self.forward_interaction_vals = np.sum(self.x[:, self.tidx] * self.curr_interactions)
-            # print(self.forward_interaction_vals)
+            self.forward_interaction_vals = np.nansum(self.x[:, self.tidx] * self.curr_interactions)
             self.update_single()
             self.reverse_loglik = self.default_reverse_loglik
             # Set for middle timepoints
@@ -1056,7 +1067,7 @@ class SubjectLogTrajectorySetMP(pl.multiprocessing.PersistentWorker):
                 # Calculate A matrix for forward and reverse
                 # Set the reverse of the current time step to the forward of the previous
                 self.reverse_interaction_vals = self.forward_interaction_vals #np.sum(self.x[:, self.prev_tidx] * self.curr_interactions)
-                self.forward_interaction_vals = np.sum(self.x[:, self.tidx] * self.curr_interactions)
+                self.forward_interaction_vals = np.nansum(self.x[:, self.tidx] * self.curr_interactions)
 
                 # Run single update
                 self.update_single()
@@ -1128,6 +1139,28 @@ class SubjectLogTrajectorySetMP(pl.multiprocessing.PersistentWorker):
         tidx = self.tidx
         oidx = self.oidx
 
+        # Check if we should update the zero inflation policy
+        if self.zero_inflation_transition_policy is not None:
+            if self.zero_inflation_transition_policy == 'ignore':
+                if not self.zero_inflation_data[oidx,tidx]:
+                    self.x[oidx, tidx] = np.nan
+                    self.logx[oidx, tidx] = np.nan
+                    return
+                else:
+                    if tidx < self.zero_inflation_data.shape[1]-1:
+                        do_forward = self.zero_inflation_data[oidx, tidx+1]
+                    else:
+                        do_forward = True
+                    if tidx > 0:
+                        do_reverse = self.zero_inflation_data[oidx, tidx-1]
+                    else:
+                        do_reverse = True
+            else:
+                raise NotImplementedError('Not Implemented')
+        else:
+            do_forward = True
+            do_reverse = True
+
         # t = self.times[self.tidx]
         # # proposal
         # mu1 = self.curr_logx[tidx]
@@ -1180,8 +1213,14 @@ class SubjectLogTrajectorySetMP(pl.multiprocessing.PersistentWorker):
         #     # print('fully in pert?', self.fully_in_pert[self.tidx])
         #     print('forward growth', self.forward_growth_rate)
 
-        prev_aaa = self.forward_loglik()
-        prev_bbb = self.reverse_loglik()
+        if do_forward:
+            prev_aaa = self.forward_loglik()
+        else:
+            prev_aaa = 0
+        if do_reverse:
+            prev_bbb = self.reverse_loglik()
+        else:
+            prev_bbb = 0
         prev_ddd = self.data_loglik()
 
         # if tidx == 5:
@@ -1196,8 +1235,14 @@ class SubjectLogTrajectorySetMP(pl.multiprocessing.PersistentWorker):
         self.curr_logx[tidx] = logx_new
         self.sum_q[tidx] = self.sum_q[tidx] - prev_x_value + x_new
 
-        new_aaa = self.forward_loglik()
-        new_bbb = self.reverse_loglik()
+        if do_forward:
+            new_aaa = self.forward_loglik()
+        else:
+            new_aaa = 0
+        if do_reverse:
+            new_bbb = self.reverse_loglik()
+        else:
+            new_bbb = 0
         new_ddd = self.data_loglik()
 
         # if tidx == 5:
@@ -1212,7 +1257,6 @@ class SubjectLogTrajectorySetMP(pl.multiprocessing.PersistentWorker):
         #     print('new logx value', logx_new)
 
         l_new = new_aaa + new_bbb + new_ddd
-            
         r_accept = l_new - l_old
 
         # if tidx == 0:
@@ -1368,6 +1412,12 @@ class SubjectLogTrajectorySetMP(pl.multiprocessing.PersistentWorker):
         a1 : growth rates and perturbations (if necessary)
         Axj : cluster interactions with the other abundances already multiplied
         tidx : time index
+
+        Zero-inflation
+        --------------
+        When we get here, the current asv at `tidx` is not a structural zero, but 
+        there might be other bugs in the system that do have a structural zero there.
+        Thus we do nan adds
         '''
         logxi = self.curr_logx[tidx]
         xi = self.curr_x[tidx]
@@ -1383,7 +1433,9 @@ class SubjectLogTrajectorySetMP(pl.multiprocessing.PersistentWorker):
 
 class ZeroInflation(pl.graph.Node):
     '''This is the posterior distribution for the zero inflation model. These are used
-    to learn when the model should use use the data and when it should not.
+    to learn when the model should use use the data and when it should not. We do not need
+    to trace this object because we set the structural zeros to nans in the trace for 
+    filtering.
 
     TODO: Parallel version of the class
     '''
@@ -1400,6 +1452,18 @@ class ZeroInflation(pl.graph.Node):
         self.value = []
         self.mp = mp
         self._strr = 'NA'
+
+        for ridx in range(self.G.data.n_replicates):
+            n_timepoints = self.G.data.n_timepoints_for_replicate[ridx]
+            self.value.append(np.ones(shape=(len(self.G.data.asvs), n_timepoints), dtype=bool))
+
+    def reset_value_size(self):
+        '''Change the size of the trajectory when we set the intermediate timepoints
+        '''
+        n_asvs = self.G.data.n_asvs
+        for ridx in range(len(self.value)):
+            n_timepoints = self.G.data.n_timepoints_for_replicate[ridx]
+            self.value[ridx] = np.ones((n_asvs, n_timepoints), dtype=bool)
 
     def __str__(self):
         return self._strr
@@ -1420,108 +1484,37 @@ class ZeroInflation(pl.graph.Node):
             raise TypeError('`delay` ({}) must be an int'.format(type(delay)))
         self.delay = delay
 
-        for ridx in range(self.G.data.n_replicates):
-            temp = np.ones(shape=self.G.data.data[ridx].shape, dtype=bool)
-            self.value.append(temp)
-
-        return
-
-        # import pandas as pd
-        # pd.set_option('display.max_rows', None)
-        # pd.set_option('display.max_columns', None)
-        # pd.set_option('display.width', None)
-        # pd.set_option('display.max_colwidth', -1)
-        # print('\n8')
-        # print(pd.concat([M6.loc['ASV_8'], M7.loc['ASV_8'], M8.loc['ASV_8'], M9.loc['ASV_8'], M10.loc['ASV_8']], axis=1))
-        if 'ASV_8' in self.G.data.asvs:
-            oidx = self.G.data.asvs['ASV_8'].idx
+        if value_option in [None, 'auto']:
+            # Set everything to on
+            self.value = []
             for ridx in range(self.G.data.n_replicates):
-                tidx_start = self.G.data.timepoint2index[ridx][23.0]
-                tidx_end = self.G.data.timepoint2index[ridx][28.5]
-                self.value[ridx][oidx, tidx_start:tidx_end] = False
+                n_timepoints = self.G.data.n_timepoints_for_replicate[ridx]
+                self.value.append(np.ones(
+                    shape=(len(self.G.data.asvs), n_timepoints), dtype=bool))
 
-        if 'ASV_19' in self.G.data.asvs:
-            oidx = self.G.data.asvs['ASV_19'].idx
-            # print(pd.concat([M6.loc['ASV_19'], M7.loc['ASV_19'], M8.loc['ASV_19'], M9.loc['ASV_19'], M10.loc['ASV_19']], axis=1))
+        elif value_option == 'mdsine-cdiff-dataset':
+            # Set everything to on except for cdiff before day 28 for every subject
+            self.value = []
             for ridx in range(self.G.data.n_replicates):
-                tidx_start = self.G.data.timepoint2index[ridx][39.0]
-                tidx_end = self.G.data.timepoint2index[ridx][45.0]
-                self.value[ridx][oidx, tidx_start:tidx_end] = False
+                n_timepoints = self.G.data.n_timepoints_for_replicate[ridx]
+                self.value.append(np.ones(
+                    shape=(len(self.G.data.asvs), n_timepoints), dtype=bool))
 
-        # print('\n20')
-
-        if 'ASV_20' in self.G.data.asvs:
-            oidx = self.G.data.asvs['ASV_20'].idx
-            # print(pd.concat([M6.loc['ASV_20'], M7.loc['ASV_20'], M8.loc['ASV_20'], M9.loc['ASV_20'], M10.loc['ASV_20']], axis=1))
+            # Get cdiff
+            cdiff_idx = self.G.data.asvs['Clostridium-difficile'].idx
+            turn_off = []
+            turn_on = []
             for ridx in range(self.G.data.n_replicates):
-                tidx_start = self.G.data.timepoint2index[ridx][42.0]
-                tidx_end = self.G.data.timepoint2index[ridx][44.5]
-                self.value[ridx][oidx, tidx_start:tidx_end] = False
+                for tidx, t in enumerate(self.G.data.times[ridx]):
+                    for oidx in range(len(self.G.data.asvs)):
+                        if t < 28 and oidx == cdiff_idx:
+                            self.value[ridx][cdiff_idx, tidx] = False
+                            turn_off.append((ridx, tidx, cdiff_idx))
+                        else:
+                            turn_on.append((ridx, tidx, oidx))
 
-                tidx_start = self.G.data.timepoint2index[ridx][0.0]
-                tidx_end = self.G.data.timepoint2index[ridx][1.0]
-                self.value[ridx][oidx, tidx_start:tidx_end] = False
+        else:
+            raise ValueError('`value_option` ({}) not recognized'.format(value_option))
 
-        # print('\n25')
-        if 'ASV_25' in self.G.data.asvs:
-            oidx = self.G.data.asvs['ASV_25'].idx
-            # print(pd.concat([M6.loc['ASV_25'], M7.loc['ASV_25'], M8.loc['ASV_25'], M9.loc['ASV_25'], M10.loc['ASV_25']], axis=1))
-
-            if '7' in self.G.data.subjects:
-                rname = '7'
-                for i in range(self.G.data.n_replicates):
-                    if rname == self.G.data.subjects.iloc(i).name:
-                        ridx = i
-                        break
-                tidx_start = self.G.data.timepoint2index[ridx][39.0]
-                tidx_end = self.G.data.timepoint2index[ridx][64.5]
-                self.value[ridx][oidx, tidx_start:tidx_end] = False
-
-            if '10' in self.G.data.subjects:
-                rname = '10'
-                for i in range(self.G.data.n_replicates):
-                    if rname == self.G.data.subjects.iloc(i).name:
-                        ridx = i
-                        break
-                tidx_start = self.G.data.timepoint2index[ridx][39.0]
-                tidx_end = self.G.data.timepoint2index[ridx][57.0]
-                self.value[ridx][oidx, tidx_start:tidx_end] = False
-
-            if '8' in self.G.data.subjects:
-                rname = '8'
-                for i in range(self.G.data.n_replicates):
-                    if rname == self.G.data.subjects.iloc(i).name:
-                        ridx = i
-                        break
-                tidx_start = self.G.data.timepoint2index[ridx][43.0]
-                tidx_end = self.G.data.timepoint2index[ridx][45.0]
-                self.value[ridx][oidx, tidx_start:tidx_end] = False
-
-            if '9' in self.G.data.subjects:
-                rname = '9'
-                for i in range(self.G.data.n_replicates):
-                    if rname == self.G.data.subjects.iloc(i).name:
-                        ridx = i
-                        break
-                tidx_start = self.G.data.timepoint2index[ridx][38.0]
-                tidx_end = self.G.data.timepoint2index[ridx][59.5]
-                self.value[ridx][oidx, tidx_start:tidx_end] = False
-
-            if '6' in self.G.data.subjects:
-                rname = '6'
-                for i in range(self.G.data.n_replicates):
-                    if rname == self.G.data.subjects.iloc(i).name:
-                        ridx = i
-                        break
-                tidx_start = self.G.data.timepoint2index[ridx][39.0]
-                tidx_end = self.G.data.timepoint2index[ridx][59.5]
-                self.value[ridx][oidx, tidx_start:tidx_end] = False
-
-        # print('\n28')
-        if 'ASV_28' in self.G.data.asvs:
-            oidx = self.G.data.asvs['ASV_28'].idx
-            # print(pd.concat([M6.loc['ASV_28'], M7.loc['ASV_28'], M8.loc['ASV_28'], M9.loc['ASV_28'], M10.loc['ASV_28']], axis=1))
-            for ridx in range(self.G.data.n_replicates):
-                tidx_start = self.G.data.timepoint2index[ridx][37.5]
-                tidx_end = self.G.data.timepoint2index[ridx][53.0]
-                self.value[ridx][oidx, tidx_start:tidx_end] = False
+        self.G.data.set_zero_inflation(turn_on=turn_on, turn_off=turn_off)
+                

@@ -600,6 +600,12 @@ class PriorMeanMH(pl.variables.TruncatedNormal):
 
             prec = X.T @ X
             cov = pinv(prec, self)
+
+            logging.critical('here')
+            print(cov.shape)
+            print(X.T.shape)
+            print(y.shape)
+
             mean = cov @ X.T @ y
 
             if self.child_name == STRNAMES.GROWTH_VALUE:
@@ -1339,46 +1345,7 @@ class RegressCoeff(pl.variables.MVN):
         self.sample_iter = 0
 
         if self.update_jointly_growth_si:
-            # Get the rows for each asv
-            self.rows_oidx = {}
-            n_asvs = len(self.G.data.asvs)
-            replicate_bias = np.zeros(self.G.data.n_replicates, dtype=int)
-            idxs = np.asarray([], dtype=int)
-            for ridx in range(1,self.G.data.n_replicates):
-                replicate_bias[ridx] = replicate_bias[ridx-1] + \
-                    self.n_asvs * self.G.data.n_dts_for_replicate[ridx-1]
-            for ridx in range(self.G.data.n_replicates):
-                a = np.arange(0, self.G.data.n_dts_for_replicate[ridx]*n_asvs, step=n_asvs,
-                    dtype=int)
-                a = a + replicate_bias[ridx]
-                idxs = np.append(idxs, a)
-            for oidx in range(len(self.G.data.asvs)):
-                self.rows_oidx[oidx] = idxs + oidx
-
-            if pl.isstr(tune):
-                if tune in ['auto']:
-                    tune = 50
-                else:
-                    raise ValueError('`tune` ({}) not recognized'.format(tune))
-            elif pl.isint(tune):
-                if tune < 0:
-                    raise ValueError('`tune` ({}) must be > 0'.format(
-                        tune))
-            else:
-                raise TypeError('`tune` ({}) type not recognized'.format(type(tune)))
-            self.tune = tune
-            if pl.isstr(end_tune):
-                if end_tune in ['auto', 'half-burnin']:
-                    end_tune = int(self.G.inference.burnin/2)
-                else:
-                    raise ValueError('`tune` ({}) not recognized'.format(end_tune))
-            elif pl.isint(end_tune):
-                if end_tune < 0 or end_tune > self.G.inference.burnin:
-                    raise ValueError('`end_tune` ({}) out of range (0, {})'.format(
-                        end_tune, self.G.inference.burnin))
-            else:
-                raise TypeError('`end_tune` ({}) type not recognized'.format(type(end_tune)))
-            self.end_tune = end_tune
+            raise NotImplementedError('Not Implemented')
                 
     # @profile
     def asarray(self):
@@ -1516,128 +1483,7 @@ class RegressCoeff(pl.variables.MVN):
                 self.self_interactions.update()
             return
         # Update together - make the matrices
-        self._update_acceptances()
-
-        # Make proposal
-        lhs = [REPRNAMES.CLUSTER_INTERACTION_VALUE]
-        if self._there_are_perturbations:
-            if self.perturbations_additive:
-                lhs.append(REPRNAMES.PERT_VALUE)
-                X = np.hstack((
-                    self.G.data.design_matrices[REPRNAMES.GROWTH_VALUE].data.reshape(-1,1),
-                    self.G.data.design_matrices[REPRNAMES.SELF_INTERACTION_VALUE].data.reshape(-1,1)))
-            else:
-                X = np.hstack((
-                    self.G.data.design_matrices[REPRNAMES.GROWTH_VALUE].data_w_perts.reshape(-1,1),
-                    self.G.data.design_matrices[REPRNAMES.SELF_INTERACTION_VALUE].data.reshape(-1,1)))
-
-        else:
-            X = np.hstack((
-                self.G.data.design_matrices[REPRNAMES.GROWTH_VALUE].data.reshape(-1,1),
-                self.G.data.design_matrices[REPRNAMES.SELF_INTERACTION_VALUE].data.reshape(-1,1)))
-
-        y = self.G.data.construct_lhs(lhs)
-        process_prec_diag = self.G[REPRNAMES.PROCESSVAR].prec
-        self.prior_means = np.asarray([
-            self.G[REPRNAMES.PRIOR_MEAN_GROWTH].value,
-            self.G[REPRNAMES.PRIOR_MEAN_SELF_INTERACTIONS].value])
-        self.prior_precs = np.asarray([
-            1/self.G[REPRNAMES.PRIOR_VAR_GROWTH].value,
-            1/self.G[REPRNAMES.PRIOR_VAR_SELF_INTERACTIONS].value])
-
-        # Make the dictionaries mapping the ASVs to the rows
-        self.X = {}
-        self.y = {}
-        self.process_prec_diag = {}
-        self.process_std_diag = {}
-        self._prior_sqrt_growth = np.sqrt(self.G[REPRNAMES.PRIOR_VAR_GROWTH].value)
-        self._prior_sqrt_si = np.sqrt(self.G[REPRNAMES.PRIOR_VAR_SELF_INTERACTIONS].value)
-        for oidx in range(len(self.G.data.asvs)):
-            rows = self.rows_oidx[oidx]
-            self.X[oidx] = X[rows, :]
-            self.y[oidx] = y[rows, :]
-            self.process_prec_diag[oidx] = process_prec_diag[rows]
-            self.process_std_diag[oidx] = np.sqrt(self.process_prec_diag[oidx])
-
-        oidxs = npr.permutation(len(self.G.data.asvs))
-        for oidx in oidxs:
-            self._update_single_growth_si(oidx=oidx)
-        
-        if self._there_are_perturbations:
-            # If there are perturbations then we need to update their
-            # matrix because the growths changed
-            self.G.data.design_matrices[REPRNAMES.PERT_VALUE].update_values()
-
-    def _update_single_growth_si(self, oidx):
-        '''Single update for `oidx`
-        '''
-        # Get data
-        prior_means = self.prior_means
-        prior_prec = self.prior_precs
-        X = self.X[oidx]
-        y = self.y[oidx]
-        process_prec_diag = self.process_prec_diag[oidx]
-
-        prev_growth = self.growth.value[oidx]
-        prev_si = self.self_interactions[oidx]
-        prev_value = np.asarray([prev_growth, prev_si]).reshape(-1,1)
-
-        # propose new calue by calculating the posterior
-        pm = (prior_means * prior_prec).reshape(-1,1)
-
-        a = X.T * process_prec_diag
-        beta_prec = a @ X + np.diag(prior_prec)
-        self.cov.value = pinv(beta_prec, self)
-        self.mean.value = self.cov.value @ ( a @ y + pm).ravel()
-
-        new_growth, new_si = self.sample().ravel()
-        if (new_growth <= self.growth.low or new_growth >= self.growth.high) or \
-            (new_si <= self.self_interactions.low or new_si >= self.self_interactions.high):
-            # Reject
-            return 
-        new_value = self.value.reshape(-1,1)
-
-        # Calculate target distribution
-        value = (y - X @ prev_value).ravel()
-        prev_target_ll = np.sum(pl.random.normal.logpdf(value=value, mean=0, 
-            std=self.process_std_diag[oidx]))
-        prev_target_ll += pl.random.truncnormal.logpdf(value=prev_growth, 
-            mean=prior_means[0], std=self._prior_sqrt_growth,
-            low=self.growth.low, high=self.growth.high)
-        prev_target_ll += pl.random.truncnormal.logpdf(value=prev_si, 
-            mean=prior_means[1], std=self._prior_sqrt_si,
-            low=self.self_interactions.low, high=self.self_interactions.high)
-
-        value = (y - X @ new_value).ravel()
-        new_target_ll = np.sum(pl.random.normal.logpdf(value=value, mean=0, 
-            std=self.process_std_diag[oidx]))
-        new_target_ll += pl.random.truncnormal.logpdf(value=new_growth, 
-            mean=prior_means[0], std=self._prior_sqrt_growth,
-            low=self.growth.low, high=self.growth.high)
-        new_target_ll += pl.random.truncnormal.logpdf(value=new_si, 
-            mean=prior_means[1], std=self._prior_sqrt_si,
-            low=self.self_interactions.low, high=self.self_interactions.high)
-
-        # Normalize by the proposal ll
-        prev_prop_ll = pl.random.multivariate_normal.logpdf(value=prev_value, 
-            mean=self.mean.value.reshape(-1,1), cov=self.cov.value)
-        new_prop_ll = pl.random.multivariate_normal.logpdf(value=new_value, 
-            mean=self.mean.value.reshape(-1,1), cov=self.cov.value)
-        
-        # Accept or reject
-        r = (new_target_ll - prev_prop_ll) - \
-            (prev_target_ll - new_prop_ll)
-        u = np.log(pl.random.misc.fast_sample_standard_uniform())
-
-        if r >= u:
-            # print('accept')
-            self.acceptances[self.sample_iter][oidx] = True
-            self.growth.value[oidx] = new_growth
-            self.self_interactions.value[oidx] = new_si
-            self.temp_acceptances[oidx] += 1
-        else:
-            self.growth.value[oidx] = prev_growth
-            self.self_interactions.value[oidx] = prev_si
+        raise NotImplementedError('Not Implemented')
 
     def add_trace(self):
         '''Trace values for growth, self-interactions, and cluster interaction values
@@ -1661,5 +1507,3 @@ class RegressCoeff(pl.variables.MVN):
         self.interactions.add_init_value()
         if self._there_are_perturbations:
             self.pert_mag.add_init_value()
-
-

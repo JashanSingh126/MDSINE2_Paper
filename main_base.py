@@ -92,58 +92,48 @@ def run(params, graph_name, data_filename, tracer_filename,
     # just load the chain and then set the inference starting
     if continue_inference is not None:
         raise NotImplementedError('Not finished implementing yet')
-        if not pl.isint(continue_inference):
-            raise TypeError('`continue_inference` ({}) must be None or an int'.format(
-                type(continue_inference)))
-        if continue_inference < 0:
-            raise ValueError('`continue_inference` ({}) must be  > 0'.format(continue_inference))
-        REPRNAMES.set(G=GRAPH)
-        logging.info('Continuing inference at Gibb step {}'.format(continue_inference))
-        mcmc = pl.inference.BaseMCMC.load(mcmc_filename)
-        mcmc.continue_inference(gibbs_step_start=continue_inference)
+        # if not pl.isint(continue_inference):
+        #     raise TypeError('`continue_inference` ({}) must be None or an int'.format(
+        #         type(continue_inference)))
+        # if continue_inference < 0:
+        #     raise ValueError('`continue_inference` ({}) must be  > 0'.format(continue_inference))
+        # REPRNAMES.set(G=GRAPH)
+        # logging.info('Continuing inference at Gibb step {}'.format(continue_inference))
+        # mcmc = pl.inference.BaseMCMC.load(mcmc_filename)
+        # mcmc.continue_inference(gibbs_step_start=continue_inference)
 
-        # Set the items to the values they were at that gibbs step
+        # # Set the items to the values they were at that gibbs step
 
-        # Set cluster assignments
-        cluster_assignments = mcmc.graph[REPRNAMES.CLUSTERING]
-        clustering = mcmc.graph[REPRNAMES.CLUSTERING_OBJ]
-        if params.LEARN[STRNAMES.CLUSTERING]:
-            coclusters = clustering.coclusters.get_trace_from_disk(section='entire')
-            toarray = pl.cluster.toarray_from_cocluster(coclusters[-1])
-            clustering.from_array(toarray)
-        # Else do nothing because it was fixed.
+        # # Set cluster assignments
+        # cluster_assignments = mcmc.graph[REPRNAMES.CLUSTERING]
+        # clustering = mcmc.graph[REPRNAMES.CLUSTERING_OBJ]
+        # if params.LEARN[STRNAMES.CLUSTERING]:
+        #     coclusters = clustering.coclusters.get_trace_from_disk(section='entire')
+        #     toarray = pl.cluster.toarray_from_cocluster(coclusters[-1])
+        #     clustering.from_array(toarray)
+        # # Else do nothing because it was fixed.
 
-        # Set concentration
-        concentration = mcmc.grpah[REPRNAMES.CONCENTRATION]
-        if params.LEARN[STRNAMES.CONCENTRATION]:
-            trace = concentration.get_trace_from_disk(section='entire')
-            concentration.value = trace[-1]
+        # # Set concentration
+        # concentration = mcmc.grpah[REPRNAMES.CONCENTRATION]
+        # if params.LEARN[STRNAMES.CONCENTRATION]:
+        #     trace = concentration.get_trace_from_disk(section='entire')
+        #     concentration.value = trace[-1]
 
-        # Set interactions
+        # # Set interactions
+        # # Set perturbations
+        # # Set growth
+        # # Set self interactions
+        # # Set process variance
+        # # Set filtering
+        # # Build the design matrices from scratch (all of them)
 
-        # Set perturbations
+        # filtering = mcmc.graph[REPRNAMES.FILTERING]
+        # Z = mcmc.graph[REPRNAMES.CLUSTER_INTERACTION_INDICATOR]
+        # subjset = mcmc.graph.data.subjects
 
-        # Set growth
-
-        # Set self interactions
-
-        # Set process variance
-
-        # Set filtering
-
-        # Build the design matrices from scratch (all of them)
-
-
-
-
-
-        filtering = mcmc.graph[REPRNAMES.FILTERING]
-        Z = mcmc.graph[REPRNAMES.CLUSTER_INTERACTION_INDICATOR]
-        subjset = mcmc.graph.data.subjects
-
-        return run_inference(mcmc=mcmc, crash_if_error=crash_if_error, 
-            cluster_assignments=cluster_assignments, filtering=filtering, Z=Z,
-            subjset=subjset, data_filename=data_filename)
+        # return run_inference(mcmc=mcmc, crash_if_error=crash_if_error, 
+        #     cluster_assignments=cluster_assignments, filtering=filtering, Z=Z,
+        #     subjset=subjset, data_filename=data_filename)
 
     params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['h5py_filename'] = hdf5_filename
 
@@ -155,7 +145,8 @@ def run(params, graph_name, data_filename, tracer_filename,
     asvs = subjset.asvs
     d = data.Data(asvs=subjset.asvs, subjects=subjset, 
         min_rel_abund=params.ADD_MIN_REL_ABUNDANCE,
-        data_logscale=params.DATA_LOGSCALE, G=GRAPH)
+        data_logscale=params.DATA_LOGSCALE, G=GRAPH,
+        zero_inflation_transition_policy=params.ZERO_INFLATION_TRANSITION_POLICY)
     clustering = pl.cluster.Clustering(clusters=None, items=asvs, G=GRAPH, 
         name=STRNAMES.CLUSTERING_OBJ)
 
@@ -263,7 +254,8 @@ def run(params, graph_name, data_filename, tracer_filename,
     # Filtering and zero inflation
     if params.DATA_LOGSCALE:
         filtering = posterior.FilteringLogMP(G=GRAPH, mp=params.MP_FILTERING, 
-            perturbations_additive=params.PERTURBATIONS_ADDITIVE)
+            perturbations_additive=params.PERTURBATIONS_ADDITIVE,
+            zero_inflation_transition_policy=params.ZERO_INFLATION_TRANSITION_POLICY)
     else:
         filtering = posterior.FilteringMP(G=GRAPH, mp=params.MP_FILTERING)
     zero_inflation = posterior.ZeroInflation(G=GRAPH, mp=params.MP_ZERO_INFLATION)
@@ -3382,7 +3374,7 @@ def validate(src_basepath, model, forward_sims,
     logging.info('Starting forward sims')
     results = metrics.Metrics(model=model, limit_of_detection=1e5, simulation_dt=sim_dt, 
         output_dt=output_dt, log_integration=True, traj_fillvalue=traj_fillvalue,
-        perturbations_additive=perturbations_additive, mp=None)
+        perturbations_additive=perturbations_additive, mp=mp)
     if comparison is not None:
         results.add_truth_metrics(comparison_results)
     for subject in val_subjset:

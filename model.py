@@ -273,7 +273,16 @@ class gLVDynamicsSingleClustering(pl.BaseDynamics):
             if self.perturbations_additive:
                 ret = np.exp(np.log(x) + (growth + self._interactions @ x + perts) * dt).ravel()
             else:
-                ret = np.exp(np.log(x) + (growth + self._interactions @ x) * dt).ravel()
+                try:
+                    ret = np.exp(np.log(x) + (growth + self._interactions @ x) * dt).ravel()
+                except:
+                    print('here')
+                    print(x.shape)
+                    print(growth.shape)
+                    print(self._interactions)
+                    print(dt)
+                    print(len(self.asvs))
+                    raise
         else:
             if self.perturbations_additive:
                 ret = (x + x * (growth + self._interactions @ x + perts) * dt).ravel()

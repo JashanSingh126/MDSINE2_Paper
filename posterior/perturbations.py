@@ -573,6 +573,24 @@ class PerturbationIndicators(pl.Node):
                 i += l
 
             d[cid] = a
+        
+        if self.G.data.zero_inflation_transition_policy is not None:
+            # We need to convert the indices that are meant from no zero inflation to 
+            # ones that take into account zero inflation - use the array from 
+            # `data.Data._setrows_to_include_zero_inflation`. If the index should be
+            # included, then we subtract the number of indexes that are previously off
+            # before that index. If it should not be included then we exclude it
+            prevoff_arr = self.G.data.off_previously_arr_zero_inflation
+            rows_to_include = self.G.data.zero_inflation_transition_policy
+            for cid in d:
+                arr = d[cid]
+                new_arr = np.zeros(len(arr), dtype=int)
+                n = 0
+                for i, idx in enumerate(arr):
+                    if rows_to_include[idx]:
+                        new_arr[n] = idx - prevoff_arr[i]
+                        n += 1
+                new_arr = new_arr[:n]
         return d
 
     # @profile

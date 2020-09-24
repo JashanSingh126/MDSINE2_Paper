@@ -955,6 +955,9 @@ class ClusterAssignments(pl.graph.Node):
         multiprocess the likelihood calculations for each asv. If we didnt then this 
         implementation has the same performance as `ClusterAssignments.update_slow_fast`.
         '''
+        if self.G.data.zero_inflation_transition_policy is not None:
+            raise NotImplementedError('Multiprocessing for zero inflation data is not implemented yet.' \
+                ' Use `mp=None`')
         DMI = self.G.data.design_matrices[REPRNAMES.CLUSTER_INTERACTION_VALUE]
         DMP = self.G.data.design_matrices[REPRNAMES.PERT_VALUE]
         if self.clustering.n_clusters.sample_iter == 0:

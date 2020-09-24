@@ -596,7 +596,7 @@ class ClusterInteractionIndicators(pl.variables.Variable):
                 'debug': pool is done sequentially and not sent to processors
                 'full': pool is done at different processors
         relative : bool
-            Whether you update using the relative marginal likelihood or not
+            Whether you update using the relative marginal likelihood or not.
         '''
         if not pl.isbool(relative):
             raise TypeError('`relative` ({}) must be a bool'.format(type(relative)))
@@ -725,6 +725,39 @@ class ClusterInteractionIndicators(pl.variables.Variable):
         self._strr = '{}\ntotal time: {}, n_interactions: {}/{}, {:.2f}'.format(
             iii, time.time()-start, n_on, len(iii), n_on/len(iii))
 
+    def update_single_idx_slow(self, idx):
+        '''Update the likelihood for interaction `idx`
+
+        Parameters
+        ----------
+        idx : int
+            This is the index of the interaction we are updating
+        '''
+        prior_ll_on = np.log(self.G[REPRNAMES.INDICATOR_PROB].value)
+        prior_ll_off = np.log(1 - self.G[REPRNAMES.INDICATOR_PROB].value)
+
+        d_on = self.calculate_marginal_loglikelihood(idx=idx, val=True)
+        d_off = self.calculate_marginal_loglikelihood(idx=idx, val=False)
+
+        ll_on = d_on['ret'] + prior_ll_on
+        ll_off = d_off['ret'] + prior_ll_off
+
+        # print('slow\n\ttotal: {}\n\tbeta_logdet_diff: {}\n\t' \
+        #     'priorvar_logdet_diff: {}\n\tbEb_diff: {}\n\t' \
+        #     'bEbprior_diff: {}\n\tn_on_when_off: {}'.format(
+        #         ll_on - ll_off,
+        #         d_on['beta_logdet'] - d_off['beta_logdet'],
+        #         d_on['priorvar_logdet'] - d_off['priorvar_logdet'],
+        #         d_on['bEb'] - d_off['bEb'],
+        #         d_on['bEbprior'] - d_off['bEbprior'],
+        #         self.interactions.num_pos_indicators()))
+
+        dd = [ll_off, ll_on]
+
+        res = bool(sample_categorical_log(dd))
+        self.interactions.iloc(idx).indicator = res
+        self.update_cnt_indicators()
+
     # @profile
     def _make_idx_vector_for_clusters(self):
         '''Creates a dictionary that maps the cluster id to the
@@ -760,6 +793,26 @@ class ClusterInteractionIndicators(pl.variables.Variable):
                 i += l
 
             d[cid] = a
+        
+        if self.G.data.zero_inflation_transition_policy is not None:
+            # We need to convert the indices that are meant from no zero inflation to 
+            # ones that take into account zero inflation - use the array from 
+            # `data.Data._setrows_to_include_zero_inflation`. If the index should be
+            # included, then we subtract the number of indexes that are previously off
+            # before that index. If it should not be included then we exclude it
+            prevoff_arr = self.G.data.off_previously_arr_zero_inflation
+            rows_to_include = self.G.data.rows_to_include_zero_inflation
+            for cid in d:
+                arr = d[cid]
+                new_arr = np.zeros(len(arr), dtype=int)
+                n = 0
+                for idx in arr:
+                    if rows_to_include[idx]:
+                        new_arr[n] = idx - prevoff_arr[idx]
+                        n += 1
+
+                new_arr = new_arr[:n]
+                d[cid] = new_arr
         return d
 
     # @profile
@@ -937,39 +990,6 @@ class ClusterInteractionIndicators(pl.variables.Variable):
         n_on = np.sum(iii)
         self._strr = '{}\ntotal time: {}, n_interactions: {}/{}, {:.2f}'.format(
             iii, time.time()-start, n_on, len(iii), n_on/len(iii))
-
-    def update_single_idx_slow(self, idx):
-        '''Update the likelihood for interaction `idx`
-
-        Parameters
-        ----------
-        idx : int
-            This is the index of the interaction we are updating
-        '''
-        prior_ll_on = np.log(self.G[REPRNAMES.INDICATOR_PROB].value)
-        prior_ll_off = np.log(1 - self.G[REPRNAMES.INDICATOR_PROB].value)
-
-        d_on = self.calculate_marginal_loglikelihood(idx=idx, val=True)
-        d_off = self.calculate_marginal_loglikelihood(idx=idx, val=False)
-
-        ll_on = d_on['ret'] + prior_ll_on
-        ll_off = d_off['ret'] + prior_ll_off
-
-        # print('slow\n\ttotal: {}\n\tbeta_logdet_diff: {}\n\t' \
-        #     'priorvar_logdet_diff: {}\n\tbEb_diff: {}\n\t' \
-        #     'bEbprior_diff: {}\n\tn_on_when_off: {}'.format(
-        #         ll_on - ll_off,
-        #         d_on['beta_logdet'] - d_off['beta_logdet'],
-        #         d_on['priorvar_logdet'] - d_off['priorvar_logdet'],
-        #         d_on['bEb'] - d_off['bEb'],
-        #         d_on['bEbprior'] - d_off['bEbprior'],
-        #         self.interactions.num_pos_indicators()))
-
-        dd = [ll_off, ll_on]
-
-        res = bool(sample_categorical_log(dd))
-        self.interactions.iloc(idx).indicator = res
-        self.update_cnt_indicators()
 
     def calculate_marginal_loglikelihood(self, idx, val):
         '''Calculate the likelihood of interaction `idx` with the value `val`
@@ -1154,6 +1174,43 @@ class ClusterInteractionIndicators(pl.variables.Variable):
             logging.critical('Crashed in log_det')
             logging.critical('beta_cov:\n{}'.format(beta_cov))
             logging.critical('prior_prec\n{}'.format(prior_prec))
+
+            logging.critical('here')
+            print('y')
+            print(y.shape)
+            print(y)
+            print('process_prec')
+            print(process_prec.shape)
+            print('X')
+            print(X.shape)
+            print(X)
+            print('priors')
+            print(prior_mean)
+            print(prior_prec_diag)
+            print('self-interactions')
+            X = pl.toarray(self.G.data.design_matrices[REPRNAMES.SELF_INTERACTION_VALUE].matrix)
+            print(X.shape)
+            print(np.any(np.isnan(X)))
+            print('growth')
+            X = pl.toarray(self.G.data.design_matrices[REPRNAMES.GROWTH_VALUE].matrix_without_perturbations)
+            print(X.shape)
+            print(np.any(np.isnan(X)))
+            print('orig y')
+            y = self.G.data.lhs.vector
+            print(y.shape)
+            print(np.any(np.isnan(y)))
+            print('cluster-interactions')
+            X = pl.toarray(self.G.data.design_matrices[REPRNAMES.CLUSTER_INTERACTION_VALUE].matrix)
+            print(X.shape)
+            print(np.any(np.isnan(X)))
+
+            n_on = 0
+            for row in range(X.shape[0]):
+                n_on += np.any(np.isnan(X[row]))
+
+            print('nans on {}/{} rows'.format(n_on, X.shape[0]))
+                    
+
             raise
         
         if val:

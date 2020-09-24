@@ -65,24 +65,24 @@ pl.seed(1)
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
 
-truth = np.array([[1,0],[-1,0]])
+# truth = np.array([[1,0],[-1,0]])
 
-pred = np.array([[[1,0],[1,0]],
-                 [[0,0],[-1,0]],
-                 [[1,1],[-1,0]],
-                 [[1,0],[-1,1]]])
+# pred = np.array([[[1,0],[1,0]],
+#                  [[0,0],[-1,0]],
+#                  [[1,1],[-1,0]],
+#                  [[1,0],[-1,1]]])
 
-print(truth)
-print(pred)
+# print(truth)
+# print(pred)
 
-print()
+# print()
 
-auc = pl.metrics.rocauc_posterior_interactions(pred, truth, signed=True) #, per_gibb=False)
+# auc = pl.metrics.rocauc_posterior_interactions(pred, truth, signed=True) #, per_gibb=False)
 
-print('auc')
-print(auc)
+# print('auc')
+# print(auc)
 
-sys.exit()
+# sys.exit()
 
 # fname1 = 'raw_data/seqs_temp/final/src_data/rdp_archaea_509seqs.fa'
 # fname2 = 'raw_data/seqs_temp/final/src_data/rdp_bacteria_12227seqs.fa'
@@ -192,105 +192,105 @@ sys.exit()
 
 # sys.exit()
 
-####################################################
-# Make family level plots of the ASVs in the phylogenetic trees
-####################################################
-chain_locs = [
-    'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-    'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
+# ####################################################
+# # Make family level plots of the ASVs in the phylogenetic trees
+# ####################################################
+# chain_locs = [
+#     'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
 
-tree_loc = 'raw_data/phylogenetic_tree_w_reference_seq.nhx'
+# tree_loc = 'raw_data/phylogenetic_tree_w_reference_seq.nhx'
 
-os.makedirs('tmp', exist_ok=True)
-os.makedirs('tmp/subtrees', exist_ok=True)
+# os.makedirs('tmp', exist_ok=True)
+# os.makedirs('tmp/subtrees', exist_ok=True)
 
-asvnames = set([])
-for chainloc in chain_locs:
-    chain = pl.inference.BaseMCMC.load(chainloc)
-    asvs = chain.graph.data.asvs
+# asvnames = set([])
+# for chainloc in chain_locs:
+#     chain = pl.inference.BaseMCMC.load(chainloc)
+#     asvs = chain.graph.data.asvs
 
-    for asv in asvs:
-        asvnames.add(asv.name)
+#     for asv in asvs:
+#         asvnames.add(asv.name)
 
-asvnames = list(asvnames)
-set_asvnames = set(asvnames)
+# asvnames = list(asvnames)
+# set_asvnames = set(asvnames)
 
-totalnames = copy.deepcopy(asvnames)
-# tree = ete3.Tree(tree_loc)
-# for name in tree.get_leaf_names():
-#     if 'OTU_' not in name:
-#         totalnames.append(name)
+# totalnames = copy.deepcopy(asvnames)
+# # tree = ete3.Tree(tree_loc)
+# # for name in tree.get_leaf_names():
+# #     if 'OTU_' not in name:
+# #         totalnames.append(name)
 
-# print(totalnames)
+# # print(totalnames)
 
-# tree.prune(totalnames, preserve_branch_length=True)
-# tree.write(outfile='tmp/tree_temp.nhx')
-# # sys.exit()
-tree_name = 'tmp/tree_temp.nhx'
-tree = ete3.Tree(tree_name)
-
-
-# Make the distance matrix
-print(len(tree))
-names = tree.get_leaf_names()
-names.sort()
-
-with open('raw_data/phylo_dist.pkl', 'rb') as handle:
-    df = pickle.load(handle)
+# # tree.prune(totalnames, preserve_branch_length=True)
+# # tree.write(outfile='tmp/tree_temp.nhx')
+# # # sys.exit()
+# tree_name = 'tmp/tree_temp.nhx'
+# tree = ete3.Tree(tree_name)
 
 
-i = 0
-f = open('tmp/subtrees/table.tsv', 'w')
-for asvname in asvnames:
-    asv = subjset_real.asvs[asvname]
-    if not asv.tax_is_defined('species'):
-        i += 1
-        print('\n\nLooking at {}, {}'.format(i,asv))
-        print('-------------------------')
+# # Make the distance matrix
+# print(len(tree))
+# names = tree.get_leaf_names()
+# names.sort()
 
-        row = df[asv.name].to_numpy()
-        idxs = np.argsort(row)
+# with open('raw_data/phylo_dist.pkl', 'rb') as handle:
+#     df = pickle.load(handle)
 
-        iii = 0
-        for idx in idxs:
-            if names[idx] not in set_asvnames:
-                iii = idx 
-                break
 
-        cnr = names[iii]
-        f.write('{}\t{}\n'.format(asv.name, cnr))
+# i = 0
+# f = open('tmp/subtrees/table.tsv', 'w')
+# for asvname in asvnames:
+#     asv = subjset_real.asvs[asvname]
+#     if not asv.tax_is_defined('species'):
+#         i += 1
+#         print('\n\nLooking at {}, {}'.format(i,asv))
+#         print('-------------------------')
 
-        # tree = ete3.Tree(tree_name)
-        # # Get the 10 closest relatives that are not asvnames
-        # row = df[asv.name].to_numpy()
-        # idxs = np.argsort(row)
-        # iii = 0
-        # names_to_keep = []
-        # cnr = None
-        # for idx in idxs:
-        #     if iii > 10:
-        #         break
-        #     if names[idx] not in set_asvnames:
-        #         names_to_keep.append(names[idx])
-        #         if iii == 0:
-        #             cnr = names[idx]
-        #         iii += 1
+#         row = df[asv.name].to_numpy()
+#         idxs = np.argsort(row)
 
-        # print(names_to_keep)
+#         iii = 0
+#         for idx in idxs:
+#             if names[idx] not in set_asvnames:
+#                 iii = idx 
+#                 break
 
-        # # Make subtree of just these names
-        # names_to_keep.append(asv.name)
-        # tree.prune(names_to_keep, preserve_branch_length=False)
+#         cnr = names[iii]
+#         f.write('{}\t{}\n'.format(asv.name, cnr))
 
-        # for node in tree.traverse():
-        #     node.name = node.name.replace('OTU','ASV')
+#         # tree = ete3.Tree(tree_name)
+#         # # Get the 10 closest relatives that are not asvnames
+#         # row = df[asv.name].to_numpy()
+#         # idxs = np.argsort(row)
+#         # iii = 0
+#         # names_to_keep = []
+#         # cnr = None
+#         # for idx in idxs:
+#         #     if iii > 10:
+#         #         break
+#         #     if names[idx] not in set_asvnames:
+#         #         names_to_keep.append(names[idx])
+#         #         if iii == 0:
+#         #             cnr = names[idx]
+#         #         iii += 1
 
-        # ts = ete3.TreeStyle()
-        # ts.title.add_face(ete3.TextFace('{} CNR {}'.format(
-        #     asv.name.replace('OTU', 'ASV'), cnr), fsize=15), column=1)
-        # tree.render('tmp/subtrees/{}.pdf'.format(asv.name.replace('OTU','ASV')), tree_style=ts)
-f.close()
-sys.exit()
+#         # print(names_to_keep)
+
+#         # # Make subtree of just these names
+#         # names_to_keep.append(asv.name)
+#         # tree.prune(names_to_keep, preserve_branch_length=False)
+
+#         # for node in tree.traverse():
+#         #     node.name = node.name.replace('OTU','ASV')
+
+#         # ts = ete3.TreeStyle()
+#         # ts.title.add_face(ete3.TextFace('{} CNR {}'.format(
+#         #     asv.name.replace('OTU', 'ASV'), cnr), fsize=15), column=1)
+#         # tree.render('tmp/subtrees/{}.pdf'.format(asv.name.replace('OTU','ASV')), tree_style=ts)
+# f.close()
+# sys.exit()
 
 # ####################################################
 # # Make plots of the ASVs
@@ -784,82 +784,87 @@ sys.exit()
 # # Calculate keystoneness
 # ####################################################
 # # Get the growth rates
+
 # fname = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
-# chain = pl.inference.BaseMCMC.load(fname)
-# subjset = chain.graph.data.subjects
-
-# SECTION = 'posterior'
-# growth_master = pl.variables.summary(
-#     chain.graph[names.STRNAMES.GROWTH_VALUE],
-#     section=SECTION)['mean']
-# si_master = pl.variables.summary(
-#     chain.graph[names.STRNAMES.SELF_INTERACTION_VALUE],
-#     section=SECTION)['mean']
-# A_master = pl.variables.summary(
-#     chain.graph[names.STRNAMES.INTERACTIONS_OBJ], set_nan_to_0=True,
-#     section=SECTION, only='mean')['mean']
-
-# dyn = model.gLVDynamicsSingleClustering(asvs=subjset.asvs, log_dynamics=True, 
-#     perturbations_additive=False)
-# dyn.growth = growth_master
-# dyn.self_interactions = si_master
-# dyn.interactions = A_master
-
-# df = subjset.df(dtype='abs', agg='mean', times='union')
-# initial_conditions = df[0.5].to_numpy()
-
-# for i in range(len(initial_conditions)):
-#     if initial_conditions[i] == 0:
-#         initial_conditions[i] = pl.random.truncnormal.sample(mean=1e5, std=1e5, low=1e2)
-
-# days = 20
-# BASE_CONCENTRATIONS = pl.dynamics.integrate(dyn, initial_conditions=initial_conditions.reshape(-1,1), 
-#     dt=0.01, n_days=days, times=np.arange(days), subsample=True)['X'][:, -1]
 
 
-# dists = np.zeros(len(BASE_CONCENTRATIONS))
-# conc_d = {}
+# def keystoneness(chain_fname, sets_to_remove):
 
-# for aidx in range(len(BASE_CONCENTRATIONS)):
-#     # Take out asv aidx and do the forward simulation
-#     print('{}/{}'.format(aidx, len(BASE_CONCENTRATIONS)))
+#     chain = pl.inference.BaseMCMC.load(chain_fname)
+#     subjset = chain.graph.data.subjects
+
+#     SECTION = 'posterior'
+#     growth_master = pl.variables.summary(
+#         chain.graph[names.STRNAMES.GROWTH_VALUE],
+#         section=SECTION)['mean']
+#     si_master = pl.variables.summary(
+#         chain.graph[names.STRNAMES.SELF_INTERACTION_VALUE],
+#         section=SECTION)['mean']
+#     A_master = pl.variables.summary(
+#         chain.graph[names.STRNAMES.INTERACTIONS_OBJ], set_nan_to_0=True,
+#         section=SECTION, only='mean')['mean']
+
 #     dyn = model.gLVDynamicsSingleClustering(asvs=subjset.asvs, log_dynamics=True, 
 #         perturbations_additive=False)
+#     dyn.growth = growth_master
+#     dyn.self_interactions = si_master
+#     dyn.interactions = A_master
 
-#     mask = np.ones(len(BASE_CONCENTRATIONS), dtype=bool)
-#     mask[aidx] = False
+#     df = subjset.df(dtype='abs', agg='mean', times='union')
+#     initial_conditions = df[0.5].to_numpy()
 
-#     dyn.growth = growth_master[mask]
-#     dyn.self_interactions = si_master[mask]
-#     dyn.interactions = np.delete(A_master, aidx, 0)
-#     dyn.interactions = np.delete(dyn.interactions, aidx, 1)
-#     init_conc = initial_conditions[mask]
+#     for i in range(len(initial_conditions)):
+#         if initial_conditions[i] == 0:
+#             initial_conditions[i] = pl.random.truncnormal.sample(mean=1e5, std=1e5, low=1e2)
 
-#     iii = pl.dynamics.integrate(dyn, initial_conditions=init_conc.reshape(-1,1), 
-#         dt=0.01, n_days=days, times=np.arange(days), subsample=True)
-#     conc_d[aidx] = iii
-#     concentrations = iii['X'][:, -1]
+#     days = 20
+#     BASE_CONCENTRATIONS = pl.dynamics.integrate(dyn, initial_conditions=initial_conditions.reshape(-1,1), 
+#         dt=0.01, n_days=days, times=np.arange(days), subsample=True)['X'][:, -1]
 
-#     dists[aidx] = np.sqrt(np.sum(np.square(concentrations - BASE_CONCENTRATIONS[mask])))
-#     # print('aidx', aidx, ':', dists[aidx])
 
-# idxs = np.argsort(dists)[::-1]
-# clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
-# f = open('keystoneness_healthy.txt', 'w')
-# f.write('1 Based indexing for clusters\n')
-# for i, idx in enumerate(idxs):
-#     asv = subjset.asvs[idx]
-#     cid = clustering.idx2cid[idx]
+#     dists = np.zeros(len(BASE_CONCENTRATIONS))
+#     conc_d = {}
 
-#     f.write('\n{}\n'.format(i))
-#     f.write('\tMicrobe name: {}\n\tTaxonomy: {}' \
-#         '\n\tCluster assignment: {}\n\tEffect: {:.4E}\n'.format(
-#             asv.name,
-#             pl.asvname_formatter(format='%(genus)s %(species)s', 
-#                 asv=asv, asvs=subjset.asvs, lca=False),
-#             clustering.cid2cidx[cid]+1,
-#             dists[idx]
-#         ))
+#     for aidx in range(len(BASE_CONCENTRATIONS)):
+#         # Take out asv aidx and do the forward simulation
+#         print('{}/{}'.format(aidx, len(BASE_CONCENTRATIONS)))
+#         dyn = model.gLVDynamicsSingleClustering(asvs=subjset.asvs, log_dynamics=True, 
+#             perturbations_additive=False)
+
+#         mask = np.ones(len(BASE_CONCENTRATIONS), dtype=bool)
+#         mask[aidx] = False
+
+#         dyn.growth = growth_master[mask]
+#         dyn.self_interactions = si_master[mask]
+#         dyn.interactions = np.delete(A_master, aidx, 0)
+#         dyn.interactions = np.delete(dyn.interactions, aidx, 1)
+#         init_conc = initial_conditions[mask]
+
+#         iii = pl.dynamics.integrate(dyn, initial_conditions=init_conc.reshape(-1,1), 
+#             dt=0.01, n_days=days, times=np.arange(days), subsample=True)
+#         conc_d[aidx] = iii
+#         concentrations = iii['X'][:, -1]
+
+#         dists[aidx] = np.sqrt(np.sum(np.square(concentrations - BASE_CONCENTRATIONS[mask])))
+#         # print('aidx', aidx, ':', dists[aidx])
+
+#     idxs = np.argsort(dists)[::-1]
+#     clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
+#     f = open('keystoneness_healthy.txt', 'w')
+#     f.write('1 Based indexing for clusters\n')
+#     for i, idx in enumerate(idxs):
+#         asv = subjset.asvs[idx]
+#         cid = clustering.idx2cid[idx]
+
+#         f.write('\n{}\n'.format(i))
+#         f.write('\tMicrobe name: {}\n\tTaxonomy: {}' \
+#             '\n\tCluster assignment: {}\n\tEffect: {:.4E}\n'.format(
+#                 asv.name,
+#                 pl.asvname_formatter(format='%(genus)s %(species)s', 
+#                     asv=asv, asvs=subjset.asvs, lca=False),
+#                 clustering.cid2cidx[cid]+1,
+#                 dists[idx]
+#             ))
 
 #     # plt.figure()
 #     # M = conc_d[idx]['X']
@@ -869,7 +874,7 @@ sys.exit()
 #     #     plt.plot(times, M[i,:])
 #     # plt.yscale('log')
 #     # plt.show()
-# f.close()
+#     f.close()
 
 
 # ###########################################
