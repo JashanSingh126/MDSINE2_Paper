@@ -199,11 +199,9 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 #     'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
 #     'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
 
-# tree_loc = 'raw_data/phylogenetic_tree_w_reference_seq.nhx'
-
+# # tree_loc = 'raw_data/phylogenetic_tree_w_reference_seq.nhx'
 # os.makedirs('tmp', exist_ok=True)
-# os.makedirs('tmp/subtrees', exist_ok=True)
-
+# os.makedirs('tmp/subtrees_125percentmedian', exist_ok=True)
 # asvnames = set([])
 # for chainloc in chain_locs:
 #     chain = pl.inference.BaseMCMC.load(chainloc)
@@ -221,26 +219,65 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 # #     if 'OTU_' not in name:
 # #         totalnames.append(name)
 
-# # print(totalnames)
+# # # print(totalnames)
 
-# # tree.prune(totalnames, preserve_branch_length=True)
-# # tree.write(outfile='tmp/tree_temp.nhx')
-# # # sys.exit()
+# # # tree.prune(totalnames, preserve_branch_length=True)
+# # # tree.write(outfile='tmp/tree_temp.nhx')
+# # # # sys.exit()
 # tree_name = 'tmp/tree_temp.nhx'
 # tree = ete3.Tree(tree_name)
 
+# d = {}
+# for i, aname in enumerate(asvnames):
+#     print('{}/{}'.format(i,len(asvnames)))
+#     asv = subjset_real.asvs[aname]
+#     if asv.tax_is_defined('family'):
+#         family = asv.taxonomy['family']
+#         if family in d:
+#             continue
+#         else:
+#             d[family] = []
+#             for iii, bname in enumerate(asvnames):
+#                 if bname == aname:
+#                     continue
+#                 basv = subjset_real.asvs[bname]
+#                 if basv.taxonomy['family'] != family:
+#                     continue
+#                 d[family].append(tree.get_distance(aname, bname))
+
+# f = open('tmp/subtrees_125percentmedian/family_dists_asv.txt', 'w')
+# for family in d:
+#     f.write(family + '\n')
+#     arr = np.asarray(d[family])
+#     summ = pl.variables.summary(arr)
+#     for k,v in summ.items():
+#         f.write('\t{}: {}\n'.format(k,v))
+# f.write('total\n')
+# arr = []
+# for ele in d.values():
+#     arr += ele
+# arr = np.asarray(arr)
+# summ = pl.variables.summary(arr)
+# for k,v in summ.items():
+#     f.write('\t{}:{}\n'.format(k,v))
+
+
+# # Set the radius to 125% the median
+# radius = summ['median'] * 1.25
+# f.write('Radius set to 125% of median ({}): {}'.format(summ['median'], radius))
+# f.close()
 
 # # Make the distance matrix
 # print(len(tree))
 # names = tree.get_leaf_names()
 # names.sort()
 
-# with open('raw_data/phylo_dist.pkl', 'rb') as handle:
+# with open('tmp/phylo_dist.pkl', 'rb') as handle:
 #     df = pickle.load(handle)
 
 
 # i = 0
-# f = open('tmp/subtrees/table.tsv', 'w')
+# f = open('tmp/subtrees_125percentmedian/table.tsv', 'w')
 # for asvname in asvnames:
 #     asv = subjset_real.asvs[asvname]
 #     if not asv.tax_is_defined('species'):
@@ -258,37 +295,39 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 #                 break
 
 #         cnr = names[iii]
-#         f.write('{}\t{}\n'.format(asv.name, cnr))
+#         f.write('{}\n'.format(asv.name))
 
-#         # tree = ete3.Tree(tree_name)
-#         # # Get the 10 closest relatives that are not asvnames
-#         # row = df[asv.name].to_numpy()
-#         # idxs = np.argsort(row)
-#         # iii = 0
-#         # names_to_keep = []
-#         # cnr = None
-#         # for idx in idxs:
-#         #     if iii > 10:
-#         #         break
-#         #     if names[idx] not in set_asvnames:
-#         #         names_to_keep.append(names[idx])
-#         #         if iii == 0:
-#         #             cnr = names[idx]
-#         #         iii += 1
+#         tree = ete3.Tree(tree_name)
+#         # Get the all elements within `radius`
+#         names_to_keep = []
+#         row = df[asv.name].to_numpy()
+#         idxs = np.argsort(row)
 
-#         # print(names_to_keep)
+#         for idx in idxs:
+#             if row[idx] > radius:
+#                 break
+#             if names[idx] in set_asvnames:
+#                 continue
+#             names_to_keep.append(names[idx])
 
-#         # # Make subtree of just these names
-#         # names_to_keep.append(asv.name)
-#         # tree.prune(names_to_keep, preserve_branch_length=False)
+#         print(names_to_keep)
 
-#         # for node in tree.traverse():
-#         #     node.name = node.name.replace('OTU','ASV')
+#         # Make subtree of just these names
+#         names_to_keep.append(asv.name)
+#         tree.prune(names_to_keep, preserve_branch_length=False)
 
-#         # ts = ete3.TreeStyle()
-#         # ts.title.add_face(ete3.TextFace('{} CNR {}'.format(
-#         #     asv.name.replace('OTU', 'ASV'), cnr), fsize=15), column=1)
-#         # tree.render('tmp/subtrees/{}.pdf'.format(asv.name.replace('OTU','ASV')), tree_style=ts)
+#         for node in tree.traverse():
+#             node.name = node.name.replace('OTU','ASV')
+
+#             if 'ASV' in node.name:
+#                 face = ete3.TextFace(node.name)
+#                 face.background.color='LightGreen'
+#                 node.add_face(face, column=0)
+
+#         ts = ete3.TreeStyle()
+#         ts.title.add_face(ete3.TextFace('{}, Phylogenetic radius: {:.4f}'.format(
+#             asv.name.replace('OTU', 'ASV'), radius), fsize=15), column=1)
+#         tree.render('tmp/subtrees_125percentmedian/{}.pdf'.format(asv.name.replace('OTU','ASV')), tree_style=ts)
 # f.close()
 # sys.exit()
 
