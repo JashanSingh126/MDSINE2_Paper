@@ -614,16 +614,28 @@ class Metrics(pl.Saveable):
 
             # If truth is supplied, then use that for the error metric
             if truth is not None:
-                error_total = np.mean(error_metric(M_truth_, given_times_pred_traj_, axis=1)[0])
+                if error_metric.__name__ == 'spearmanr':
+                    error_total = np.mean(error_metric(M_truth_, given_times_pred_traj_, axis=1)[0])
+                else:
+                    error_total = np.mean(error_metric(M_truth_, given_times_pred_traj_, axis=1))
                 error_ASVs = []
                 for oidx in range(len(subject.asvs)):
-                    error_ASVs.append(error_metric(M_truth_[oidx,:], given_times_pred_traj_[oidx,:])[0])
+                    if error_metric.__name__ == 'spearmanr':
+                        error_ASVs.append(error_metric(M_truth_[oidx,:], given_times_pred_traj_[oidx,:])[0])
+                    else:
+                        error_ASVs.append(error_metric(M_truth_[oidx,:], given_times_pred_traj_[oidx,:]))
 
             else:
-                error_total = np.mean(error_metric(M_, given_times_pred_traj_,axis=1)[0])
+                if error_metric.__name__ == 'spearmanr':
+                    error_total = np.mean(error_metric(M_, given_times_pred_traj_,axis=1)[0])
+                else:
+                    error_total = np.mean(error_metric(M_, given_times_pred_traj_,axis=1))
                 error_ASVs = []
                 for oidx in range(len(subject.asvs)):
-                    error_ASVs.append(error_metric(M_[oidx,:], given_times_pred_traj_[oidx,:])[0])
+                    if error_metric.__name__ == 'spearmanr':
+                        error_ASVs.append(error_metric(M_[oidx,:], given_times_pred_traj_[oidx,:])[0])
+                    else:
+                        error_ASVs.append(error_metric(M_[oidx,:], given_times_pred_traj_[oidx,:]))
 
         else:
             # Using a bayesian model, integrate over the posterior
@@ -734,13 +746,25 @@ class Metrics(pl.Saveable):
 
             for i in range(len(error_total)):
                 if truth is not None:
-                    error_total[i] = np.mean(error_metric(M_truth_, given_times_pred_traj_[i], axis=1)[0])
+                    if error_metric.__name__ == 'spearmanr':
+                        error_total[i] = np.mean(error_metric(M_truth_, given_times_pred_traj_[i], axis=1)[0])
+                    else:
+                        error_total[i] = np.mean(error_metric(M_truth_, given_times_pred_traj_[i], axis=1))
                     for oidx in range(len(subject.asvs)):
-                        error_ASVs[i,oidx] = error_metric(M_truth_[oidx,:], given_times_pred_traj_[i,oidx,:])[0]
+                        if error_metric.__name__ == 'spearmanr':
+                            error_ASVs[i,oidx] = error_metric(M_truth_[oidx,:], given_times_pred_traj_[i,oidx,:])[0]
+                        else:
+                            error_ASVs[i,oidx] = error_metric(M_truth_[oidx,:], given_times_pred_traj_[i,oidx,:])
                 else:
-                    error_total[i] = np.mean(error_metric(M_, given_times_pred_traj_[i], axis=1)[0])
+                    if error_metric.__name__ == 'spearmanr':
+                        error_total[i] = np.mean(error_metric(M_, given_times_pred_traj_[i], axis=1)[0])
+                    else:
+                        error_total[i] = np.mean(error_metric(M_, given_times_pred_traj_[i], axis=1))
                     for oidx in range(len(subject.asvs)):
-                        error_ASVs[i,oidx] = error_metric(M_[oidx,:], given_times_pred_traj_[i,oidx,:])[0]
+                        if error_metric.__name__ == 'spearmanr':
+                            error_ASVs[i,oidx] = error_metric(M_[oidx,:], given_times_pred_traj_[i,oidx,:])[0]
+                        else:
+                            error_ASVs[i,oidx] = error_metric(M_[oidx,:], given_times_pred_traj_[i,oidx,:])
 
         ret = {}
         if simtype == 'sim-days':

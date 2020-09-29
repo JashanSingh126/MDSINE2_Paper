@@ -1492,7 +1492,7 @@ class ZeroInflation(pl.graph.Node):
                 self.value.append(np.ones(
                     shape=(len(self.G.data.asvs), n_timepoints), dtype=bool))
 
-        elif value_option == 'mdsine-cdiff-dataset':
+        elif value_option == 'mdsine-cdiff':
             # Set everything to on except for cdiff before day 28 for every subject
             self.value = []
             for ridx in range(self.G.data.n_replicates):

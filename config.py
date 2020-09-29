@@ -564,7 +564,7 @@ class ModelConfigReal(_BaseModelConfig):
     learned or not
     '''
     def __init__(self, output_basepath, data_seed, init_seed, burnin, n_samples, pcc,
-        leave_out, max_n_asvs, cross_validate, use_bsub):
+        leave_out, max_n_asvs, cross_validate, use_bsub, dataset):
         '''Customization parameters
 
         Parameters
@@ -595,7 +595,16 @@ class ModelConfigReal(_BaseModelConfig):
         self.N_CPUS = 12
         self.N_GBS = 10000
 
-        self.DATA_FILENAME = 'pickles/real_subjectset.pkl'
+        if dataset == 'mdsine2-real-data':
+            self.DATA_FILENAME = 'pickles/real_subjectset.pkl'
+            zero_inflation_value_option = None
+            n_clusters = 30
+            n_clusters_type = 'spearman'
+        elif dataset == 'mdsine-cdiff':
+            self.DATA_FILENAME = 'pickles/subjset_cdiff.pkl'
+            zero_inflation_value_option = dataset
+            n_clusters = None
+            n_clusters_type = 'no-clusters'
         self.BURNIN = burnin
         self.N_SAMPLES = n_samples
         self.CHECKPOINT = 2
@@ -611,6 +620,7 @@ class ModelConfigReal(_BaseModelConfig):
         self.MAX_N_ASVS = max_n_asvs
         self.DATA_LOGSCALE = True
         self.PERTURBATIONS_ADDITIVE = False
+        self.ZERO_INFLATION_TRANSITION_POLICY = 'ignore'
 
         self.GROWTH_TRUNCATION_SETTINGS = 'positive'
         self.SELF_INTERACTIONS_TRUNCATION_SETTINGS = 'positive'
@@ -802,17 +812,17 @@ class ModelConfigReal(_BaseModelConfig):
                 'plot_initial': False,
                 'target_acceptance_rate': 0.44},
             STRNAMES.ZERO_INFLATION: {
-                'value_option': 'manual',
+                'value_option': zero_inflation_value_option,
                 'delay': 0},
             STRNAMES.CONCENTRATION: {
                 'value_option': 'prior-mean',
                 'hyperparam_option': 'diffuse',
                 'delay': 0, 'n_iter': 20},
             STRNAMES.CLUSTERING: {
-                'value_option': 'fixed-topology',
+                'value_option': n_clusters_type,
                 'delay': 2,
-                'n_clusters': 30,
-                'value': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+                'n_clusters': n_clusters,
+                # 'value': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
                 'percent_mix': self.PERCENT_CHANGE_CLUSTERING,
                 'run_every_n_iterations': 4},
             STRNAMES.REGRESSCOEFF: {
@@ -1361,15 +1371,24 @@ class MLCRRConfig(_BaseModelConfig):
     n_cpus : int
         Number of available processors available
     '''
-    def __init__(self, output_basepath, data_seed, init_seed, data_path, n_cpus=1):
+    def __init__(self, output_basepath, data_seed, init_seed, data_path, dataset, 
+        leave_out, n_cpus=1):
 
         self.OUTPUT_BASEPATH = output_basepath
         self.DATA_PATH = data_path
         self.DATA_SEED = data_seed
         self.INIT_SEED = init_seed
         self.N_CPUS = n_cpus
+        self.LEAVE_OUT = leave_out
 
-        self.DATA_FILENAME = '../pickles/real_subjectset.pkl'
+        if dataset == 'mdsine2-real-data':
+            self.DATA_FILENAME = 'pickles/real_subjectset.pkl'
+            self.DELETE_FIRST_TIMEPOINT = True
+        elif dataset == 'mdsine-cdiff':
+            self.DATA_FILENAME = 'pickles/subjset_cdiff.pkl'
+            self.DELETE_FIRST_TIMEPOINT = False
+
+        self.DATASET = dataset
         self.DATA_DTYPE = 'abs'
         self.QPCR_NORMALIZATION_MAX_VALUE = 100
 
@@ -1517,22 +1536,34 @@ class FilteringConfig(pl.Saveable):
     healthy : bool
         If True, do regression on the healthy patients
     '''
-    def __init__(self, healthy):
-        self.COLONIZATION_TIME = 5
-        self.THRESHOLD = 0.0001
-        self.DTYPE = 'rel'
-        self.MIN_NUM_SUBJECTS = 2 #'all'
-        self.MIN_NUM_CONSECUTIVE = 5
-        self.HEALTHY = healthy
+    def __init__(self, healthy, dataset):
+        self.DATASET = dataset
+
+        if self.DATASET == 'mdsine2-real-data':
+            self.COLONIZATION_TIME = 5
+            self.THRESHOLD = 0.0001
+            self.DTYPE = 'rel'
+            self.MIN_NUM_SUBJECTS = 2 #'all'
+            self.MIN_NUM_CONSECUTIVE = 5
+            self.HEALTHY = healthy
+        elif self.DATASET == 'mdsine-cdiff':
+            pass
+        else:
+            raise ValueError('`dataset` ({}) not recognized'.format(self.DATASET))
 
     def __str__(self):
-        return 'healthy{}_{}_{}_{}_{}_{}'.format(
-            self.HEALTHY,
-            self.COLONIZATION_TIME,
-            self.THRESHOLD,
-            self.DTYPE,
-            self.MIN_NUM_SUBJECTS,
-            self.MIN_NUM_CONSECUTIVE)
+        if self.DATASET == 'mdsine2-real-data':
+            return 'healthy{}_{}_{}_{}_{}_{}'.format(
+                self.HEALTHY,
+                self.COLONIZATION_TIME,
+                self.THRESHOLD,
+                self.DTYPE,
+                self.MIN_NUM_SUBJECTS,
+                self.MIN_NUM_CONSECUTIVE)
+        elif self.DATASET == 'mdsine-cdiff':
+            return 'mdsine_cdiff_dset'
+        else:
+            raise ValueError('`dataset` ({}) not recognized'.format(self.DATASET))
 
     def suffix(self):
         return str(self)

@@ -218,6 +218,73 @@ def consistency(subjset, dtype, threshold, min_num_consecutive, colonization_tim
     subjset.pop_asvs(to_delete)
     return subjset
 
+def mdsine_cdiff_preprocess(subjset):
+    '''Delete all of the ASVs that were not included in the original MDSINE [1] paper and 
+    set the abundance of C. Diff to zero before day 28
+
+    Parameters
+    ----------
+    subjset : str, pylab.base.SubjectSet
+        This is the SubjectSet object that we are doing the filtering on
+        If it is a str, then it is the location of the saved object.
+
+    Returns
+    -------
+    pylab.base.SubjectSet
+        This is the filtered subjectset
+
+    References
+    ----------
+    [1] Bucci, Vanni, et al. "MDSINE: Microbial Dynamical Systems INference Engine 
+        for microbiome time-series analyses." Genome biology 17.1 (2016): 1-17.
+    '''
+    if pl.isstr(subjset):
+        subjset = pl.base.SubjectSet.load(subjset)
+    elif not pl.issubjectset(subjset):
+        raise TypeError('`subjset` ({}) must be of type pylab.base.SubjectSet'.format(type(subjset)))
+
+    try:
+        asvs_to_keep = [
+            'Clostridium-hiranonis',
+            'Proteus-mirabilis',
+            'Bacteroides-ovatus',
+            'Bacteroides-vulgatus',
+            'Roseburia-hominis',
+            'Parabacteroides-distasonis',
+            'Akkermansia-muciniphila',
+            'Clostridium-difficile',
+            'Bacteroides-fragilis',
+            'Klebsiella-oxytoca',
+            'Clostridium-ramosum',
+            'Escherichia-coli',
+            'Ruminococcus-obeum',
+            'Clostridium-scindens']
+        
+        to_delete = []
+        for asv in subjset.asvs:
+            if asv.name not in asvs_to_keep:
+                to_delete.append(asv.name)
+        subjset.pop_asvs(to_delete)
+
+        cdiff = subjset.asvs['Clostridium-difficile']
+        cdiff_aidx = cdiff.idx
+
+        # Set the abundance of C. Diff to 0 before day 28 in all of the subjects
+        for subj in subjset:
+            for t in subj.times:
+                if t < 28:
+                    subj.reads[t][cdiff_aidx] = 0
+                # print(t, subj.reads[t][cdiff_aidx])
+
+    except:
+        logging.critical("Failed during filtering the SubjectSet. This is most likely because " \
+            "the names of the ASVs don't correspond to the names in MDSINE. Make sure that you " \
+            "are passing in the right subject set")
+        raise
+
+    return subjset
+
+
 def plot_asv(subjset, asv, fparams, legend, fig=None, title_format=None,
     suptitle_format=None, yscale_log=True, matrixes=None, read_depthses=None, 
     qpcrses=None, xlabel='Days', ylabel='CFUs/g', adjust_top=0.9, suptitle_fontsize=20):
@@ -334,16 +401,6 @@ def plot_asv(subjset, asv, fparams, legend, fig=None, title_format=None,
         traj = matrix[oidx, :]
         times = subj.times
         min_abund = (1/read_depths) * qpcrs
-
-        if fparams is not None:
-            if fparams.DTYPE == 'rel':
-                threshold = fparams.THRESHOLD * qpcrs
-            elif fparams.DTYPE == 'raw':
-                threshold = (fparams.THRESHOLD/read_depths) * qpcrs
-            else:
-                threshold = np.ones(len(times), type=float) * fparams.THRESHOLD
-        else:
-            threshold = None
 
         # ax.plot(times, min_abund, label='Single Count', color=palette[0], 
         #     marker='.', alpha=0.5, zorder=10)
