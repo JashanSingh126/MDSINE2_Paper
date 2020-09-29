@@ -153,10 +153,10 @@ class Metrics(pl.Saveable):
                 if pl.isMCMC(self.model):
                     f.write('Mean total {} Error trajectories: '.format(error_name))
                     if temp['error-metric'] == pl.metrics.PE:
-                        f.write('{:.3}\n'.format(np.mean(temp['error-total']*100)))
+                        f.write('{:.3}\n'.format(np.nanmean(temp['error-total']*100)))
                         lll = '%'
                     else:
-                        f.write('{:.5E}\n'.format(np.mean(temp['error-total'])))
+                        f.write('{:.5E}\n'.format(np.nanmean(temp['error-total'])))
                         if temp['dtype'] == 'abs':
                             lll = 'CFUs/g'
                         elif temp['dtype'] == 'raw':
@@ -180,7 +180,7 @@ class Metrics(pl.Saveable):
                 f.write('Mean {} Error ASVs\n'.format(error_name))
                 for oidx in range(len(subject.asvs)):
                     if pl.isMCMC(self.model):
-                        err = np.mean(temp['error-asvs'][:,oidx])
+                        err = np.nanmean(temp['error-asvs'][:,oidx])
                     else:
                         err = temp['error-asvs'][oidx]
                     if temp['error-metric'] == pl.metrics.PE:
@@ -745,7 +745,9 @@ class Metrics(pl.Saveable):
 
 
             for i in range(len(error_total)):
+                print('\n\n', i)
                 if truth is not None:
+                    print('truth is not None')
                     if error_metric.__name__ == 'spearmanr':
                         error_total[i] = np.mean(error_metric(M_truth_, given_times_pred_traj_[i], axis=1)[0])
                     else:
@@ -756,6 +758,7 @@ class Metrics(pl.Saveable):
                         else:
                             error_ASVs[i,oidx] = error_metric(M_truth_[oidx,:], given_times_pred_traj_[i,oidx,:])
                 else:
+                    print('truth is none')
                     if error_metric.__name__ == 'spearmanr':
                         error_total[i] = np.mean(error_metric(M_, given_times_pred_traj_[i], axis=1)[0])
                     else:
@@ -763,6 +766,11 @@ class Metrics(pl.Saveable):
                     for oidx in range(len(subject.asvs)):
                         if error_metric.__name__ == 'spearmanr':
                             error_ASVs[i,oidx] = error_metric(M_[oidx,:], given_times_pred_traj_[i,oidx,:])[0]
+                            print('\t{} error_ASVs[{},{}]'.format(oidx,i,oidx), error_ASVs[i,oidx])
+                            if np.isnan(error_ASVs[i,oidx]):
+                                print('NAN')
+                                print(M_[oidx,:])
+                                print(given_times_pred_traj_[i,oidx,:])
                         else:
                             error_ASVs[i,oidx] = error_metric(M_[oidx,:], given_times_pred_traj_[i,oidx,:])
 
@@ -782,6 +790,11 @@ class Metrics(pl.Saveable):
         ret['error-total'] = error_total
         ret['error-asvs'] = error_ASVs
         ret['error-metric'] = error_metric
+
+        print('end stuff')
+        print(ret['error-asvs'])
+        print(ret['error-metric'])
+
         if pl.isMCMC(self.model):
             ret['pred-high'] = pred_traj_high
             ret['pred-low'] = pred_traj_low
@@ -971,7 +984,7 @@ class Metrics(pl.Saveable):
                     ax.set_xlabel('Days')
 
                     if pl.isMCMC(self.model):
-                        err = np.mean(error_asvs[:, oidx])
+                        err = np.nanmean(error_asvs[:, oidx])
                     else:
                         err = error_asvs[oidx]
 

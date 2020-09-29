@@ -501,8 +501,10 @@ class Data(DataNode):
             A list of ridx, tidx, aidx to set to a structural zero
         '''
         if self.zero_inflation_transition_policy is None:
-            raise ValueError('Cannot set set the zero infation if `zero_inflation_transition_policy` ' \
-                'is not set during initialization')
+            # raise ValueError('Cannot set set the zero infation if `zero_inflation_transition_policy` ' \
+            #     'is not set during initialization')
+            logging.warning('`zero_inflation_transition_policy` is None so we are not doing anything')
+            return
         if turn_on is not None:
             for i, (ridx,tidx,aidx) in enumerate(turn_on):
                 if ridx > self.n_replicates or ridx < 0:
@@ -1131,7 +1133,7 @@ class GrowthDesignMatrix(DesignMatrix):
         if self.perturbations_additive:
             return
 
-        self.data_w_perts = np.zeros(self.n_rows, dtype=float)
+        self.data_w_perts = np.zeros(self.n_rows_master, dtype=float)
         d = []
         for ridx in range(self.G.data.n_replicates):
             if log:
@@ -1155,7 +1157,7 @@ class GrowthDesignMatrix(DesignMatrix):
 
         shape = (self.n_rows_master, self.n_cols_master)
         self.matrix_with_perturbations = scipy.sparse.coo_matrix(
-            (self.data_w_perts,(self.rows,self.cols)), shape=self.shape).tocsc()
+            (self.data_w_perts,(self.rows,self.cols)), shape=shape).tocsc()
         if self.G.data.zero_inflation_transition_policy is not None:
             self.matrix_with_perturbations = \
                 self.matrix_with_perturbations[self.G.data.rows_to_include_zero_inflation, :]

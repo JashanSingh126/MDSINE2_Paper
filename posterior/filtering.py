@@ -1491,6 +1491,8 @@ class ZeroInflation(pl.graph.Node):
                 n_timepoints = self.G.data.n_timepoints_for_replicate[ridx]
                 self.value.append(np.ones(
                     shape=(len(self.G.data.asvs), n_timepoints), dtype=bool))
+            turn_on = None
+            turn_off = None
 
         elif value_option == 'mdsine-cdiff':
             # Set everything to on except for cdiff before day 28 for every subject

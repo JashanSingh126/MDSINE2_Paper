@@ -2946,9 +2946,10 @@ def validate(src_basepath, model, forward_sims,
         else:
             A_comparison = comparison.graph[STRNAMES.CLUSTER_INTERACTION_VALUE].value
 
-        # Only do the interactions
+        # Put in the self-interactions
+        self_interactions_comparison = comparison.graph[STRNAMES.SELF_INTERACTION_VALUE].value
         for i in range(A_comparison.shape[0]):
-            A_comparison[i,i] = 0
+            A_comparison[i,i] = self_interactions_comparison[i]
         
         pl.visualization.render_interaction_strength(
             interaction_matrix=A_comparison, log_scale=yscale_log,
@@ -2966,6 +2967,12 @@ def validate(src_basepath, model, forward_sims,
             # calculate the error over every sample, r
             A_predicted = model.graph[STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk()
             A_predicted[np.isnan(A_predicted)] = 0
+
+            # Set self-interactins for the predicted matrix
+            self_interactions_predicted = model.graph[STRNAMES.SELF_INTERACTION_VALUE].get_trace_from_disk()
+            for i in range(len(ASVS)):
+                A_predicted[:,i,i] = self_interactions_predicted[:, i]
+
             comparison_results['error-interactions'] = np.zeros(A_predicted.shape[0], dtype=float)
             for i in range(A_predicted.shape[0]):
                 comparison_results['error-interactions'][i] = interaction_error_metric(
@@ -3020,8 +3027,9 @@ def validate(src_basepath, model, forward_sims,
                     
         else:
             A_predicted = model.graph[STRNAMES.CLUSTER_INTERACTION_VALUE].value
+            self_interactions_predicted = model.graph[STRNAMES.SELF_INTERACTION_VALUE].value
             for i in range(A_predicted.shape[0]):
-                A_predicted[i,i] = 0
+                A_predicted[i,i] = self_interactions_predicted[i]
             comparison_results['error-interactions'] = interaction_error_metric( 
                 A_comparison, A_predicted)
 
@@ -3033,13 +3041,12 @@ def validate(src_basepath, model, forward_sims,
                 truth=A_comparison, per_gibb=False, **network_topology_metric_kwargs)
             f.write('Error {}: {}\n'.format(network_topology_metric.__name__, 
                 comparison_results['error-topology']))
-            
-
 
     # Write the expcted value of growth, self-interactions, and perturbations
     f.write('\n\nExpected Growth\n')
     f.write('===============\n')
-    f.write('Error Type: {}\n'.format(growth_error_metric.__name__))
+    if comparison is not None:
+        f.write('Error Type: {}\n'.format(growth_error_metric.__name__))
 
     if pl.isMCMC(model):
         growth_trace = model.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk()
@@ -3107,19 +3114,20 @@ def validate(src_basepath, model, forward_sims,
             f.write('\n')
     else:
         for oidx in range(len(ASVS)):
-            f.write('{}:'.format(pl.asvname_formatter(
+            f.write('{}:\n'.format(pl.asvname_formatter(
                 format=asv_prefix_formatter, asv=oidx, asvs=ASVS)))
             if pl.isMCMC(model):
-                f.write('\n')
                 summ = pl.variables.summary(growth_trace[:,oidx])
                 for key,val in summ.items():
                     f.write('\t{}: {:.5f}'.format(key,val))
+                f.write('\n')
             else:
-                f.write('\t{:.5f}'.format(growth[oidx]))
+                f.write('\t{:.5f}\n'.format(growth[oidx]))
 
     f.write('\n\nExpected self-interactions\n')
     f.write('==========================\n')
-    f.write('Error Type: {}\n'.format(si_error_metric.__name__))
+    if comparison is not None:
+        f.write('Error Type: {}\n'.format(si_error_metric.__name__))
     if pl.isMCMC(model):
         si_trace = model.graph[STRNAMES.SELF_INTERACTION_VALUE].get_trace_from_disk()
 
@@ -3185,21 +3193,22 @@ def validate(src_basepath, model, forward_sims,
             f.write(dftemp.to_string(formatters=['{:.5E}'.format, '{:.5E}'.format, '{:.5E}'.format, '{:.5f}'.format, '{}'.format]))
             f.write('\n')
     else:
-
-        f.write('{}:'.format(pl.asvname_formatter(
-            format=asv_prefix_formatter, asv=oidx, asvs=ASVS)))
-        if pl.isMCMC(model):
-            f.write('\n')
-            summ = pl.variables.summary(si_trace[:,oidx])
-            for key,val in summ.items():
-                f.write('\t{}: {:.5f}'.format(key,val))
-        else:
-            f.write('\t{:.5f}'.format(self_interactions[oidx]))
+        for oidx in range(len(ASVS)):
+            f.write('{}:\n'.format(pl.asvname_formatter(
+                format=asv_prefix_formatter, asv=oidx, asvs=ASVS)))
+            if pl.isMCMC(model):
+                summ = pl.variables.summary(si_trace[:,oidx])
+                for key,val in summ.items():
+                    f.write('\t{}: {:.5f}'.format(key,val))
+                f.write('\n')
+            else:
+                f.write('\t{:.5f}\n'.format(self_interactions[oidx]))
 
     if model.graph.perturbations is not None:
         f.write('\n\nExpected Perturbations\n')
         f.write('======================\n')
-        f.write('Error Type: {}\n'.format(pert_error_metric.__name__))
+        if comparison is not None:
+            f.write('Error Type: {}\n'.format(pert_error_metric.__name__))
         for pidx, pred_perturbation in enumerate(model.graph.perturbations):
             if subjset.perturbations[pidx].name is not None:
                 pname = subjset.perturbations[pidx].name
@@ -3405,7 +3414,7 @@ def validate(src_basepath, model, forward_sims,
             traj_error_metric.__name__))
 
     f = open(basepath+'results.txt', 'a')
-    f = results.readify(f=f, asv_format='%(name)s, %(genus)s')
+    f = results.readify(f=f, asv_format='%(name)s, %(genus)s %(species)s')
     f.close()
     
     with open(results_filename, 'wb') as output:

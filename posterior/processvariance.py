@@ -231,7 +231,10 @@ class ProcessVarGlobal(pl.variables.SICS):
             kwargs_dict={REPRNAMES.GROWTH_VALUE:{
                 'with_perturbations': self._there_are_perturbations}})
         z = np.asarray(z).ravel()
-        z = z * self.G.data.sqrt_dt_vec[self.G.data.rows_to_include_zero_inflation]
+        if self.G.data.zero_inflation_transition_policy is not None:
+            z = z * self.G.data.sqrt_dt_vec[self.G.data.rows_to_include_zero_inflation]
+        else:
+            z = z * self.G.data.sqrt_dt_vec
         residual = np.sum(np.square(z))
 
         self.dof.value = self.prior.dof.value + len(z)

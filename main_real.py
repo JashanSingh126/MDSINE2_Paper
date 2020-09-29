@@ -9,6 +9,7 @@ import os.path
 import pickle
 import pandas as pd
 import argparse
+import scipy.stats
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -131,7 +132,7 @@ def parse_args():
 
 def main_leave_out_single(params, fparams, continue_inference):
     # Constants
-    ONLY_PLOT = False
+    ONLY_PLOT = True
 
     pl.seed(params.DATA_SEED)
 
@@ -308,18 +309,18 @@ def main_leave_out_single(params, fparams, continue_inference):
     fparams = config.FilteringConfig.load(fparams_filename)
     chain_result = pl.inference.BaseMCMC.load(chain_result_filename)
 
-    main_base.readify_chain(
-        src_basepath=basepath,
-        params=params,
-        yscale_log=True,
-        center_color_for_strength=True,
-        run_on_copy=True,
-        asv_prefix_formatter='%(index)s: (%(name)s) %(genus)s %(species)s',
-        yticklabels='(%(name)s) %(lca)s: %(index)s',
-        plot_name_filtering='%(order)s, %(family)s, %(genus)s',
-        sort_interactions_by_cocluster=True,
-        plot_filtering_thresh=False,
-        plot_gif_filtering=False)
+    # main_base.readify_chain(
+    #     src_basepath=basepath,
+    #     params=params,
+    #     yscale_log=True,
+    #     center_color_for_strength=True,
+    #     run_on_copy=True,
+    #     asv_prefix_formatter='%(index)s: (%(name)s) %(genus)s %(species)s',
+    #     yticklabels='(%(name)s) %(lca)s: %(index)s',
+    #     plot_name_filtering='%(order)s, %(family)s, %(genus)s',
+    #     sort_interactions_by_cocluster=True,
+    #     plot_filtering_thresh=False,
+    #     plot_gif_filtering=False)
 
     # main_base.readify_chain_fixed_topology(src_basepath=basepath,
     #     abund_times_start=7, abund_times_end=21,
@@ -332,11 +333,12 @@ def main_leave_out_single(params, fparams, continue_inference):
         main_base.validate(
             src_basepath=basepath, model=chain_result,
             forward_sims=['sim-full'],
-            yscale_log=True, run_on_copy=True,
-            asv_prefix_formatter='%(index)s: (%(name)s) %(genus)s %(species2)s ',
-            yticklabels='(%(name)s) %(genus)s %(species2)s: %(index)s',
+            yscale_log=True, run_on_copy=False,
+            asv_prefix_formatter='%(index)s: (%(name)s) %(genus)s %(species)s ',
+            yticklabels='(%(name)s) %(genus)s %(species)s: %(index)s',
             mp=5, output_dt=1/8, perturbations_additive=params.PERTURBATIONS_ADDITIVE,
-            traj_error_metric=pl.metrics.logPE,
+            traj_fillvalue=1e5,
+            traj_error_metric=scipy.stats.spearmanr, #pl.metrics.PE,
             pert_error_metric=pl.metrics.RMSE,
             interaction_error_metric=pl.metrics.RMSE,
             growth_error_metric=pl.metrics.PE,

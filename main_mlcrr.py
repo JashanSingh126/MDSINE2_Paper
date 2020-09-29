@@ -240,7 +240,7 @@ if __name__ == '__main__':
             pert_error_metric=pl.metrics.RMSE,
             interaction_error_metric=pl.metrics.RMSE,
             growth_error_metric=pl.metrics.RMSE,
-            si_error_metric=pl.metrics.PE,)
+            si_error_metric=pl.metrics.PE)
 
     
 
