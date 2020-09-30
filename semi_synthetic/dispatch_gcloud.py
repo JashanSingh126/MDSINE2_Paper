@@ -99,16 +99,16 @@ print('Arguments: {}'.format(arguments_global[argument_option]))
 
 # Run the docker
 output_path = './output/runs/'
-if os.path.isdir(output_path):
-    print('already ran, not doing again')
-else:
-    os.makedirs(output_path, exist_ok=True)
-    command = 'python main_mcmc.py -d {d} -i {i} -m {m} -p {p} -b {b} -db {db} -ns {ns} -nb {nb} -nt {nt} -nr {nr} -us {us} -ckpt {ckpt}'.format(
-        d=data_seed, i=init_seed, m=measurement_noise, p=process_variance, 
-        b=output_path, db=base_data_path, ns=n_samples, nb=n_burnin, nt=n_timepoints, 
-        nr=n_replicates, us=uniform_sampling, ckpt=checkpoint)
-    print('EXECUTING:', command)
-    os.system(command)
+# if os.path.isdir(output_path):
+#     print('already ran, not doing again')
+# else:
+os.makedirs(output_path, exist_ok=True)
+command = 'python main_mcmc.py -d {d} -i {i} -m {m} -p {p} -b {b} -db {db} -ns {ns} -nb {nb} -nt {nt} -nr {nr} -us {us} -ckpt {ckpt}'.format(
+    d=data_seed, i=init_seed, m=measurement_noise, p=process_variance, 
+    b=output_path, db=base_data_path, ns=n_samples, nb=n_burnin, nt=n_timepoints, 
+    nr=n_replicates, us=uniform_sampling, ckpt=checkpoint)
+print('EXECUTING:', command)
+os.system(command)
 
 # Kill the vm
 os.system('bash get_instance_details.sh')

@@ -3301,6 +3301,37 @@ def validate(src_basepath, model, forward_sims,
                     dftemp = pd.DataFrame(columns=['Predicted', 'Truth', 'Abs Diff', 'Metric Error', 'Name'], 
                         data=res)
                     f.write(dftemp.to_string(formatters=['{:.5f}'.format, '{:.5f}'.format, '{:.5f}'.format, '{:.5f}'.format, '{}'.format]))
+        if comparison is not None:
+            total_pert_error = []
+            for pidx, pred_perturbation in enumerate(model.graph.perturbations):
+                if subjset.perturbations[pidx].name is not None:
+                    pname = subjset.perturbations[pidx].name
+                else:
+                    pname = pidx
+                total_pert_error.append(comparison_results['error-{}'.format(pname)])
+            total_pert_error = np.mean(np.vstack(total_pert_error), axis=0)
+            comparison_results['error-perturbations'] = total_pert_error
+            f.write('Average perturbation performance\n')
+            summ = pl.variables.summary(comparison_results['error-perturbations'])
+            for k,v in summ.items():
+                f.write('\t{}: {}\n'.format(k,v))
+
+            # Plot the error
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            xs = np.arange(len(comparison_results['error-perturbations'.format(pname)]))
+            ys = np.squeeze(comparison_results['error-perturbations'.format(pname)])
+
+            ax.plot(xs, ys, alpha=0.5)
+            ax.set_xlabel('Sample')
+            ax.set_ylabel(pert_error_metric.__name__)
+            ax.set_title('Average Perturbation Performance {}\nmean={}'.format(
+                pert_error_metric.__name__, summ['mean']))
+            
+            fig.tight_layout()
+            plt.savefig(errorpath + 'averg_pert_performance.pdf'.format(pname))
+            plt.close()
+                
 
     # Clustering
     if pl.isMCMC(model):

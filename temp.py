@@ -310,80 +310,79 @@ for asv in asvs:
 # SeqIO.write(sequences=seqs_to_keep, handle='raw_data/seqs_temp/RDP_unaligned_overlap_seqs.fa', format='fasta')
 # sys.exit()
 
-# ####################################################
-# # Parse data like MDSINE1
-# ####################################################
+####################################################
+# Parse data like MDSINE1
+####################################################
+
+def make_data_like_mdsine1(subjset, basepath):
+    '''Parse subjset into data format like mdsine1
+    '''
+    os.makedirs(basepath, exist_ok=True)
+
+    n_times = 0 # for `#OTU ID`
+    for subj in subjset:
+        n_times += len(subj.times)
+
+    metadata_columns = ['sampleID', 'isIncluded', 'subjectID', 'measurementid', 'perturbid']
+    
+
+    # Make the counts
+    counts_columns = ['{}'.format(i+1) for i in range(n_times)]
+    count_Ms = []
+    for subj in subjset:
+        d = subj.matrix()
+        M = d['raw']
+        count_Ms.append(M)
+    
+    counts = np.hstack(count_Ms)
+    df_counts = pd.DataFrame(counts, columns=counts_columns, index=[asv.name for asv in subjset.asvs])
+    df_counts.index = df_counts.index.rename('#OTU ID')
+    df_counts.to_csv(basepath + 'counts.txt', sep='\t', header=True, index=True)
+
+    # Make the biomass
+    biomass_columns = ['mass1', 'mass2', 'mass3']
+    qs = []
+    for subj in subjset:
+        for t in subj.times:
+            qs.append(subj.qpcr[t].data)
+    biomass = np.vstack(qs)
+    df_biomass = pd.DataFrame(data=biomass, columns=biomass_columns, index=counts_columns)
+    df_biomass.to_csv(basepath + 'biomass.txt', sep='\t', header=True, index=False, float_format='%.2E')
+    
+
+    # Make metadata
+    sampleID = counts_columns
+    is_included = [1 for i in range(len(sampleID))]
+    subjectID = []
+    measurementid = []
+    perturbid = []
+    for subjidx, subj in enumerate(subjset):
+        for t in subj.times:
+            subjectID.append(int(subj.name))
+            measurementid.append(t)
+
+            p = 0
+            for pidx, pert in enumerate(subjset.perturbations):
+                if t >= pert.start and t <= pert.end:
+                    p = pidx+1
+                    break
+            perturbid.append(p)
+
+    print(perturbid)
+
+    df_metadata = pd.DataFrame({
+        'sampleID': sampleID, 
+        'isIncluded': is_included, 
+        'subjectID': subjectID,
+        'measurementid': measurementid,
+        'perturbid': perturbid})
+    df_metadata.to_csv(basepath + 'metadata.txt', sep='\t', header=True, index=False)
+    
 # subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
-
-# def make_data_like_mdsine1(subjset, basepath):
-#     '''Parse subjset into data format like mdsine1
-#     '''
-#     os.makedirs(basepath, exist_ok=True)
-
-#     n_times = 0 # for `#OTU ID`
-#     for subj in subjset:
-#         n_times += len(subj.times)
-
-#     metadata_columns = ['sampleID', 'isIncluded', 'subjectID', 'measurementid', 'perturbid']
-    
-
-#     # Make the counts
-#     counts_columns = ['{}'.format(i+1) for i in range(n_times)]
-#     count_Ms = []
-#     for subj in subjset:
-#         d = subj.matrix()
-#         M = d['raw']
-#         count_Ms.append(M)
-    
-#     counts = np.hstack(count_Ms)
-#     df_counts = pd.DataFrame(counts, columns=counts_columns, index=[asv.name for asv in subjset.asvs])
-#     df_counts.index = df_counts.index.rename('#OTU ID')
-#     df_counts.to_csv(basepath + 'counts.txt', sep='\t', header=True, index=True)
-
-#     # Make the biomass
-#     biomass_columns = ['mass1', 'mass2', 'mass3']
-#     qs = []
-#     for subj in subjset:
-#         for t in subj.times:
-#             qs.append(subj.qpcr[t].data)
-#     biomass = np.vstack(qs)
-#     df_biomass = pd.DataFrame(data=biomass, columns=biomass_columns, index=counts_columns)
-#     df_biomass.to_csv(basepath + 'biomass.txt', sep='\t', header=True, index=False, float_format='%.2E')
-    
-
-#     # Make metadata
-#     sampleID = counts_columns
-#     is_included = [1 for i in range(len(sampleID))]
-#     subjectID = []
-#     measurementid = []
-#     perturbid = []
-#     for subjidx, subj in enumerate(subjset):
-#         for t in subj.times:
-#             subjectID.append(int(subj.name))
-#             measurementid.append(t)
-
-#             p = 0
-#             for pidx, pert in enumerate(subjset.perturbations):
-#                 if t >= pert.start and t <= pert.end:
-#                     p = pidx+1
-#                     break
-#             perturbid.append(p)
-
-#     print(perturbid)
-
-#     df_metadata = pd.DataFrame({
-#         'sampleID': sampleID, 
-#         'isIncluded': is_included, 
-#         'subjectID': subjectID,
-#         'measurementid': measurementid,
-#         'perturbid': perturbid})
-#     df_metadata.to_csv(basepath + 'metadata.txt', sep='\t', header=True, index=False)
-    
-
 # subjset_real.pop_subject(filtering.UNHEALTHY_SUBJECTS)
-# subjset = subjset_real
+subjset = pl.base.SubjectSet.load('')
 
-# make_data_like_mdsine1(subjset, basepath='tmp/healthy/')
+make_data_like_mdsine1(subjset, basepath='tmp/healthy/')
 
 # ####################################################
 # # Calculate keystoneness

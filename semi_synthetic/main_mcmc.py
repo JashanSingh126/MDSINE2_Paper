@@ -324,7 +324,7 @@ if __name__ == '__main__':
         yticklabels='(%(name)s): %(index)s',
         mp=None, comparison=comparison, 
         perturbations_additive=params.PERTURBATIONS_ADDITIVE,
-        traj_error_metric=RMSE, #scipy.stats.spearmanr,
+        traj_error_metric=pl.metrics.RMSE, #scipy.stats.spearmanr,
         network_topology_metric=pl.metrics.rocauc_posterior_interactions,
         network_topology_metric_kwargs={
             'signed': synparams.TOPOLOGY_METRIC_SIGNED,

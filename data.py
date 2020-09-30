@@ -1625,6 +1625,10 @@ class InteractionsBaseDesignMatrix(DesignMatrix):
         n_asvs = self.G.data.n_asvs
         data = self.G.data.data
 
+        self.rows = self.master_rows
+        self.cols = self.master_cols
+        self.data = self.master_data
+
         i = 0
         for ridx in range(self.G.data.n_replicates):
             i = InteractionsBaseDesignMatrix._fast_build(
