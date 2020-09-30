@@ -215,7 +215,7 @@ class ModelConfigMCMC(_BaseModelConfig):
     learned or not
     '''
     def __init__(self, output_basepath, data_path, data_seed, init_seed, a0, a1,
-        n_samples, burnin, pcc, clustering_on):
+        n_samples, burnin, checkpoint, pcc, clustering_on):
         '''Initialize
         '''
         self.OUTPUT_BASEPATH = output_basepath
@@ -226,7 +226,7 @@ class ModelConfigMCMC(_BaseModelConfig):
         self.DATA_FILENAME = '../pickles/real_subjectset.pkl'
         self.BURNIN = burnin
         self.N_SAMPLES = n_samples
-        self.CHECKPOINT = 50
+        self.CHECKPOINT = checkpoint
         self.ADD_MIN_REL_ABUNDANCE = False
         self.PROCESS_VARIANCE_TYPE = 'multiplicative-global'
         self.DATA_DTYPE = 'abs'
@@ -242,6 +242,7 @@ class ModelConfigMCMC(_BaseModelConfig):
         # This is whether to use the log-scale dynamics or not
         self.DATA_LOGSCALE = True
         self.PERTURBATIONS_ADDITIVE = False
+        self.ZERO_INFLATION_TRANSITION_POLICY = None
 
         self.MP_FILTERING = 'debug'
         self.MP_INDICATORS = None
@@ -272,7 +273,7 @@ class ModelConfigMCMC(_BaseModelConfig):
             STRNAMES.FILTERING: True,
             STRNAMES.ZERO_INFLATION: False,
             STRNAMES.CLUSTERING: True, #clustering_on,
-            STRNAMES.CONCENTRATION: clustering_on,
+            STRNAMES.CONCENTRATION: True,
             STRNAMES.CLUSTER_INTERACTION_INDICATOR: True,
             STRNAMES.INDICATOR_PROB: True,
             STRNAMES.PERT_INDICATOR: True,
@@ -430,7 +431,7 @@ class ModelConfigMCMC(_BaseModelConfig):
                 'plot_initial': False,
                 'target_acceptance_rate': 0.44},
             STRNAMES.ZERO_INFLATION: {
-                'value_option': 'manual',
+                'value_option': None,
                 'delay': 0},
             STRNAMES.CONCENTRATION: {
                 'value_option': 'prior-mean',

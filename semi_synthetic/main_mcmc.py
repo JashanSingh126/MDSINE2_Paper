@@ -55,6 +55,9 @@ def parse_args():
     parser.add_argument('--burnin', '-nb', type=int,
         help='Total number of burnin steps',
         dest='burnin', default=2000)
+    parser.add_argument('--checkpoint', '-ckpt', type=int,
+        help='When to save to disk',
+        dest='checkpoint', default=200)
     parser.add_argument('--n-times', '-nt', type=int,
         help='Number of time points', 
         dest='n_times')
@@ -164,7 +167,7 @@ if __name__ == '__main__':
         process_variance_level=args.process_variance_level,
         measurement_noise_level=args.measurement_noise_level)
     params = config.ModelConfigMCMC(output_basepath=args.basepath, data_seed=args.data_seed,
-        data_path=args.data_path,
+        data_path=args.data_path, checkpoint=args.checkpoint,
         init_seed=args.init_seed, a0=synparams.NEGBIN_A0, a1=synparams.NEGBIN_A1,
         n_samples=args.n_samples, burnin=args.burnin, pcc=args.percent_change_clustering,
         clustering_on=args.clustering_on)
@@ -321,15 +324,15 @@ if __name__ == '__main__':
         yticklabels='(%(name)s): %(index)s',
         mp=None, comparison=comparison, 
         perturbations_additive=params.PERTURBATIONS_ADDITIVE,
-        traj_error_metric=scipy.stats.spearmanr,
+        traj_error_metric=RMSE, #scipy.stats.spearmanr,
         network_topology_metric=pl.metrics.rocauc_posterior_interactions,
         network_topology_metric_kwargs={
             'signed': synparams.TOPOLOGY_METRIC_SIGNED,
             'average': synparams.TOPOLOGY_METRIC_AVERAGE},
         pert_error_metric=pl.metrics.RMSE,
         interaction_error_metric=pl.metrics.RMSE,
-        growth_error_metric=pl.metrics.logPE,
-        si_error_metric=pl.metrics.logPE,
+        growth_error_metric=pl.metrics.RMSE,
+        si_error_metric=pl.metrics.RMSE,
         traj_fillvalue=params.C_M/2,
         clus_error_metric=normalized_mutual_info_score)
 

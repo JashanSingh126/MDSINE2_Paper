@@ -13,7 +13,12 @@ from oauth2client.client import GoogleCredentials
 print(os.path.abspath(os.getcwd()))
 print(os.listdir('output/'))
 f = open('output/args.txt', 'r')
-argument_option = int(f.read())
+argument_option, n_samples, n_burnin, checkpoint = f.read().split(' ')
+argument_option = int(argument_option)
+n_samples = int(n_samples)
+n_burnin = int(n_burnin)
+checkpoint = int(checkpoint)
+
 f.close()
 
 meshes = [
@@ -79,25 +84,31 @@ boxplot_type = mesh[7]
 
 
 
-# # Make the base data
+# Make the base data
 base_data_path = './output/base_data/'
-command = 'python make_subjsets.py -b {basepath} -nr {nrs} -m {mns} -p {pvs} -d {nd} -dset semi-synthetic -nt {nts}'.format(
-    basepath=base_data_path, nrs=lst_replicates, mns=lst_measurement_noises,
-    pvs=lst_process_variances, nd=max_dataseeds, nts=lst_times)
-print('EXECUTING:', command)
-os.system(command)
+if os.path.isdir(base_data_path):
+    print('Not making mroe data, already run')
+else:
+    command = 'python make_subjsets.py -b {basepath} -nr {nrs} -m {mns} -p {pvs} -d {nd} -dset semi-synthetic -nt {nts}'.format(
+        basepath=base_data_path, nrs=lst_replicates, mns=lst_measurement_noises,
+        pvs=lst_process_variances, nd=max_dataseeds, nts=lst_times)
+    print('EXECUTING:', command)
+    os.system(command)
 
 print('Arguments: {}'.format(arguments_global[argument_option]))
 
 # Run the docker
 output_path = './output/runs/'
-os.makedirs(output_path, exist_ok=True)
-command = 'python main_mcmc.py -d {d} -i {i} -m {m} -p {p} -b {b} -db {db} -ns {ns} -nb {nb} -nt {nt} -nr {nr} -us {us}'.format(
-    d=data_seed, i=init_seed, m=measurement_noise, p=process_variance, 
-    b=output_path, db=base_data_path, ns=15000, nb=5000, nt=n_timepoints, 
-    nr=n_replicates, us=uniform_sampling)
-print('EXECUTING:', command)
-os.system(command)
+if os.path.isdir(output_path):
+    print('already ran, not doing again')
+else:
+    os.makedirs(output_path, exist_ok=True)
+    command = 'python main_mcmc.py -d {d} -i {i} -m {m} -p {p} -b {b} -db {db} -ns {ns} -nb {nb} -nt {nt} -nr {nr} -us {us} -ckpt {ckpt}'.format(
+        d=data_seed, i=init_seed, m=measurement_noise, p=process_variance, 
+        b=output_path, db=base_data_path, ns=n_samples, nb=n_burnin, nt=n_timepoints, 
+        nr=n_replicates, us=uniform_sampling, ckpt=checkpoint)
+    print('EXECUTING:', command)
+    os.system(command)
 
 # Kill the vm
 os.system('bash get_instance_details.sh')
