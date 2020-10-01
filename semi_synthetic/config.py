@@ -47,6 +47,41 @@ FPARAMS_FILENAME = 'filtering_params.pkl'
 SYNPARAMS_FILENAME = 'synthetic_params.pkl'
 MLCRR_RESULTS_FILENAME = 'mlcrr_results.pkl'
 
+SEMI_SYNTHETIC_MESHES = [
+    (
+        [5], # Number of replicates
+        [55], # Number of timepoints
+        3, # Total number of data seeds
+        1, # Total number of initialization seeds
+        [0.1, 0.2, 0.25, 0.3, 0.4], # Measurement Noises
+        [0.1], # Process variances
+        [1], # Clustering on/off
+        0, # Uniform sampling of timepoints
+        0 # Boxplot type
+    ),    
+    (
+        [2,3,4,5], # Number of replicates
+        [55], # Number of timepoints
+        3, # Total number of data seeds
+        1, # Total number of initialization seeds
+        [0.3], # Measurement Noises
+        [0.1], # Process variances
+        [1], # Clustering on/off
+        0, # Uniform sampling of timepoints
+        1 # Boxplot type
+    ),
+    (
+        [4], # Number of replicates
+        [35, 45, 50, 55, 65], # Number of timepoints
+        3, # Total number of data seeds
+        1, # Total number of initialization seeds
+        [0.3], # Measurement Noises
+        [0.1], # Process variances
+        [1], # Clustering on/off
+        1, # Uniform sampling of timepoints
+        2 # Boxplot type
+    )]
+
 def calculate_reads_a0a1(desired_percent_variation):
     '''
     When we scale the a0 and a1 terms, we are assuming that you want to
