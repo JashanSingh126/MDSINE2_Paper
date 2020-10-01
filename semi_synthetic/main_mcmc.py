@@ -1,4 +1,4 @@
-'''This module runs MCMC inference on the synthetic data
+b'''This module runs MCMC inference on the synthetic data
 '''
 
 import logging
@@ -290,15 +290,15 @@ if __name__ == '__main__':
         params.save(params_filename)
 
     params = config.ModelConfigMCMC.load(params_filename)
-    # main_base.readify_chain(
-    #     src_basepath=basepath, 
-    #     params=params,
-    #     yscale_log=params.DATA_LOGSCALE, 
-    #     center_color_for_strength=True,
-    #     run_on_copy=False,
-    #     plot_filtering_thresh=False,
-    #     exact_filename=exact_filename,
-    #     syndata=syndata_filename)
+    main_base.readify_chain(
+        src_basepath=basepath, 
+        params=params,
+        yscale_log=params.DATA_LOGSCALE, 
+        center_color_for_strength=True,
+        run_on_copy=False,
+        plot_filtering_thresh=False,
+        exact_filename=exact_filename,
+        syndata=syndata_filename)
 
     logging.info('here')
     

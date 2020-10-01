@@ -309,18 +309,18 @@ def main_leave_out_single(params, fparams, continue_inference):
     fparams = config.FilteringConfig.load(fparams_filename)
     chain_result = pl.inference.BaseMCMC.load(chain_result_filename)
 
-    # main_base.readify_chain(
-    #     src_basepath=basepath,
-    #     params=params,
-    #     yscale_log=True,
-    #     center_color_for_strength=True,
-    #     run_on_copy=True,
-    #     asv_prefix_formatter='%(index)s: (%(name)s) %(genus)s %(species)s',
-    #     yticklabels='(%(name)s) %(lca)s: %(index)s',
-    #     plot_name_filtering='%(order)s, %(family)s, %(genus)s',
-    #     sort_interactions_by_cocluster=True,
-    #     plot_filtering_thresh=False,
-    #     plot_gif_filtering=False)
+    main_base.readify_chain(
+        src_basepath=basepath,
+        params=params,
+        yscale_log=True,
+        center_color_for_strength=True,
+        run_on_copy=True,
+        asv_prefix_formatter='%(index)s: (%(name)s) %(genus)s %(species)s',
+        yticklabels='(%(name)s) %(lca)s: %(index)s',
+        plot_name_filtering='%(order)s, %(family)s, %(genus)s',
+        sort_interactions_by_cocluster=True,
+        plot_filtering_thresh=False,
+        plot_gif_filtering=False)
 
     # main_base.readify_chain_fixed_topology(src_basepath=basepath,
     #     abund_times_start=7, abund_times_end=21,

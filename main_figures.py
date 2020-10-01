@@ -2831,7 +2831,7 @@ def semi_synthetic_benchmark_figure():
     # basepath = 'tmp/'
     # os.makedirs(basepath, exist_ok=True)
 
-    df = _make_fake()
+    df = _make_fake_semi_synthetic()
 
     fig = _outer_semi_synthetic(
         df=df, only={'Number of Timepoints': 55, 'Number of Replicates': 5, 
@@ -2860,7 +2860,7 @@ def semi_synthetic_benchmark_figure():
 def _srn():
     return np.absolute(np.random.normal())
 
-def _make_fake():
+def _make_fake_semi_synthetic():
     columns = ['Model', 
             'Error Trajectories', 
             'Error Interactions', 
@@ -3019,9 +3019,56 @@ def _inner_semi_synth(df, only, x, y, hue, ax, title, ylabel, yscale, legend):
 
     return ax
  
+# Model performance on new dataset
+# --------------------------------
+def model_performance_benchmark_figure():
+    fig = plt.figure(figsize=(10,5))
+    ax = fig.add_subplot(111)
+    df = _make_fake_model_performance_df()
+    ax = sns.boxplot(hue='Dataset', x='Model', y='Error Trajectories', data=df, ax=ax)
+    ax.set_ylabel('RMSE', fontsize=15)
+    ax.set_xlabel('Model', fontsize=15)
+    ax.set_yscale('log')
+    fig.suptitle('Hold out Performance on Ulcerative Colitis and Healthy Dataset', 
+        fontsize=18, fontweight='bold')
+    ax.get_legend().remove()
+    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=15)
+
+    for tick in ax.yaxis.get_major_ticks():
+        tick.label.set_fontsize(14)
+    for tick in ax.xaxis.get_major_ticks():
+        tick.label.set_fontsize(14)
+
+    fig.tight_layout()
+    fig.subplots_adjust(top=.889)
+
+    plt.savefig(BASEPATH + 'model_performance_benchmark.pdf')
+    plt.savefig(BASEPATH + 'model_performance_benchmark.png')
+    plt.close()
+
+def _make_fake_model_performance_df():
+    data = {
+        'Model': [],
+        'Error Trajectories': [],
+        'Dataset': []}
+    
+    for ds in ['Ulcerative Colitis', 'Healthy']:
+        for model in ['MDSINE2', 'L2', 'cLV']:
+            if ds == 'Healthy':
+                n = 4
+            else:
+                n = 5
+            
+            for i in range(n):
+                data['Model'].append(model)
+                data['Error Trajectories'].append(_srn())
+                data['Dataset'].append(ds)
+
+    df = pd.DataFrame(data)
+    return df
 
 # Alpha diversity
-alpha_diversity_mean_std()
+# alpha_diversity_mean_std()
 
 # Beta diversity
 # beta_diversity_figure()
@@ -3040,7 +3087,10 @@ alpha_diversity_mean_std()
 # phylogenetic_heatmap(True)
 
 # Semi-synthetic benchmarking
-semi_synthetic_benchmark_figure()
+# semi_synthetic_benchmark_figure()
+
+# Model performance benchmarking
+model_performance_benchmark_figure()
 
 
 

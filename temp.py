@@ -200,199 +200,6 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
 # subjset_real.save('pickles/subjset_cdiff.pkl')
 
-####################################################
-# Make fake semi synthetic output df
-####################################################
-
-def _srn():
-    return np.absolute(np.random.normal())
-
-def _make_fake():
-    columns = ['Model', 
-            'Error Trajectories', 
-            'Error Interactions', 
-            'Error Perturbations', 
-            'Error Topology',
-            'Error Growth',
-            'Error Clustering',
-            'Measurement Noise',
-            'Process Variance',
-            'Number of Timepoints',
-            'Uniform Samples',
-            'Number of Replicates']
-
-    n_dataseeds = 10
-    models = ['MDSINE2', 'L2', 'cLV']
-    n_timepoints = [35, 45, 50, 55, 65]
-    n_replicates = [2,3,4,5]
-    measurement_noises = [0.1, 0.2, 0.25, 0.3, 0.4]
-    pv = 0.1
-
-    data = {
-        'Model': [],
-        'Error Trajectories': [], 
-        'Error Interactions': [], 
-        'Error Perturbations': [], 
-        'Error Topology': [],
-        'Error Growth': [],
-        'Error Clustering': [],
-        'Measurement Noise': [],
-        'Process Variance': [],
-        'Number of Timepoints': [],
-        'Uniform Samples': [],
-        'Number of Replicates': []}
-    # Do measurement noise
-    nt = 55
-    nr = 5
-    us = False
-    for model in models:
-        for mn in measurement_noises:
-            for ds in range(n_dataseeds):
-                data['Model'].append(model)
-                data['Error Trajectories'].append(_srn())
-                data['Error Interactions'].append(_srn())
-                data['Error Perturbations'].append(_srn())
-                data['Error Topology'].append(_srn())
-                data['Error Growth'].append(_srn())
-                data['Error Clustering'].append(_srn())
-                data['Measurement Noise'].append(mn)
-                data['Process Variance'].append(pv)
-                data['Number of Timepoints'].append(nt)
-                data['Uniform Samples'].append(us)
-                data['Number of Replicates'].append(nr)
-
-    # Do n-replicates
-    nt = 55
-    mn = 0.3
-    us = False
-    for model in models:
-        for nr in n_replicates:
-            for ds in range(n_dataseeds):
-                data['Model'].append(model)
-                data['Error Trajectories'].append(_srn())
-                data['Error Interactions'].append(_srn())
-                data['Error Perturbations'].append(_srn())
-                data['Error Topology'].append(_srn())
-                data['Error Growth'].append(_srn())
-                data['Error Clustering'].append(_srn())
-                data['Measurement Noise'].append(mn)
-                data['Process Variance'].append(pv)
-                data['Number of Timepoints'].append(nt)
-                data['Uniform Samples'].append(us)
-                data['Number of Replicates'].append(nr)
-
-    # Do n_timepoints
-    mn = 0.3
-    nr = 4
-    us = True
-    for model in models:
-        for nt in n_timepoints:
-            for ds in range(n_dataseeds):
-                data['Model'].append(model)
-                data['Error Trajectories'].append(_srn())
-                data['Error Interactions'].append(_srn())
-                data['Error Perturbations'].append(_srn())
-                data['Error Topology'].append(_srn())
-                data['Error Growth'].append(_srn())
-                data['Error Clustering'].append(_srn())
-                data['Measurement Noise'].append(mn)
-                data['Process Variance'].append(pv)
-                data['Number of Timepoints'].append(nt)
-                data['Uniform Samples'].append(us)
-                data['Number of Replicates'].append(nr)
-
-    df = pd.DataFrame(data)
-    return df
-
-def semi_synthetic_benchmark_figure():
-
-    # fname = 'test_df_semi_synthetic.pkl'
-    # basepath = 'tmp/'
-    # os.makedirs(basepath, exist_ok=True)
-
-    df = _make_fake()
-
-    fig = _outer_semi_synthetic(
-        df=df, only={'Number of Timepoints': 55, 'Number of Replicates': 5, 
-        'Uniform Samples': False},
-        x = 'Measurement Noise')
-
-    fig = _outer_semi_synthetic(
-        df=df, only={'Number of Timepoints': 55, 'Measurement Noise': 0.3, 
-        'Uniform Samples': False},
-        x = 'Number of Replicates')
-    
-    fig = _outer_semi_synthetic(
-        df=df, only={'Number of Replicates': 4, 'Measurement Noise': 0.3, 
-        'Uniform Samples': True},
-        x = 'Number of Timepoints')
-
-    plt.show()
-
-def _outer_semi_synthetic(df, only, x):
-    fig = plt.figure(figsize=(10,5))
-
-    # Do Measurement noise
-    # Only use uniform samples = False, n_timepoitns = 55, n_replicates = 5
-    hue = 'Model'
-    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Trajectories', hue=hue,
-        ax=fig.add_subplot(2,3,1), title='Forward Simulation Error', 
-        ylabel='RMSE', yscale='log', legend=False)
-
-    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Growth', hue=hue,
-        ax=fig.add_subplot(2,3,2), title='Error Growth Rates', 
-        ylabel='RMSE', yscale='linear', legend=False)
-    
-    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Interactions', hue=hue,
-        ax=fig.add_subplot(2,3,3), title='Error Interactions', 
-        ylabel='RMSE', yscale='log', legend=True)
-
-    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Perturbations', hue=hue,
-        ax=fig.add_subplot(2,3,4), title='Error Perturbations', 
-        ylabel='RMSE', yscale='linear', legend=False)
-    
-    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Topology', hue=hue,
-        ax=fig.add_subplot(2,3,5), title='Error Topology', 
-        ylabel='AUC ROC', yscale='linear', legend=False)
-    
-    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Clustering', hue=hue,
-        ax=fig.add_subplot(2,3,6), title='Error Cluster Assignment', 
-        ylabel='Normalized Mutual Information', yscale='linear', legend=False)
-
-    fig.suptitle(x, fontsize=22, fontweight='bold')
-    fig.tight_layout()
-    fig.subplots_adjust(top=0.87)
-    return fig
-
-def _inner_semi_synth(df, only, x, y, hue, ax, title, ylabel, yscale, legend):
-    
-    dftemp = df
-    if only is not None:
-        for col, val in only.items():
-            dftemp = dftemp[dftemp[col] == val]
-
-        # print(df.columns)
-        # print(dftemp['Measurement Noise'])
-        # sys.exit()
-
-    print(dftemp)
-    
-    sns.boxplot(data=dftemp, x=x, y=y, hue=hue, ax=ax)
-
-    ax.set_title(title)
-    ax.set_ylabel(ylabel)
-    ax.set_yscale(yscale)
-
-    if not legend:
-        ax.get_legend().remove()
-    else:
-        ax.get_legend().remove()
-        ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-
-    return ax
- 
-semi_synthetic_benchmark_figure()
-
 
 # ####################################################
 # # Stem plots
@@ -475,79 +282,83 @@ semi_synthetic_benchmark_figure()
 # plt.show()
 # sys.exit()
 
-# ####################################################
-# # Parse data like MDSINE1
-# ####################################################
+####################################################
+# Parse data like MDSINE1
+####################################################
 
-# def make_data_like_mdsine1(subjset, basepath):
-#     '''Parse subjset into data format like mdsine1
-#     '''
-#     os.makedirs(basepath, exist_ok=True)
+def make_data_like_mdsine1(subjset, basepath):
+    '''Parse subjset into data format like mdsine1
+    '''
+    os.makedirs(basepath, exist_ok=True)
 
-#     n_times = 0 # for `#OTU ID`
-#     for subj in subjset:
-#         n_times += len(subj.times)
+    n_times = 0 # for `#OTU ID`
+    for subj in subjset:
+        n_times += len(subj.times)
 
-#     metadata_columns = ['sampleID', 'isIncluded', 'subjectID', 'measurementid', 'perturbid']
+    metadata_columns = ['sampleID', 'isIncluded', 'subjectID', 'measurementid', 'perturbid']
     
 
-#     # Make the counts
-#     counts_columns = ['{}'.format(i+1) for i in range(n_times)]
-#     count_Ms = []
-#     for subj in subjset:
-#         d = subj.matrix()
-#         M = d['raw']
-#         count_Ms.append(M)
+    # Make the counts
+    counts_columns = ['{}'.format(i+1) for i in range(n_times)]
+    count_Ms = []
+    for subj in subjset:
+        d = subj.matrix()
+        M = d['raw']
+        count_Ms.append(M)
     
-#     counts = np.hstack(count_Ms)
-#     df_counts = pd.DataFrame(counts, columns=counts_columns, index=[asv.name for asv in subjset.asvs])
-#     df_counts.index = df_counts.index.rename('#OTU ID')
-#     df_counts.to_csv(basepath + 'counts.txt', sep='\t', header=True, index=True)
+    counts = np.hstack(count_Ms)
+    df_counts = pd.DataFrame(counts, columns=counts_columns, index=[asv.name for asv in subjset.asvs])
+    df_counts.index = df_counts.index.rename('#OTU ID')
+    df_counts.to_csv(basepath + 'counts.txt', sep='\t', header=True, index=True)
 
-#     # Make the biomass
-#     biomass_columns = ['mass1', 'mass2', 'mass3']
-#     qs = []
-#     for subj in subjset:
-#         for t in subj.times:
-#             qs.append(subj.qpcr[t].data)
-#     biomass = np.vstack(qs)
-#     df_biomass = pd.DataFrame(data=biomass, columns=biomass_columns, index=counts_columns)
-#     df_biomass.to_csv(basepath + 'biomass.txt', sep='\t', header=True, index=False, float_format='%.2E')
+    # Make the biomass
+    biomass_columns = ['mass1', 'mass2', 'mass3']
+    qs = []
+    for subj in subjset:
+        for t in subj.times:
+            qs.append(subj.qpcr[t].data)
+    biomass = np.vstack(qs)
+    df_biomass = pd.DataFrame(data=biomass, columns=biomass_columns, index=counts_columns)
+    df_biomass.to_csv(basepath + 'biomass.txt', sep='\t', header=True, index=False, float_format='%.2E')
     
 
-#     # Make metadata
-#     sampleID = counts_columns
-#     is_included = [1 for i in range(len(sampleID))]
-#     subjectID = []
-#     measurementid = []
-#     perturbid = []
-#     for subjidx, subj in enumerate(subjset):
-#         for t in subj.times:
-#             subjectID.append(int(subj.name))
-#             measurementid.append(t)
+    # Make metadata
+    sampleID = counts_columns
+    is_included = [1 for i in range(len(sampleID))]
+    subjectID = []
+    measurementid = []
+    perturbid = []
+    for subjidx, subj in enumerate(subjset):
+        for t in subj.times:
+            subjectID.append(int(subj.name))
+            measurementid.append(t)
 
-#             p = 0
-#             for pidx, pert in enumerate(subjset.perturbations):
-#                 if t >= pert.start and t <= pert.end:
-#                     p = pidx+1
-#                     break
-#             perturbid.append(p)
+            p = 0
+            for pidx, pert in enumerate(subjset.perturbations):
+                if t >= pert.start and t <= pert.end:
+                    p = pidx+1
+                    break
+            perturbid.append(p)
 
-#     print(perturbid)
+    print(perturbid)
 
-#     df_metadata = pd.DataFrame({
-#         'sampleID': sampleID, 
-#         'isIncluded': is_included, 
-#         'subjectID': subjectID,
-#         'measurementid': measurementid,
-#         'perturbid': perturbid})
-#     df_metadata.to_csv(basepath + 'metadata.txt', sep='\t', header=True, index=False)
-    
-# # subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
-# # subjset_real.pop_subject(filtering.UNHEALTHY_SUBJECTS)
-# subjset = pl.base.SubjectSet.load('')
+    df_metadata = pd.DataFrame({
+        'sampleID': sampleID, 
+        'isIncluded': is_included, 
+        'subjectID': subjectID,
+        'measurementid': measurementid,
+        'perturbid': perturbid})
+    df_metadata.to_csv(basepath + 'metadata.txt', sep='\t', header=True, index=False)
 
-# make_data_like_mdsine1(subjset, basepath='tmp/healthy/')
+chains = {
+    'healthy': 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    'uc': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
+
+for dtype in ['healthy', 'uc']:
+    chainname = chains[dtype]
+    chain = pl.inference.BaseMCMC.load(chainname)
+    subjset = chain.graph.data.subjects
+    make_data_like_mdsine1(subjset, basepath='tmp/{}_mdsine1_like/'.format(dtype))
 
 # ####################################################
 # # Calculate keystoneness
