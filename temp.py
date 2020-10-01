@@ -64,10 +64,9 @@ pl.seed(1)
 
 subjset_real = pl.base.SubjectSet.load('pickles/subjset_cdiff.pkl')
 
-asvs = subjset_real.asvs
-
-for asv in asvs:
-    print(asv)
+# asvs = subjset_real.asvs
+# for asv in asvs:
+#     print(asv)
 
 # asv = asvs['Clostridium-hiranonis']
 # asv.taxonomy['kingdom'] = 'Bacteria'
@@ -311,78 +310,165 @@ for asv in asvs:
 # sys.exit()
 
 ####################################################
-# Parse data like MDSINE1
+# Stem plots
 ####################################################
+import matplotlib.image as mpimg
+from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationBbox
 
-def make_data_like_mdsine1(subjset, basepath):
-    '''Parse subjset into data format like mdsine1
-    '''
-    os.makedirs(basepath, exist_ok=True)
+subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
+times = []
+for subj in subjset_real:
+    times = np.append(times, subj.times)
+times = np.sort(np.unique(times))
+print(times)
 
-    n_times = 0 # for `#OTU ID`
-    for subj in subjset:
-        n_times += len(subj.times)
+def remove_edges(ax):
+    ax.spines['top'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.xaxis.set_major_locator(plt.NullLocator())
+    ax.xaxis.set_minor_locator(plt.NullLocator())
+    ax.yaxis.set_major_locator(plt.NullLocator())
+    ax.yaxis.set_minor_locator(plt.NullLocator())
+    return ax
 
-    metadata_columns = ['sampleID', 'isIncluded', 'subjectID', 'measurementid', 'perturbid']
+y = [-0.1 for t in times]
+
+fig = plt.figure(figsize=(34,10))
+ax = fig.add_subplot(311)
+ax = remove_edges(ax)
+markerline, stemlines, baseline = ax.stem(times, y, linefmt='none')
+baseline.set_color('black')
+markerline.set_color('black')
+markerline.set_markersize(5)
+
+
+x = np.arange(0, np.max(times), step=10)
+labels = ['Day {}'.format(int(t)) for t in x]
+for ylim in [0.12, -0.12]:
+    y = [ylim for t in x]
+    markerline, stemlines, baseline = ax.stem(x, y)
+    stemlines = [stemline.set_color('black') for stemline in stemlines]
+    baseline.set_color('black')
+    markerline.set_color('none')
+for i in range(len(labels)):
+    label = labels[i]
+    xpos = x[i] 
+    ax.text(xpos, 0.-.15, label, horizontalalignment='center')
+x = np.arange(0,np.max(times),2)
+for ylim in [0.07, -0.07]:
+    y = [ylim for t in x]
+    markerline, stemlines, baseline = ax.stem(x, y)
+    stemlines = [stemline.set_color('black') for stemline in stemlines]
+    baseline.set_color('black')
+    markerline.set_color('none')
+
+for perturbation in subjset_real.perturbations:
+    name = perturbation.name
+    # lines += [start,end]
+    # ax.text(start, 0.33, 'Start {}'.format(name), horizontalalignment='center')
+    ax.text((perturbation.end+perturbation.start)/2, 0.15, name.capitalize(), horizontalalignment='center')
+
+    # ax.arrow(start, 0.3, 0, -0.27, length_includes_head=True, head_width=0.25, head_length=0.05)
+    # ax.arrow(end, 0.3, 0, -0.27, length_includes_head=True, head_width=0.25, head_length=0.05)
+    starts = np.asarray([perturbation.start])
+    ends = np.asarray([perturbation.end])
+    ax.barh(y=[0 for i in range(len(starts))], width=ends-starts, height=0.1, left=starts)
+
+ax.text(0, 0.2, 'Colonization', horizontalalignment='center')
+ax.arrow(0, 0.17, 0, -0.14, length_includes_head=True, head_width=0.25, head_length=0.05)
+
+
+# stool collection
+xpos = np.max(times)* 1.05
+y = 0.05
+ax.scatter([xpos], [y], c='black', s=25)
+ax.text(xpos+1, y, 'Stool Collection', horizontalalignment='left', fontsize=18, 
+    verticalalignment='center')
+
+
+ax.set_ylim(-0.15,0.4)
+
+
+
+plt.show()
+
+sys.exit()
+
+# ####################################################
+# # Parse data like MDSINE1
+# ####################################################
+
+# def make_data_like_mdsine1(subjset, basepath):
+#     '''Parse subjset into data format like mdsine1
+#     '''
+#     os.makedirs(basepath, exist_ok=True)
+
+#     n_times = 0 # for `#OTU ID`
+#     for subj in subjset:
+#         n_times += len(subj.times)
+
+#     metadata_columns = ['sampleID', 'isIncluded', 'subjectID', 'measurementid', 'perturbid']
     
 
-    # Make the counts
-    counts_columns = ['{}'.format(i+1) for i in range(n_times)]
-    count_Ms = []
-    for subj in subjset:
-        d = subj.matrix()
-        M = d['raw']
-        count_Ms.append(M)
+#     # Make the counts
+#     counts_columns = ['{}'.format(i+1) for i in range(n_times)]
+#     count_Ms = []
+#     for subj in subjset:
+#         d = subj.matrix()
+#         M = d['raw']
+#         count_Ms.append(M)
     
-    counts = np.hstack(count_Ms)
-    df_counts = pd.DataFrame(counts, columns=counts_columns, index=[asv.name for asv in subjset.asvs])
-    df_counts.index = df_counts.index.rename('#OTU ID')
-    df_counts.to_csv(basepath + 'counts.txt', sep='\t', header=True, index=True)
+#     counts = np.hstack(count_Ms)
+#     df_counts = pd.DataFrame(counts, columns=counts_columns, index=[asv.name for asv in subjset.asvs])
+#     df_counts.index = df_counts.index.rename('#OTU ID')
+#     df_counts.to_csv(basepath + 'counts.txt', sep='\t', header=True, index=True)
 
-    # Make the biomass
-    biomass_columns = ['mass1', 'mass2', 'mass3']
-    qs = []
-    for subj in subjset:
-        for t in subj.times:
-            qs.append(subj.qpcr[t].data)
-    biomass = np.vstack(qs)
-    df_biomass = pd.DataFrame(data=biomass, columns=biomass_columns, index=counts_columns)
-    df_biomass.to_csv(basepath + 'biomass.txt', sep='\t', header=True, index=False, float_format='%.2E')
+#     # Make the biomass
+#     biomass_columns = ['mass1', 'mass2', 'mass3']
+#     qs = []
+#     for subj in subjset:
+#         for t in subj.times:
+#             qs.append(subj.qpcr[t].data)
+#     biomass = np.vstack(qs)
+#     df_biomass = pd.DataFrame(data=biomass, columns=biomass_columns, index=counts_columns)
+#     df_biomass.to_csv(basepath + 'biomass.txt', sep='\t', header=True, index=False, float_format='%.2E')
     
 
-    # Make metadata
-    sampleID = counts_columns
-    is_included = [1 for i in range(len(sampleID))]
-    subjectID = []
-    measurementid = []
-    perturbid = []
-    for subjidx, subj in enumerate(subjset):
-        for t in subj.times:
-            subjectID.append(int(subj.name))
-            measurementid.append(t)
+#     # Make metadata
+#     sampleID = counts_columns
+#     is_included = [1 for i in range(len(sampleID))]
+#     subjectID = []
+#     measurementid = []
+#     perturbid = []
+#     for subjidx, subj in enumerate(subjset):
+#         for t in subj.times:
+#             subjectID.append(int(subj.name))
+#             measurementid.append(t)
 
-            p = 0
-            for pidx, pert in enumerate(subjset.perturbations):
-                if t >= pert.start and t <= pert.end:
-                    p = pidx+1
-                    break
-            perturbid.append(p)
+#             p = 0
+#             for pidx, pert in enumerate(subjset.perturbations):
+#                 if t >= pert.start and t <= pert.end:
+#                     p = pidx+1
+#                     break
+#             perturbid.append(p)
 
-    print(perturbid)
+#     print(perturbid)
 
-    df_metadata = pd.DataFrame({
-        'sampleID': sampleID, 
-        'isIncluded': is_included, 
-        'subjectID': subjectID,
-        'measurementid': measurementid,
-        'perturbid': perturbid})
-    df_metadata.to_csv(basepath + 'metadata.txt', sep='\t', header=True, index=False)
+#     df_metadata = pd.DataFrame({
+#         'sampleID': sampleID, 
+#         'isIncluded': is_included, 
+#         'subjectID': subjectID,
+#         'measurementid': measurementid,
+#         'perturbid': perturbid})
+#     df_metadata.to_csv(basepath + 'metadata.txt', sep='\t', header=True, index=False)
     
-# subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
-# subjset_real.pop_subject(filtering.UNHEALTHY_SUBJECTS)
-subjset = pl.base.SubjectSet.load('')
+# # subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
+# # subjset_real.pop_subject(filtering.UNHEALTHY_SUBJECTS)
+# subjset = pl.base.SubjectSet.load('')
 
-make_data_like_mdsine1(subjset, basepath='tmp/healthy/')
+# make_data_like_mdsine1(subjset, basepath='tmp/healthy/')
 
 # ####################################################
 # # Calculate keystoneness
