@@ -62,7 +62,11 @@ logging.basicConfig(level=logging.INFO)
 pl.seed(1)
 
 
-subjset_real = pl.base.SubjectSet.load('pickles/subjset_cdiff.pkl')
+subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
+
+# ####################################################
+# # Correct mdsine1 data
+# ####################################################
 
 # asvs = subjset_real.asvs
 # for asv in asvs:
@@ -196,205 +200,280 @@ subjset_real = pl.base.SubjectSet.load('pickles/subjset_cdiff.pkl')
 
 # subjset_real.save('pickles/subjset_cdiff.pkl')
 
+####################################################
+# Make fake semi synthetic output df
+####################################################
 
-# truth = np.array([[1,0],[-1,0]])
+def _srn():
+    return np.absolute(np.random.normal())
 
-# pred = np.array([[[1,0],[1,0]],
-#                  [[0,0],[-1,0]],
-#                  [[1,1],[-1,0]],
-#                  [[1,0],[-1,1]]])
+def _make_fake():
+    columns = ['Model', 
+            'Error Trajectories', 
+            'Error Interactions', 
+            'Error Perturbations', 
+            'Error Topology',
+            'Error Growth',
+            'Error Clustering',
+            'Measurement Noise',
+            'Process Variance',
+            'Number of Timepoints',
+            'Uniform Samples',
+            'Number of Replicates']
 
-# print(truth)
-# print(pred)
+    n_dataseeds = 10
+    models = ['MDSINE2', 'L2', 'cLV']
+    n_timepoints = [35, 45, 50, 55, 65]
+    n_replicates = [2,3,4,5]
+    measurement_noises = [0.1, 0.2, 0.25, 0.3, 0.4]
+    pv = 0.1
 
-# print()
+    data = {
+        'Model': [],
+        'Error Trajectories': [], 
+        'Error Interactions': [], 
+        'Error Perturbations': [], 
+        'Error Topology': [],
+        'Error Growth': [],
+        'Error Clustering': [],
+        'Measurement Noise': [],
+        'Process Variance': [],
+        'Number of Timepoints': [],
+        'Uniform Samples': [],
+        'Number of Replicates': []}
+    # Do measurement noise
+    nt = 55
+    nr = 5
+    us = False
+    for model in models:
+        for mn in measurement_noises:
+            for ds in range(n_dataseeds):
+                data['Model'].append(model)
+                data['Error Trajectories'].append(_srn())
+                data['Error Interactions'].append(_srn())
+                data['Error Perturbations'].append(_srn())
+                data['Error Topology'].append(_srn())
+                data['Error Growth'].append(_srn())
+                data['Error Clustering'].append(_srn())
+                data['Measurement Noise'].append(mn)
+                data['Process Variance'].append(pv)
+                data['Number of Timepoints'].append(nt)
+                data['Uniform Samples'].append(us)
+                data['Number of Replicates'].append(nr)
 
-# auc = pl.metrics.rocauc_posterior_interactions(pred, truth, signed=True) #, per_gibb=False)
+    # Do n-replicates
+    nt = 55
+    mn = 0.3
+    us = False
+    for model in models:
+        for nr in n_replicates:
+            for ds in range(n_dataseeds):
+                data['Model'].append(model)
+                data['Error Trajectories'].append(_srn())
+                data['Error Interactions'].append(_srn())
+                data['Error Perturbations'].append(_srn())
+                data['Error Topology'].append(_srn())
+                data['Error Growth'].append(_srn())
+                data['Error Clustering'].append(_srn())
+                data['Measurement Noise'].append(mn)
+                data['Process Variance'].append(pv)
+                data['Number of Timepoints'].append(nt)
+                data['Uniform Samples'].append(us)
+                data['Number of Replicates'].append(nr)
 
-# print('auc')
-# print(auc)
+    # Do n_timepoints
+    mn = 0.3
+    nr = 4
+    us = True
+    for model in models:
+        for nt in n_timepoints:
+            for ds in range(n_dataseeds):
+                data['Model'].append(model)
+                data['Error Trajectories'].append(_srn())
+                data['Error Interactions'].append(_srn())
+                data['Error Perturbations'].append(_srn())
+                data['Error Topology'].append(_srn())
+                data['Error Growth'].append(_srn())
+                data['Error Clustering'].append(_srn())
+                data['Measurement Noise'].append(mn)
+                data['Process Variance'].append(pv)
+                data['Number of Timepoints'].append(nt)
+                data['Uniform Samples'].append(us)
+                data['Number of Replicates'].append(nr)
 
-# sys.exit()
+    df = pd.DataFrame(data)
+    return df
 
-# fname1 = 'raw_data/seqs_temp/final/src_data/rdp_archaea_509seqs.fa'
-# fname2 = 'raw_data/seqs_temp/final/src_data/rdp_bacteria_12227seqs.fa'
-# fname3 = 'raw_data/seqs_temp/final/src_data/rdp_combined.fa'
+def semi_synthetic_benchmark_figure():
 
-# d = {}
-# seqs = SeqIO.parse(fname1, 'fasta')
-# seqs = SeqIO.to_dict(seqs)
-# for k,v in seqs.items():
-#     if k not in d:
-#         d[k] = v
-# seqs = SeqIO.parse(fname2, 'fasta')
-# seqs = SeqIO.to_dict(seqs)
-# for k,v in seqs.items():
-#     if k not in d:
-#         d[k] = v
+    # fname = 'test_df_semi_synthetic.pkl'
+    # basepath = 'tmp/'
+    # os.makedirs(basepath, exist_ok=True)
 
-# to_write = list(d.values())
-# SeqIO.write(to_write, fname3, 'fasta')
-# sys.exit()
+    df = _make_fake()
 
-# fname = 'raw_data/seqs_temp/align_seqs_rdp_reference.sto'
-# # fname = 'raw_data/seqs_temp/ecoli_align.sto'
-# fname_all = 'raw_data/seqs_temp/unaligned RDP seqs/rdp_reference_unaligned_seqs.fa'
-# # fname = 'raw_data/seqs_temp/RDP_aligned_200_seqs.sto'
-# ecoli_fname = 'raw_data/seqs_temp/ECOLI/arb-silva.de_2020-08-05_id864569.fasta'
-# from Bio import SeqIO
-# from Bio import pairwise2
+    fig = _outer_semi_synthetic(
+        df=df, only={'Number of Timepoints': 55, 'Number of Replicates': 5, 
+        'Uniform Samples': False},
+        x = 'Measurement Noise')
 
-# ecoli = SeqIO.parse(ecoli_fname, 'fasta')
+    fig = _outer_semi_synthetic(
+        df=df, only={'Number of Timepoints': 55, 'Measurement Noise': 0.3, 
+        'Uniform Samples': False},
+        x = 'Number of Replicates')
     
+    fig = _outer_semi_synthetic(
+        df=df, only={'Number of Replicates': 4, 'Measurement Noise': 0.3, 
+        'Uniform Samples': True},
+        x = 'Number of Timepoints')
 
-# for i,record in enumerate(seqs):
-#     if i == 2:
-#         sys.exit()
-#     print()
-#     print(record.id)
-#     print(len(record.seq))
-#     print(record.seq)
+    plt.show()
 
-# for i,record in enumerate(seqs):
-#     if i == 0:
-#         continue
-#     print()
-#     print(record.id)
-#     print(len(record.seq))
-#     print(record.seq)
+def _outer_semi_synthetic(df, only, x):
+    fig = plt.figure(figsize=(10,5))
 
+    # Do Measurement noise
+    # Only use uniform samples = False, n_timepoitns = 55, n_replicates = 5
+    hue = 'Model'
+    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Trajectories', hue=hue,
+        ax=fig.add_subplot(2,3,1), title='Forward Simulation Error', 
+        ylabel='RMSE', yscale='log', legend=False)
 
-# seqs_to_save = []
-# for i, record in enumerate(seqs):
-#     if i == 1000:
-#         break
-#     seqs_to_save.append(record)
-# SeqIO.write(sequences=seqs_to_save, handle='raw_data/seqs_temp/RDP_unaligned_1000seqs.fa', format='fasta')
-# sys.exit()
-# percent_overlap = {}
+    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Growth', hue=hue,
+        ax=fig.add_subplot(2,3,2), title='Error Growth Rates', 
+        ylabel='RMSE', yscale='linear', legend=False)
+    
+    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Interactions', hue=hue,
+        ax=fig.add_subplot(2,3,3), title='Error Interactions', 
+        ylabel='RMSE', yscale='log', legend=True)
 
-# for i, record in enumerate(seqs):
-#     if i == 0:
-#         ecoli_seq = np.asarray(list(str(record.seq)), dtype=str)
-#         ecoli_neq_gap = ecoli_seq != '-'
+    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Perturbations', hue=hue,
+        ax=fig.add_subplot(2,3,4), title='Error Perturbations', 
+        ylabel='RMSE', yscale='linear', legend=False)
+    
+    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Topology', hue=hue,
+        ax=fig.add_subplot(2,3,5), title='Error Topology', 
+        ylabel='AUC ROC', yscale='linear', legend=False)
+    
+    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Clustering', hue=hue,
+        ax=fig.add_subplot(2,3,6), title='Error Cluster Assignment', 
+        ylabel='Normalized Mutual Information', yscale='linear', legend=False)
 
-#     else:
-#         seq = np.asarray(list(str(record.seq)), dtype=str)
-#         seq_neq_gap = (seq != '-')
+    fig.suptitle(x, fontsize=22, fontweight='bold')
+    fig.tight_layout()
+    fig.subplots_adjust(top=0.87)
+    return fig
 
-#         a = ecoli_neq_gap.reshape(-1,1)
-#         b = seq_neq_gap.reshape(-1,1)
+def _inner_semi_synth(df, only, x, y, hue, ax, title, ylabel, yscale, legend):
+    
+    dftemp = df
+    if only is not None:
+        for col, val in only.items():
+            dftemp = dftemp[dftemp[col] == val]
 
-#         percent_overlap[record.id] = np.sum(ecoli_neq_gap == seq_neq_gap) / len(seq_neq_gap)
+        # print(df.columns)
+        # print(dftemp['Measurement Noise'])
+        # sys.exit()
 
-# for k,v in percent_overlap.items():
-#     print(k,v)
+    print(dftemp)
+    
+    sns.boxplot(data=dftemp, x=x, y=y, hue=hue, ax=ax)
 
-# vals = np.array(list(percent_overlap.values()))
-# keys = np.array(list(percent_overlap.keys()))
+    ax.set_title(title)
+    ax.set_ylabel(ylabel)
+    ax.set_yscale(yscale)
 
-# plt.hist(vals, bins=20)
-# plt.yscale('log')
-# plt.show()
+    if not legend:
+        ax.get_legend().remove()
+    else:
+        ax.get_legend().remove()
+        ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 
-# # Get the keys that are above 90% overlap
-# keys_to_keep = keys[vals >= 0.9]
-# keys_to_keep = set(list(keys_to_keep))
-# seqs_to_keep = []
-# seqs = SeqIO.parse(fname_all, 'fasta')
-# for record in seqs:
-#     if record.id in keys_to_keep:
-#         seqs_to_keep.append(record)
-
-# SeqIO.write(sequences=seqs_to_keep, handle='raw_data/seqs_temp/RDP_unaligned_overlap_seqs.fa', format='fasta')
-# sys.exit()
-
-####################################################
-# Stem plots
-####################################################
-import matplotlib.image as mpimg
-from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationBbox
-
-subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
-times = []
-for subj in subjset_real:
-    times = np.append(times, subj.times)
-times = np.sort(np.unique(times))
-print(times)
-
-def remove_edges(ax):
-    ax.spines['top'].set_visible(False)
-    ax.spines['bottom'].set_visible(False)
-    ax.spines['left'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.xaxis.set_major_locator(plt.NullLocator())
-    ax.xaxis.set_minor_locator(plt.NullLocator())
-    ax.yaxis.set_major_locator(plt.NullLocator())
-    ax.yaxis.set_minor_locator(plt.NullLocator())
     return ax
-
-y = [-0.1 for t in times]
-
-fig = plt.figure(figsize=(34,10))
-ax = fig.add_subplot(311)
-ax = remove_edges(ax)
-markerline, stemlines, baseline = ax.stem(times, y, linefmt='none')
-baseline.set_color('black')
-markerline.set_color('black')
-markerline.set_markersize(5)
+ 
+semi_synthetic_benchmark_figure()
 
 
-x = np.arange(0, np.max(times), step=10)
-labels = ['Day {}'.format(int(t)) for t in x]
-for ylim in [0.12, -0.12]:
-    y = [ylim for t in x]
-    markerline, stemlines, baseline = ax.stem(x, y)
-    stemlines = [stemline.set_color('black') for stemline in stemlines]
-    baseline.set_color('black')
-    markerline.set_color('none')
-for i in range(len(labels)):
-    label = labels[i]
-    xpos = x[i] 
-    ax.text(xpos, 0.-.15, label, horizontalalignment='center')
-x = np.arange(0,np.max(times),2)
-for ylim in [0.07, -0.07]:
-    y = [ylim for t in x]
-    markerline, stemlines, baseline = ax.stem(x, y)
-    stemlines = [stemline.set_color('black') for stemline in stemlines]
-    baseline.set_color('black')
-    markerline.set_color('none')
+# ####################################################
+# # Stem plots
+# ####################################################
+# import matplotlib.image as mpimg
+# from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationBbox
 
-for perturbation in subjset_real.perturbations:
-    name = perturbation.name
-    # lines += [start,end]
-    # ax.text(start, 0.33, 'Start {}'.format(name), horizontalalignment='center')
-    ax.text((perturbation.end+perturbation.start)/2, 0.15, name.capitalize(), horizontalalignment='center')
+# subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
+# times = []
+# for subj in subjset_real:
+#     times = np.append(times, subj.times)
+# times = np.sort(np.unique(times))
+# print(times)
 
-    # ax.arrow(start, 0.3, 0, -0.27, length_includes_head=True, head_width=0.25, head_length=0.05)
-    # ax.arrow(end, 0.3, 0, -0.27, length_includes_head=True, head_width=0.25, head_length=0.05)
-    starts = np.asarray([perturbation.start])
-    ends = np.asarray([perturbation.end])
-    ax.barh(y=[0 for i in range(len(starts))], width=ends-starts, height=0.1, left=starts)
+# def remove_edges(ax):
+#     ax.spines['top'].set_visible(False)
+#     ax.spines['bottom'].set_visible(False)
+#     ax.spines['left'].set_visible(False)
+#     ax.spines['right'].set_visible(False)
+#     ax.xaxis.set_major_locator(plt.NullLocator())
+#     ax.xaxis.set_minor_locator(plt.NullLocator())
+#     ax.yaxis.set_major_locator(plt.NullLocator())
+#     ax.yaxis.set_minor_locator(plt.NullLocator())
+#     return ax
 
-ax.text(0, 0.2, 'Colonization', horizontalalignment='center')
-ax.arrow(0, 0.17, 0, -0.14, length_includes_head=True, head_width=0.25, head_length=0.05)
+# y = [-0.1 for t in times]
 
-
-# stool collection
-xpos = np.max(times)* 1.05
-y = 0.05
-ax.scatter([xpos], [y], c='black', s=25)
-ax.text(xpos+1, y, 'Stool Collection', horizontalalignment='left', fontsize=18, 
-    verticalalignment='center')
+# fig = plt.figure(figsize=(34,10))
+# ax = fig.add_subplot(311)
+# ax = remove_edges(ax)
+# markerline, stemlines, baseline = ax.stem(times, y, linefmt='none')
+# baseline.set_color('black')
+# markerline.set_color('black')
+# markerline.set_markersize(5)
 
 
-ax.set_ylim(-0.15,0.4)
+# x = np.arange(0, np.max(times), step=10)
+# labels = ['Day {}'.format(int(t)) for t in x]
+# for ylim in [0.12, -0.12]:
+#     y = [ylim for t in x]
+#     markerline, stemlines, baseline = ax.stem(x, y)
+#     stemlines = [stemline.set_color('black') for stemline in stemlines]
+#     baseline.set_color('black')
+#     markerline.set_color('none')
+# for i in range(len(labels)):
+#     label = labels[i]
+#     xpos = x[i] 
+#     ax.text(xpos, 0.-.15, label, horizontalalignment='center')
+# x = np.arange(0,np.max(times),2)
+# for ylim in [0.07, -0.07]:
+#     y = [ylim for t in x]
+#     markerline, stemlines, baseline = ax.stem(x, y)
+#     stemlines = [stemline.set_color('black') for stemline in stemlines]
+#     baseline.set_color('black')
+#     markerline.set_color('none')
+
+# for perturbation in subjset_real.perturbations:
+#     name = perturbation.name
+#     # lines += [start,end]
+#     # ax.text(start, 0.33, 'Start {}'.format(name), horizontalalignment='center')
+#     ax.text((perturbation.end+perturbation.start)/2, 0.15, name.capitalize(), horizontalalignment='center')
+
+#     # ax.arrow(start, 0.3, 0, -0.27, length_includes_head=True, head_width=0.25, head_length=0.05)
+#     # ax.arrow(end, 0.3, 0, -0.27, length_includes_head=True, head_width=0.25, head_length=0.05)
+#     starts = np.asarray([perturbation.start])
+#     ends = np.asarray([perturbation.end])
+#     ax.barh(y=[0 for i in range(len(starts))], width=ends-starts, height=0.1, left=starts)
+
+# ax.text(0, 0.2, 'Colonization', horizontalalignment='center')
+# ax.arrow(0, 0.17, 0, -0.14, length_includes_head=True, head_width=0.25, head_length=0.05)
 
 
-
-plt.show()
-
-sys.exit()
+# # stool collection
+# xpos = np.max(times)* 1.05
+# y = 0.05
+# ax.scatter([xpos], [y], c='black', s=25)
+# ax.text(xpos+1, y, 'Stool Collection', horizontalalignment='left', fontsize=18, 
+#     verticalalignment='center')
+# ax.set_ylim(-0.15,0.4)
+# plt.show()
+# sys.exit()
 
 # ####################################################
 # # Parse data like MDSINE1
@@ -2935,160 +3014,6 @@ clusterings = []
 #         fig.subplots_adjust(top=0.84, right=.86, left=0.09)
 #         plt.savefig(subjpath + '{}.pdf'.format(asv.name))
 #         plt.close()
-        
-
-# #####################################################
-# # Make filtering plots
-# #####################################################
-# def consistency(subjset, matrices, dtype, threshold, min_num_consecutive, colonization_time=None, 
-#     min_num_subjects=1):
-#     '''Filters the subjects by looking at the consistency of the 'dtype', which can
-#     be either 'raw' where we look for the minimum number of counts, 'rel', where we
-#     look for a minimum relative abundance, or 'abs' where we look for a minium 
-#     absolute abundance.
-
-#     There must be at least `threshold` for at least
-#     `min_num_consecutive` consecutive timepoints for at least
-#     `min_num_subjects` subjects for the ASV to be classified as valid.
-
-#     If a colonization time is specified, we only look after that timepoint
-
-#     Parameters
-#     ----------
-#     subjset : str, pylab.base.SubjectSet
-#         This is the SubjectSet object that we are doing the filtering on
-#         If it is a str, then it is the location of the saved object.
-#     dtype : str
-#         This is the string to say what type of data we are thresholding. Options
-#         are 'raw', 'rel', or 'abs'.
-#     threshold : numeric
-#         This is the threshold for either counts, relative abudnance, or
-#         absolute abundance
-#     min_num_consecutive : int
-#         Number of consecutive timepoints to look for
-#     colonization_time : numeric
-#         This is the time we are looking after for colonization. If None we assume 
-#         there is no colonization time.
-#     min_num_subjects : int
-#         This is the minimum number of subjects this needs to be valid for.
-
-#     Returns
-#     -------
-#     pylab.base.SubjectSet
-#         This is the filtered subject set.
-
-#     Raises
-#     ------
-#     ValueError
-#         If types are not valid or values are invalid
-#     '''
-#     if not pl.isstr(dtype):
-#         raise TypeError('`dtype` ({}) must be a str'.format(type(dtype)))
-#     if dtype not in ['raw', 'rel', 'abs']:
-#         raise ValueError('`dtype` ({}) not recognized'.format(dtype))
-#     if not pl.issubjectset(subjset):
-#         raise TypeError('`subjset` ({}) must be a pylab.base.SubjectSet'.format(
-#             type(subjset)))
-#     if not pl.isnumeric(threshold):
-#         raise TypeError('`threshold` ({}) must be a numeric'.format(type(threshold)))
-#     if threshold <= 0:
-#         raise ValueError('`threshold` ({}) must be > 0'.format(threshold))
-#     if not pl.isint(min_num_consecutive):
-#         raise TypeError('`min_num_consecutive` ({}) must be an int'.format(
-#             type(min_num_consecutive)))
-#     if min_num_consecutive <= 0:
-#         raise ValueError('`min_num_consecutive` ({}) must be > 0'.format(min_num_consecutive))
-#     if colonization_time is None:
-#         colonization_time = 0
-#     if not pl.isnumeric(colonization_time):
-#         raise TypeError('`colonization_time` ({}) must be a numeric'.format(
-#             type(colonization_time)))
-#     if colonization_time < 0:
-#         raise ValueError('`colonization_time` ({}) must be >= 0'.format(colonization_time))
-#     if min_num_subjects is None:
-#         min_num_subjects = 1
-#     if not pl.isint(min_num_subjects):
-#         raise TypeError('`min_num_subjects` ({}) must be an int'.format(
-#             type(min_num_subjects)))
-#     if min_num_subjects > len(subjset) or min_num_subjects <= 0:
-#         raise ValueError('`min_num_subjects` ({}) value not valid'.format(min_num_subjects))
-
-#     # Everything is fine, now we can do the filtering
-#     talley = np.zeros(len(subjset.asvs), dtype=int)
-#     for i, subj in enumerate(subjset):
-#         matrix = np.array(matrices[i]) #subj.matrix(min_rel_abund=None)[dtype]
-#         tidx_start = None
-#         for tidx, t in enumerate(subj.times):
-#             if t >= colonization_time:
-#                 tidx_start = tidx
-#                 break
-#         if tidx_start is None:
-#             raise ValueError('Something went wrong')
-#         matrix = matrix[:, tidx_start:]
-
-#         for oidx in range(matrix.shape[0]):
-#             consecutive = 0
-#             for tidx in range(matrix.shape[1]):
-#                 if matrix[oidx,tidx] >= threshold:
-#                     consecutive += 1
-#                 else:
-#                     consecutive = 0
-#                 if consecutive >= min_num_consecutive:
-#                     talley[oidx] += 1
-#                     break
-
-#     invalid_oidxs = np.where(talley < min_num_subjects)[0]
-#     # invalid_oids = subjset.asvs.ids.order[invalid_oidxs]
-#     # subjset.pop_asvs(invalid_oids)
-#     return len(subjset.asvs) - len(invalid_oidxs)
-
-# subjset_master = pl.SubjectSet.load('pickles/real_subjectset.pkl')
-
-# # Count filtering
-# healthy = False
-# thresholds = np.arange(1, 25) / 50000
-# min_num_consecutives = np.arange(1,8)
-# dtype = 'rel'
-# colonization_time = 5
-
-# if not healthy:
-#     sidxs = ['2','3','4','5']
-# else:
-#     sidxs = ['6','7','8','9','10']
-# for sidx in sidxs:
-#     subjset_master.pop_subject(sidx)
-
-# min_num_subjects = np.arange(1, len(subjset_master)+1)
-
-# matrices = []
-# for subj in subjset_master:
-#     matrices.append(subj.matrix()[dtype])
-
-# fig = plt.figure()
-# for mns in min_num_subjects:
-#     print('\n\nmin_num_subjects', mns)
-
-#     n_theres = {}
-#     for mnc in min_num_consecutives:
-#         n_theres[mnc] = []
-#         for mthresh in thresholds:
-#             # subjset = copy.deepcopy(subjset_master)
-#             n_theres[mnc].append(
-#                 consistency(subjset_master, matrices, dtype, mthresh, mnc, colonization_time,
-#                 mns))
-#             print(n_theres[mnc][-1])
-
-#     ax = fig.add_subplot(3,2,mns)
-#     ax.grid()
-#     for mnc in min_num_consecutives:
-#         ax.plot(thresholds, n_theres[mnc], label='{} consecutive'.format(mnc))
-#     ax.legend()
-#     ax.set_title('{} Subject/s'.format(mns))
-#     ax.set_xlabel('Minimum relative abundance')
-#     ax.set_ylabel('Number of ASVs remaining')
-
-# fig.suptitle('Consecutive Filtering, healthy={}'.format(healthy))
-# plt.show()
 
 # #####################################################
 # # Make num asvs over time plots

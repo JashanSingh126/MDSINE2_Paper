@@ -931,7 +931,7 @@ def alpha_diversity_mean_std(ax=None, figlabel=None):
         endidx = np.searchsorted(times, end_t)
         perturbation.start = startidx - 0.5
         perturbation.end = endidx + 0.5
-    pl.visualization.shade_in_perturbations(ax, perturbations=subjset.perturbations, textsize=10, 
+    pl.visualization.shade_in_perturbations(ax, perturbations=subjset.perturbations, textsize=18, 
         alpha=0)
     for perturbation in subjset.perturbations:
         ax.axvline(x=perturbation.start, color='black', linestyle='--', lw=2)
@@ -939,12 +939,13 @@ def alpha_diversity_mean_std(ax=None, figlabel=None):
 
 
     # Set the ticks to be bold
+    ax.set_yticks([0.2, 0.4, 0.6, 0.8])
     for tick in ax.yaxis.get_major_ticks():
-        tick.label.set_fontsize(13)
-        tick.label.set_fontweight('bold')
+        tick.label.set_fontsize(16)
+        # tick.label.set_fontweight('bold')
     for tick in ax.xaxis.get_major_ticks():
-        tick.label.set_fontsize(13)
-        tick.label.set_fontweight('bold')
+        tick.label.set_fontsize(16)
+        # tick.label.set_fontweight('bold')
 
     # Set the labels
     ax.set_title('Normalized Entropy', size=15, fontsize=35, fontweight='bold')
@@ -960,7 +961,7 @@ def alpha_diversity_mean_std(ax=None, figlabel=None):
     l = mlines.Line2D([],[], color=colors_unhealthy,
         linestyle='-', label='Ulcerative Colitis')
     handles.append(l)
-    lgnd2 = plt.legend(handles=handles)
+    lgnd2 = plt.legend(handles=handles, fontsize=18)
     axlegend.add_artist(lgnd2)
     axlegend.spines['top'].set_visible(False)
     axlegend.spines['bottom'].set_visible(False)
@@ -971,7 +972,15 @@ def alpha_diversity_mean_std(ax=None, figlabel=None):
     axlegend.yaxis.set_major_locator(plt.NullLocator())
     axlegend.yaxis.set_minor_locator(plt.NullLocator())
 
+    plt.subplots_adjust(bottom=0.18)
+
+    caption = 'Mean and standard deviation of normalized entropy measure within each consortium.'
+    axlegend.text(0.5, -0.2, caption, horizontalalignment='center', fontsize=17)
+
     plt.savefig(BASEPATH + 'alpha_diversity_mean_std.pdf')
+    plt.savefig(BASEPATH + 'alpha_diversity_mean_std.png')
+    # plt.show()
+    plt.close()
 
 
 # Beta Diversity
@@ -1139,7 +1148,8 @@ def beta_diversity_figure(axleft=None, axright=None, axcenter=None, figlabel=Non
         linestyle='-', label='Ulcerative Colitis')
     handles.append(l)
     lgnd2 = plt.legend(handles=handles, title='$\\bf{Dataset}$', 
-        bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+        bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.,
+        fontsize=17, title_fontsize=18)
     axcenter.add_artist(lgnd2)
 
     # Perturbations
@@ -1173,7 +1183,8 @@ def beta_diversity_figure(axleft=None, axright=None, axcenter=None, figlabel=Non
             label=pert_name)
         handles.append(l)
     lgnd3 = plt.legend(handles=handles, title='$\\bf{Markers}$', 
-        bbox_to_anchor=(1.05, 0.5), loc='center left', borderaxespad=0.)
+        bbox_to_anchor=(1.05, 0.0), loc='lower left', borderaxespad=0.,
+        fontsize=17, title_fontsize=18)
     axcenter.add_artist(lgnd3)
 
     axcenter.set_title('Bray-Curtis PCoA', fontsize=35, fontweight='bold')
@@ -1192,27 +1203,37 @@ def beta_diversity_figure(axleft=None, axright=None, axcenter=None, figlabel=Non
     axleft.spines['right'].set_color('crimson')
     axleft.tick_params(axis='both', color='crimson')
 
+    axleft.set_xticks([-0.35, -0.25, -0.15, -0.05])
+    axleft.set_yticks([-0.15, -0.05, 0.05, 0.15])
     for tick in axleft.yaxis.get_major_ticks():
-        tick.label.set_fontsize(13)
-        tick.label.set_fontweight('bold')
+        tick.label.set_fontsize(18)
+        # tick.label.set_fontweight('bold')
     for tick in axleft.xaxis.get_major_ticks():
-        tick.label.set_fontsize(13)
-        tick.label.set_fontweight('bold')
+        tick.label.set_fontsize(18)
+        # tick.label.set_fontweight('bold')
 
+    axright.set_yticks([-0.4, -0.2, 0, 0.2, 0.4])
     for tick in axright.yaxis.get_major_ticks():
-        tick.label.set_fontsize(13)
-        tick.label.set_fontweight('bold')
+        tick.label.set_fontsize(18)
+        # tick.label.set_fontweight('bold')
     for tick in axright.xaxis.get_major_ticks():
-        tick.label.set_fontsize(13)
-        tick.label.set_fontweight('bold')
+        tick.label.set_fontsize(18)
+        # tick.label.set_fontweight('bold')
 
     # axleft.set_facecolor('whitesmoke')
     # axright.set_facecolor('whitesmoke')
 
-    fig.subplots_adjust(left=0.09, right=0.83)
+    fig.subplots_adjust(left=0.09, right=0.775, bottom=0.25)
+
+    caption = 'Bray-Curtis beta diversity measure projected with principle coordinate analysis (PCoA).\n' \
+        'Each partition (colonization, perturbation time points, and post perturbation points) of the time-\n' \
+        'series has its own marker.'
+    axcenter.text(0.5, -0.34, caption, horizontalalignment='center', fontsize=17)
 
     # bc_pcoa.plot()
     plt.savefig(BASEPATH + 'pcoa_braycurtis_w_zoom.pdf')
+    plt.savefig(BASEPATH + 'pcoa_braycurtis_w_zoom.png')
+    plt.close()
     # plt.show()
 
 def beta_diversity_figure_no_zoom_2_colors(axleft=None, axright=None, axcenter=None, figlabel=None):
@@ -2462,8 +2483,7 @@ def species_heatmap():
     N_CONSEC = 5
     MIN_REL_ABUND = 0 #0.001
 
-    fig = plt.figure()
-    fig.set_size_inches(11.5, 8)
+    fig = plt.figure(figsize=(10,30))
     ax = fig.add_subplot(121)
     df_healthy, df_uc = _get_top_asvs_species_heatmap(n_consec=N_CONSEC,
         min_rel_abund=MIN_REL_ABUND)
@@ -2481,8 +2501,9 @@ def species_heatmap():
     # ax.set_title('Healthy bottom 200', fontsize=20, fontweight='bold')
 
     fig.suptitle('Healthy',fontsize=20, fontweight='bold')
-
     fig.subplots_adjust(wspace=0.2, right=0.96)
+
+    plt.show()
 
 def _combine_dfs(subjset, dtype):
     times = []
@@ -2570,9 +2591,6 @@ def _get_top_asvs_species_heatmap(n_consec, min_rel_abund, dtype='abs'):
 
     return df_healthy, df_uc
 
-
-# Species Heatmap
-# ---------------
 def species_heatmap_single(subjset, df, ax, display_ylabels=True, cbar=False):
 
     df = np.log10(df)
@@ -2603,30 +2621,426 @@ def species_heatmap_single(subjset, df, ax, display_ylabels=True, cbar=False):
 
     print(df.head())
     print(len(df.index))
+
+# Preprocess Filtering
+# --------------------
+def preprocess_filtering(healthy):
+
+    thresholds = np.arange(1, 25) / 50000
+    min_num_consecutives = np.arange(1,8)
+    dtype = 'rel'
+    colonization_time = 5
+    basepath = 'tmp/'
+    os.makedirs(basepath, exist_ok=True)
+    subjset_master = loaddata(healthy)
+
+    min_num_subjects = np.arange(1, len(subjset_master)+1)
+    matrices = []
+    for subj in subjset_master:
+        matrices.append(subj.matrix()[dtype])
+
+    # Get the data
+    fname = basepath + 'healthy{}_filtering_mns.pkl'.format(healthy)
+    if os.path.isfile(fname):
+        with open(fname, 'rb') as handle:
+            master_n_there = pickle.load(handle)
+    else:
+        master_n_there = {}
+        for i_mns, mns in enumerate(min_num_subjects):
+            
+            print('\n\nmin_num_subjects', mns)
+            print('Top level {}/{}'.format(i_mns, len(min_num_subjects)))
+            n_theres = {}
+            for mnc in min_num_consecutives:
+                n_theres[mnc] = []
+                for iii, mthresh in enumerate(thresholds):
+                    # subjset = copy.deepcopy(subjset_master)
+                    n_theres[mnc].append(
+                        _consistency(subjset_master, matrices, dtype, mthresh, mnc, colonization_time,
+                        mns))
+                    # print(n_theres[mnc][-1])
+                    print('{}/{}'.format(iii,len(thresholds)))
+            
+            master_n_there[mns] = n_theres
+        with open(fname, 'wb') as handle:
+            pickle.dump(master_n_there, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    # Plot the data
+    fig = plt.figure(figsize=(20,10))
+    ax = fig.add_subplot(111, facecolor=None)
+
+    caption = 'How many ASVs pass initial filtering given the criteria. To pass the filtering,\nan ASV must ' \
+        'have be greater than a given relative abundance for a given number of consecutive\n' \
+        'time points in at least a given number of subjects.'
+
+    ax.text(0.4, -0.08, 'Minimum relative abundance', fontsize=22)
+    ax.text(-0.08, 0.3, 'Number of ASVs remaining', fontsize=22, rotation='vertical')
+    ax.text(0.5, -0.23, caption, fontsize=18, horizontalalignment='center')
+
+    ax.spines['top'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.xaxis.set_major_locator(plt.NullLocator())
+    ax.xaxis.set_minor_locator(plt.NullLocator())
+    ax.yaxis.set_major_locator(plt.NullLocator())
+    ax.yaxis.set_minor_locator(plt.NullLocator())
+
+    for mns in master_n_there:
+        n_theres = master_n_there[mns]
+
+        if not healthy:
+            ax = fig.add_subplot(2,3,mns)
+        else:
+            ax = fig.add_subplot(2,2,mns)
+        ax.grid()
+        for mnc in min_num_consecutives:
+            ax.plot(thresholds, n_theres[mnc], label='{} consecutive'.format(mnc))
+        ax.set_title('{} Subject/s'.format(mns), fontsize=22)
+
+        if not healthy and mns == 3:
+            ax.legend(bbox_to_anchor=(1.05,1), loc='upper left', fontsize=14)
+        if healthy and mns == 2:
+            ax.legend(bbox_to_anchor=(1.05,1), loc='upper left', fontsize=14)
+
+        for tick in ax.yaxis.get_major_ticks():
+            tick.label.set_fontsize(14)
+        for tick in ax.xaxis.get_major_ticks():
+            tick.label.set_fontsize(14)
+
+    if not healthy:
+        title = 'Preprocess Filtering, Ulcerative Colitis Consortium'
+    else:
+        title = 'Preprocess Filtering, Healthy Consortium'
+    fig.subplots_adjust(right=0.85, bottom=0.185)
+
+    fig.suptitle(title, fontsize=30, fontweight='bold')
+    # plt.show()
+    plt.savefig(BASEPATH + 'preprocess_filtering_healthy{}.pdf'.format(healthy))
+    plt.savefig(BASEPATH + 'preprocess_filtering_healthy{}.png'.format(healthy))
+    plt.close()
+
+def _consistency(subjset, matrices, dtype, threshold, min_num_consecutive, colonization_time=None, 
+    min_num_subjects=1):
+    '''Filters the subjects by looking at the consistency of the 'dtype', which can
+    be either 'raw' where we look for the minimum number of counts, 'rel', where we
+    look for a minimum relative abundance, or 'abs' where we look for a minium 
+    absolute abundance.
+
+    There must be at least `threshold` for at least
+    `min_num_consecutive` consecutive timepoints for at least
+    `min_num_subjects` subjects for the ASV to be classified as valid.
+
+    If a colonization time is specified, we only look after that timepoint
+
+    Parameters
+    ----------
+    subjset : str, pylab.base.SubjectSet
+        This is the SubjectSet object that we are doing the filtering on
+        If it is a str, then it is the location of the saved object.
+    dtype : str
+        This is the string to say what type of data we are thresholding. Options
+        are 'raw', 'rel', or 'abs'.
+    threshold : numeric
+        This is the threshold for either counts, relative abudnance, or
+        absolute abundance
+    min_num_consecutive : int
+        Number of consecutive timepoints to look for
+    colonization_time : numeric
+        This is the time we are looking after for colonization. If None we assume 
+        there is no colonization time.
+    min_num_subjects : int
+        This is the minimum number of subjects this needs to be valid for.
+
+    Returns
+    -------
+    pylab.base.SubjectSet
+        This is the filtered subject set.
+
+    Raises
+    ------
+    ValueError
+        If types are not valid or values are invalid
+    '''
+    if not pl.isstr(dtype):
+        raise TypeError('`dtype` ({}) must be a str'.format(type(dtype)))
+    if dtype not in ['raw', 'rel', 'abs']:
+        raise ValueError('`dtype` ({}) not recognized'.format(dtype))
+    if not pl.issubjectset(subjset):
+        raise TypeError('`subjset` ({}) must be a pylab.base.SubjectSet'.format(
+            type(subjset)))
+    if not pl.isnumeric(threshold):
+        raise TypeError('`threshold` ({}) must be a numeric'.format(type(threshold)))
+    if threshold <= 0:
+        raise ValueError('`threshold` ({}) must be > 0'.format(threshold))
+    if not pl.isint(min_num_consecutive):
+        raise TypeError('`min_num_consecutive` ({}) must be an int'.format(
+            type(min_num_consecutive)))
+    if min_num_consecutive <= 0:
+        raise ValueError('`min_num_consecutive` ({}) must be > 0'.format(min_num_consecutive))
+    if colonization_time is None:
+        colonization_time = 0
+    if not pl.isnumeric(colonization_time):
+        raise TypeError('`colonization_time` ({}) must be a numeric'.format(
+            type(colonization_time)))
+    if colonization_time < 0:
+        raise ValueError('`colonization_time` ({}) must be >= 0'.format(colonization_time))
+    if min_num_subjects is None:
+        min_num_subjects = 1
+    if not pl.isint(min_num_subjects):
+        raise TypeError('`min_num_subjects` ({}) must be an int'.format(
+            type(min_num_subjects)))
+    if min_num_subjects > len(subjset) or min_num_subjects <= 0:
+        raise ValueError('`min_num_subjects` ({}) value not valid'.format(min_num_subjects))
+
+    # Everything is fine, now we can do the filtering
+    talley = np.zeros(len(subjset.asvs), dtype=int)
+    for i, subj in enumerate(subjset):
+        matrix = np.array(matrices[i]) #subj.matrix(min_rel_abund=None)[dtype]
+        tidx_start = None
+        for tidx, t in enumerate(subj.times):
+            if t >= colonization_time:
+                tidx_start = tidx
+                break
+        if tidx_start is None:
+            raise ValueError('Something went wrong')
+        matrix = matrix[:, tidx_start:]
+
+        for oidx in range(matrix.shape[0]):
+            consecutive = 0
+            for tidx in range(matrix.shape[1]):
+                if matrix[oidx,tidx] >= threshold:
+                    consecutive += 1
+                else:
+                    consecutive = 0
+                if consecutive >= min_num_consecutive:
+                    talley[oidx] += 1
+                    break
+
+    invalid_oidxs = np.where(talley < min_num_subjects)[0]
+    # invalid_oids = subjset.asvs.ids.order[invalid_oidxs]
+    # subjset.pop_asvs(invalid_oids)
+    return len(subjset.asvs) - len(invalid_oidxs)
+
+
+# Semi-synthetic model performance
+# --------------------------------
+def semi_synthetic_benchmark_figure():
+
+    # fname = 'test_df_semi_synthetic.pkl'
+    # basepath = 'tmp/'
+    # os.makedirs(basepath, exist_ok=True)
+
+    df = _make_fake()
+
+    fig = _outer_semi_synthetic(
+        df=df, only={'Number of Timepoints': 55, 'Number of Replicates': 5, 
+        'Uniform Samples': False},
+        x = 'Measurement Noise')
+    plt.savefig(BASEPATH + 'semi_synthetic_measurement_noise.pdf')
+    plt.savefig(BASEPATH + 'semi_synthetic_measurement_noise.png')
+    plt.close()
+
+    fig = _outer_semi_synthetic(
+        df=df, only={'Number of Timepoints': 55, 'Measurement Noise': 0.3, 
+        'Uniform Samples': False},
+        x = 'Number of Replicates')
+    plt.savefig(BASEPATH + 'semi_synthetic_replicates.pdf')
+    plt.savefig(BASEPATH + 'semi_synthetic_replicates.png')
+    plt.close()
+    
+    fig = _outer_semi_synthetic(
+        df=df, only={'Number of Replicates': 4, 'Measurement Noise': 0.3, 
+        'Uniform Samples': True},
+        x = 'Number of Timepoints')
+    plt.savefig(BASEPATH + 'semi_synthetic_timepoints.pdf')
+    plt.savefig(BASEPATH + 'semi_synthetic_timepoints.png')
+    plt.close()
+
+def _srn():
+    return np.absolute(np.random.normal())
+
+def _make_fake():
+    columns = ['Model', 
+            'Error Trajectories', 
+            'Error Interactions', 
+            'Error Perturbations', 
+            'Error Topology',
+            'Error Growth',
+            'Error Clustering',
+            'Measurement Noise',
+            'Process Variance',
+            'Number of Timepoints',
+            'Uniform Samples',
+            'Number of Replicates']
+
+    n_dataseeds = 10
+    models = ['MDSINE2', 'L2', 'cLV']
+    n_timepoints = [35, 45, 50, 55, 65]
+    n_replicates = [2,3,4,5]
+    measurement_noises = [0.1, 0.2, 0.25, 0.3, 0.4]
+    pv = 0.1
+
+    data = {
+        'Model': [],
+        'Error Trajectories': [], 
+        'Error Interactions': [], 
+        'Error Perturbations': [], 
+        'Error Topology': [],
+        'Error Growth': [],
+        'Error Clustering': [],
+        'Measurement Noise': [],
+        'Process Variance': [],
+        'Number of Timepoints': [],
+        'Uniform Samples': [],
+        'Number of Replicates': []}
+    # Do measurement noise
+    nt = 55
+    nr = 5
+    us = False
+    for model in models:
+        for mn in measurement_noises:
+            for ds in range(n_dataseeds):
+                data['Model'].append(model)
+                data['Error Trajectories'].append(_srn())
+                data['Error Interactions'].append(_srn())
+                data['Error Perturbations'].append(_srn())
+                data['Error Topology'].append(_srn())
+                data['Error Growth'].append(_srn())
+                data['Error Clustering'].append(_srn())
+                data['Measurement Noise'].append(mn)
+                data['Process Variance'].append(pv)
+                data['Number of Timepoints'].append(nt)
+                data['Uniform Samples'].append(us)
+                data['Number of Replicates'].append(nr)
+
+    # Do n-replicates
+    nt = 55
+    mn = 0.3
+    us = False
+    for model in models:
+        for nr in n_replicates:
+            for ds in range(n_dataseeds):
+                data['Model'].append(model)
+                data['Error Trajectories'].append(_srn())
+                data['Error Interactions'].append(_srn())
+                data['Error Perturbations'].append(_srn())
+                data['Error Topology'].append(_srn())
+                data['Error Growth'].append(_srn())
+                data['Error Clustering'].append(_srn())
+                data['Measurement Noise'].append(mn)
+                data['Process Variance'].append(pv)
+                data['Number of Timepoints'].append(nt)
+                data['Uniform Samples'].append(us)
+                data['Number of Replicates'].append(nr)
+
+    # Do n_timepoints
+    mn = 0.3
+    nr = 4
+    us = True
+    for model in models:
+        for nt in n_timepoints:
+            for ds in range(n_dataseeds):
+                data['Model'].append(model)
+                data['Error Trajectories'].append(_srn())
+                data['Error Interactions'].append(_srn())
+                data['Error Perturbations'].append(_srn())
+                data['Error Topology'].append(_srn())
+                data['Error Growth'].append(_srn())
+                data['Error Clustering'].append(_srn())
+                data['Measurement Noise'].append(mn)
+                data['Process Variance'].append(pv)
+                data['Number of Timepoints'].append(nt)
+                data['Uniform Samples'].append(us)
+                data['Number of Replicates'].append(nr)
+
+    df = pd.DataFrame(data)
+    return df
+
+def _outer_semi_synthetic(df, only, x):
+    fig = plt.figure(figsize=(10,5))
+
+    # Do Measurement noise
+    # Only use uniform samples = False, n_timepoitns = 55, n_replicates = 5
+    hue = 'Model'
+    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Trajectories', hue=hue,
+        ax=fig.add_subplot(2,3,1), title='Forward Simulation Error', 
+        ylabel='RMSE', yscale='log', legend=False)
+
+    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Growth', hue=hue,
+        ax=fig.add_subplot(2,3,2), title='Error Growth Rates', 
+        ylabel='RMSE', yscale='linear', legend=False)
+    
+    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Interactions', hue=hue,
+        ax=fig.add_subplot(2,3,3), title='Error Interactions', 
+        ylabel='RMSE', yscale='log', legend=True)
+
+    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Perturbations', hue=hue,
+        ax=fig.add_subplot(2,3,4), title='Error Perturbations', 
+        ylabel='RMSE', yscale='linear', legend=False)
+    
+    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Topology', hue=hue,
+        ax=fig.add_subplot(2,3,5), title='Error Topology', 
+        ylabel='AUC ROC', yscale='linear', legend=False)
+    
+    ax = _inner_semi_synth(df=df, only=only, x=x, y='Error Clustering', hue=hue,
+        ax=fig.add_subplot(2,3,6), title='Error Cluster Assignment', 
+        ylabel='Normalized Mutual Information', yscale='linear', legend=False)
+
+    fig.suptitle(x, fontsize=22, fontweight='bold')
+    fig.tight_layout()
+    fig.subplots_adjust(top=0.87)
+    return fig
+
+def _inner_semi_synth(df, only, x, y, hue, ax, title, ylabel, yscale, legend):
+    
+    dftemp = df
+    if only is not None:
+        for col, val in only.items():
+            dftemp = dftemp[dftemp[col] == val]
+
+        # print(df.columns)
+        # print(dftemp['Measurement Noise'])
+        # sys.exit()
+
+    print(dftemp)
+    
+    sns.boxplot(data=dftemp, x=x, y=y, hue=hue, ax=ax)
+
+    ax.set_title(title)
+    ax.set_ylabel(ylabel)
+    ax.set_yscale(yscale)
+
+    if not legend:
+        ax.get_legend().remove()
+    else:
+        ax.get_legend().remove()
+        ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+
+    return ax
  
-# alpha_diversity_figure()
-# alpha_diversity_figure_boxplot()
-# alpha_diversity_mean_std()
 
+# Alpha diversity
+alpha_diversity_mean_std()
+
+# Beta diversity
 # beta_diversity_figure()
-# beta_diversity_figure_no_zoom_2_colors()
 
+# Data figure
+# data_figure_rel_and_qpcr(horizontal=True)
 
-data_figure_rel_and_qpcr(horizontal=True)
-
+# Species heatmap
 # species_heatmap()
 
-# colorplot()
+# Preprocess filtering
+# preprocess_filtering(True)
+# preprocess_filtering(False)
 
-# data_figure1_cutoff()
-
-# temp()
-
+# Phylogenetic heatmap
 # phylogenetic_heatmap(True)
 
-
-# figure1()
-plt.show()
+# Semi-synthetic benchmarking
+semi_synthetic_benchmark_figure()
 
 
 
