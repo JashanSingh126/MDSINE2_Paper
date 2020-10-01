@@ -151,51 +151,43 @@ if args.run_make_subjsets:
     print('EXECUTING:', command)
     os.system(command)
 
-
 for mesh in arguments_global:
-    n_replicates = mesh[0]
-    n_timepoints = mesh[1]
-    n_data_seeds = mesh[2]
-    n_init_seeds = mesh[3]
-    measurement_noises = mesh[4]
-    process_variances = mesh[5]
-    clustering_ons = 1
-    uniform_sampling = mesh[6]
+    nr = mesh[0]
+    nt = mesh[1]
+    d = mesh[2]
+    i = mesh[3]
+    mn = mesh[4]
+    pv = mesh[5]
+    co = 1
+    us = mesh[6]
     boxplot_type = mesh[7]
-    for d in range(n_data_seeds):
-        for i in range(n_init_seeds):
-            for nr in n_replicates:
-                for nt in n_timepoints:
-                    for mn in measurement_noises:
-                        for pv in process_variances:
-                    
-                            for co in clustering_ons:
-                                # Make name
-                                if boxplot_type == 0:
-                                    # Do measurement 
-                                    jobname = 'MC{}m{}'.format(d,mn)
-                                elif boxplot_type == 1:
-                                    # Do replicates
-                                    jobname = 'MC{}r{}'.format(d,nr)
-                                else:
-                                    # Do number of timepoints
-                                    jobname = 'MC{}t{}'.format(d,nt)
 
-                                name = 'd{d}_i{i}_ns{ns}_nb{nb}_nr{nr}_m{m}_p{p}_co{co}_nt{nt}_us{us}'.format(
-                                    d=d,i=i, ns=args.n_samples, nb=args.burnin, nr=nr, m=mn, p=pv, 
-                                    co=co, nt=nt, us=uniform_sampling)
-                                lsfname = lsfdir + name + '.lsf'
-                                f = open(lsfname, 'w')
-                                f.write(my_str.format(
-                                    jobname=jobname, 
-                                    logging_loc=logdir + name,
-                                    n_cpus=args.n_cpus, queue=args.queue,
-                                    n_mbs=args.n_mbs, 
-                                    mn=mn, pv=pv, d=d, i=i, b=basepath,
-                                    burnin=args.burnin, n_samples=args.n_samples, nr=nr, 
-                                    co=co, nt=nt, db=args.data_path, us=uniform_sampling))
-                                f.close()
-                                os.system('bsub < {}'.format(lsfname))
+    # Make name
+    if boxplot_type == 0:
+        # Do measurement 
+        jobname = 'MC{}m{}'.format(d,mn)
+    elif boxplot_type == 1:
+        # Do replicates
+        jobname = 'MC{}r{}'.format(d,nr)
+    else:
+        # Do number of timepoints
+        jobname = 'MC{}t{}'.format(d,nt)
+
+    name = 'd{d}_i{i}_ns{ns}_nb{nb}_nr{nr}_m{m}_p{p}_co{co}_nt{nt}_us{us}'.format(
+        d=d,i=i, ns=args.n_samples, nb=args.burnin, nr=nr, m=mn, p=pv, 
+        co=co, nt=nt, us=uniform_sampling)
+    lsfname = lsfdir + name + '.lsf'
+    f = open(lsfname, 'w')
+    f.write(my_str.format(
+        jobname=jobname, 
+        logging_loc=logdir + name,
+        n_cpus=args.n_cpus, queue=args.queue,
+        n_mbs=args.n_mbs, 
+        mn=mn, pv=pv, d=d, i=i, b=basepath,
+        burnin=args.burnin, n_samples=args.n_samples, nr=nr, 
+        co=co, nt=nt, db=args.data_path, us=uniform_sampling))
+    f.close()
+    os.system('bsub < {}'.format(lsfname))
 
 
 
