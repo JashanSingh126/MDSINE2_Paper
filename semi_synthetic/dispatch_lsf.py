@@ -2,8 +2,10 @@ import numpy as np
 import os
 import shutil
 import argparse
+import sys
 
 import config
+import pylab as pl
 
 parser = argparse.ArgumentParser()
 parser = argparse.ArgumentParser()
@@ -151,6 +153,7 @@ if args.run_make_subjsets:
     print('EXECUTING:', command)
     os.system(command)
 
+# Dispatch the jobs
 for mesh in arguments_global:
     nr = mesh[0]
     nt = mesh[1]
@@ -188,9 +191,3 @@ for mesh in arguments_global:
         co=co, nt=nt, db=args.data_path, us=uniform_sampling))
     f.close()
     os.system('bsub < {}'.format(lsfname))
-
-
-
-
-                        
-

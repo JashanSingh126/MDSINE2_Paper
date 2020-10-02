@@ -180,130 +180,130 @@ def main_leave_out_single(params, fparams, continue_inference):
             # Out of range, dont do anything
             return
 
-    if not ONLY_PLOT:
+    # if not ONLY_PLOT:
 
-        if continue_inference:
-            params = config.ModelConfigReal.load(params_filename)
-            fparams = config.FilteringConfig.load(fparams_filename)
-            subjset = pl.base.SubjectSet.load(subjset_filename)
-        else:
-            params.save(params_filename)
-            fparams.save(fparams_filename)
+    #     if continue_inference:
+    #         params = config.ModelConfigReal.load(params_filename)
+    #         fparams = config.FilteringConfig.load(fparams_filename)
+    #         subjset = pl.base.SubjectSet.load(subjset_filename)
+    #     else:
+    #         params.save(params_filename)
+    #         fparams.save(fparams_filename)
 
-            # Filtering and abundance normalization
-            if fparams.DATASET == 'mdsine2-real-data':
-                subjset = filtering.consistency(subjset, dtype=fparams.DTYPE,
-                    threshold=fparams.THRESHOLD, union_both_consortia=fparams.HEALTHY==-1,
-                    min_num_consecutive=fparams.MIN_NUM_CONSECUTIVE,
-                    colonization_time=fparams.COLONIZATION_TIME,
-                    min_num_subjects=fparams.MIN_NUM_SUBJECTS)
-            elif fparams.DATASET == 'mdsine-cdiff':
-                subjset = filtering.mdsine_cdiff_preprocess(subjset=subjset)
-            else:
-                raise ValueError('`dataset` ({}) not recognized'.format(fparams.DATASET))
+    #         # Filtering and abundance normalization
+    #         if fparams.DATASET == 'mdsine2-real-data':
+    #             subjset = filtering.consistency(subjset, dtype=fparams.DTYPE,
+    #                 threshold=fparams.THRESHOLD, union_both_consortia=fparams.HEALTHY==-1,
+    #                 min_num_consecutive=fparams.MIN_NUM_CONSECUTIVE,
+    #                 colonization_time=fparams.COLONIZATION_TIME,
+    #                 min_num_subjects=fparams.MIN_NUM_SUBJECTS)
+    #         elif fparams.DATASET == 'mdsine-cdiff':
+    #             subjset = filtering.mdsine_cdiff_preprocess(subjset=subjset)
+    #         else:
+    #             raise ValueError('`dataset` ({}) not recognized'.format(fparams.DATASET))
 
-            f = open(basepath + 'filtering_output.txt', 'w')
-            for asv in subjset.asvs:
-                f.write('Index: {}\n\tName: {}\n\tTaxonomy: {}\n\tSequence: {}\n'.format(asv.idx, asv.name, 
-                    pl.asvname_formatter(format='%(order)s %(family)s, %(genus)s, %(species)s',
-                        asv=asv, asvs=subjset.asvs),asv.sequence))
-            f.close()
+    #         f = open(basepath + 'filtering_output.txt', 'w')
+    #         for asv in subjset.asvs:
+    #             f.write('Index: {}\n\tName: {}\n\tTaxonomy: {}\n\tSequence: {}\n'.format(asv.idx, asv.name, 
+    #                 pl.asvname_formatter(format='%(order)s %(family)s, %(genus)s, %(species)s',
+    #                     asv=asv, asvs=subjset.asvs),asv.sequence))
+    #         f.close()
 
-            # f = open('healthy_{}_asvs.txt'.format(fparams.HEALTHY), 'w')
-            # for asv in subjset.asvs:
-            #     f.write('{}\n'.format(asv.name))
-            # f.close()
-            # sys.exit()
+    #         # f = open('healthy_{}_asvs.txt'.format(fparams.HEALTHY), 'w')
+    #         # for asv in subjset.asvs:
+    #         #     f.write('{}\n'.format(asv.name))
+    #         # f.close()
+    #         # sys.exit()
             
-            logging.info('num asvs after preprocess filtering {}'.format(len(subjset.asvs)))
+    #         logging.info('num asvs after preprocess filtering {}'.format(len(subjset.asvs)))
 
-            if params.MAX_N_ASVS != -1:
-                subjset = get_top(subjset, max_n_asvs=params.MAX_N_ASVS)
-            if params.DELETE_FIRST_TIMEPOINT:
-                subjset.pop_times(0, sids='all')
-            # subjset = get_asvs(subjset, asvs=['ASV_2'])
-            # subjset.pop_times(times=np.arange(20,70,step=0.5), sids='all')
-            # subjset.perturbations = None
+    #         if params.MAX_N_ASVS != -1:
+    #             subjset = get_top(subjset, max_n_asvs=params.MAX_N_ASVS)
+    #         if params.DELETE_FIRST_TIMEPOINT:
+    #             subjset.pop_times(0, sids='all')
+    #         # subjset = get_asvs(subjset, asvs=['ASV_2'])
+    #         # subjset.pop_times(times=np.arange(20,70,step=0.5), sids='all')
+    #         # subjset.perturbations = None
 
-            plotbasepath = basepath+'valid_asvs/'
-            os.makedirs(plotbasepath, exist_ok=True) # Make the folder
+    #         plotbasepath = basepath+'valid_asvs/'
+    #         os.makedirs(plotbasepath, exist_ok=True) # Make the folder
 
-        # Remove subjects if necessary
-        if params.LEAVE_OUT != -1:
-            if continue_inference:
-                validate_subjset = pl.base.SubjectSet.load(validate_subjset_filename)
-            else:
-                validate_subjset = subjset.pop_subject(params.LEAVE_OUT)
-                validate_subjset.save(validate_subjset_filename)
-        else:
-            validate_subjset = None
+    #     # Remove subjects if necessary
+    #     if params.LEAVE_OUT != -1:
+    #         if continue_inference:
+    #             validate_subjset = pl.base.SubjectSet.load(validate_subjset_filename)
+    #         else:
+    #             validate_subjset = subjset.pop_subject(params.LEAVE_OUT)
+    #             validate_subjset.save(validate_subjset_filename)
+    #     else:
+    #         validate_subjset = None
 
-        matrixes = [subj.matrix()['abs'] for subj in subjset]
-        read_depthses = [subj.read_depth() for subj in subjset]
-        qpcrses = [np.sum(subj.matrix()['abs'], axis=0) for subj in subjset]
+    #     matrixes = [subj.matrix()['abs'] for subj in subjset]
+    #     read_depthses = [subj.read_depth() for subj in subjset]
+    #     qpcrses = [np.sum(subj.matrix()['abs'], axis=0) for subj in subjset]
 
-        # logging.info('Plotting Data')
-        # for asv in subjset.asvs:
-        #     logging.info('{}/{}'.format(asv.idx, len(subjset.asvs)))
-        #     fig = plt.figure(figsize=(20,10))
-        #     fig = filtering.plot_asv(
-        #         subjset=subjset, asv=asv, fparams=fparams, fig=fig,
-        #         legend=True, title_format='Subject %(sname)s',
-        #         suptitle_format='%(index)s: %(name)s\n%(order)s, %(family)s, %(genus)s',
-        #         yscale_log=True, matrixes=matrixes, read_depthses=read_depthses,
-        #         qpcrses=qpcrses)
-        #     plt.savefig(plotbasepath + '{}.pdf'.format(asv.name))
-        #     plt.close()
+    #     # logging.info('Plotting Data')
+    #     # for asv in subjset.asvs:
+    #     #     logging.info('{}/{}'.format(asv.idx, len(subjset.asvs)))
+    #     #     fig = plt.figure(figsize=(20,10))
+    #     #     fig = filtering.plot_asv(
+    #     #         subjset=subjset, asv=asv, fparams=fparams, fig=fig,
+    #     #         legend=True, title_format='Subject %(sname)s',
+    #     #         suptitle_format='%(index)s: %(name)s\n%(order)s, %(family)s, %(genus)s',
+    #     #         yscale_log=True, matrixes=matrixes, read_depthses=read_depthses,
+    #     #         qpcrses=qpcrses)
+    #     #     plt.savefig(plotbasepath + '{}.pdf'.format(asv.name))
+    #     #     plt.close()
 
-        # Plot data
-        subjs = [subj for subj in subjset]
-        for i, subj in enumerate(subjs):
-            pl.visualization.abundance_over_time(subj=subj, dtype='abs', legend=True,
-                taxlevel='genus', set_0_to_nan=True, yscale_log=True)
-            plt.savefig(basepath + 'data{}.pdf'.format(subj.name))
-            plt.close()
+    #     # Plot data
+    #     subjs = [subj for subj in subjset]
+    #     for i, subj in enumerate(subjs):
+    #         pl.visualization.abundance_over_time(subj=subj, dtype='abs', legend=True,
+    #             taxlevel='genus', set_0_to_nan=True, yscale_log=True)
+    #         plt.savefig(basepath + 'data{}.pdf'.format(subj.name))
+    #         plt.close()
         
-        pl.visualization.abundance_over_time(subj=subjset, dtype='qpcr', include_errorbars=False, grid=True)
-        fig = plt.gcf()
-        fig.tight_layout()
-        plt.savefig(basepath + 'qpcr_data.pdf')
-        plt.close()
+    #     pl.visualization.abundance_over_time(subj=subjset, dtype='qpcr', include_errorbars=False, grid=True)
+    #     fig = plt.gcf()
+    #     fig.tight_layout()
+    #     plt.savefig(basepath + 'qpcr_data.pdf')
+    #     plt.close()
 
-        pl.visualization.abundance_over_time(subj=subjset, dtype='read-depth', yscale_log=False, grid=True)
-        plt.savefig(basepath + 'read_depths.pdf')
-        plt.close()
+    #     pl.visualization.abundance_over_time(subj=subjset, dtype='read-depth', yscale_log=False, grid=True)
+    #     plt.savefig(basepath + 'read_depths.pdf')
+    #     plt.close()
 
-        if params.QPCR_NORMALIZATION_MAX_VALUE is not None:
-            subjset.normalize_qpcr(max_value=params.QPCR_NORMALIZATION_MAX_VALUE)
-            logging.info('Normalizing qPCR values. Normalization constant: {:.3E}'.format(
-                subjset.qpcr_normalization_factor))
-            old_c_m = params.C_M
-            old_v2 = params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2']
-            params.C_M = params.C_M * subjset.qpcr_normalization_factor
-            params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2'] *= subjset.qpcr_normalization_factor
-            logging.info('Old `c_m`: {:.2E}. New `c_m`: {:.2E}'.format(
-                old_c_m, params.C_M))
-            logging.info('Old `v_2`: {:.2E}. New `v2`: {:.2E}'.format(
-                old_v2, params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2']))
-            params.INITIALIZATION_KWARGS[STRNAMES.SELF_INTERACTION_VALUE]['rescale_value'] = \
-                subjset.qpcr_normalization_factor
+    #     if params.QPCR_NORMALIZATION_MAX_VALUE is not None:
+    #         subjset.normalize_qpcr(max_value=params.QPCR_NORMALIZATION_MAX_VALUE)
+    #         logging.info('Normalizing qPCR values. Normalization constant: {:.3E}'.format(
+    #             subjset.qpcr_normalization_factor))
+    #         old_c_m = params.C_M
+    #         old_v2 = params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2']
+    #         params.C_M = params.C_M * subjset.qpcr_normalization_factor
+    #         params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2'] *= subjset.qpcr_normalization_factor
+    #         logging.info('Old `c_m`: {:.2E}. New `c_m`: {:.2E}'.format(
+    #             old_c_m, params.C_M))
+    #         logging.info('Old `v_2`: {:.2E}. New `v2`: {:.2E}'.format(
+    #             old_v2, params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2']))
+    #         params.INITIALIZATION_KWARGS[STRNAMES.SELF_INTERACTION_VALUE]['rescale_value'] = \
+    #             subjset.qpcr_normalization_factor
 
-        subjset.save(subjset_filename)
+    #     subjset.save(subjset_filename)
 
-        # Run the model
-        chain_result = main_base.run(
-            params=params,
-            graph_name=graph_name,
-            data_filename=subjset_filename,
-            graph_filename=graph_filename,
-            tracer_filename=tracer_filename,
-            hdf5_filename=hdf5_filename,
-            mcmc_filename=chain_result_filename,
-            checkpoint_iter=params.CHECKPOINT,
-            crash_if_error=True,
-            continue_inference=None)
-        chain_result.save(chain_result_filename)
-        params.save(params_filename)
+    #     # Run the model
+    #     chain_result = main_base.run(
+    #         params=params,
+    #         graph_name=graph_name,
+    #         data_filename=subjset_filename,
+    #         graph_filename=graph_filename,
+    #         tracer_filename=tracer_filename,
+    #         hdf5_filename=hdf5_filename,
+    #         mcmc_filename=chain_result_filename,
+    #         checkpoint_iter=params.CHECKPOINT,
+    #         crash_if_error=True,
+    #         continue_inference=None)
+    #     chain_result.save(chain_result_filename)
+    #     params.save(params_filename)
 
     params = config.ModelConfigReal.load(params_filename)
     fparams = config.FilteringConfig.load(fparams_filename)
@@ -314,7 +314,7 @@ def main_leave_out_single(params, fparams, continue_inference):
         params=params,
         yscale_log=True,
         center_color_for_strength=True,
-        run_on_copy=True,
+        run_on_copy=False,
         asv_prefix_formatter='%(index)s: (%(name)s) %(genus)s %(species)s',
         yticklabels='(%(name)s) %(lca)s: %(index)s',
         plot_name_filtering='%(order)s, %(family)s, %(genus)s',

@@ -30,7 +30,7 @@ import matplotlib.legend as mlegend
 from matplotlib.colors import LogNorm
 
 import ete3
-from ete3 import TreeStyle
+# from ete3 import TreeStyle
 import Bio
 from Bio import Phylo
 
@@ -2831,31 +2831,48 @@ def semi_synthetic_benchmark_figure():
     # basepath = 'tmp/'
     # os.makedirs(basepath, exist_ok=True)
 
-    df = _make_fake_semi_synthetic()
+    # df = _make_fake_semi_synthetic()
+    df = pd.read_csv('semi_synthetic/df.tsv', sep='\t')
+    print(df.head())
 
-    fig = _outer_semi_synthetic(
-        df=df, only={'Number of Timepoints': 55, 'Number of Replicates': 5, 
-        'Uniform Samples': False},
-        x = 'Measurement Noise')
-    plt.savefig(BASEPATH + 'semi_synthetic_measurement_noise.pdf')
-    plt.savefig(BASEPATH + 'semi_synthetic_measurement_noise.png')
-    plt.close()
+    try:
+        fig = _outer_semi_synthetic(
+            df=df, only={'Number of Timepoints': 55, 'Number of Replicates': 5, 
+            'Uniform Samples': False},
+            x = 'Measurement Noise')
+        plt.savefig(BASEPATH + 'semi_synthetic_measurement_noise.pdf')
+        plt.savefig(BASEPATH + 'semi_synthetic_measurement_noise.png')
+        plt.close()
+        print('Measurement noise done')
+    except Exception as e:
+        print('Failed Measurement noise')
+        print(e)
 
-    fig = _outer_semi_synthetic(
-        df=df, only={'Number of Timepoints': 55, 'Measurement Noise': 0.3, 
-        'Uniform Samples': False},
-        x = 'Number of Replicates')
-    plt.savefig(BASEPATH + 'semi_synthetic_replicates.pdf')
-    plt.savefig(BASEPATH + 'semi_synthetic_replicates.png')
-    plt.close()
+    try:
+        fig = _outer_semi_synthetic(
+            df=df, only={'Number of Timepoints': 55, 'Measurement Noise': 0.3, 
+            'Uniform Samples': False},
+            x = 'Number of Replicates')
+        plt.savefig(BASEPATH + 'semi_synthetic_replicates.pdf')
+        plt.savefig(BASEPATH + 'semi_synthetic_replicates.png')
+        plt.close()
+        print('Replicates done')
+    except Exception as e:
+        print('Failed Replicates noise')
+        print(e)
     
-    fig = _outer_semi_synthetic(
-        df=df, only={'Number of Replicates': 4, 'Measurement Noise': 0.3, 
-        'Uniform Samples': True},
-        x = 'Number of Timepoints')
-    plt.savefig(BASEPATH + 'semi_synthetic_timepoints.pdf')
-    plt.savefig(BASEPATH + 'semi_synthetic_timepoints.png')
-    plt.close()
+    try:
+        fig = _outer_semi_synthetic(
+            df=df, only={'Number of Replicates': 4, 'Measurement Noise': 0.3, 
+            'Uniform Samples': True},
+            x = 'Number of Timepoints')
+        plt.savefig(BASEPATH + 'semi_synthetic_timepoints.pdf')
+        plt.savefig(BASEPATH + 'semi_synthetic_timepoints.png')
+        plt.close()
+        print('timepoints done')
+    except Exception as e:
+        print('Failed timepoints')
+        print(e)
 
 def _srn():
     return np.absolute(np.random.normal())
@@ -3067,6 +3084,7 @@ def _make_fake_model_performance_df():
     df = pd.DataFrame(data)
     return df
 
+os.makedirs('output_figures/', exist_ok=True)
 # Alpha diversity
 # alpha_diversity_mean_std()
 
@@ -3087,10 +3105,10 @@ def _make_fake_model_performance_df():
 # phylogenetic_heatmap(True)
 
 # Semi-synthetic benchmarking
-# semi_synthetic_benchmark_figure()
+semi_synthetic_benchmark_figure()
 
 # Model performance benchmarking
-model_performance_benchmark_figure()
+# model_performance_benchmark_figure()
 
 
 
