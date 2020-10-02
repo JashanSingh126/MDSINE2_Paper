@@ -322,11 +322,9 @@ def main_leave_out_single(params, fparams, continue_inference):
         plot_filtering_thresh=False,
         plot_gif_filtering=False)
 
-    # main_base.readify_chain_fixed_topology(src_basepath=basepath,
-    #     abund_times_start=7, abund_times_end=21,
-    #     piechart_axis_layout='auto', healthy=bool(args.healthy))
-
-
+    # # main_base.readify_chain_fixed_topology(src_basepath=basepath,
+    # #     abund_times_start=7, abund_times_end=21,
+    # #     piechart_axis_layout='auto', healthy=bool(args.healthy))
     
     # If the validation subjset exists, run the validation function
     if os.path.isfile(validate_subjset_filename):
@@ -338,7 +336,7 @@ def main_leave_out_single(params, fparams, continue_inference):
             yticklabels='(%(name)s) %(genus)s %(species)s: %(index)s',
             mp=5, output_dt=1/8, perturbations_additive=params.PERTURBATIONS_ADDITIVE,
             traj_fillvalue=1e5,
-            traj_error_metric=scipy.stats.spearmanr, #pl.metrics.PE,
+            traj_error_metric=scipy.stats.RMSE, #pl.metrics.PE,
             pert_error_metric=pl.metrics.RMSE,
             interaction_error_metric=pl.metrics.RMSE,
             growth_error_metric=pl.metrics.PE,
