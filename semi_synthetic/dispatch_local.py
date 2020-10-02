@@ -86,7 +86,7 @@ lst_process_variances = ' '.join(agg_process_variances)
 
 command = 'python make_subjsets.py -b {basepath} -nr {nrs} -m {mns} -p {pvs} -d {nd} -dset semi-synthetic -nt {nts}'.format(
     basepath=subjset_path, nrs=lst_replicates, mns=lst_measurement_noises,
-    pvs=lst_process_variances, nd=max_dataseeds, nts=lst_times)
+    pvs=lst_process_variances, nd=max_dataseeds+1, nts=lst_times)
 os.system(command)
 
 # Run each inference
