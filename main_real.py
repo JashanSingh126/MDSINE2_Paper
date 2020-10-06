@@ -328,7 +328,7 @@ def main_leave_out_single(params, fparams, continue_inference):
     # If the validation subjset exists, run the validation function
     if os.path.isfile(validate_subjset_filename):
         main_base.validate(
-            src_basepath=basepath, model=chain_result,
+            src_basepath=basepath, model=chain_result, dst_basepath=basepath+'validation_RMSE_w_lookahead/', 
             forward_sims=['sim-full'],
             yscale_log=True, run_on_copy=False,
             asv_prefix_formatter='%(index)s: (%(name)s) %(genus)s %(species)s ',
