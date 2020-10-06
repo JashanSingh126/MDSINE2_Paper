@@ -42,6 +42,7 @@ import preprocess_filtering as filtering
 import model
 import names
 import main_base
+import util as MDSINE2_util
 
 import ete3
 import Bio
@@ -63,6 +64,11 @@ pl.seed(1)
 
 
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
+
+
+
+
+
 
 # ####################################################
 # # Correct mdsine1 data
@@ -282,90 +288,23 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 # plt.show()
 # sys.exit()
 
-####################################################
-# Parse data like MDSINE1
-####################################################
+# ####################################################
+# # Parse data like MDSINE1
+# ####################################################
 
-def make_data_like_mdsine1(subjset, basepath):
-    '''Parse subjset into data format like mdsine1
-    '''
-    os.makedirs(basepath, exist_ok=True)
+# chains = {
+#     'healthy': 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'uc': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
 
-    n_times = 0 # for `#OTU ID`
-    for subj in subjset:
-        n_times += len(subj.times)
-
-    metadata_columns = ['sampleID', 'isIncluded', 'subjectID', 'measurementid', 'perturbid']
-    
-
-    # Make the counts
-    counts_columns = ['{}'.format(i+1) for i in range(n_times)]
-    count_Ms = []
-    for subj in subjset:
-        d = subj.matrix()
-        M = d['raw']
-        count_Ms.append(M)
-    
-    counts = np.hstack(count_Ms)
-    df_counts = pd.DataFrame(counts, columns=counts_columns, index=[asv.name for asv in subjset.asvs])
-    df_counts.index = df_counts.index.rename('#OTU ID')
-    df_counts.to_csv(basepath + 'counts.txt', sep='\t', header=True, index=True)
-
-    # Make the biomass
-    biomass_columns = ['mass1', 'mass2', 'mass3']
-    qs = []
-    for subj in subjset:
-        for t in subj.times:
-            qs.append(subj.qpcr[t].data)
-    biomass = np.vstack(qs)
-    df_biomass = pd.DataFrame(data=biomass, columns=biomass_columns, index=counts_columns)
-    df_biomass.to_csv(basepath + 'biomass.txt', sep='\t', header=True, index=False, float_format='%.2E')
-    
-
-    # Make metadata
-    sampleID = counts_columns
-    is_included = [1 for i in range(len(sampleID))]
-    subjectID = []
-    measurementid = []
-    perturbid = []
-    for subjidx, subj in enumerate(subjset):
-        for t in subj.times:
-            subjectID.append(int(subj.name))
-            measurementid.append(t)
-
-            p = 0
-            for pidx, pert in enumerate(subjset.perturbations):
-                if t >= pert.start and t <= pert.end:
-                    p = pidx+1
-                    break
-            perturbid.append(p)
-
-    print(perturbid)
-
-    df_metadata = pd.DataFrame({
-        'sampleID': sampleID, 
-        'isIncluded': is_included, 
-        'subjectID': subjectID,
-        'measurementid': measurementid,
-        'perturbid': perturbid})
-    df_metadata.to_csv(basepath + 'metadata.txt', sep='\t', header=True, index=False)
-
-chains = {
-    'healthy': 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-    'uc': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
-
-for dtype in ['healthy', 'uc']:
-    chainname = chains[dtype]
-    chain = pl.inference.BaseMCMC.load(chainname)
-    subjset = chain.graph.data.subjects
-    make_data_like_mdsine1(subjset, basepath='tmp/{}_mdsine1_like/'.format(dtype))
+# for dtype in ['healthy', 'uc']:
+#     chainname = chains[dtype]
+#     chain = pl.inference.BaseMCMC.load(chainname)
+#     subjset = chain.graph.data.subjects
+#     MDSINE2_util.make_data_like_mdsine1(subjset, basepath='tmp/{}_mdsine1_like/'.format(dtype))
 
 # ####################################################
 # # Calculate keystoneness
 # ####################################################
-# # Get the growth rates
-
-
 # chains = {
 #     'healthy': 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
 #     'uc': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
@@ -382,126 +321,13 @@ for dtype in ['healthy', 'uc']:
 #         'tmp/keystone_proposal/uc_cycle_2.txt',
 #         'tmp/keystone_proposal/uc_cycle_3.txt']}
 
-# def keystoneness(chain_fname, fname, outfile):
-#     '''The file(s) show a list of asvs to delete, comma separated
-
-#     All of the asvs on a single line should be deleted at once
-#     '''
-
-#     chain = pl.inference.BaseMCMC.load(chain_fname)
-#     subjset = chain.graph.data.subjects
-
-#     SECTION = 'posterior'
-#     growth_master = pl.variables.summary(
-#         chain.graph[names.STRNAMES.GROWTH_VALUE],
-#         section=SECTION)['mean']
-#     si_master = pl.variables.summary(
-#         chain.graph[names.STRNAMES.SELF_INTERACTION_VALUE],
-#         section=SECTION)['mean']
-#     A_master = pl.variables.summary(
-#         chain.graph[names.STRNAMES.INTERACTIONS_OBJ], set_nan_to_0=True,
-#         section=SECTION, only='mean')['mean']
-
-#     dyn = model.gLVDynamicsSingleClustering(asvs=subjset.asvs, log_dynamics=True, 
-#         perturbations_additive=False)
-#     dyn.growth = growth_master
-#     dyn.self_interactions = si_master
-#     dyn.interactions = A_master
-
-#     df = subjset.df(dtype='abs', agg='mean', times='union')
-#     initial_conditions = df[0.5].to_numpy()
-
-#     for i in range(len(initial_conditions)):
-#         if initial_conditions[i] == 0:
-#             initial_conditions[i] = pl.random.truncnormal.sample(mean=1e5, std=1e5, low=1e2)
-
-#     days = 20
-#     BASE_CONCENTRATIONS = pl.dynamics.integrate(dyn, initial_conditions=initial_conditions.reshape(-1,1), 
-#         dt=0.01, n_days=days, times=np.arange(days), subsample=True)['X'][:, -1]
-
-
-#     dists = {}
-#     conc_d = {}
-
-#     f = open(fname, 'r')
-#     args = f.read().split('\n')
-#     f.close()
-
-#     names_to_del_lst = []
-#     for arg in args:
-#         # Get rid of replicates
-#         lst_ = arg.split(',')
-#         lst = []
-#         for ele in lst_:
-#             if ele not in lst:
-#                 lst.append(ele)
-#         names_to_del_lst.append(tuple(lst))
-
-    
-    
-#     for names_to_del in names_to_del_lst:
-#         idxs_to_del = [subjset.asvs[name].idx for name in names_to_del]
-#         # Take out asv aidxs and do the forward simulation
-#         print('{}/{}'.format(names_to_del, len(args)))
-#         dyn = model.gLVDynamicsSingleClustering(asvs=subjset.asvs, log_dynamics=True, 
-#             perturbations_additive=False)
-
-#         mask = np.ones(len(BASE_CONCENTRATIONS), dtype=bool)
-#         mask[idxs_to_del] = False
-
-#         dyn.growth = growth_master[mask]
-#         dyn.self_interactions = si_master[mask]
-#         dyn.interactions = np.delete(A_master, idxs_to_del, 0)
-#         dyn.interactions = np.delete(dyn.interactions, idxs_to_del, 1)
-#         init_conc = initial_conditions[mask]
-
-#         iii = pl.dynamics.integrate(dyn, initial_conditions=init_conc.reshape(-1,1), 
-#             dt=0.01, n_days=days, times=np.arange(days), subsample=True)
-#         conc_d[names_to_del] = iii
-#         concentrations = iii['X'][:, -1]
-
-#         dists[names_to_del] = np.sqrt(np.sum(np.square(concentrations - BASE_CONCENTRATIONS[mask])))
-
-#     idxs = (np.argsort(list(dists.values())))[::-1]
-#     keys = list(dists.keys())
-
-#     f = open(outfile, 'w')
-
-#     f.write('Concise results\n')
-#     for i, idx in enumerate(idxs):
-#         f.write('{}: {} (was {} on bfs)\n'.format(i+1, keys[idx], idx+1))
-
-#     f.write('Spearman correlation on ranking: {}\n'.format(
-#         scipy.stats.spearmanr(idxs, np.arange(len(idxs)))[0]))
-
-
-
-#     f.write('expanded results')
-#     for i, idx in enumerate(idxs):
-        
-#         names_ = keys[idx]
-#         f.write('\n\n---------------------------------------------\n{}\n'.format(names_))
-#         temp_asvs = [subjset.asvs[name] for name in names_]
-#         for asv in temp_asvs:
-#             f.write('{}\n'.format(str(asv)))
-
-#         f.write('Effect: {:.4E}\n'.format(dists[names_]))
-
-#     # plt.figure()
-#     # M = conc_d[idx]['X']
-#     # times = conc_d[idx]['times']
-
-#     # for i in range(M.shape[0]):
-#     #     plt.plot(times, M[i,:])
-#     # plt.yscale('log')
-#     # plt.show()
-#     f.close()
-
 
 # for key in chains.keys():
 #     fnames_temp = fnames[key]
 #     for fname in fnames_temp:
-#         keystoneness(chains[key], fname=fname, outfile=fname.replace('.txt', '_keystoneness.txt'))
+#         MDSINE2_util.keystoneness(chains[key], fname=fname, outfile=fname.replace('.txt', '_keystoneness_full_posterior.txt'),
+#             max_posterior=None)
+# sys.exit()
 
 # ####################################################
 # # Get interaction traces
@@ -708,87 +534,87 @@ for dtype in ['healthy', 'uc']:
 #         plt.close()
     
 
-# ####################################################
-# # 16S v4 gapless sequences and taxonomy
-# ###################################################
+####################################################
+# 16S v4 gapless sequences and taxonomy
+###################################################
 
-# seqs = SeqIO.parse('raw_data/align_seqs_v4.sto', 'stockholm')
-# seqs = SeqIO.to_dict(seqs)
+seqs = SeqIO.parse('raw_data/align_seqs_v4.sto', 'stockholm')
+seqs = SeqIO.to_dict(seqs)
 
-# asvs = {}
-# chains = [
-#     'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-#     'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
-# for i, fname in enumerate(chains):
-#     chain = pl.inference.BaseMCMC.load(fname)
-#         if asvname not in asvs:
-#             asvs[asvname] = None
+asvs = {}
+chains = [
+    'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
+for i, fname in enumerate(chains):
+    chain = pl.inference.BaseMCMC.load(fname)
+        if asvname not in asvs:
+            asvs[asvname] = None
 
-# print(len(asvs))
-# d = {}
-# l = None
-# for k,v in seqs.items():
-#     if k in asvs:
-#         d[k] = v
-#     l = len(v.seq)
-# seqs = d
+print(len(asvs))
+d = {}
+l = None
+for k,v in seqs.items():
+    if k in asvs:
+        d[k] = v
+    l = len(v.seq)
+seqs = d
 
-# asvs = list(asvs.keys())
+asvs = list(asvs.keys())
 
-# M = np.zeros(shape=(len(seqs), l), dtype=bool)
-# Mseqs = np.zeros(shape=(len(seqs), l), dtype=str)
-# for i, (k,v) in enumerate(seqs.items()):
-#     Mseqs[i] = np.asarray(list(str(v.seq)))
-#     M[i] = Mseqs[i] == '-'
-#     # print(str)
+M = np.zeros(shape=(len(seqs), l), dtype=bool)
+Mseqs = np.zeros(shape=(len(seqs), l), dtype=str)
+for i, (k,v) in enumerate(seqs.items()):
+    Mseqs[i] = np.asarray(list(str(v.seq)))
+    M[i] = Mseqs[i] == '-'
+    # print(str)
 
-# cols_to_keep = []
-# for col in range(M.shape[1]):
-#     n = np.sum(M[:, col])
-#     if n == 0:
-#         cols_to_keep.append(col)
-#     else:
-#         print('column {} has {} gaps'.format(col, n))
+cols_to_keep = []
+for col in range(M.shape[1]):
+    n = np.sum(M[:, col])
+    if n == 0:
+        cols_to_keep.append(col)
+    else:
+        print('column {} has {} gaps'.format(col, n))
 
-# print('{}/{} left'.format(len(cols_to_keep), M.shape[1]))
+print('{}/{} left'.format(len(cols_to_keep), M.shape[1]))
 
-# Mseqs = Mseqs[:, cols_to_keep]
-# # print(Mseqs)
-# # print(Mseqs.shape)
+Mseqs = Mseqs[:, cols_to_keep]
+# print(Mseqs)
+# print(Mseqs.shape)
 
-# lll = []
-# taxonomies = ['kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species']
-# d = {}
-# for tax in taxonomies:
-#     d[tax] = []
-# asvset = subjset_real.asvs
-# for i in range(Mseqs.shape[0]):
-#     # print()
-#     # print(asvs[i])
-#     asvname = asvs[i]
-#     asv = asvset[asvname]
-#     for taxa in taxonomies:
-#         d[taxa].append('NA')
-#         if asv.tax_is_defined(taxa):
-#             if taxa == 'species':
-#                 p = asv.taxonomy[taxa].split('/')
-#                 if len(p) > 3:
-#                     continue
-#                 else:
-#                     d[taxa][-1] = asv.taxonomy[taxa]
-#             else:
-#                 d[taxa][-1] = asv.taxonomy[taxa]
-#     lll.append(''.join(list(Mseqs[i])))
+lll = []
+taxonomies = ['kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species']
+d = {}
+for tax in taxonomies:
+    d[tax] = []
+asvset = subjset_real.asvs
+for i in range(Mseqs.shape[0]):
+    # print()
+    # print(asvs[i])
+    asvname = asvs[i]
+    asv = asvset[asvname]
+    for taxa in taxonomies:
+        d[taxa].append('NA')
+        if asv.tax_is_defined(taxa):
+            if taxa == 'species':
+                p = asv.taxonomy[taxa].split('/')
+                if len(p) > 3:
+                    continue
+                else:
+                    d[taxa][-1] = asv.taxonomy[taxa]
+            else:
+                d[taxa][-1] = asv.taxonomy[taxa]
+    lll.append(''.join(list(Mseqs[i])))
 
-# ddd = [d[taxa] for taxa in taxonomies]
-# df = pd.DataFrame([asvs,lll] + ddd).T
-# df.columns=['name', 'sequences'] + taxonomies
-# df = df.set_index('name')
+ddd = [d[taxa] for taxa in taxonomies]
+df = pd.DataFrame([asvs,lll] + ddd).T
+df.columns=['name', 'sequences'] + taxonomies
+df = df.set_index('name')
+print(df)
+print(df.shape)
+df.to_csv('16S_v4_aligned_gapless_sequences_and_taxonomy.tsv', sep='\t')
 # print(df)
-# print(df.shape)
-# df.to_csv('16S_v4_aligned_gapless_sequences_and_taxonomy.tsv', sep='\t')
-# # print(df)
-# # print(df.T)
+# print(df.T)
 
 # ####################################################
 # # Coclustering trace save
@@ -924,106 +750,6 @@ for dtype in ['healthy', 'uc']:
         #     format='%(order)s %(family)s %(genus)s %(species)s'))
 #         print(PI[i,j])
 # sys.exit()
-
-# ####################################################
-# # Make table of gaps of sequences
-# ###################################################
-# fname = 'raw_data/seqs_temp/aligned_RDP_typed_cultured_trunc1600_singletons_5_of_less_occurances.fa'
-# fname_to_use = 'raw_data/seqs_temp/RDP_typed_cultured_trunc1600.fa'
-# fprefix = 'raw_data/seqs_temp/RDP_typed_cultured_trunc1600_second_'
-# fsuffix = '.fa'
-# seqs = SeqIO.parse(fname, 'fasta')
-# seqs_to_use = SeqIO.parse(fname_to_use, 'fasta')
-# seqs = SeqIO.to_dict(seqs)
-# seqs_to_use = SeqIO.to_dict(seqs_to_use)
-
-# def get_seqs_gaps(seqs, min_gap_length, max_num_seqs_in_gap, repeats_only=False):
-#     '''Return the sequences to be that have base pairs in gaps of at least
-#     length `min_gap_length` for `max_num_seqs_in_gap` sequences or less.
-
-#     Parameters
-#     ----------
-#     seqs : dict (str -> Record)
-#         maps the ID of the sequence to the record
-#     min_gap_length : int
-#         Minimum spance of the gap that we are looking at
-#     max_num_seqs_in_gap : int
-#         Maximum number of subjects that we should count as an insertion
-#     repeats_only : bool
-#         If True, only returns the sequences that come up in more than 1 distict
-#         insertion regions
-
-#     Returns
-#     -------
-#     list(str)
-#     '''
-#     i = 0
-#     for record in seqs.values():
-#         width = len(record.seq)
-#     M = np.zeros(shape=(len(seqs), width), dtype=str)
-
-#     for i, record in enumerate(seqs.values()):
-#         # print('here')
-#         M[i] = np.asarray(list(str(record.seq)))
-
-#     X = M != '.'
-#     Y = M != '-'
-#     M = X & Y
-
-#     # `M` : places where there are not gaps
-#     num_seqs_no_gaps = np.sum(M, axis=0)
-#     insertions = num_seqs_no_gaps <= max_num_seqs_in_gap
-
-#     # Get the set of ranges that satify the gap criteria
-#     cols = []
-#     curr_cols = []
-#     for col, val in enumerate(insertions):
-#         if val:
-#             curr_cols.append(col)
-#         else:
-#             if len(curr_cols) >= min_gap_length:
-#                 cols.append(curr_cols)
-#             curr_cols = []
-
-#     # Get the sequence ids that satisfy the gap criteria
-#     names = list(seqs.keys())
-#     cnt = {}
-#     for curr_cols in cols:
-#         sums_for_rows = np.sum(M[:, curr_cols], axis=1)
-#         rows = np.where(sums_for_rows > 0)[0]
-#         curr_names = list(set([names[row] for row in rows]))
-
-#         for name in curr_names:
-#             if name not in cnt:
-#                 cnt[name] = 0
-#             cnt[name] += 1
-
-#     names_to_ret = []
-#     for k,v in cnt.items():
-#         if repeats_only and v == 1:
-#             continue
-#         names_to_ret.append(k)
-
-#     return names_to_ret
-
-# print(len(seqs))
-# gaps1_5 = get_seqs_gaps(seqs, 1, 5)
-# print(5, len(gaps1_5))
-# sys.exit()
-
-# # singletons for 5 or less occurances
-# seqs_to_delete = set(gaps1_5)
-# ret = []
-# for k in seqs:
-#     try:
-#         v = seqs_to_use[k]
-#         if k not in seqs_to_delete:
-#             ret.append(v)
-#     except:
-#         print('{} not found'.format(k))
-# SeqIO.write(ret, fprefix + 'singletons_5_of_less_occurances' + fsuffix, 'fasta')
-# sys.exit()
-
 
 # ####################################################
 # # Make df of the cluster interactions
