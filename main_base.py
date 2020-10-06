@@ -3421,9 +3421,9 @@ def validate(src_basepath, model, forward_sims,
             truth = comparison.graph.data.subjects[subject.name]
         else:
             truth = None
-        # if pl.isML(model):
-        #     results.lookahead(time_lookahead=lookaheads, subject=subject, dtype='abs', 
-        #         percentile=percentile, truth=truth, error_metric=traj_error_metric)
+        if lookaheads is not None:
+            results.lookahead(time_lookahead=lookaheads, subject=subject, dtype='abs', 
+                percentile=percentile, truth=truth, error_metric=traj_error_metric)
         for sim_options in forward_sims:
             logging.info('{}-{}'.format(subject.name, sim_options))
             if sim_options == 'sim-full':

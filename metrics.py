@@ -375,19 +375,21 @@ class Metrics(pl.Saveable):
         for tidx,t in enumerate(np.arange(max_t)):
             rev_idx_master[t] = tidx
 
-        master_ts = np.arange(np.min(times), np.max(times))
+        master_ts = subject.times
         max_look_ahead = np.max(time_lookahead)
         for start, start_pnt_idx in enumerate(master_ts):
             # Do every third one
             if start_pnt_idx % 3 != 0:
                 continue
-            try:
-                # Fails when start or n_days is out of line
-                ret = self._sim(subject=subject, dtype=dtype, start=start, n_days=max_look_ahead,
-                    simtype='sim-days', percentile=percentile, truth=truth, error_metric=error_metric, 
-                    save_at_finish=False, skip_if_start_dne=True)
-            except Exception as e:
-                logging.info(e)
+            if start == master_ts[-1]:
+                break
+
+            # Fails when start or n_days is out of line
+            ret = self._sim(subject=subject, dtype=dtype, start=start, n_days=max_look_ahead,
+                simtype='sim-days', percentile=percentile, truth=truth, error_metric=error_metric, 
+                save_at_finish=False, skip_if_start_dne=True)
+
+            if ret is None:
                 continue
 
             pred_ts = ret['pred-times']
@@ -424,33 +426,46 @@ class Metrics(pl.Saveable):
                     continue
                 if t not in rev_idx_pred or t not in rev_idx_data:
                     logging.warning('Time lookahead `{}` not in times for predicted ({}) or ' \
-                        'data ({})'.format(t, pred_ts, data_ts))
+                        'data ({}). Set as nan'.format(t, pred_ts, data_ts))
+                    continue
+                else:
                 
-                data_pnt = data_M[:, rev_idx_data[t]]
-                pred_pnt = pred_M[:, rev_idx_pred[t]]
+                    data_pnt = data_M[:, rev_idx_data[t]]
+                    pred_pnt = pred_M[:, rev_idx_pred[t]]
 
-                # Use fillvalue if necessary
-                data_pnt_ = data_pnt
-                data_pnt_[data_pnt_ == 0] = self.traj_fillvalue
-                pred_pnt_ = pred_pnt
-                pred_pnt_[pred_pnt_ == 0] = self.traj_fillvalue
+                    # Use fillvalue if necessary
+                    data_pnt_ = data_pnt
+                    data_pnt_[data_pnt_ == 0] = self.traj_fillvalue
+                    pred_pnt_ = pred_pnt
+                    pred_pnt_[pred_pnt_ == 0] = self.traj_fillvalue
 
-                err = error_metric(data_pnt_, pred_pnt_)[0]
-                logging.info('{}: {}'.format(tla, err))
-                tidx_master = rev_idx_master[t]
-                self.time_lookaheads[subject.name]['lookaheads'][tla]['pred'][tidx_master] = err
+                    if error_metric.__name__ == 'spearmanr':
+                        err = error_metric(data_pnt_, pred_pnt_)[0]
+                    else:
+                        err = error_metric(data_pnt_, pred_pnt_)
+                    logging.info('{}: {}'.format(tla, err))
+                    tidx_master = rev_idx_master[t]
+                    self.time_lookaheads[subject.name]['lookaheads'][tla]['pred'][tidx_master] = err
 
-                if pl.isMCMC(self.model):
+                    if pl.isMCMC(self.model):
 
-                    high_M_ = high_M[:, rev_idx_pred[t]]
-                    high_M_[high_M_ == 0] = self.traj_fillvalue
-                    low_M_ = low_M[:, rev_idx_pred[t]]
-                    low_M_[low_M_ == 0] = self.traj_fillvalue
+                        high_M_ = high_M[:, rev_idx_pred[t]]
+                        high_M_[high_M_ == 0] = self.traj_fillvalue
+                        low_M_ = low_M[:, rev_idx_pred[t]]
+                        low_M_[low_M_ == 0] = self.traj_fillvalue
 
-                    self.time_lookaheads[subject.name]['lookaheads'][tla]['high'][tidx_master] = \
-                        error_metric(data_pnt_, high_M_)[0]
-                    self.time_lookaheads[subject.name]['lookaheads'][tla]['low'][tidx_master] = \
-                        error_metric(data_pnt_, low_M_)[0]
+                        if error_metric.__name__ == 'spearmanr':
+                            self.time_lookaheads[subject.name]['lookaheads'][tla]['high'][tidx_master] = \
+                                error_metric(data_pnt_, high_M_)[0]
+                        else:
+                            self.time_lookaheads[subject.name]['lookaheads'][tla]['high'][tidx_master] = \
+                                error_metric(data_pnt_, high_M_)
+                        if error_metric.__name__ == 'spearmanr':
+                            self.time_lookaheads[subject.name]['lookaheads'][tla]['low'][tidx_master] = \
+                                error_metric(data_pnt_, low_M_)[0]
+                        else:
+                            self.time_lookaheads[subject.name]['lookaheads'][tla]['low'][tidx_master] = \
+                                error_metric(data_pnt_, low_M_)
 
     def _sim(self, subject, dtype, start, n_days, simtype, percentile, truth, error_metric, 
         save_at_finish, skip_if_start_dne):
@@ -492,7 +507,12 @@ class Metrics(pl.Saveable):
                 raise ValueError('`error_metric` ({}) not recognized'.format(error_metric))
 
         start_idx = np.searchsorted(subject.times, start)
-        _start = subject.times[start_idx]
+        try:
+            _start = subject.times[start_idx]
+        except:
+            logging.critical('`start` ({}) out of bounds in times ({}). returning None'.format(
+                start, subject.times))
+            return None
         if truth is not None:
             if not pl.issubject(truth):
                 raise ValueError('`truth` ({}) must be a pylab.base.Subject'.format(type(truth)))
@@ -524,6 +544,7 @@ class Metrics(pl.Saveable):
             n_days = given_times[-1] - _start
             _end_subj_times = given_times
             M = M[:, start_idx:]
+            M_ = M_[:, start_idx:]
             if truth is not None:
                 M_truth = M_truth[:, start_idx_truth:]
                 given_times = truth.times[start_idx_truth:]
@@ -535,6 +556,7 @@ class Metrics(pl.Saveable):
             given_times = subject.times[start_idx:end_idx+1]
             _end_subj_times = given_times
             M = M[:, start_idx:end_idx+1]
+            M_ = M_[:, start_idx:end_idx+1]
             if truth is not None:
                 end_idx_truth = np.searchsorted(truth.times, end)
                 M_truth = M_truth[:, start_idx_truth:end_idx_truth+1]
@@ -745,9 +767,7 @@ class Metrics(pl.Saveable):
 
 
             for i in range(len(error_total)):
-                print('\n\n', i)
                 if truth is not None:
-                    print('truth is not None')
                     if error_metric.__name__ == 'spearmanr':
                         error_total[i] = np.mean(error_metric(M_truth_, given_times_pred_traj_[i], axis=1)[0])
                     else:
@@ -758,7 +778,6 @@ class Metrics(pl.Saveable):
                         else:
                             error_ASVs[i,oidx] = error_metric(M_truth_[oidx,:], given_times_pred_traj_[i,oidx,:])
                 else:
-                    print('truth is none')
                     if error_metric.__name__ == 'spearmanr':
                         error_total[i] = np.mean(error_metric(M_, given_times_pred_traj_[i], axis=1)[0])
                     else:
@@ -790,10 +809,6 @@ class Metrics(pl.Saveable):
         ret['error-total'] = error_total
         ret['error-asvs'] = error_ASVs
         ret['error-metric'] = error_metric
-
-        print('end stuff')
-        print(ret['error-asvs'])
-        print(ret['error-metric'])
 
         if pl.isMCMC(self.model):
             ret['pred-high'] = pred_traj_high
@@ -891,6 +906,9 @@ class Metrics(pl.Saveable):
                     ax.fill_between(xs, y1=high_ys, y2=low_ys,
                             alpha=0.25, color=colors[tla_idx])
                 ax.plot(xs, ys, color=colors[tla_idx], label='{} Days'.format(tla))
+
+                print('printing ')
+                print(xs)
 
             ax.legend()
             ax.set_xlabel('Days')

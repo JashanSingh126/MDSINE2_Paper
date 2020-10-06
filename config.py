@@ -564,7 +564,7 @@ class ModelConfigReal(_BaseModelConfig):
     learned or not
     '''
     def __init__(self, output_basepath, data_seed, init_seed, burnin, n_samples, pcc,
-        leave_out, max_n_asvs, cross_validate, use_bsub, dataset):
+        leave_out, max_n_asvs, cross_validate, use_bsub, dataset, checkpoint):
         '''Customization parameters
 
         Parameters
@@ -607,7 +607,7 @@ class ModelConfigReal(_BaseModelConfig):
             n_clusters_type = 'no-clusters'
         self.BURNIN = burnin
         self.N_SAMPLES = n_samples
-        self.CHECKPOINT = 100
+        self.CHECKPOINT = checkpoint
         self.ADD_MIN_REL_ABUNDANCE = False
         self.PROCESS_VARIANCE_TYPE = 'multiplicative-global'
         self.DATA_DTYPE = 'abs'
@@ -627,7 +627,7 @@ class ModelConfigReal(_BaseModelConfig):
 
         self.MP_FILTERING = 'debug'
         self.MP_INDICATORS = None
-        self.MP_CLUSTERING = 'full-5' #'full-8'
+        self.MP_CLUSTERING = 'debug' #'full-8'
         self.MP_ZERO_INFLATION = None
         self.RELATIVE_LOG_MARGINAL_INDICATORS = True
         self.RELATIVE_LOG_MARGINAL_PERT_INDICATORS = True
