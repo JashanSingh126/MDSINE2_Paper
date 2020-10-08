@@ -135,7 +135,7 @@ def parse_args():
 
 def main_leave_out_single(params, fparams, continue_inference):
     # Constants
-    ONLY_PLOT = True
+    ONLY_PLOT = False
 
     pl.seed(params.DATA_SEED)
 
@@ -304,7 +304,10 @@ def main_leave_out_single(params, fparams, continue_inference):
             mcmc_filename=chain_result_filename,
             checkpoint_iter=params.CHECKPOINT,
             crash_if_error=True,
-            continue_inference=None)
+            continue_inference=None,
+            intermediate_validation_t=params.INTERMEDIATE_VALIDATION_T,
+            intermediate_validation_kwargs=params.INTERMEDIATE_VALIDATION_KWARGS,
+            intermediate_validation_func=main_base.mdsine2_cv_intermediate_validation_func)
         chain_result.save(chain_result_filename)
         params.save(params_filename)
 

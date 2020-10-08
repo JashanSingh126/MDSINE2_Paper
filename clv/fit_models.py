@@ -51,7 +51,7 @@ def fit_glv(observations, time_points, effects, held_out_observations, held_out_
         held_out_observations = held_out_rel_abun
 
     glv = GeneralizedLotkaVolterra(observations, time_points, effects)
-    glv.train(folds=folds)
+    glv.train_ridge(folds=folds)
     A, g, B = glv.get_params()
 
     predictions = [glv.predict(o[0],tpts,e) for (o,tpts,e) in zip(held_out_observations, held_out_time_points, held_out_effects)]

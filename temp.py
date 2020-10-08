@@ -65,9 +65,15 @@ pl.seed(1)
 
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
+def mersauce(a,b,c,deff):
+    print('am I right or am I right')
 
+args = inspect.getargspec(mersauce).args
 
-
+for i, arg in enumerate(args):
+    print(i, arg)
+print()
+sys.exit()
 
 
 # ####################################################
@@ -302,32 +308,33 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 #     subjset = chain.graph.data.subjects
 #     MDSINE2_util.make_data_like_mdsine1(subjset, basepath='tmp/{}_mdsine1_like/'.format(dtype))
 
-# ####################################################
-# # Calculate keystoneness
-# ####################################################
-# chains = {
-#     'healthy': 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-#     'uc': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
+####################################################
+# Calculate keystoneness
+####################################################
+from multiprocessing import freeze_support
 
-# fnames = {
-#     'healthy': [
-#         'tmp/keystone_proposal/healthy_chain_2.txt',
-#         'tmp/keystone_proposal/healthy_chain_3.txt',
-#         'tmp/keystone_proposal/healthy_cycle_2.txt',
-#         'tmp/keystone_proposal/healthy_cycle_3.txt'],
-#     'uc': [
-#         'tmp/keystone_proposal/uc_chain_2.txt',
-#         'tmp/keystone_proposal/uc_chain_3.txt',
-#         'tmp/keystone_proposal/uc_cycle_2.txt',
-#         'tmp/keystone_proposal/uc_cycle_3.txt']}
+chains = {
+    'healthy': 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    'uc': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
 
+fnames = {
+    'healthy': [
+        'tmp/keystone_proposal/healthy_chain_2.txt',
+        'tmp/keystone_proposal/healthy_chain_3.txt',
+        'tmp/keystone_proposal/healthy_cycle_2.txt',
+        'tmp/keystone_proposal/healthy_cycle_3.txt'],
+    'uc': [
+        # 'tmp/keystone_proposal/uc_chain_2.txt',
+        # 'tmp/keystone_proposal/uc_chain_3.txt']} #,
+        'tmp/keystone_proposal/uc_cycle_2.txt',
+        'tmp/keystone_proposal/uc_cycle_3.txt']}
 
-# for key in chains.keys():
-#     fnames_temp = fnames[key]
-#     for fname in fnames_temp:
-#         MDSINE2_util.keystoneness(chains[key], fname=fname, outfile=fname.replace('.txt', '_keystoneness_full_posterior.txt'),
-#             max_posterior=None)
-# sys.exit()
+for key in ['uc']: #chains.keys():
+    fnames_temp = fnames[key]
+    for fname in fnames_temp:
+        MDSINE2_util.keystoneness(chains[key], fname=fname, outfile=fname.replace('.txt', '_keystoneness_full_posterior.txt'),
+            max_posterior=None, mp=None)
+sys.exit()
 
 # ####################################################
 # # Get interaction traces
@@ -534,87 +541,87 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 #         plt.close()
     
 
-####################################################
-# 16S v4 gapless sequences and taxonomy
-###################################################
+# ####################################################
+# # 16S v4 gapless sequences and taxonomy
+# ###################################################
 
-seqs = SeqIO.parse('raw_data/align_seqs_v4.sto', 'stockholm')
-seqs = SeqIO.to_dict(seqs)
+# seqs = SeqIO.parse('raw_data/align_seqs_v4.sto', 'stockholm')
+# seqs = SeqIO.to_dict(seqs)
 
-asvs = {}
-chains = [
-    'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-    'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
-for i, fname in enumerate(chains):
-    chain = pl.inference.BaseMCMC.load(fname)
-        if asvname not in asvs:
-            asvs[asvname] = None
+# asvs = {}
+# chains = [
+#     'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
+# for i, fname in enumerate(chains):
+#     chain = pl.inference.BaseMCMC.load(fname)
+#         if asvname not in asvs:
+#             asvs[asvname] = None
 
-print(len(asvs))
-d = {}
-l = None
-for k,v in seqs.items():
-    if k in asvs:
-        d[k] = v
-    l = len(v.seq)
-seqs = d
+# print(len(asvs))
+# d = {}
+# l = None
+# for k,v in seqs.items():
+#     if k in asvs:
+#         d[k] = v
+#     l = len(v.seq)
+# seqs = d
 
-asvs = list(asvs.keys())
+# asvs = list(asvs.keys())
 
-M = np.zeros(shape=(len(seqs), l), dtype=bool)
-Mseqs = np.zeros(shape=(len(seqs), l), dtype=str)
-for i, (k,v) in enumerate(seqs.items()):
-    Mseqs[i] = np.asarray(list(str(v.seq)))
-    M[i] = Mseqs[i] == '-'
-    # print(str)
+# M = np.zeros(shape=(len(seqs), l), dtype=bool)
+# Mseqs = np.zeros(shape=(len(seqs), l), dtype=str)
+# for i, (k,v) in enumerate(seqs.items()):
+#     Mseqs[i] = np.asarray(list(str(v.seq)))
+#     M[i] = Mseqs[i] == '-'
+#     # print(str)
 
-cols_to_keep = []
-for col in range(M.shape[1]):
-    n = np.sum(M[:, col])
-    if n == 0:
-        cols_to_keep.append(col)
-    else:
-        print('column {} has {} gaps'.format(col, n))
+# cols_to_keep = []
+# for col in range(M.shape[1]):
+#     n = np.sum(M[:, col])
+#     if n == 0:
+#         cols_to_keep.append(col)
+#     else:
+#         print('column {} has {} gaps'.format(col, n))
 
-print('{}/{} left'.format(len(cols_to_keep), M.shape[1]))
+# print('{}/{} left'.format(len(cols_to_keep), M.shape[1]))
 
-Mseqs = Mseqs[:, cols_to_keep]
-# print(Mseqs)
-# print(Mseqs.shape)
+# Mseqs = Mseqs[:, cols_to_keep]
+# # print(Mseqs)
+# # print(Mseqs.shape)
 
-lll = []
-taxonomies = ['kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species']
-d = {}
-for tax in taxonomies:
-    d[tax] = []
-asvset = subjset_real.asvs
-for i in range(Mseqs.shape[0]):
-    # print()
-    # print(asvs[i])
-    asvname = asvs[i]
-    asv = asvset[asvname]
-    for taxa in taxonomies:
-        d[taxa].append('NA')
-        if asv.tax_is_defined(taxa):
-            if taxa == 'species':
-                p = asv.taxonomy[taxa].split('/')
-                if len(p) > 3:
-                    continue
-                else:
-                    d[taxa][-1] = asv.taxonomy[taxa]
-            else:
-                d[taxa][-1] = asv.taxonomy[taxa]
-    lll.append(''.join(list(Mseqs[i])))
+# lll = []
+# taxonomies = ['kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species']
+# d = {}
+# for tax in taxonomies:
+#     d[tax] = []
+# asvset = subjset_real.asvs
+# for i in range(Mseqs.shape[0]):
+#     # print()
+#     # print(asvs[i])
+#     asvname = asvs[i]
+#     asv = asvset[asvname]
+#     for taxa in taxonomies:
+#         d[taxa].append('NA')
+#         if asv.tax_is_defined(taxa):
+#             if taxa == 'species':
+#                 p = asv.taxonomy[taxa].split('/')
+#                 if len(p) > 3:
+#                     continue
+#                 else:
+#                     d[taxa][-1] = asv.taxonomy[taxa]
+#             else:
+#                 d[taxa][-1] = asv.taxonomy[taxa]
+#     lll.append(''.join(list(Mseqs[i])))
 
-ddd = [d[taxa] for taxa in taxonomies]
-df = pd.DataFrame([asvs,lll] + ddd).T
-df.columns=['name', 'sequences'] + taxonomies
-df = df.set_index('name')
-print(df)
-print(df.shape)
-df.to_csv('16S_v4_aligned_gapless_sequences_and_taxonomy.tsv', sep='\t')
+# ddd = [d[taxa] for taxa in taxonomies]
+# df = pd.DataFrame([asvs,lll] + ddd).T
+# df.columns=['name', 'sequences'] + taxonomies
+# df = df.set_index('name')
 # print(df)
-# print(df.T)
+# print(df.shape)
+# df.to_csv('16S_v4_aligned_gapless_sequences_and_taxonomy.tsv', sep='\t')
+# # print(df)
+# # print(df.T)
 
 # ####################################################
 # # Coclustering trace save

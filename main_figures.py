@@ -2072,11 +2072,11 @@ def data_figure_rel_and_qpcr(horizontal):
 
     axqpcr1.set_yticks([1e10, 1e11])
     for tick in axqpcr1.yaxis.get_major_ticks():
-        tick.label.set_fontsize(20)
+        tick.label.set_fontsize(24)
 
     axqpcr2.set_yticks([1e10, 1e11])
     for tick in axqpcr2.yaxis.get_major_ticks():
-        tick.label.set_fontsize(20)
+        tick.label.set_fontsize(24)
 
     # Make animation at the top
     if horizontal:
@@ -2092,23 +2092,23 @@ def data_figure_rel_and_qpcr(horizontal):
     _data_figure_rel_and_qpcr_legend(axlegend=axlegend1, TAXLEVEL=TAXLEVEL,
         CUTOFF_FRAC_ABUNDANCE=CUTOFF_FRAC_ABUNDANCE)
 
-    # Make the caption
-    if horizontal:
-        txt = '(A) Relative abundance of the inoculum sample of the healthy consortium. ' \
-        '(B) qPCR measurements over time for the healthy consortium. (C) Bottom ' \
-        'Relative abundances over time for the healthy consortium. ' \
-        '(D) Relative abundance of the inoculum sample of the Ulcerative Colitis (UC) consortium. ' \
-        '(E) qPCR measurements over time for the UC consortium. (F) ' \
-        'Relative abundances over time for the UC consortium.'
-    else:
-        txt = '(A) Relative abundance of the inoculum sample of the healthy consortium. ' \
-        '(B) qPCR measurements over time for the healthy consortium. (C) Bottom ' \
-        'Relative abundances over time for the healthy consortium. ' \
-        '(D) Relative abundance of the inoculum sample of the Ulcerative Colitis (UC) consortium. ' \
-        '(E) qPCR measurements over time for the UC consortium. (F) ' \
-        'Relative abundances over time for the UC consortium.'
-    # axtext = fig.add_subplot(gs[6:, 10:20])
-    fig.text(0.5, 0.05, txt, ha='center', fontsize=18, wrap=True)
+    # # Make the caption
+    # if horizontal:
+    #     txt = '(A) Relative abundance of the inoculum sample of the healthy consortium. ' \
+    #     '(B) qPCR measurements over time for the healthy consortium. (C) Bottom ' \
+    #     'Relative abundances over time for the healthy consortium. ' \
+    #     '(D) Relative abundance of the inoculum sample of the Ulcerative Colitis (UC) consortium. ' \
+    #     '(E) qPCR measurements over time for the UC consortium. (F) ' \
+    #     'Relative abundances over time for the UC consortium.'
+    # else:
+    #     txt = '(A) Relative abundance of the inoculum sample of the healthy consortium. ' \
+    #     '(B) qPCR measurements over time for the healthy consortium. (C) Bottom ' \
+    #     'Relative abundances over time for the healthy consortium. ' \
+    #     '(D) Relative abundance of the inoculum sample of the Ulcerative Colitis (UC) consortium. ' \
+    #     '(E) qPCR measurements over time for the UC consortium. (F) ' \
+    #     'Relative abundances over time for the UC consortium.'
+    # # axtext = fig.add_subplot(gs[6:, 10:20])
+    # fig.text(0.5, 0.05, txt, ha='center', fontsize=18, wrap=True)
 
     axpert1.spines['top'].set_visible(False)
     axpert1.spines['bottom'].set_visible(False)
@@ -2163,7 +2163,7 @@ def _data_figure_experiment_animation(ax):
 
     x = np.arange(0, np.max(times), step=10)
     labels = ['Day {}'.format(int(t)) for t in x]
-    for ylim in [0.15, -0.15]:
+    for ylim in [0.15, -0.18]:
         y = [ylim for t in x]
         markerline, stemlines, baseline = ax.stem(x, y)
         stemlines = [stemline.set_color('black') for stemline in stemlines]
@@ -2172,7 +2172,7 @@ def _data_figure_experiment_animation(ax):
     for i in range(len(labels)):
         label = labels[i]
         xpos = x[i] 
-        ax.text(xpos, 0.-.35, label, horizontalalignment='center', fontsize=18)
+        ax.text(xpos, 0.-.35, label, horizontalalignment='center', fontsize=22)
     x = np.arange(0,np.max(times),2)
     for ylim in [0.07, -0.07]:
         y = [ylim for t in x]
@@ -2186,7 +2186,7 @@ def _data_figure_experiment_animation(ax):
         # lines += [start,end]
         # ax.text(start, 0.33, 'Start {}'.format(name), horizontalalignment='center')
         ax.text((perturbation.end+perturbation.start)/2, 0.15, name.capitalize(), horizontalalignment='center',
-            fontsize=18)
+            fontsize=22)
 
         # ax.arrow(start, 0.3, 0, -0.27, length_includes_head=True, head_width=0.25, head_length=0.05)
         # ax.arrow(end, 0.3, 0, -0.27, length_includes_head=True, head_width=0.25, head_length=0.05)
@@ -2194,14 +2194,14 @@ def _data_figure_experiment_animation(ax):
         ends = np.asarray([perturbation.end])
         ax.barh(y=[0 for i in range(len(starts))], width=ends-starts, height=0.1, left=starts, color='darkgrey')
 
-    ax.text(0, 0.15, 'Colonization', horizontalalignment='center', fontsize=18)
+    ax.text(0, 0.15, 'Colonization', horizontalalignment='center', fontsize=22)
     # ax.arrow(0, 0.17, 0, -0.14, length_includes_head=True, head_width=0.25, head_length=0.05)
 
     # stool collection
     xpos = np.max(times)* 1.05
     y = 0.05
     ax.scatter([xpos], [y], c='black', s=25)
-    ax.text(xpos+1, y, 'Stool Collection', horizontalalignment='left', fontsize=18, 
+    ax.text(xpos+1, y, 'Stool Collection', horizontalalignment='left', fontsize=22, 
         verticalalignment='center')
 
     ax.set_ylim(-0.15,0.4)
@@ -2325,7 +2325,7 @@ def _data_figure_rel_and_qpcr(HEALTHY, TAXLEVEL, df, CUTOFF_FRAC_ABUNDANCE, axqp
     axrel.yaxis.set_major_locator(plt.NullLocator())
     axrel.yaxis.set_minor_locator(plt.NullLocator())
     for tick in axrel.xaxis.get_major_ticks():
-        tick.label.set_fontsize(20)
+        tick.label.set_fontsize(24)
 
     # Plot the qpcr
     qpcr_meas = {}
@@ -2391,7 +2391,7 @@ def _data_figure_rel_and_qpcr(HEALTHY, TAXLEVEL, df, CUTOFF_FRAC_ABUNDANCE, axqp
     axinoculum.set_ylim(bottom=0, top=1)
 
     for tick in axinoculum.yaxis.get_major_ticks():
-        tick.label.set_fontsize(20)
+        tick.label.set_fontsize(24)
 
 
     # fig.subplots_adjust(left=0.07, right=0.82, hspace=0.1)
@@ -2407,11 +2407,11 @@ def _data_figure_rel_and_qpcr(HEALTHY, TAXLEVEL, df, CUTOFF_FRAC_ABUNDANCE, axqp
         title = 'Healthy Subject'
     else:
         title = 'Ulcerative Colitis Subject'
-    axqpcr.set_title(title, fontsize=28, fontweight='bold', y=1.15)
+    axqpcr.set_title(title, fontsize=28, fontweight='bold', y=1.2)
         # transform=axqpcr.transAxes)
 
     axpert.set_xlim(axrel.get_xlim())
-    pl.visualization.shade_in_perturbations(axpert, perturbations=subjset.perturbations, textsize=20, 
+    pl.visualization.shade_in_perturbations(axpert, perturbations=subjset.perturbations, textsize=22, 
         alpha=0)
     for perturbation in subjset.perturbations:
         axpert.axvline(x=perturbation.start, color='black', linestyle='--', lw=2)
@@ -2431,50 +2431,6 @@ def _data_figure_rel_and_qpcr(HEALTHY, TAXLEVEL, df, CUTOFF_FRAC_ABUNDANCE, axqp
             transform=axrel.transAxes)
 
     return max_qpcr_value
-
-def figure1():
-    '''Figure 1
-
-    data1
-    data2
-    alpha diversity
-    beta diversity
-    '''
-    fig = plt.figure(figsize=(40,20))
-    gs = fig.add_gridspec(9,5) # This is zero indexed
-
-    # Top right - data healthy
-    print('Plotting healthy data')
-    axtop = fig.add_subplot(gs[0, :2])
-    axmiddle = fig.add_subplot(gs[1:3, :2])
-    axbottom = fig.add_subplot(gs[3, :2])
-    axpert = fig.add_subplot(gs[:4, :2], facecolor='none')
-    data_figure(True, axtop, axmiddle, axbottom, axpert, figlabel='A')
-
-    # Top left - data unhealthy
-    print('plotting unhealthy data')
-    axtop = fig.add_subplot(gs[0, 3:])
-    axmiddle = fig.add_subplot(gs[1:3, 3:])
-    axbottom = fig.add_subplot(gs[3, 3:])
-    axpert = fig.add_subplot(gs[:4, 3:], facecolor='none')
-    data_figure(False, axtop, axmiddle, axbottom, axpert, figlabel='B')
-
-    # Bottom left - Alpha diversity
-    print('alpha diversity')
-    ax = fig.add_subplot(gs[-4:, :2])
-    alpha_diversity_figure(ax=ax, figlabel='C')
-
-    # Bottom right - beta diversity
-    axleft = fig.add_subplot(gs[-4:, -2])
-    axright = fig.add_subplot(gs[-4:, -1])
-    axcenter = fig.add_subplot(gs[-4:, -2:], facecolor='none')
-    print('beta diversity')
-    beta_diversity_figure(axleft, axright, axcenter, figlabel='D')
-
-    
-
-    plt.savefig(BASEPATH + 'figure1_order.pdf')
-    # plt.show()
 
 
 # Species Heatmap
@@ -3102,10 +3058,10 @@ os.makedirs('output_figures/', exist_ok=True)
 # preprocess_filtering(False)
 
 # Phylogenetic heatmap
-# phylogenetic_heatmap(True)
+phylogenetic_heatmap(True)
 
 # Semi-synthetic benchmarking
-semi_synthetic_benchmark_figure()
+# semi_synthetic_benchmark_figure()
 
 # Model performance benchmarking
 # model_performance_benchmark_figure()

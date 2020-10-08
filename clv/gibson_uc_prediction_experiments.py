@@ -55,7 +55,6 @@ def fit_model(Y, U, T, model, n_subjects):
 
     folds = n_subjects
     for fold in range(folds):
-        print("running fold", fold)
         train_Y = []
         train_U = []
         train_T = []
@@ -150,7 +149,7 @@ def prediction_experiment(Y, U, T, n_subjects):
                 train_U.append(U[i])
                 train_T.append(T[i])
 
-        parameter_filename = "tmp_c2b2/gibson_uc_predictions-{}".format(fold)
+        parameter_filename = "tmp/gibson_uc_predictions-{}".format(fold)
 
 
         print("cLV")
@@ -162,19 +161,19 @@ def prediction_experiment(Y, U, T, n_subjects):
 
         #plot_trajectories(pred_clv, test_T, "tmp_plots", "diet-clv-{}".format(fold))
 
-        print("Linear ALR")
-        try:
-            pred_alr = pkl.load(open(parameter_filename + "-alr", "rb"))
-        except FileNotFoundError:
-            pred_alr = fit_linear_alr(train_Y, train_T, train_U, test_Y, test_T, test_U, folds=3)
-            pkl.dump(pred_alr, open(parameter_filename + "-alr", "wb"))
+        # print("Linear ALR")
+        # try:
+        #     pred_alr = pkl.load(open(parameter_filename + "-alr", "rb"))
+        # except FileNotFoundError:
+        #     pred_alr = fit_linear_alr(train_Y, train_T, train_U, test_Y, test_T, test_U, folds=3)
+        #     pkl.dump(pred_alr, open(parameter_filename + "-alr", "wb"))
 
-        print("Linear Rel Abun")
-        try:
-            pred_lra = pkl.load(open(parameter_filename + "-lra", "rb"))
-        except FileNotFoundError:
-            pred_lra = fit_linear_rel_abun(train_Y, train_T, train_U, test_Y, test_T, test_U, folds=3)
-            pkl.dump(pred_lra, open(parameter_filename + "-lra", "wb"))
+        # print("Linear Rel Abun")
+        # try:
+        #     pred_lra = pkl.load(open(parameter_filename + "-lra", "rb"))
+        # except FileNotFoundError:
+        #     pred_lra = fit_linear_rel_abun(train_Y, train_T, train_U, test_Y, test_T, test_U, folds=3)
+        #     pkl.dump(pred_lra, open(parameter_filename + "-lra", "wb"))
 
         print("gLV")
         try:
@@ -193,15 +192,15 @@ def prediction_experiment(Y, U, T, n_subjects):
 
         baseline_err_cv += [compute_baseline_errors(test_Y)]
         en_err_cv += [compute_errors(test_Y, pred_clv)]
-        linear_err_cv += [compute_errors(test_Y, pred_alr)]
-        rel_abun_err_cv += [compute_errors(test_Y, pred_lra)]
+        # linear_err_cv += [compute_errors(test_Y, pred_alr)]
+        # rel_abun_err_cv += [compute_errors(test_Y, pred_lra)]
         glv_err_cv += [compute_errors(test_Y, pred_glv)]
         #glv_rel_abun_err_cv = [compute_errors(test_Y, pred_glv_ra)]
 
 
         en_err_stratified_cv += compute_errors_by_time(test_Y, pred_clv)
-        linear_err_stratified_cv += compute_errors_by_time(test_Y, pred_alr)
-        rel_abun_err_stratified_cv += compute_errors_by_time(test_Y, pred_lra)
+        # linear_err_stratified_cv += compute_errors_by_time(test_Y, pred_alr)
+        # rel_abun_err_stratified_cv += compute_errors_by_time(test_Y, pred_lra)
         glv_err_stratified_cv += compute_errors_by_time(test_Y, pred_glv)
         #glv_rel_abun_err_stratified_cv += compute_errors_by_time(test_Y, pred_glv_ra)
     
@@ -216,40 +215,44 @@ def prediction_experiment(Y, U, T, n_subjects):
     rel_abun_sum = []
     glv_sum = []
     clv_sum = []
-    for cl,bl,ln,ra,gl in zip(en_err_cv, baseline_err_cv, linear_err_cv, rel_abun_err_cv, glv_err_cv):
+    # for cl,bl,ln,ra,gl in zip(en_err_cv, baseline_err_cv, linear_err_cv, rel_abun_err_cv, glv_err_cv):
+    for cl,bl,gl in zip(en_err_cv, baseline_err_cv, glv_err_cv):
         baseline += (bl - cl).tolist()
-        linear += (ln - cl).tolist()
-        rel_abun += (ra - cl).tolist()
+        # linear += (ln - cl).tolist()
+        # rel_abun += (ra - cl).tolist()
         glv += (gl - cl).tolist()
 
         baseline_sum += [np.sum(bl)]
-        linear_sum += [np.sum(ln)]
-        rel_abun_sum += [np.sum(ra)]
+        # linear_sum += [np.sum(ln)]
+        # rel_abun_sum += [np.sum(ra)]
         glv_sum += [np.sum(gl)]
         clv_sum += [np.sum(cl)]
 
 
     baseline = np.array(baseline)
-    linear = np.array(linear)
-    rel_abun = np.array(rel_abun)
+    # linear = np.array(linear)
+    # rel_abun = np.array(rel_abun)
     glv = np.array(glv)
 
     baseline_p = wilcoxon_exact(baseline_sum, clv_sum, alternative="greater")[1]
-    linear_p = wilcoxon_exact(linear_sum, clv_sum, alternative="greater")[1]
-    rel_abun_p = wilcoxon_exact(rel_abun_sum, clv_sum, alternative="greater")[1]
+    # linear_p = wilcoxon_exact(linear_sum, clv_sum, alternative="greater")[1]
+    # rel_abun_p = wilcoxon_exact(rel_abun_sum, clv_sum, alternative="greater")[1]
     glv_p = wilcoxon_exact(glv_sum, clv_sum, alternative="greater")[1]
 
 
-    df = pd.DataFrame(np.array([baseline, glv, linear, rel_abun]).T,
+    # df = pd.DataFrame(np.array([baseline, glv, linear, rel_abun]).T,
+    df = pd.DataFrame(np.array([baseline, glv,]).T,
                       columns=["baseline\n$p={:.3f}$".format(baseline_p),
-                               "gLV\n$p={:.3f}$".format(glv_p),
-                               "alr-linear\n$p={:.3f}$".format(linear_p),
-                               "ra-linear\n$p={:.3f}$".format(rel_abun_p)])
+                               "gLV\n$p={:.3f}$".format(glv_p)])
+                            #    "alr-linear\n$p={:.3f}$".format(linear_p),
+                            #    "ra-linear\n$p={:.3f}$".format(rel_abun_p)])
     ax = df.boxplot(showmeans=True)
     ax.set_ylabel("Square Error(X) $-$ Square Error(cLV)")
     ax.set_title("Ulcerative Colitis Dataset")
 
     plt.savefig("plots/gibson-uc_prediction-comparison.pdf")
+
+    print('got here')
 
 
     for idx, en_glv_linear_rel in enumerate(zip(en_err_stratified_cv, glv_err_stratified_cv, linear_err_stratified_cv, rel_abun_err_stratified_cv)):
@@ -304,7 +307,8 @@ def prediction_experiment(Y, U, T, n_subjects):
 
         plt.savefig("plots/gibson-uc_prediction_comparison-test-{}.pdf".format(idx))
 
-    return (baseline, baseline_p), (linear, linear_p), (rel_abun, rel_abun_p), (glv, glv_p)
+    # return (baseline, baseline_p), (linear, linear_p), (rel_abun, rel_abun_p), (glv, glv_p)
+    return (baseline, baseline_p), (glv, glv_p)
 
 
 def adjust_concentrations(Y):
@@ -327,7 +331,7 @@ if __name__ == "__main__":
 
     Y_adj = adjust_concentrations(Y)
 
-    models = ["clv", "alr", "lra", "glv", "glv-ra"]
+    models = ["clv", "glv"]
     for model in models:
         fit_model(Y_adj, U, T, model, n_subjects=len(Y))
         prediction_experiment(Y_adj, U, T, n_subjects=len(Y))

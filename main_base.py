@@ -14,6 +14,7 @@ import pickle
 import numpy as np
 import pandas as pd
 import json
+import sklearn.metrics
 
 # Plotting
 import matplotlib.pyplot as plt
@@ -44,7 +45,9 @@ MIN_TRAJ_COLOR = 'purple'
 def run(params, graph_name, data_filename, tracer_filename, 
     mcmc_filename, graph_filename, hdf5_filename, 
     checkpoint_iter, crash_if_error, asv_strname='name',
-    continue_inference=None):
+    continue_inference=None, intermediate_validation_t=None,
+    intermediate_validation_func=None,
+    intermediate_validation_kwargs=None):
     '''This is the method used to run the model specified by "Robust and Scalable
     Models of Microbiome Dynamics" by Gibson and Gerber (2018)
 
@@ -67,6 +70,14 @@ def run(params, graph_name, data_filename, tracer_filename,
     continue_inference : int, None
         If this is not None, then we are continuing the chain at Gibb step
         `continue_inference` - else we are creating a new chain at Gibb step 0
+    intermediate_validation_t : int
+        How often to run the intermediate validation function. If None then we do not run
+    intermediate_validation_func : callable
+        The intermediate validation function. If `intermediate_validation_t` is not None then
+        this must not be None as well.
+    intermediate_validation_kwargs : dict
+        These are the extra arguments for the intermediate validation. If there are no extra
+        arguments then this is None.
 
     Returns
     -------
@@ -375,7 +386,7 @@ def run(params, graph_name, data_filename, tracer_filename,
     REPRNAMES.set(G=GRAPH)
 
     ######################################################################
-    # Set up inference and inference order.
+    # Set up inference and inference order. Add intermediate validation if necessary
     mcmc = pl.inference.BaseMCMC(
         burnin=params.BURNIN,
         n_samples=params.N_SAMPLES,
@@ -388,6 +399,12 @@ def run(params, graph_name, data_filename, tracer_filename,
             elif subjset.perturbations is not None:
                 order.append(name)
     mcmc.set_inference_order(order)
+
+    if intermediate_validation_t is not None:
+        mcmc.set_intermediate_validation(
+            t=intermediate_validation_t,
+            func=intermediate_validation_func,
+            kwargs=intermediate_validation_kwargs)
 
     ######################################################################
     # Initialize
@@ -3403,11 +3420,11 @@ def validate(src_basepath, model, forward_sims,
                 plt.close()
 
             else:
-                f.write('Variation of Information: No Clustering\n')
+                f.write('Clustering metric: No Clustering\n')
                 comparison_results['varitaion-of-information'] = np.nan
     else:
         if comparison is not None:
-            comparison_results['varitaion-of-information'] = np.nan
+            comparison_results['error-clustering'] = np.nan
 
     # Forward simulate for each subject in val_subjset
     logging.info('Starting forward sims')
@@ -4606,5 +4623,183 @@ def calc_eigan_over_gibbs(ret, growth, si, interactions):
     
     return ret
 
+def mdsine2_cv_intermediate_validation_func(chain, n_samples, burnin, sample_iter):
+    '''Intermediate validation for mdsine2 cross validation. 
+    '''
+    basepath = chain.get_save_location().replace('mcmc.pkl', 'intermediate_validation/')
+    os.makedirs(basepath, exist_ok=True)
+
+    txt = '\nMCMC chain for graph {} at sample {}/{}. {} burn-in'.format(
+        chain.graph.name, sample_iter, n_samples, burnin)
+    fname = basepath + 'intermediate_val.txt'
+    f = open(fname, 'a')
+    f.write(txt)
+    f.close()
+
+def semi_synthetic_intermediate_validation_func(chain, n_samples, burnin, sample_iter, comparison_filename,
+    ds, mn, pv, nt, nr, us):
+    '''Intermediate validation for semi-synthetic. Take the difference over what has transpired already
+
+    Parameters
+    ----------
+    chain : pl.inference.BaseMCMC
+        Chain we are doing an intermediate validation of
+    n_samples : int
+        Total number of samples for `chain`
+    burnin : int
+        Number of samples to initially throw away
+    sample_iter : int
+        Current gibb step
+    comparison_filename : str
+        This is the location of the comparison graph we are comparing to
+    ds : int
+        Data seed
+    mn : float
+        Measurement noise level
+    pv : float
+        Process variance level
+    nt : int
+        Number of timepoints
+    nr : int
+        Number of replicates
+    us : bool
+        Uniform timepoint sampling
+    '''
+    comparison = pl.inference.BaseMCMC.load(comparison_filename)
+    
+    columns = ['sample_iter', 'rmse_growth', 'rmse_interactions',
+               'topology', 'rmse_perturbations', 'clustering', 'Data Seed', 
+               'Measurement Noise', 'Process Variance', 'Number of Timepoints',
+               'Number of Replicates', 'Uniform Samples']
+    basepath = chain.graph.get_save_location()
+    path = basepath.replace('graph.pkl', 'intermediate_results.tsv')
+    
+
+    ret = [sample_iter]
+    suffix = [ds, mn, pv, nt, nr, us]
+
+    # Growth rate
+    # -----------
+    growth = chain.graph[STRNAMES.GROWTH_VALUE]
+
+    # Get local and disk trace
+    growth_trace = growth.trace[:growth.ckpt_iter, ...]
+    growth_trace_disk = growth.get_trace_from_disk(section='entire')
+    growth_trace = np.vstack((growth_trace, growth_trace_disk))
+    
+    growth_truth = comparison.graph[STRNAMES.GROWTH_VALUE].value.ravel()
+    error_growth = np.zeros(growth_trace.shape[0], dtype=float)
+    for i in range(len(error_growth)):
+        error_growth[i] = pl.metrics.RMSE(growth_truth, growth_trace[i])
+    ret.append(np.nanmean(error_growth))
+
+    # Interactions
+    # ------------
+    # Self interactions
+    si = chain.graph[STRNAMES.SELF_INTERACTION_VALUE]
+    si_trace = si.trace[: si.ckpt_iter, ...]
+    si_trace_disk = si.get_trace_from_disk(section='entire')
+    si_trace = np.vstack((si_trace, si_trace_disk))
+    si_trace = -np.absolute(si_trace)
+
+    si_truth = -np.absolute(comparison.graph[STRNAMES.SELF_INTERACTION_VALUE].value.ravel())
+
+    # Interactions
+    interactions = chain.graph[STRNAMES.INTERACTIONS_OBJ]
+    interactions_trace = interactions.trace[:interactions.ckpt_iter, ...]
+    interactions_trace[np.isnan(interactions_trace)] = 0
+    for aidx in range(len(si_truth)):
+        interactions_trace[:,aidx,aidx] = si_trace[:, aidx]
+
+    interactions_trace *= chain.graph.data.subjects.qpcr_normalization_factor
+    
+    interactions_truth = comparison.graph[STRNAMES.INTERACTIONS_OBJ].get_datalevel_value_matrix()
+    interactions_truth[np.isnan(interactions_truth)] = 0
+    for aidx in range(len(si_truth)):
+        interactions_truth[aidx,aidx] = si_truth[aidx]
+
+    interactions_error = np.zeros(interactions_trace.shape[0], dtype=float)
+    for i in range(len(interactions_error)):
+        interactions_error[i] = pl.metrics.RMSE(interactions_truth, interactions_trace[i])
+    ret.append(np.nanmean(interactions_error))
+
+    # Topology
+    topology_error = np.zeros(interactions_trace.shape[0], dtype=float)
+    for i in range(len(topology_error)):
+        topology_error[i] = pl.metrics.rocauc_posterior_interactions(
+            signed=True, average='weighted', truth=interactions_truth,
+            pred=interactions_trace[i], per_gibb=False)
+    ret.append(np.nanmean(topology_error))
+
+    # Perturbations
+    # -------------
+    if chain.graph.perturbations is not None:
+        pert_errors = np.zeros(shape=(len(chain.graph.perturbations), si_trace.shape[0]))
+        for pidx, pert in enumerate(chain.graph.perturbations):
+            pert_truth = comparison.graph.perturbations[pidx].item_array()
+            pert_truth[np.isnan(pert_truth)] = 0
+
+            pert_trace = pert.trace[pert.ckpt_iter, ...]
+            pert_trace_disk = pert.get_trace_from_disk(section='entire')
+            pert_trace = np.vstack((pert_trace, pert_trace_disk))
+            pert_trace[np.isnan(pert_trace)] = 0
+
+            for i in range(pert_trace.shape[0]):
+                pert_errors[pidx,i] = pl.metrics.RMSE(pert_trace[i], pert_truth)
+
+        avg_pert_errors = np.nanmean(pert_errors, axis=0)
+        ret.append(np.nanmean(avg_pert_errors))
+
+    else:
+        ret.append(np.nan)
+
+    # Clustering
+    # ----------
+    if chain.is_in_inference_order(STRNAMES.CLUSTERING):
+        clustering = chain.graph[STRNAMES.CLUSTERING_OBJ]
+        coclusters = clustering.coclusters
+
+        cocluster_trace = coclusters.trace[: coclusters.ckpt_iter, ...]
+        cocluster_trace_disk = coclusters.get_trace_from_disk(section='entire')
+        cocluster_trace = np.vstack((cocluster_trace, cocluster_trace_disk))
+
+        clustering_truth = comparison.graph[STRNAMES.CLUSTERING_OBJ]
+        cluster_assignments_truth = clustering_truth.toarray_vec()
+
+        clustering_error = np.zeros(cocluster_trace.shape[0], dtype=float)
+        for i in range(len(clustering_error)):
+            cluster_assignments = pl.cluster.toarray_vec_from_coclusters(cocluster_trace[i])
+            clustering_error = sklearn.metrics.normalized_mutual_info_score(
+                labels_true=cluster_assignments_truth,
+                labels_pred=cluster_assignments)
+        ret.append(np.nanmean(clustering_error))
+    else:
+        ret.append(np.nan)
+    ret = ret + suffix
+
+    dfnew = pd.DataFrame([ret], columns=columns)
+
+    print(dfnew)
+
+    # Save the results, append the results with a dataframe
+    if os.path.isfile(path):
+        df = pd.read_csv(path, sep='\t', header=0)
+        df = df.append(dfnew)
+    else:
+        df = dfnew
+
+    print(df)
+    print(path)
+
+    df.to_csv(path, sep='\t', index=False)
+    
 
     
+
+
+    
+
+
+    
+    
+

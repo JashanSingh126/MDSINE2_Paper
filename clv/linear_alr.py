@@ -403,7 +403,7 @@ def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=Fa
     best_r = 0
     best_sqr_err = np.inf
     for i, (alpha, r_A, r_g, r_B) in enumerate(alpha_rA_rg_rB):
-        #print("\tTesting regularization parameter set", i+1, "of", len(alpha_rA_rg_rB), file=sys.stderr)
+        print("\tTesting regularization parameter set", i+1, "of", len(alpha_rA_rg_rB), file=sys.stderr)
         sqr_err = 0
         for fold in range(folds):
             train_X = []

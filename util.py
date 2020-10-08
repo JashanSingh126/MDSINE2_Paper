@@ -189,7 +189,7 @@ def make_data_like_mdsine1(subjset, basepath):
         'perturbid': perturbid})
     df_metadata.to_csv(basepath + 'metadata.txt', sep='\t', header=True, index=False)
 
-def keystoneness(chain_fname, fname, outfile, max_posterior=None):
+def keystoneness(chain_fname, fname, outfile, max_posterior=None, mp=None):
     '''The file(s) show a list of asvs to delete, comma separated
     All of the asvs on a single line should be deleted at once. Note that 
     this is all a single process
@@ -232,25 +232,55 @@ def keystoneness(chain_fname, fname, outfile, max_posterior=None):
     initial_conditions = initial_conditions.reshape(-1,1)
 
     days = 20
+    sim_dt = 0.01
     BASE_CONCENTRATIONS = np.zeros(shape=growth_master.shape, dtype=float)
     # Generate the base concentrations
-    
-    for i in range(growth_master.shape[0]):
-        start_time = time.time()
-        pred_dyn = model.gLVDynamicsSingleClustering(asvs=subjset.asvs, 
-            log_dynamics=True, perturbations_additive=False, sim_max=1e20, start_day=0)
-        pred_dyn.growth = growth_master[i]
-        pred_dyn.self_interactions = si_master[i]
-        pred_dyn.interactions = A_master[i]
 
-        _d = pl.dynamics.integrate(dynamics=pred_dyn, 
-            initial_conditions=initial_conditions,
-            dt=0.01, n_days=days, 
-            subsample=True, times=np.arange(days), log_every=None)
-        BASE_CONCENTRATIONS[i] = _d['X'][:,-1]
-        if i %20 == 0:
-            print('{}/{}: {}'.format(i,growth_master.shape[0], time.time()-start_time))
-        # print(BASE_CONCENTRATIONS[i,:])
+    if mp is None:
+        for i in range(growth_master.shape[0]):
+            start_time = time.time()
+            pred_dyn = model.gLVDynamicsSingleClustering(asvs=subjset.asvs, 
+                log_dynamics=True, perturbations_additive=False, sim_max=1e20, start_day=0)
+            pred_dyn.growth = growth_master[i]
+            pred_dyn.self_interactions = si_master[i]
+            pred_dyn.interactions = A_master[i]
+
+            _d = pl.dynamics.integrate(dynamics=pred_dyn, 
+                initial_conditions=initial_conditions,
+                dt=sim_dt, n_days=days, 
+                subsample=True, times=np.arange(days), log_every=None)
+            BASE_CONCENTRATIONS[i] = _d['X'][:,-1]
+            if i %20 == 0:
+                print('{}/{}: {}'.format(i,growth_master.shape[0], time.time()-start_time))
+            # print(BASE_CONCENTRATIONS[i,:])
+    else:
+        # Integrate over posterior with multiprocessing
+        raise NotImplementedError('Not working on windows')
+        pool = pl.multiprocessing.PersistentPool(ptype='dasw')
+        try:
+            for i in range(mp):
+                pool.add_worker(_ForwardSimWorker(asvs=subjset.asvs,
+                    initial_conditions=initial_conditions, start_day=0,
+                    sim_dt=sim_dt, n_days=days+sim_dt, log_integration=True,
+                    perturbations_additive=False, sim_times=np.arange(days+sim_dt),
+                    name='worker{}'.format(i)))
+                # pool.staged_map_start(func='integrate')
+            for i in range(growth_master.shape[0]):
+                kwargs = {
+                    'i': i,
+                    'growth': growth_master[i],
+                    'self_interactions': si_master[i],
+                    'interactions': A_master[i],
+                    'perturbations': None}
+                pool.staged_map_put(kwargs)
+
+            ret = pool.staged_map_get()
+            pool.kill()
+            BASE_CONCENTRATIONS = np.asarray(ret, dtype=float)
+
+        except:
+            pool.kill()
+            raise
 
     dists = {}
 
@@ -331,3 +361,36 @@ def keystoneness(chain_fname, fname, outfile, max_posterior=None):
             f.write('{}\n'.format(str(asv)))
 
         f.write('Effect: {:.4E}\n'.format(dists[names_]))
+
+class _ForwardSimWorker(pl.multiprocessing.PersistentWorker):
+    '''Multiprocessed forward simulation.
+    '''
+    def __init__(self, asvs, initial_conditions, sim_dt, n_days, name, 
+        log_integration, perturbations_additive, sim_times, start_day):
+        self.asvs = asvs
+        self.initial_conditions = initial_conditions
+        self.sim_dt = sim_dt
+        self.n_days = n_days
+        self.name = name
+        self.log_integration = log_integration
+        self.perturbations_additive = perturbations_additive
+        self.sim_times = sim_times
+        self.start_day = start_day
+
+    def integrate(self, growth, self_interactions, interactions, perturbations, i):
+        '''forward simulate
+        '''
+
+        pred_dyn = model_module.gLVDynamicsSingleClustering(asvs=self.asvs, 
+            log_dynamics=self.log_integration, start_day=self.start_day,
+            perturbations_additive=self.perturbations_additive)
+        pred_dyn.growth = growth
+        pred_dyn.self_interactions = self_interactions
+        pred_dyn.interactions = interactions
+        pred_dyn.perturbations = perturbations
+
+        _d = pl.dynamics.integrate(dynamics=pred_dyn, initial_conditions=self.initial_conditions,
+            dt=self.sim_dt, n_days=self.n_days, subsample=True, 
+            times=self.sim_times, log_every=None)
+        print('integrate {} from process {}'.format(i, self.name))
+        return _d['X']

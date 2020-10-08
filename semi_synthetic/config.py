@@ -46,12 +46,13 @@ PARAMS_FILENAME = 'params.pkl'
 FPARAMS_FILENAME = 'filtering_params.pkl'
 SYNPARAMS_FILENAME = 'synthetic_params.pkl'
 MLCRR_RESULTS_FILENAME = 'mlcrr_results.pkl'
+COMPARISON_FILENAME = 'comparison.pkl'
 
 SEMI_SYNTHETIC_MESHES = [
     (
         [5], # Number of replicates
         [55], # Number of timepoints
-        3, # Total number of data seeds
+        2, # Total number of data seeds
         1, # Total number of initialization seeds
         [0.1, 0.2, 0.25, 0.3, 0.4], # Measurement Noises
         [0.1], # Process variances
@@ -62,7 +63,7 @@ SEMI_SYNTHETIC_MESHES = [
     (
         [2,3,4,5], # Number of replicates
         [55], # Number of timepoints
-        3, # Total number of data seeds
+        2, # Total number of data seeds
         1, # Total number of initialization seeds
         [0.3], # Measurement Noises
         [0.1], # Process variances
@@ -73,7 +74,7 @@ SEMI_SYNTHETIC_MESHES = [
     (
         [4], # Number of replicates
         [35, 45, 50, 55, 65], # Number of timepoints
-        3, # Total number of data seeds
+        2, # Total number of data seeds
         1, # Total number of initialization seeds
         [0.3], # Measurement Noises
         [0.1], # Process variances
@@ -294,6 +295,9 @@ class ModelConfigMCMC(_BaseModelConfig):
 
         self.N_QPCR_BUCKETS = 3
 
+        self.INTERMEDIATE_VALIDATION_T = 20 #8 * 3600 # Every 8 hours
+        self.INTERMEDIATE_VALIDATION_KWARGS = None
+
         self.LEARN = {
             STRNAMES.REGRESSCOEFF: True,
             STRNAMES.PRIOR_VAR_GROWTH: False,
@@ -307,7 +311,7 @@ class ModelConfigMCMC(_BaseModelConfig):
             STRNAMES.PROCESSVAR: True,
             STRNAMES.FILTERING: True,
             STRNAMES.ZERO_INFLATION: False,
-            STRNAMES.CLUSTERING: True, #clustering_on,
+            STRNAMES.CLUSTERING: False, #clustering_on,
             STRNAMES.CONCENTRATION: True,
             STRNAMES.CLUSTER_INTERACTION_INDICATOR: True,
             STRNAMES.INDICATOR_PROB: True,

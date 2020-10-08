@@ -199,11 +199,30 @@ if __name__ == '__main__':
     params_filename = basepath + config.PARAMS_FILENAME
     syndata_filename = basepath + config.SYNDATA_FILENAME
     synparams_filename = basepath + config.SYNPARAMS_FILENAME
+    comparison_filename = basepath + config.COMPARISON_FILENAME
 
     exact_filename = config.make_subj_name(basepath=params.DATA_PATH, data_seed=params.DATA_SEED, 
         n_asvs=args.n_asvs, process_variance=args.process_variance_level, uniform_sampling_timepoints=args.uniform_sampling,
         measurement_noise=args.measurement_noise_level, n_replicates=args.n_replicates, 
         n_times=args.n_times, exact=True)
+
+    syndata = synthetic.SyntheticData.load(config.make_syndata_base_name(
+        basepath=params.DATA_PATH, dset=synparams.DSET, ds=params.DATA_SEED))
+    subjset = pl.base.SubjectSet.load(config.make_subj_name(
+        basepath=params.DATA_PATH, data_seed=params.DATA_SEED, n_asvs=args.n_asvs, 
+        process_variance=args.process_variance_level, measurement_noise=args.measurement_noise_level,
+        n_replicates=args.n_replicates, n_times=args.n_times, uniform_sampling_timepoints=args.uniform_sampling))
+
+    # Save these locally
+    syndata.save(syndata_filename)
+    subjset.save(subjset_filename)
+
+    exact_subjset = pl.base.SubjectSet.load(config.make_val_subjset_name(
+        basepath=params.DATA_PATH, ds=params.DATA_SEED, 
+        pv=args.process_variance_level))
+    comparison = make_comparison(syndata_filename=syndata_filename, 
+        exact_subjset=exact_subjset)
+    comparison.save(comparison_filename)
 
     if not ONLY_PLOT:
         os.makedirs(basepath, exist_ok=True) # Make the folder
@@ -217,19 +236,19 @@ if __name__ == '__main__':
             logging.warning('array: {}'.format(arr))
 
             params.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value'] = arr
+
+        # Set the validation arg for intermediate_validation_kwargs
+        params.INTERMEDIATE_VALIDATION_KWARGS = {
+            'comparison_filename': comparison_filename,
+            'ds': params.DATA_SEED,
+            'mn': synparams.MEASUREMENT_NOISE_LEVEL,
+            'pv': synparams.PROCESS_VARIANCE_LEVEL,
+            'nt': synparams.TIMES,
+            'nr': synparams.N_REPLICATES,
+            'us': synparams.UNIFORM_SAMPLING_TIMEPOINTS}
+
         params.save(params_filename)
         synparams.save(synparams_filename)
-        
-        syndata = synthetic.SyntheticData.load(config.make_syndata_base_name(
-            basepath=params.DATA_PATH, dset=synparams.DSET, ds=params.DATA_SEED))
-        subjset = pl.base.SubjectSet.load(config.make_subj_name(
-            basepath=params.DATA_PATH, data_seed=params.DATA_SEED, n_asvs=args.n_asvs, 
-            process_variance=args.process_variance_level, measurement_noise=args.measurement_noise_level,
-            n_replicates=args.n_replicates, n_times=args.n_times, uniform_sampling_timepoints=args.uniform_sampling))
-
-        # Save these locally
-        syndata.save(syndata_filename)
-        subjset.save(subjset_filename)
 
         # Plot
         for i, subj in enumerate(subjset):
@@ -285,7 +304,10 @@ if __name__ == '__main__':
             hdf5_filename=hdf5_filename,
             mcmc_filename=chain_result_filename,
             checkpoint_iter=params.CHECKPOINT,
-            crash_if_error=True)
+            crash_if_error=True,
+            intermediate_validation_func=main_base.semi_synthetic_intermediate_validation_func,
+            intermediate_validation_t=params.INTERMEDIATE_VALIDATION_T,
+            intermediate_validation_kwargs=params.INTERMEDIATE_VALIDATION_KWARGS)
         chain_result.save(chain_result_filename)
         params.save(params_filename)
 
@@ -307,12 +329,7 @@ if __name__ == '__main__':
         basepath=params.DATA_PATH, ds=params.DATA_SEED, 
         pv=args.process_variance_level, mn=args.measurement_noise_level,
         nt=args.n_times, uniform_sampling_timepoints=args.uniform_sampling))
-    exact_subjset = pl.base.SubjectSet.load(config.make_val_subjset_name(
-        basepath=params.DATA_PATH, ds=params.DATA_SEED, 
-        pv=args.process_variance_level))
     noise_subjset.save(basepath + config.VALIDATION_SUBJSET_FILENAME)
-    comparison = make_comparison(syndata_filename=syndata_filename, 
-        exact_subjset=exact_subjset)
 
     logging.info('here2')
 

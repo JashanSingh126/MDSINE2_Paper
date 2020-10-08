@@ -639,6 +639,9 @@ class ModelConfigReal(_BaseModelConfig):
         self.QPCR_NOISE_SCALE = LEARNED_LOGNORMAL_SCALE
         self.N_QPCR_BUCKETS = 3
 
+        self.INTERMEDIATE_VALIDATION_T = 20 #8 * 3600 # Every 8 hours
+        self.INTERMEDIATE_VALIDATION_KWARGS = None
+
         self.LEARN = {
             STRNAMES.REGRESSCOEFF: True,
             STRNAMES.PROCESSVAR: True,

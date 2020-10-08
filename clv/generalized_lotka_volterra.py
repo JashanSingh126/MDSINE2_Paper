@@ -5,6 +5,8 @@ from scipy.stats import linregress
 from scipy.integrate import RK45, solve_ivp
 from timeout import timeout
 
+from multiprocessing import TimeoutError
+
 def add_pseudo_counts(Y, pseudo_count=1e-3):
     """Adds pseudo counts to avoid zeros and compute relative abundances
     
@@ -417,6 +419,7 @@ def estimate_ridge_regularizers_cv(X, U, T, folds, no_effects=False, verbose=Fal
         folds = len(X)
 
     rs = [0.125, 0.25, 0.5, 1, 2, 4, 8]
+    # rs = [0.125, 0.5]
     rA_rg_rB = []
     for r_A in rs:
         for r_g in rs:
@@ -516,6 +519,6 @@ def compute_prediction_error(X, U, T, A, g, B):
         try:
             p_pred = predict(x, u, t, A, g, B)
             err += compute_err(compute_rel_abun(x), p_pred)
-        except TimeoutError:
+        except:
             err += np.inf
     return err/len(X)

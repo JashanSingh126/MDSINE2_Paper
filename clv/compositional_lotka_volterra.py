@@ -504,6 +504,10 @@ def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=Fa
                     for r_B in rs:
                         alpha_rA_rg_rB.append((alpha, r_A, r_g, r_B))
 
+    # print(alpha_rA_rg_rB)
+    # print(len(alpha_rA_rg_rB))
+    # sys.exit()
+
     np.set_printoptions(suppress=True)
     best_r = 0
     best_sqr_err = np.inf
@@ -691,6 +695,6 @@ def compute_prediction_error(X, P, U, T, A, g, B, denom_ids):
         try:
             p_pred = predict(x, p, u, t, A, g, B, denom_ids)
             err += compute_err(p, p_pred)
-        except TimeoutError:
+        except:
             err += np.inf
     return err/len(X)
