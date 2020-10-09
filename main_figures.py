@@ -68,33 +68,6 @@ TAXLEVEL_REV_IDX = {
 
 DATA_FIGURE_COLORS = {}
 
-# XKCD_COLORS_ = [
-#     'windows blue',
-#     'pale red',
-#     'medium green',
-#     'denim blue',
-#     'amber',
-#     'greyish',
-#     'faded green',
-#     'butter yellow',
-#     'dusty purple',
-#     'rose',
-#     'blue green',
-#     'slate',
-#     'cream',
-#     'bluish purple',
-#     'snot green',
-#     'deep pink',
-#     'pastel blue',
-#     'orchid',
-#     'dull yellow',
-#     'milk chocolate',
-
-#     'black',
-#     'white',
-#     'red',
-#     'orange']
-# XKCD_COLORS = sns.xkcd_palette(XKCD_COLORS_)
 XKCD_COLORS1 = sns.color_palette('muted', n_colors=10)
 XKCD_COLORS2 = sns.color_palette("dark", n_colors=10)
 
@@ -446,11 +419,12 @@ def _make_cluster_membership_heatmap(chainname, ax, order, binary, fig):
     ax.yaxis.set_major_locator(plt.NullLocator())
     ax.yaxis.set_major_locator(plt.NullLocator())
 
-    xticklabels = np.arange(1, len(df.columns)+1, dtype=int)
-    ax.set_xticks(ticks=np.arange(len(xticklabels)))
+    xticklabels = np.arange(1, len(df.columns)+1, step=2, dtype=int)
+    ax.set_xticks(ticks=np.arange(len(df.columns), step=2))
     ax.set_xticklabels(labels=xticklabels)
-    for tick in ax.xaxis.get_major_ticks():
+    for i, tick in enumerate(ax.xaxis.get_major_ticks()):
         tick.label.set_rotation(90)
+        tick.label.set_fontsize(15)
         # tick.label.set_horizontalalignment('right')
     
     # Make grid
@@ -462,7 +436,8 @@ def _make_cluster_membership_heatmap(chainname, ax, order, binary, fig):
 
     cbaxes = fig.add_axes([0.92, 0.5, 0.02, 0.1]) # left, bottom, width, height
     cbar = plt.colorbar(im, cax=cbaxes, orientation='vertical')
-    cbar.ax.set_xlabel('Relative Abund')
+    cbar.ax.set_title('Relative\nAbundance', fontsize=18)
+    cbar.ax.tick_params(labelsize=15)
 
     return ax, newcolnames
 
@@ -500,7 +475,7 @@ def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig):
     df = df[colorder]
 
     max_val = np.max(np.absolute(df.values))
-    # max_val = 5
+    max_val = 5
     im = ax.imshow(df.values, cmap='bwr_r', aspect='auto', vmin=-max_val, 
         vmax=max_val)
     ax.yaxis.set_major_locator(plt.NullLocator())
@@ -514,17 +489,19 @@ def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig):
     ax.tick_params(axis='both', which='minor', left=False, bottom=False)
     
     cbaxes = fig.add_axes([0.92, 0.75, 0.02, 0.1]) # left, bottom, width, height
-    cbar = plt.colorbar(im, cax=cbaxes, orientation='vertical')
-    cbar.ax.set_xlabel('Pert Effect')
+    cbar = plt.colorbar(im, cax=cbaxes, orientation='vertical', ticks=[-5,-2.5,0,2.5,5])
+    cbar.ax.set_yticklabels(['<-5', '-2.5', '0', '2.5', '>5'], fontsize=15)
+    cbar.ax.set_title('Pert Effect', fontsize=18)
 
     ax.set_yticks(np.arange(len(subjset.perturbations)), minor=False)
     ax.set_yticklabels(list(df.index))
 
     for tick in ax.yaxis.get_major_ticks():
         tick.label.set_rotation(0)
+        tick.label.set_fontsize(18)
     return ax
 
-def _make_phylogenetic_tree(treename, chainname, ax, fig):
+def _make_phylogenetic_tree(treename, chainname, ax, fig, healthy, side_by_side=False):
     chain = pl.inference.BaseMCMC.load(chainname)
     asvs = chain.graph.data.asvs
     names = [str(name) for name in asvs.names.order]
@@ -570,15 +547,22 @@ def _make_phylogenetic_tree(treename, chainname, ax, fig):
 
         asvname += ' ' + asv.name
         asvname = ' ' + suffix + asvname
-        text._text = str(asvname.replace('OTU_', 'ASV_'))        
-        text._text = text._text + '- ' * 75
-        text.set_fontsize(6)
+        text._text = str(asvname.replace('OTU_', 'ASV'))   
+        if healthy:  
+            text._text = text._text + '- ' * 40
+        else:
+            text._text = text._text + '- ' * 45
+        text.set_fontsize(9.7)
 
     # Make the taxnonmic key on the right hand side
     text = 'Taxonomy Key\n'
     for taxa in taxonomies:
         text += '{} - {}\n'.format(suffix_taxa[taxa], taxa)
-    fig.text(0.88, 0.3, text, fontsize=12)
+    if side_by_side is not None:
+        if not side_by_side:
+            fig.text(0.1, 0.875, text, fontsize=18)
+        else:
+            fig.text(0.9, 0.3, text, fontsize=18)
     
 
     return ax, asv_order
@@ -596,15 +580,15 @@ def phylogenetic_heatmap(healthy):
     treename = 'raw_data/phylogenetic_tree_branch_len_preserved.nhx'
 
     fig = plt.figure(figsize=(12,20))
-    gs = fig.add_gridspec(5,2)
-    ax_phyl = fig.add_subplot(gs[1:,0])
-    ax_clus = fig.add_subplot(gs[1:,1])
-    ax_pert = fig.add_subplot(gs[0,1])
+    gs = fig.add_gridspec(12,10)
+    ax_phyl = fig.add_subplot(gs[1:,:3])
+    ax_clus = fig.add_subplot(gs[1:,6:])
+    ax_pert = fig.add_subplot(gs[0,6:])
 
 
 
     ax_phyl, order = _make_phylogenetic_tree(treename=treename, chainname=chainname, ax=ax_phyl, 
-        fig=fig)
+        fig=fig, healthy=healthy)
     ax_clus, colorder = _make_cluster_membership_heatmap(chainname=chainname, ax=ax_clus, 
         order=order, binary=False, fig=fig)
     ax_pert = _make_perturbation_heatmap(chainname=chainname, min_bayes_factor=10, 
@@ -621,7 +605,8 @@ def phylogenetic_heatmap(healthy):
     ax_phyl.set_xlabel('')
     ax_phyl.set_ylabel('')
 
-    fig.subplots_adjust(wspace=0.40, left=0.06, right=0.87, hspace=0.01)
+    fig.subplots_adjust(wspace=0.40, left=0.03, right=0.87, hspace=0.01,
+        top=0.95, bottom=0.03)
 
     if healthy:
         title = 'Healthy'
@@ -631,14 +616,76 @@ def phylogenetic_heatmap(healthy):
         s = 'uc'
     fig.suptitle(title, fontsize=30)
 
-    # Make the caption
-    txt = 'Average abundance from day 7-21 (pre-perturbation). Fixed topology inference.'
-    # axtext = fig.add_subplot(gs[6:, 10:20])
-    fig.text(0.5, 0.03, txt, ha='center', fontsize=12, wrap=True)
-
     plt.savefig(BASEPATH + 'phylo_clustering_heatmap_{}_RDP_alignment.pdf'.format(s))
     plt.close()
     # plt.show()
+
+def phylogenetic_heatmap_side_by_side():
+
+    fig = plt.figure(figsize=(24,20))
+    gs = fig.add_gridspec(12,21)
+    ax_phyl_healthy = fig.add_subplot(gs[1:,:3])
+    ax_clus_healthy = fig.add_subplot(gs[1:,6:10])
+    ax_pert_healthy = fig.add_subplot(gs[0,6:10])
+
+    ax_phyl_uc = fig.add_subplot(gs[1:,11:11+3])
+    ax_clus_uc = fig.add_subplot(gs[1:,11+6:11+10])
+    ax_pert_uc = fig.add_subplot(gs[0,11+6:11+10])
+
+    treename = 'raw_data/phylogenetic_tree_branch_len_preserved.nhx'
+
+    # Healthy
+    chainname = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/' \
+        'ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+    ax_phyl_healthy, order = _make_phylogenetic_tree(treename=treename, chainname=chainname, ax=ax_phyl_healthy, 
+        fig=fig, healthy=True, side_by_side=True)
+    ax_clus_healthy, colorder = _make_cluster_membership_heatmap(chainname=chainname, ax=ax_clus_healthy, 
+        order=order, binary=False, fig=fig)
+    ax_pert_healthy = _make_perturbation_heatmap(chainname=chainname, min_bayes_factor=10, 
+        ax=ax_pert_healthy, colorder=colorder, fig=fig)
+
+    ax_phyl_healthy.spines['top'].set_visible(False)
+    ax_phyl_healthy.spines['bottom'].set_visible(False)
+    ax_phyl_healthy.spines['left'].set_visible(False)
+    ax_phyl_healthy.spines['right'].set_visible(False)
+    ax_phyl_healthy.xaxis.set_major_locator(plt.NullLocator())
+    ax_phyl_healthy.xaxis.set_minor_locator(plt.NullLocator())
+    ax_phyl_healthy.yaxis.set_major_locator(plt.NullLocator())
+    ax_phyl_healthy.yaxis.set_minor_locator(plt.NullLocator())
+    ax_phyl_healthy.set_xlabel('')
+    ax_phyl_healthy.set_ylabel('')
+    ax_pert_healthy.set_title('Healthy Consortium', fontsize=30)
+
+    # UC
+    chainname = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/' \
+            'ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+    ax_phyl_uc, order = _make_phylogenetic_tree(treename=treename, chainname=chainname, ax=ax_phyl_uc, 
+        fig=fig, healthy=True, side_by_side=None)
+    ax_clus_uc, colorder = _make_cluster_membership_heatmap(chainname=chainname, ax=ax_clus_uc, 
+        order=order, binary=False, fig=fig)
+    ax_pert_uc = _make_perturbation_heatmap(chainname=chainname, min_bayes_factor=10, 
+        ax=ax_pert_uc, colorder=colorder, fig=fig)
+
+    ax_phyl_uc.spines['top'].set_visible(False)
+    ax_phyl_uc.spines['bottom'].set_visible(False)
+    ax_phyl_uc.spines['left'].set_visible(False)
+    ax_phyl_uc.spines['right'].set_visible(False)
+    ax_phyl_uc.xaxis.set_major_locator(plt.NullLocator())
+    ax_phyl_uc.xaxis.set_minor_locator(plt.NullLocator())
+    ax_phyl_uc.yaxis.set_major_locator(plt.NullLocator())
+    ax_phyl_uc.yaxis.set_minor_locator(plt.NullLocator())
+    ax_phyl_uc.set_xlabel('')
+    ax_phyl_uc.set_ylabel('')
+    ax_pert_uc.set_title('Ulcerative Colitis Consortium', fontsize=30)
+
+    fig.subplots_adjust(wspace=0.40, left=0.03, right=0.87, hspace=0.01,
+        top=0.95, bottom=0.03)
+
+    # fig.suptitle('Test', fontsize=30)
+
+    plt.savefig(BASEPATH + 'phylo_clustering_heatmap_side_by_side_RDP_alignment.pdf')
+    plt.close()
+
 
 # Alpha Diversity
 # ---------------
@@ -3058,7 +3105,8 @@ os.makedirs('output_figures/', exist_ok=True)
 # preprocess_filtering(False)
 
 # Phylogenetic heatmap
-phylogenetic_heatmap(True)
+# phylogenetic_heatmap(False)
+phylogenetic_heatmap_side_by_side()
 
 # Semi-synthetic benchmarking
 # semi_synthetic_benchmark_figure()

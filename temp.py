@@ -324,8 +324,8 @@ fnames = {
         'tmp/keystone_proposal/healthy_cycle_2.txt',
         'tmp/keystone_proposal/healthy_cycle_3.txt'],
     'uc': [
-        # 'tmp/keystone_proposal/uc_chain_2.txt',
-        # 'tmp/keystone_proposal/uc_chain_3.txt']} #,
+        'tmp/keystone_proposal/uc_chain_2.txt',
+        'tmp/keystone_proposal/uc_chain_3.txt',
         'tmp/keystone_proposal/uc_cycle_2.txt',
         'tmp/keystone_proposal/uc_cycle_3.txt']}
 
