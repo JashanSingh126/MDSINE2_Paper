@@ -65,15 +65,15 @@ pl.seed(1)
 
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
-def mersauce(a,b,c,deff):
-    print('am I right or am I right')
+# def mersauce(a,b,c,deff):
+#     print('am I right or am I right')
 
-args = inspect.getargspec(mersauce).args
+# args = inspect.getargspec(mersauce).args
 
-for i, arg in enumerate(args):
-    print(i, arg)
-print()
-sys.exit()
+# for i, arg in enumerate(args):
+#     print(i, arg)
+# print()
+# sys.exit()
 
 
 # ####################################################
@@ -311,7 +311,7 @@ sys.exit()
 ####################################################
 # Calculate keystoneness
 ####################################################
-from multiprocessing import freeze_support
+# from multiprocessing import freeze_support
 
 chains = {
     'healthy': 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
@@ -324,9 +324,9 @@ fnames = {
         'tmp/keystone_proposal/healthy_cycle_2.txt',
         'tmp/keystone_proposal/healthy_cycle_3.txt'],
     'uc': [
-        'tmp/keystone_proposal/uc_chain_2.txt',
-        'tmp/keystone_proposal/uc_chain_3.txt',
-        'tmp/keystone_proposal/uc_cycle_2.txt',
+        # 'tmp/keystone_proposal/uc_chain_2.txt',
+        # 'tmp/keystone_proposal/uc_chain_3.txt']} #,
+        # 'tmp/keystone_proposal/uc_cycle_2.txt',
         'tmp/keystone_proposal/uc_cycle_3.txt']}
 
 for key in ['uc']: #chains.keys():

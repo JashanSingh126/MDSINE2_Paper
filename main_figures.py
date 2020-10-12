@@ -909,6 +909,7 @@ def alpha_diversity_mean_std(ax=None, figlabel=None):
     '''Alpha diversity figure
     '''
     subjset = loaddata(healthy=None)
+    subjset_innoc = loadinoculum()
     
     if ax is None:
         fig = plt.figure(figsize=(12,8))
@@ -916,6 +917,9 @@ def alpha_diversity_mean_std(ax=None, figlabel=None):
         
     val_healthy = {}
     val_unhealthy = {}
+    val_innoc_healthy = diversity.alpha.normalized_entropy(subjset_innoc['healthy'].reads[0])
+    val_innoc_uc = diversity.alpha.normalized_entropy(subjset_innoc['ulcerative colitis'].reads[0])
+
     for subj in subjset:
         for t in subj.times:
             aaa = diversity.alpha.normalized_entropy(subj.reads[t])
@@ -964,6 +968,10 @@ def alpha_diversity_mean_std(ax=None, figlabel=None):
     ax.plot(times_idxs_unhealthy, means_unhealthy, marker='o', color=colors_unhealthy, linewidth=0, 
         markersize=5)
 
+    # Add in the Inoculum
+    ax.plot([-1.5], val_innoc_healthy, marker='*', color=colors_healthy, markersize=10)
+    ax.plot([-1.5], val_innoc_uc, marker='*', color=colors_unhealthy, markersize=10)
+
     # Set the xticklabels
     locs = np.arange(0, len(times),step=10)
     ticklabels= times[locs]
@@ -985,6 +993,7 @@ def alpha_diversity_mean_std(ax=None, figlabel=None):
         ax.axvline(x=perturbation.end, color='black', linestyle='--', linewidth=2)
 
 
+
     # Set the ticks to be bold
     ax.set_yticks([0.2, 0.4, 0.6, 0.8])
     for tick in ax.yaxis.get_major_ticks():
@@ -997,7 +1006,7 @@ def alpha_diversity_mean_std(ax=None, figlabel=None):
     # Set the labels
     ax.set_title('Normalized Entropy', size=15, fontsize=35, fontweight='bold')
     ax.set_ylabel('nat', size=20, fontweight='bold')
-    ax.set_xlabel('Days', size=20, fontweight='bold')
+    ax.set_xlabel('Time (days)', size=20, fontweight='bold')
 
     # Make legend
     axlegend = fig.add_subplot(111, facecolor='none')
@@ -1007,6 +1016,9 @@ def alpha_diversity_mean_std(ax=None, figlabel=None):
     handles.append(l)
     l = mlines.Line2D([],[], color=colors_unhealthy,
         linestyle='-', label='Ulcerative Colitis')
+    handles.append(l)
+    l = mlines.Line2D([], [], color='black', marker='*', 
+        label='Inoculum', linestyle='none', markersize=10)
     handles.append(l)
     lgnd2 = plt.legend(handles=handles, fontsize=18)
     axlegend.add_artist(lgnd2)
@@ -1021,8 +1033,8 @@ def alpha_diversity_mean_std(ax=None, figlabel=None):
 
     plt.subplots_adjust(bottom=0.18)
 
-    caption = 'Mean and standard deviation of normalized entropy measure within each consortium.'
-    axlegend.text(0.5, -0.2, caption, horizontalalignment='center', fontsize=17)
+    # caption = 'Mean and standard deviation of normalized entropy measure within each consortium.'
+    # axlegend.text(0.5, -0.2, caption, horizontalalignment='center', fontsize=17)
 
     plt.savefig(BASEPATH + 'alpha_diversity_mean_std.pdf')
     plt.savefig(BASEPATH + 'alpha_diversity_mean_std.png')
@@ -1189,10 +1201,10 @@ def beta_diversity_figure(axleft=None, axright=None, axcenter=None, figlabel=Non
     # Ulcerative colitis
     handles = []
     l = mlines.Line2D([],[], color=colorshealthy,
-        linestyle='-', label='Healthy')
+        linestyle='-', label='Healthy', linewidth=5)
     handles.append(l)
     l = mlines.Line2D([],[], color=colorsunhealthy,
-        linestyle='-', label='Ulcerative Colitis')
+        linestyle='-', label='Ulcerative Colitis', linewidth=5)
     handles.append(l)
     lgnd2 = plt.legend(handles=handles, title='$\\bf{Dataset}$', 
         bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.,
@@ -1206,6 +1218,7 @@ def beta_diversity_figure(axleft=None, axright=None, axcenter=None, figlabel=Non
         markeredgecolor='black',
         markerfacecolor='none',
         linestyle='none', 
+        markersize=15,
         label='Inoculum')
     handles.append(l)
     l = mlines.Line2D([],[],
@@ -1213,6 +1226,7 @@ def beta_diversity_figure(axleft=None, axright=None, axcenter=None, figlabel=Non
         markeredgecolor='black',
         markerfacecolor='none',
         linestyle='none', 
+        markersize=15,
         label='Colonization')
     handles.append(l)
     for pidx in range(1,7):
@@ -1220,13 +1234,14 @@ def beta_diversity_figure(axleft=None, axright=None, axcenter=None, figlabel=Non
         pert_name = subjset.perturbations[(pidx-1)//2].name
         # If pidx-1 is odd, then it is post perturbation
         if (pidx-1)%2 == 1:
-            pert_name = 'Post ' + pert_name
+            pert_name = 'Post-' + pert_name
 
         l = mlines.Line2D([],[],
             marker=PERT_MARKERS[pidx],
             markeredgecolor='black',
             markerfacecolor='none',
             linestyle='none', 
+            markersize=15,
             label=pert_name)
         handles.append(l)
     lgnd3 = plt.legend(handles=handles, title='$\\bf{Markers}$', 
@@ -1234,7 +1249,7 @@ def beta_diversity_figure(axleft=None, axright=None, axcenter=None, figlabel=Non
         fontsize=17, title_fontsize=18)
     axcenter.add_artist(lgnd3)
 
-    axcenter.set_title('Bray-Curtis PCoA', fontsize=35, fontweight='bold')
+    axcenter.set_title('Bray-Curtis Similarity', fontsize=35, fontweight='bold', y=1.08)
     axcenter.set_xlabel('PC1: {:.3f}'.format(bc_pcoa.proportion_explained[0]),
         fontsize=20, fontweight='bold')
     axcenter.xaxis.set_label_coords(0.5,-0.08)
@@ -1267,15 +1282,11 @@ def beta_diversity_figure(axleft=None, axright=None, axcenter=None, figlabel=Non
         tick.label.set_fontsize(18)
         # tick.label.set_fontweight('bold')
 
-    # axleft.set_facecolor('whitesmoke')
-    # axright.set_facecolor('whitesmoke')
+    fig.subplots_adjust(left=0.09, right=0.775, top=0.86)
 
-    fig.subplots_adjust(left=0.09, right=0.775, bottom=0.25)
-
-    caption = 'Bray-Curtis beta diversity measure projected with principle coordinate analysis (PCoA).\n' \
-        'Each partition (colonization, perturbation time points, and post perturbation points) of the time-\n' \
-        'series has its own marker.'
-    axcenter.text(0.5, -0.34, caption, horizontalalignment='center', fontsize=17)
+    # Label the left and right side
+    axcenter.text(x=0., y=1.01, s='A', fontsize=25, fontweight='bold')
+    axcenter.text(x=0.545, y=1.01, s='B', fontsize=25, fontweight='bold')
 
     # bc_pcoa.plot()
     plt.savefig(BASEPATH + 'pcoa_braycurtis_w_zoom.pdf')
@@ -1891,7 +1902,7 @@ def data_figure_side_by_side(HEALTHY, fig, axleft, axright, axinoculum, axwhole,
     axright.spines['right'].set_color('crimson')
     axright.tick_params(axis='both', color='crimson')
 
-    # Make the innoculum
+    # Make the Inoculum
     inoculum_subjset = loadinoculum()
     if HEALTHY:
         inoculum = inoculum_subjset['healthy']
@@ -2089,7 +2100,7 @@ def data_figure_rel_and_qpcr(horizontal):
         df=df_healthy, CUTOFF_FRAC_ABUNDANCE=CUTOFF_FRAC_ABUNDANCE,
         axqpcr=axqpcr1, axrel=axrel1, axpert=axpert1,
         axinoculum=axinoculum1, make_ylabels=True,
-        figlabelinoculum='A', figlabelqpcr='B', figlabelrel='C',
+        figlabelinoculum='C', figlabelqpcr='B', figlabelrel='D',
         make_legend=False)
 
     if horizontal:
@@ -2107,7 +2118,7 @@ def data_figure_rel_and_qpcr(horizontal):
         df=df_unhealthy, CUTOFF_FRAC_ABUNDANCE=CUTOFF_FRAC_ABUNDANCE,
         axqpcr=axqpcr2, axrel=axrel2, axpert=axpert2,
         axinoculum=axinoculum2, make_ylabels=True,
-        figlabelinoculum='D', figlabelqpcr='E', figlabelrel='F',
+        figlabelinoculum='F', figlabelqpcr='E', figlabelrel='G',
         make_legend=False)
 
     # Set the same max and min value for the qpcr measurements
@@ -2127,8 +2138,8 @@ def data_figure_rel_and_qpcr(horizontal):
 
     # Make animation at the top
     if horizontal:
-        axanimation = fig.add_subplot(gs[0, 10*squeeze:30*squeeze], facecolor='none')
-        _data_figure_experiment_animation(ax=axanimation)
+        axanimation = fig.add_subplot(gs[0, 5*squeeze:35*squeeze], facecolor='none')
+        _data_figure_experiment_animation(ax=axanimation, figlabel='A')
 
 
     # Make the legend
@@ -2138,24 +2149,6 @@ def data_figure_rel_and_qpcr(horizontal):
         axlegend1 = fig.add_subplot(gs[13:18, 1*squeeze: 13*squeeze], facecolor='none')
     _data_figure_rel_and_qpcr_legend(axlegend=axlegend1, TAXLEVEL=TAXLEVEL,
         CUTOFF_FRAC_ABUNDANCE=CUTOFF_FRAC_ABUNDANCE)
-
-    # # Make the caption
-    # if horizontal:
-    #     txt = '(A) Relative abundance of the inoculum sample of the healthy consortium. ' \
-    #     '(B) qPCR measurements over time for the healthy consortium. (C) Bottom ' \
-    #     'Relative abundances over time for the healthy consortium. ' \
-    #     '(D) Relative abundance of the inoculum sample of the Ulcerative Colitis (UC) consortium. ' \
-    #     '(E) qPCR measurements over time for the UC consortium. (F) ' \
-    #     'Relative abundances over time for the UC consortium.'
-    # else:
-    #     txt = '(A) Relative abundance of the inoculum sample of the healthy consortium. ' \
-    #     '(B) qPCR measurements over time for the healthy consortium. (C) Bottom ' \
-    #     'Relative abundances over time for the healthy consortium. ' \
-    #     '(D) Relative abundance of the inoculum sample of the Ulcerative Colitis (UC) consortium. ' \
-    #     '(E) qPCR measurements over time for the UC consortium. (F) ' \
-    #     'Relative abundances over time for the UC consortium.'
-    # # axtext = fig.add_subplot(gs[6:, 10:20])
-    # fig.text(0.5, 0.05, txt, ha='center', fontsize=18, wrap=True)
 
     axpert1.spines['top'].set_visible(False)
     axpert1.spines['bottom'].set_visible(False)
@@ -2177,7 +2170,7 @@ def data_figure_rel_and_qpcr(horizontal):
 
 
     if horizontal:
-        fig.subplots_adjust( wspace=0.58, left=0.055, right=0.955, top=0.925, bottom=.075, hspace=0.4)
+        fig.subplots_adjust( wspace=0.58, left=0.05, right=0.95, top=0.925, bottom=.075, hspace=0.8)
     else:
         fig.subplots_adjust( wspace=0.58, left=0.075, right=0.955, top=0.925, bottom=.075, hspace=1.0)
     # plt.show()
@@ -2185,7 +2178,7 @@ def data_figure_rel_and_qpcr(horizontal):
     plt.savefig(BASEPATH + 'datafigure_rel_horizonal{}.png'.format(horizontal))
     plt.close()
 
-def _data_figure_experiment_animation(ax):
+def _data_figure_experiment_animation(ax, figlabel):
     subjset_real = pl.base.SubjectSet.load(DATAPATH)
     times = []
     for subj in subjset_real:
@@ -2210,7 +2203,7 @@ def _data_figure_experiment_animation(ax):
 
     x = np.arange(0, np.max(times), step=10)
     labels = ['Day {}'.format(int(t)) for t in x]
-    for ylim in [0.15, -0.18]:
+    for ylim in [0.15, -0.35]:
         y = [ylim for t in x]
         markerline, stemlines, baseline = ax.stem(x, y)
         stemlines = [stemline.set_color('black') for stemline in stemlines]
@@ -2219,7 +2212,7 @@ def _data_figure_experiment_animation(ax):
     for i in range(len(labels)):
         label = labels[i]
         xpos = x[i] 
-        ax.text(xpos, 0.-.35, label, horizontalalignment='center', fontsize=22)
+        ax.text(xpos, 0.-.50, label, horizontalalignment='center', fontsize=28)
     x = np.arange(0,np.max(times),2)
     for ylim in [0.07, -0.07]:
         y = [ylim for t in x]
@@ -2232,8 +2225,8 @@ def _data_figure_experiment_animation(ax):
         name = perturbation.name
         # lines += [start,end]
         # ax.text(start, 0.33, 'Start {}'.format(name), horizontalalignment='center')
-        ax.text((perturbation.end+perturbation.start)/2, 0.15, name.capitalize(), horizontalalignment='center',
-            fontsize=22)
+        ax.text((perturbation.end+perturbation.start)/2, 0.17, name.capitalize(), horizontalalignment='center',
+            fontsize=28)
 
         # ax.arrow(start, 0.3, 0, -0.27, length_includes_head=True, head_width=0.25, head_length=0.05)
         # ax.arrow(end, 0.3, 0, -0.27, length_includes_head=True, head_width=0.25, head_length=0.05)
@@ -2241,17 +2234,21 @@ def _data_figure_experiment_animation(ax):
         ends = np.asarray([perturbation.end])
         ax.barh(y=[0 for i in range(len(starts))], width=ends-starts, height=0.1, left=starts, color='darkgrey')
 
-    ax.text(0, 0.15, 'Colonization', horizontalalignment='center', fontsize=22)
+    ax.text(0, 0.17, 'Colonization', horizontalalignment='center', fontsize=28)
     # ax.arrow(0, 0.17, 0, -0.14, length_includes_head=True, head_width=0.25, head_length=0.05)
 
     # stool collection
     xpos = np.max(times)* 1.05
     y = 0.05
     ax.scatter([xpos], [y], c='black', s=25)
-    ax.text(xpos+1, y, 'Stool Collection', horizontalalignment='left', fontsize=22, 
+    ax.text(xpos+1, y, 'Stool Collection', horizontalalignment='left', fontsize=28, 
         verticalalignment='center')
 
     ax.set_ylim(-0.15,0.4)
+
+    if figlabel is not None:
+        ax.text(x=-0.02, y=1.02, s=figlabel, fontsize=30, fontweight='bold', 
+            transform=ax.transAxes)
 
     return ax
 
@@ -2304,7 +2301,7 @@ def _data_figure_rel_and_qpcr_legend(axlegend, TAXLEVEL, CUTOFF_FRAC_ABUNDANCE):
         legend_labels = legend_labels + [l2.capitalize()]
 
     axlegend.legend(legend_handle, legend_labels, ncol=3, loc='upper center', 
-        fontsize=18)
+        fontsize=22, columnspacing=0.01)
 
     axlegend.spines['top'].set_visible(False)
     axlegend.spines['bottom'].set_visible(False)
@@ -2451,10 +2448,10 @@ def _data_figure_rel_and_qpcr(HEALTHY, TAXLEVEL, df, CUTOFF_FRAC_ABUNDANCE, axqp
     
     
     if HEALTHY:
-        title = 'Healthy Subject'
+        title = 'Healthy Consortium'
     else:
-        title = 'Ulcerative Colitis Subject'
-    axqpcr.set_title(title, fontsize=28, fontweight='bold', y=1.2)
+        title = 'Ulcerative Colitis Consortium'
+    axqpcr.set_title(title, fontsize=30, fontweight='bold', y=1.3)
         # transform=axqpcr.transAxes)
 
     axpert.set_xlim(axrel.get_xlim())
@@ -3092,7 +3089,7 @@ os.makedirs('output_figures/', exist_ok=True)
 # alpha_diversity_mean_std()
 
 # Beta diversity
-# beta_diversity_figure()
+beta_diversity_figure()
 
 # Data figure
 # data_figure_rel_and_qpcr(horizontal=True)
@@ -3106,7 +3103,7 @@ os.makedirs('output_figures/', exist_ok=True)
 
 # Phylogenetic heatmap
 # phylogenetic_heatmap(False)
-phylogenetic_heatmap_side_by_side()
+# phylogenetic_heatmap_side_by_side()
 
 # Semi-synthetic benchmarking
 # semi_synthetic_benchmark_figure()
