@@ -93,9 +93,9 @@ echo $TMPDIR
 # Add your job command here
 # Load module
 module load anaconda
-source activate dispatcher
+source activate dispatcher_pylab3
 
-cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2/semi_synthetic/
+cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/semi_synthetic/
 python main_mcmc.py -m {mn} -p {pv} -d {d} -i {i} -b {b} -nb {burnin} -ns {n_samples} -nr {nr} -c {co} -nt {nt} -db {db} -us {us}
 '''
 os.makedirs(basepath, exist_ok=True)

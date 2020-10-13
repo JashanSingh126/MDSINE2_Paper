@@ -328,7 +328,7 @@ def _make_names_of_clusters(n_clusters):
     '''
     return ['Cluster {}'.format(i) for i in range(n_clusters)]
 
-def _make_cluster_membership_heatmap(chainname, ax, order, binary, fig):
+def _make_cluster_membership_heatmap(chainname, ax, order, binary, fig, make_colorbar=True, figlabel=None):
     '''Make the heatmap of the cluster membership
     If `binary` is True, then we just have a binary vector of the membership of
     the asv in the cluster. If `binary` is False, then the coloring is the average relative
@@ -434,14 +434,15 @@ def _make_cluster_membership_heatmap(chainname, ax, order, binary, fig):
 
     ax.tick_params(axis='both', which='minor', left=False, bottom=False)
 
-    cbaxes = fig.add_axes([0.92, 0.5, 0.02, 0.1]) # left, bottom, width, height
-    cbar = plt.colorbar(im, cax=cbaxes, orientation='vertical')
-    cbar.ax.set_title('Relative\nAbundance', fontsize=18)
-    cbar.ax.tick_params(labelsize=15)
+    if make_colorbar:
+        cbaxes = fig.add_axes([0.92, 0.5, 0.02, 0.1]) # left, bottom, width, height
+        cbar = plt.colorbar(im, cax=cbaxes, orientation='vertical')
+        cbar.ax.set_title('Relative\nAbundance', fontsize=18, fontweight='bold')
+        cbar.ax.tick_params(labelsize=15)
 
     return ax, newcolnames
 
-def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig):
+def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig, make_colorbar=True, figlabel=None):
     chain = pl.inference.BaseMCMC.load(chainname)
     subjset = chain.graph.data.subjects
     clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
@@ -488,10 +489,11 @@ def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig):
 
     ax.tick_params(axis='both', which='minor', left=False, bottom=False)
     
-    cbaxes = fig.add_axes([0.92, 0.75, 0.02, 0.1]) # left, bottom, width, height
-    cbar = plt.colorbar(im, cax=cbaxes, orientation='vertical', ticks=[-5,-2.5,0,2.5,5])
-    cbar.ax.set_yticklabels(['<-5', '-2.5', '0', '2.5', '>5'], fontsize=15)
-    cbar.ax.set_title('Pert Effect', fontsize=18)
+    if make_colorbar:
+        cbaxes = fig.add_axes([0.92, 0.75, 0.02, 0.1]) # left, bottom, width, height
+        cbar = plt.colorbar(im, cax=cbaxes, orientation='vertical', ticks=[-5,-2.5,0,2.5,5])
+        cbar.ax.set_yticklabels(['<-5', '-2.5', '0', '2.5', '>5'], fontsize=15)
+        cbar.ax.set_title('Perturbation\nEffect', fontsize=18, fontweight='bold')
 
     ax.set_yticks(np.arange(len(subjset.perturbations)), minor=False)
     ax.set_yticklabels(list(df.index))
@@ -501,7 +503,7 @@ def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig):
         tick.label.set_fontsize(18)
     return ax
 
-def _make_phylogenetic_tree(treename, chainname, ax, fig, healthy, side_by_side=False):
+def _make_phylogenetic_tree(treename, chainname, ax, fig, healthy, side_by_side=False, figlabel=None):
     chain = pl.inference.BaseMCMC.load(chainname)
     asvs = chain.graph.data.asvs
     names = [str(name) for name in asvs.names.order]
@@ -549,13 +551,17 @@ def _make_phylogenetic_tree(treename, chainname, ax, fig, healthy, side_by_side=
         asvname = ' ' + suffix + asvname
         text._text = str(asvname.replace('OTU_', 'ASV'))   
         if healthy:  
-            text._text = text._text + '- ' * 40
-        else:
             text._text = text._text + '- ' * 45
+        else:
+            text._text = text._text + '- ' * 55
         text.set_fontsize(9.7)
 
+    if figlabel is not None:
+        ax.text(x=0.15, y=1.03, s=figlabel, fontsize=45, fontweight='bold',
+            transform=ax.transAxes)
+
     # Make the taxnonmic key on the right hand side
-    text = 'Taxonomy Key\n'
+    text = '$\\bf{Taxonomy} \\bf{Key}$\n'
     for taxa in taxonomies:
         text += '{} - {}\n'.format(suffix_taxa[taxa], taxa)
     if side_by_side is not None:
@@ -579,13 +585,11 @@ def phylogenetic_heatmap(healthy):
         # treename = 'raw_data/phylogenetic_tree_branch_len_preserved.nhx'
     treename = 'raw_data/phylogenetic_tree_branch_len_preserved.nhx'
 
-    fig = plt.figure(figsize=(12,20))
+    fig = plt.figure(figsize=(12,15))
     gs = fig.add_gridspec(12,10)
     ax_phyl = fig.add_subplot(gs[1:,:3])
     ax_clus = fig.add_subplot(gs[1:,6:])
     ax_pert = fig.add_subplot(gs[0,6:])
-
-
 
     ax_phyl, order = _make_phylogenetic_tree(treename=treename, chainname=chainname, ax=ax_phyl, 
         fig=fig, healthy=healthy)
@@ -628,9 +632,9 @@ def phylogenetic_heatmap_side_by_side():
     ax_clus_healthy = fig.add_subplot(gs[1:,6:10])
     ax_pert_healthy = fig.add_subplot(gs[0,6:10])
 
-    ax_phyl_uc = fig.add_subplot(gs[1:,11:11+3])
-    ax_clus_uc = fig.add_subplot(gs[1:,11+6:11+10])
-    ax_pert_uc = fig.add_subplot(gs[0,11+6:11+10])
+    ax_phyl_uc = fig.add_subplot(gs[1:,10:10+3])
+    ax_clus_uc = fig.add_subplot(gs[1:,10+6:10+10])
+    ax_pert_uc = fig.add_subplot(gs[0,10+6:10+10])
 
     treename = 'raw_data/phylogenetic_tree_branch_len_preserved.nhx'
 
@@ -638,11 +642,11 @@ def phylogenetic_heatmap_side_by_side():
     chainname = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/' \
         'ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
     ax_phyl_healthy, order = _make_phylogenetic_tree(treename=treename, chainname=chainname, ax=ax_phyl_healthy, 
-        fig=fig, healthy=True, side_by_side=True)
+        fig=fig, healthy=True, side_by_side=True, figlabel='A')
     ax_clus_healthy, colorder = _make_cluster_membership_heatmap(chainname=chainname, ax=ax_clus_healthy, 
-        order=order, binary=False, fig=fig)
+        order=order, binary=False, fig=fig, make_colorbar=False)
     ax_pert_healthy = _make_perturbation_heatmap(chainname=chainname, min_bayes_factor=10, 
-        ax=ax_pert_healthy, colorder=colorder, fig=fig)
+        ax=ax_pert_healthy, colorder=colorder, fig=fig, make_colorbar=False)
 
     ax_phyl_healthy.spines['top'].set_visible(False)
     ax_phyl_healthy.spines['bottom'].set_visible(False)
@@ -660,7 +664,7 @@ def phylogenetic_heatmap_side_by_side():
     chainname = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/' \
             'ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
     ax_phyl_uc, order = _make_phylogenetic_tree(treename=treename, chainname=chainname, ax=ax_phyl_uc, 
-        fig=fig, healthy=True, side_by_side=None)
+        fig=fig, healthy=True, side_by_side=None, figlabel='B')
     ax_clus_uc, colorder = _make_cluster_membership_heatmap(chainname=chainname, ax=ax_clus_uc, 
         order=order, binary=False, fig=fig)
     ax_pert_uc = _make_perturbation_heatmap(chainname=chainname, min_bayes_factor=10, 
@@ -678,12 +682,13 @@ def phylogenetic_heatmap_side_by_side():
     ax_phyl_uc.set_ylabel('')
     ax_pert_uc.set_title('Ulcerative Colitis Consortium', fontsize=30)
 
-    fig.subplots_adjust(wspace=0.40, left=0.03, right=0.87, hspace=0.01,
+    fig.subplots_adjust(wspace=0.30, left=0.02, right=0.92, hspace=0.01,
         top=0.95, bottom=0.03)
 
     # fig.suptitle('Test', fontsize=30)
 
     plt.savefig(BASEPATH + 'phylo_clustering_heatmap_side_by_side_RDP_alignment.pdf')
+    plt.savefig(BASEPATH + 'phylo_clustering_heatmap_side_by_side_RDP_alignment.png')
     plt.close()
 
 
@@ -3089,7 +3094,7 @@ os.makedirs('output_figures/', exist_ok=True)
 # alpha_diversity_mean_std()
 
 # Beta diversity
-beta_diversity_figure()
+# beta_diversity_figure()
 
 # Data figure
 # data_figure_rel_and_qpcr(horizontal=True)
@@ -3103,7 +3108,7 @@ beta_diversity_figure()
 
 # Phylogenetic heatmap
 # phylogenetic_heatmap(False)
-# phylogenetic_heatmap_side_by_side()
+phylogenetic_heatmap_side_by_side()
 
 # Semi-synthetic benchmarking
 # semi_synthetic_benchmark_figure()

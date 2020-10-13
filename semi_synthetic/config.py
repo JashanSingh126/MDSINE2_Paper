@@ -295,7 +295,7 @@ class ModelConfigMCMC(_BaseModelConfig):
 
         self.N_QPCR_BUCKETS = 3
 
-        self.INTERMEDIATE_VALIDATION_T = 20 #8 * 3600 # Every 8 hours
+        self.INTERMEDIATE_VALIDATION_T = 4*60*60 #8 * 3600 # Every 8 hours
         self.INTERMEDIATE_VALIDATION_KWARGS = None
 
         self.LEARN = {
@@ -311,7 +311,7 @@ class ModelConfigMCMC(_BaseModelConfig):
             STRNAMES.PROCESSVAR: True,
             STRNAMES.FILTERING: True,
             STRNAMES.ZERO_INFLATION: False,
-            STRNAMES.CLUSTERING: False, #clustering_on,
+            STRNAMES.CLUSTERING: True, #clustering_on,
             STRNAMES.CONCENTRATION: True,
             STRNAMES.CLUSTER_INTERACTION_INDICATOR: True,
             STRNAMES.INDICATOR_PROB: True,
