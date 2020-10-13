@@ -20,6 +20,8 @@ import names
 import pylab as pl
 import model
 
+logging.basicConfig(level=logging.DEBUG)
+
 def parse_args():
     parser = argparse.ArgumentParser()
 
@@ -29,11 +31,9 @@ def parse_args():
         help='Posterior chain we want to do inference over')
     parser.add_argument('--data', '--input', type=str, dest='input',
         help='File describing which ASVs to leave out')
-    parser.add_argument('--output-txt', '-otxt', type=str, dest='output_txt',
-        help='Where to save the output text file')
     parser.add_argument('--output-tbl', '-otbl', type=str, dest='output_tbl',
         help='Where to save the output table of all the abundances')
-    parser.add_argument('--max-posterior', '-m', type=int, dest='max_posterior',
+    parser.add_argument('--max-posterior', type=int, dest='max_posterior',
         help='TESTING USE ONLY', default=None)
     parser.add_argument('--n-cpus', '-mp', type=int, dest='n_cpus',
         help='How many cpus to use for multiprocessing', default=None)
@@ -41,7 +41,8 @@ def parse_args():
     args = parser.parse_args()
     return args
     
-def keystoneness_leave_one_out(chain_fname, fname, outfile_rank, outfile_table, max_posterior=None, mp=None):
+def keystoneness_leave_one_out(chain_fname, fname, outfile_table, initial_conditions=None, 
+    max_posterior=None, mp=None):
     '''The file(s) show a list of asvs to delete, comma separated
     All of the asvs on a single line should be deleted at once. Note that 
     this is all a single process
@@ -52,8 +53,6 @@ def keystoneness_leave_one_out(chain_fname, fname, outfile_rank, outfile_table, 
         This is the location of the Pylab MCMC chain filename that is saved from inference
     fname : str
         This is the location of the file that describes which ASVs to be held out
-    outfile_rank : str
-        This is the location where to print the output
     output_table : str
         This is where to save the table of the concentrations and the base
     '''
@@ -76,13 +75,16 @@ def keystoneness_leave_one_out(chain_fname, fname, outfile_rank, outfile_table, 
     dyn.self_interactions = si_master
     dyn.interactions = A_master
 
-    df = subjset.df(dtype='abs', agg='mean', times='union')
-    initial_conditions = df[0.5].to_numpy()
+    if initial_conditions is None:
+        df = subjset.df(dtype='abs', agg='mean', times='union')
+        initial_conditions = df[0.5].to_numpy()
 
-    for i in range(len(initial_conditions)):
-        if initial_conditions[i] == 0:
-            initial_conditions[i] = pl.random.truncnormal.sample(mean=1e5, std=1e5, low=1e2)
-    initial_conditions = initial_conditions.reshape(-1,1)
+        for i in range(len(initial_conditions)):
+            if initial_conditions[i] == 0:
+                initial_conditions[i] = pl.random.truncnormal.sample(mean=1e5, std=1e5, low=1e2)
+        initial_conditions = initial_conditions.reshape(-1,1)
+    else:
+        inital_conditions = np.load(initial_conditions)
 
     days = 20
     sim_dt = 0.01
@@ -103,8 +105,8 @@ def keystoneness_leave_one_out(chain_fname, fname, outfile_rank, outfile_table, 
                 dt=sim_dt, n_days=days, 
                 subsample=True, times=np.arange(days), log_every=None)
             BASE_CONCENTRATIONS[i] = _d['X'][:,-1]
-            if i %20 == 0:
-                print('{}/{}: {}'.format(i,growth_master.shape[0], time.time()-start_time))
+            if i %10 == 0:
+                logging.debug('{}/{}: {}'.format(i,growth_master.shape[0], time.time()-start_time))
             # print(BASE_CONCENTRATIONS[i,:])
     else:
         # Integrate over posterior with multiprocessing
@@ -155,14 +157,16 @@ def keystoneness_leave_one_out(chain_fname, fname, outfile_rank, outfile_table, 
         names_to_del_lst.append(_tpl_names)
         row_names.append(str(_tpl_names))
 
-    output_tbl = np.zeros(shape=(len(row_names)+1, 
+    output_tbl = np.zeros(shape=(len(row_names), 
         len(chain.graph.data.asvs)), dtype=float)
-    output_tbl[0] = BASE_CONCENTRATIONS
+    output_tbl[0] = np.mean(BASE_CONCENTRATIONS, axis=0)
+
+    print('output_tbl.shape', output_tbl.shape)
     
     for names_iii, names_to_del in enumerate(names_to_del_lst):
         idxs_to_del = [subjset.asvs[name].idx for name in names_to_del]
         # Take out asv aidxs and do the forward simulation
-        print('{}/{}: {}'.format(names_iii, len(args), names_to_del))
+        logging.debug('{}/{}: {}'.format(names_iii, len(args), names_to_del))
 
         mask = np.ones(len(subjset.asvs), dtype=bool)
         mask[idxs_to_del] = False
@@ -192,7 +196,7 @@ def keystoneness_leave_one_out(chain_fname, fname, outfile_rank, outfile_table, 
                 dt=0.01, n_days=days, times=np.arange(days), subsample=True)
             concentrations[i] = iii['X'][:,-1]
             if i % 20 == 0:
-                print('\t{}/{}'.format(i, growth_master.shape[0]))
+                logging.debug('\t{}/{}'.format(i, growth_master.shape[0]))
 
         output_tbl[names_iii + 1, mask] = np.mean(concentrations, axis=0)
         output_tbl[names_iii+1, ~mask] = np.nan
@@ -202,32 +206,11 @@ def keystoneness_leave_one_out(chain_fname, fname, outfile_rank, outfile_table, 
 
     idxs = (np.argsort(list(dists.values())))[::-1]
     keys = list(dists.keys())
-
-    # Print the results
-    f = open(outfile_rank, 'w')
-
-    f.write('Concise results\n')
-    for i, idx in enumerate(idxs):
-        f.write('{}: {} (was {} on bfs)\n'.format(i+1, keys[idx], idx+1))
-
-    f.write('Spearman correlation on ranking: {}\n'.format(
-        scipy.stats.spearmanr(idxs, np.arange(len(idxs)))[0]))
-
-    f.write('expanded results')
-    for i, idx in enumerate(idxs):
-        
-        names_ = keys[idx]
-        f.write('\n\n---------------------------------------------\n{}\n'.format(names_))
-        temp_asvs = [subjset.asvs[name] for name in names_]
-        for asv in temp_asvs:
-            f.write('{}\n'.format(str(asv)))
-
-        f.write('Effect: {:.4E}\n'.format(dists[names_]))
     
     # Save the table of the concentrations
-    df = pd.DataFrame(data=outfile_table, index=row_names, 
+    df = pd.DataFrame(data=output_tbl, index=row_names, 
         columns=chain.graph.data.asvs.names.order)
-    df.to_csv(output_table, sep='\t', header=True, index=True)
+    df.to_csv(outfile_table, sep='\t', header=True, index=True)
 
 class _ForwardSimWorker(pl.multiprocessing.PersistentWorker):
     '''Multiprocessed forward simulation.
@@ -268,7 +251,7 @@ if __name__ == '__main__':
     
     if args.keystoneness_type == 'leave-one-out':
         keystoneness_leave_one_out(chain_fname=args.model, fname=args.input, 
-            outfile_rank=args.output_txt, outfile_table=args.output_tbl, 
+            outfile_table=args.output_tbl, 
             max_posterior=args.max_posterior, mp=args.n_cpus)
     elif args.keystoneness_type == 'perturbations':
         raise NotImplementedError('Not Implemented')
