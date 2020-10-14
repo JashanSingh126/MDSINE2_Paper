@@ -4665,6 +4665,7 @@ def semi_synthetic_intermediate_validation_func(chain, n_samples, burnin, sample
     us : bool
         Uniform timepoint sampling
     '''
+    logging.info('Inside intermediate validation function')
     comparison = pl.inference.BaseMCMC.load(comparison_filename)
     
     columns = ['sample_iter', 'rmse_growth', 'rmse_interactions',
@@ -4707,6 +4708,8 @@ def semi_synthetic_intermediate_validation_func(chain, n_samples, burnin, sample
     # Interactions
     interactions = chain.graph[STRNAMES.INTERACTIONS_OBJ]
     interactions_trace = interactions.trace[:interactions.ckpt_iter, ...]
+    interactions_trace_disk = interactions.get_trace_from_disk(section='entire')
+    interactions_trace = np.vstack((interactions_trace, interactions_trace_disk))
     interactions_trace[np.isnan(interactions_trace)] = 0
     for aidx in range(len(si_truth)):
         interactions_trace[:,aidx,aidx] = si_trace[:, aidx]
@@ -4738,8 +4741,7 @@ def semi_synthetic_intermediate_validation_func(chain, n_samples, burnin, sample
         for pidx, pert in enumerate(chain.graph.perturbations):
             pert_truth = comparison.graph.perturbations[pidx].item_array()
             pert_truth[np.isnan(pert_truth)] = 0
-
-            pert_trace = pert.trace[pert.ckpt_iter, ...]
+            pert_trace = pert.trace[:pert.ckpt_iter, ...]
             pert_trace_disk = pert.get_trace_from_disk(section='entire')
             pert_trace = np.vstack((pert_trace, pert_trace_disk))
             pert_trace[np.isnan(pert_trace)] = 0
@@ -4779,7 +4781,7 @@ def semi_synthetic_intermediate_validation_func(chain, n_samples, burnin, sample
 
     dfnew = pd.DataFrame([ret], columns=columns)
 
-    print(dfnew)
+    logging.info('new results:\n{}'.format(dfnew))
 
     # Save the results, append the results with a dataframe
     if os.path.isfile(path):
@@ -4787,9 +4789,6 @@ def semi_synthetic_intermediate_validation_func(chain, n_samples, burnin, sample
         df = df.append(dfnew)
     else:
         df = dfnew
-
-    print(df)
-    print(path)
 
     df.to_csv(path, sep='\t', index=False)
     

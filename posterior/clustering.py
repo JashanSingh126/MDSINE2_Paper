@@ -1028,6 +1028,8 @@ class ClusterAssignments(pl.graph.Node):
             self.pool.initialize_gibbs(**kwargs)
 
         oidxs = npr.permutation(np.arange(len(self.G.data.asvs)))
+        if self.percent_mix is not None:
+            oidxs = oidxs[:int(self.percent_mix * len(oidxs))]
         for iii, oidx in enumerate(oidxs):
             logging.info('{}/{} - {}'.format(iii, len(self.G.data.asvs), oidx))
             self.oidx = oidx

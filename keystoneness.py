@@ -1,6 +1,6 @@
 '''Run the keystoneness metric.
 
-Returns a text file of the 
+Calculate a baseline
 '''
 
 import numpy as np
@@ -40,6 +40,14 @@ def parse_args():
 
     args = parser.parse_args()
     return args
+
+def keystoneness_perturbation(chain_fname, fname, outfile_table, initial_conditions=None, 
+    max_posterior=None):
+
+    pass
+
+# def keystoneness_knockdown():
+#     pass
     
 def keystoneness_leave_one_out(chain_fname, fname, outfile_table, initial_conditions=None, 
     max_posterior=None, mp=None):

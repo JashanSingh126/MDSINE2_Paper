@@ -75,89 +75,179 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 # print()
 # sys.exit()
 
-####################################################
-# Submit keystoneness jobs 
-####################################################
+cmd_fmt = 'bmod -R "rusage[mem=3000]" {job}'
 
-my_str = '''
-#!/bin/bash
-#BSUB -J {RRR}_{consortium}_{start}_{end}
-#BSUB -o {basepath}{consortium}_{start}_{end}_output.out
-#BSUB -e {basepath}{consortium}_{start}_{end}_error.err
+f = open('tmp/change_mem.txt', 'r')
+txt = f.read()
+f.close()
+lines = txt.split('\n')
+jobs = []
+for line in lines:
+    print(line)
+    jobs.append(line[:6])
 
-# This is a sample script with specific resource requirements for the
-# **bigmemory** queue with 64GB memory requirement and memory
-# limit settings, which are both needed for reservations of
-# more than 40GB.
-# Copy this script and then submit job as follows:
-# ---
-# cd ~/lsf
-# cp templates/bsub/example_8CPU_bigmulti_64GB.lsf .
-# bsub < example_bigmulti_8CPU_64GB.lsf
-# ---
-# Then look in the ~/lsf/output folder for the script log
-# that matches the job ID number
+for job in jobs:
+    cmd = cmd_fmt.format(job=job)
+    os.system(cmd)
 
-# Please make a copy of this script for your own modifications
-
-#BSUB -q {queue}
-#BSUB -n {n_cpus}
-#BSUB -M {n_mbs}
-#BSUB -R rusage[mem={n_mbs}]
-
-# Some important variables to check (Can be removed later)
-echo '---PROCESS RESOURCE LIMITS---'
-ulimit -a
-echo '---SHARED LIBRARY PATH---'
-echo $LD_LIBRARY_PATH
-echo '---APPLICATION SEARCH PATH:---'
-echo $PATH
-echo '---LSF Parameters:---'
-printenv | grep '^LSF'
-echo '---LSB Parameters:---'
-printenv | grep '^LSB'
-echo '---LOADED MODULES:---'
-module list
-echo '---SHELL:---'
-echo $SHELL
-echo '---HOSTNAME:---'
-hostname
-echo '---GROUP MEMBERSHIP (files are created in the first group listed):---'
-groups
-echo '---DEFAULT FILE PERMISSIONS (UMASK):---'
-umask
-echo '---CURRENT WORKING DIRECTORY:---'
-pwd
-echo '---DISK SPACE QUOTA---'
-df .
-echo '---TEMPORARY SCRATCH FOLDER ($TMPDIR):---'
-echo $TMPDIR
-
-# Add your job command here
-# Load module
-module load anaconda
-source activate dispatcher_pylab3
-
-cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/
-python3 keystoneness.py --type leave-one-out --model {chain_fname} --data {input_fname} --output-tbl {basepath}{consortium}_{start}_{end}.tsv
-'''
-
-chains = {
-    'healthy': 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-    'uc': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
-fnames_ddd = {
-    'healthy': [
-        'tmp/keystone_data/healthy_chain_2.txt',
-        'tmp/keystone_data/healthy_chain_3.txt',
-        'tmp/keystone_data/healthy_cycle_2.txt',
-        'tmp/keystone_data/healthy_cycle_3.txt'],
-    'uc': [
-        'tmp/keystone_data/uc_chain_2.txt',
-        'tmp/keystone_data/uc_chain_3.txt',
-        'tmp/keystone_data/uc_cycle_2.txt',
-        'tmp/keystone_data/uc_cycle_3.txt']}
+sys.exit()
 
 
+# def mersauce(a,b,c,deff):
+#     print('am I right or am I right')
+
+# args = inspect.getargspec(mersauce).args
+
+# for i, arg in enumerate(args):
+#     print(i, arg)
+# print()
+# sys.exit()
+
+# ####################################################
+# # Submit keystoneness jobs 
+# ####################################################
+
+# my_str = '''
+# #!/bin/bash
+# #BSUB -J {RRR}_{consortium}_{start}_{end}
+# #BSUB -o {basepath}{consortium}_{start}_{end}_output.out
+# #BSUB -e {basepath}{consortium}_{start}_{end}_error.err
+
+# # This is a sample script with specific resource requirements for the
+# # **bigmemory** queue with 64GB memory requirement and memory
+# # limit settings, which are both needed for reservations of
+# # more than 40GB.
+# # Copy this script and then submit job as follows:
+# # ---
+# # cd ~/lsf
+# # cp templates/bsub/example_8CPU_bigmulti_64GB.lsf .
+# # bsub < example_bigmulti_8CPU_64GB.lsf
+# # ---
+# # Then look in the ~/lsf/output folder for the script log
+# # that matches the job ID number
+
+# # Please make a copy of this script for your own modifications
+
+# #BSUB -q {queue}
+# #BSUB -n {n_cpus}
+# #BSUB -M {n_mbs}
+# #BSUB -R rusage[mem={n_mbs}]
+
+# # Some important variables to check (Can be removed later)
+# echo '---PROCESS RESOURCE LIMITS---'
+# ulimit -a
+# echo '---SHARED LIBRARY PATH---'
+# echo $LD_LIBRARY_PATH
+# echo '---APPLICATION SEARCH PATH:---'
+# echo $PATH
+# echo '---LSF Parameters:---'
+# printenv | grep '^LSF'
+# echo '---LSB Parameters:---'
+# printenv | grep '^LSB'
+# echo '---LOADED MODULES:---'
+# module list
+# echo '---SHELL:---'
+# echo $SHELL
+# echo '---HOSTNAME:---'
+# hostname
+# echo '---GROUP MEMBERSHIP (files are created in the first group listed):---'
+# groups
+# echo '---DEFAULT FILE PERMISSIONS (UMASK):---'
+# umask
+# echo '---CURRENT WORKING DIRECTORY:---'
+# pwd
+# echo '---DISK SPACE QUOTA---'
+# df .
+# echo '---TEMPORARY SCRATCH FOLDER ($TMPDIR):---'
+# echo $TMPDIR
+
+# # Add your job command here
+# # Load module
+# module load anaconda
+# source activate dispatcher_pylab3
+
+# cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/
+# python3 keystoneness.py --type leave-one-out --model {chain_fname} --data {input_fname} --output-tbl {basepath}{consortium}_{start}_{end}.tsv
+# '''
+
+# chains = {
+#     'healthy': 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'uc': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
+
+# # Clusters
+# chains_cluster = {
+#     'healthy': 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'} #,
+#     # 'uc': 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
+# tmp_folder = 'tmp/keystone_data/'
+# output_basepath = 'tmp/keystone_clusters/'
+# os.makedirs(tmp_folder, exist_ok=True)
+# os.makedirs(output_basepath, exist_ok=True)
+
+# fname_fmt = tmp_folder + '{consortium}_clusters.txt'
+# tsv_fmt = output_basepath + '{consortium}_clusters_{start}_{end}.tsv'
+# for consortium in chains_cluster:
+#     # Make the data folder
+#     chain = pl.inference.BaseMCMC.load(chains_cluster[consortium])
+#     asvs = chain.graph.data.asvs
+#     clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
+#     s = ''
+#     for cluster in clustering:
+#         s = s +','.join([asvs.names.order[aaa] for aaa in cluster.members]) + '\n'
+#     input_fname = fname_fmt.format(consortium=consortium)
+#     f = open(input_fname, 'w')
+#     f.write(s)
+#     f.close()
+
+#     # Make tsv fname
+#     basepath = basepath = input_fname.replace('.txt', '/')
+#     os.makedirs(basepath, exist_ok=True)
+#     start = 0
+#     n_asvs_per_job = 5
+
+#     f = open(input_fname, 'r')
+#     args = f.read().split('\n')\
+
+#     while start < len(args):
+#         end = start+n_asvs_per_job
+#         if end > len(args):
+#             end = len(args)
+
+#         # Make input data
+#         input_fname = basepath + 'data_{}_{}.txt'.format(start,end)
+#         f = open(input_fname, 'w')
+#         f.write('\n'.join(args[start:end]))
+#         f.close()
+
+#         # Make lsf file
+#         lsf_fname = basepath + 'job_{}_{}.lsf'.format(start,end)
+#         f = open(lsf_fname, 'w')
+#         f.write(my_str.format(
+#             consortium=consortium, start=start, end=end, queue='medium', n_cpus=1, n_mbs=7000,
+#             chain_fname=chains[consortium], input_fname=input_fname, basepath=basepath,
+#             RRR='cluster'))
+#         f.close()
+
+#         # Submit the job
+#         command = 'bsub < {}'.format(lsf_fname)
+#         print(command)
+#         os.system(command)
+#         start = end
+# sys.exit()
+
+# # Chains and cycles
+# fnames_ddd = {
+#     'healthy': [
+#         'tmp/keystone_data/healthy_chain_2.txt',
+#         'tmp/keystone_data/healthy_chain_3.txt',
+#         'tmp/keystone_data/healthy_cycle_2.txt',
+#         'tmp/keystone_data/healthy_cycle_3.txt',
+#         'tmp/keystone_data/healthy_chain_1.txt'],
+#     'uc': [
+#         'tmp/keystone_data/uc_chain_2.txt',
+#         'tmp/keystone_data/uc_chain_3.txt',
+#         'tmp/keystone_data/uc_cycle_2.txt',
+#         'tmp/keystone_data/uc_cycle_3.txt',
+#         'tmp/keystone_data/uc_chain_1.txt']}
 # for consortium in chains:
 #     chain_fname = chains[consortium]
 #     for input_fname in fnames_ddd[consortium]:
@@ -196,40 +286,40 @@ fnames_ddd = {
 #             start = end
 
 
-# Each ASV
-start = 0
-n_asvs_per_job = 5
-consortium = 'healthy'
-chain_fname = chains[consortium]
-chain = pl.inference.BaseMCMC.load(chain_fname)
-asv_names = chain.graph.data.subjects.asvs.names.order
-basepath = 'tmp/keystone_{}/'.format(consortium)
-os.makedirs(basepath, exist_ok=True)
-while start < len(asv_names):
+# # Each ASV
+# start = 0
+# n_asvs_per_job = 5
+# consortium = 'healthy'
+# chain_fname = chains[consortium]
+# chain = pl.inference.BaseMCMC.load(chain_fname)
+# asv_names = chain.graph.data.subjects.asvs.names.order
+# basepath = 'tmp/keystone_{}/'.format(consortium)
+# os.makedirs(basepath, exist_ok=True)
+# while start < len(asv_names):
 
-    end = start+n_asvs_per_job
-    if end > len(asv_names):
-        end = len(asv_names)
+#     end = start+n_asvs_per_job
+#     if end > len(asv_names):
+#         end = len(asv_names)
 
-    # Make input data
-    input_fname = basepath + 'data_{}_{}.txt'.format(start,end)
-    f = open(input_fname, 'w')
-    f.write('\n'.join(asv_names[start:end]))
-    f.close()
+#     # Make input data
+#     input_fname = basepath + 'data_{}_{}.txt'.format(start,end)
+#     f = open(input_fname, 'w')
+#     f.write('\n'.join(asv_names[start:end]))
+#     f.close()
 
-    # Make lsf file
-    lsf_fname = basepath + 'job_{}_{}.lsf'.format(start,end)
-    f = open(lsf_fname, 'w')
-    f.write(my_str.format(
-        consortium=consortium, start=start, end=end, queue='medium', n_cpus=1, n_mbs=7000,
-        chain_fname=chain_fname, input_fname=input_fname, basepath=basepath, RRR=''))
-    f.close()
+#     # Make lsf file
+#     lsf_fname = basepath + 'job_{}_{}.lsf'.format(start,end)
+#     f = open(lsf_fname, 'w')
+#     f.write(my_str.format(
+#         consortium=consortium, start=start, end=end, queue='medium', n_cpus=1, n_mbs=7000,
+#         chain_fname=chain_fname, input_fname=input_fname, basepath=basepath, RRR=''))
+#     f.close()
 
-    # Submit the job
-    command = 'bsub < {}'.format(lsf_fname)
-    print(command)
-    os.system(command)
-    start = end
+#     # Submit the job
+#     command = 'bsub < {}'.format(lsf_fname)
+#     print(command)
+#     os.system(command)
+#     start = end
 
 sys.exit()
 
