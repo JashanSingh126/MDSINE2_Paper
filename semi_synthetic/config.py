@@ -52,7 +52,7 @@ SEMI_SYNTHETIC_MESHES = [
     (
         [5], # Number of replicates
         [55], # Number of timepoints
-        2, # Total number of data seeds
+        10, # Total number of data seeds
         1, # Total number of initialization seeds
         [0.1, 0.2, 0.25, 0.3, 0.4], # Measurement Noises
         [0.1], # Process variances
@@ -63,7 +63,7 @@ SEMI_SYNTHETIC_MESHES = [
     (
         [2,3,4,5], # Number of replicates
         [55], # Number of timepoints
-        2, # Total number of data seeds
+        10, # Total number of data seeds
         1, # Total number of initialization seeds
         [0.3], # Measurement Noises
         [0.1], # Process variances
@@ -74,7 +74,7 @@ SEMI_SYNTHETIC_MESHES = [
     (
         [4], # Number of replicates
         [35, 45, 50, 55, 65], # Number of timepoints
-        2, # Total number of data seeds
+        10, # Total number of data seeds
         1, # Total number of initialization seeds
         [0.3], # Measurement Noises
         [0.1], # Process variances
