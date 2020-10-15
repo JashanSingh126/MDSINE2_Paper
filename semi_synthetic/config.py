@@ -289,7 +289,7 @@ class ModelConfigMCMC(_BaseModelConfig):
         self.RELATIVE_LOG_MARGINAL_INDICATORS = True
         self.RELATIVE_LOG_MARGINAL_PERT_INDICATORS = True
         self.RELATIVE_LOG_MARGINAL_CLUSTERING = False
-        self.PERCENT_CHANGE_CLUSTERING = pcc
+        self.PERCENT_CHANGE_CLUSTERING = 0.05 #pcc
 
         self.NEGBIN_A0 = a0
         self.NEGBIN_A1 = a1
@@ -297,7 +297,7 @@ class ModelConfigMCMC(_BaseModelConfig):
 
         self.N_QPCR_BUCKETS = 3
 
-        self.INTERMEDIATE_VALIDATION_T = 2*60*60 #8 * 3600 # Every 8 hours
+        self.INTERMEDIATE_VALIDATION_T = 10 #2*60*60 #8 * 3600 # Every 8 hours
         self.INTERMEDIATE_VALIDATION_KWARGS = None
 
         self.LEARN = {

@@ -181,7 +181,7 @@ if __name__ == '__main__':
  
     graph_name = args.job_name #'graph'+ params.suffix() + synparams.suffix()
     basepath = params.OUTPUT_BASEPATH + graph_name + '/'
-    config.LoggingConfig(basepath=basepath)
+    config.LoggingConfig() #basepath=basepath)
 
     logging.info('Init settings')
     logging.info('Data seed: {}'.format(args.data_seed))

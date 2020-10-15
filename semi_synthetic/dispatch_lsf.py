@@ -6,6 +6,7 @@ import sys
 import pandas as pd
 import time
 import datetime
+import re
 
 import matplotlib.pyplot as plt
 import seaborn as sns
