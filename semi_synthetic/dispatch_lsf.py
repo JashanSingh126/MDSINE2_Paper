@@ -111,7 +111,7 @@ def make_lsf_script(jobname, logging_loc, n_cpus, queue, n_mbs, mn, pv, d, i, b,
     source activate dispatcher_pylab3
 
     cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/semi_synthetic/
-    python main_mcmc.py -m {mn} -p {pv} -d {d} -i {i} -b {b} -nb {burnin} -ns {n_samples} -nr {nr} -c {co} -nt {nt} -db {db} -us {us} {continue_str}
+    python main_mcmc.py --job-name {jobname} -m {mn} -p {pv} -d {d} -i {i} -b {b} -nb {burnin} -ns {n_samples} -nr {nr} -c {co} -nt {nt} -db {db} -us {us} {continue_str}
     '''
     return my_str.format(
         jobname=jobname,
