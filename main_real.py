@@ -128,7 +128,8 @@ def parse_args():
         help='Necessary if cross_validate is True. If True, use bsub to do the dispatching. ' \
             'Else just run the jobs sequentially.', default=0, dest='use_docker')
     parser.add_argument('--continue', '-cont', type=int,
-        help='Continue the inference at a specified Gibbs step', default=None, dest='continue_inference')
+        help='Continue inference at the last place where disk is recorded and initialize with the ' \
+            'data seed secified in continue', default=None, dest='continue_inference')
     
     args = parser.parse_args()
     return args
@@ -137,20 +138,12 @@ def main_leave_out_single(params, fparams, continue_inference):
     # Constants
     ONLY_PLOT = False
 
-    pl.seed(params.DATA_SEED)
-
     ddd = _make_basepath(params=params, fparams=fparams)
     params.OUTPUT_BASEPATH = ddd['output_basepath']
     basepath = ddd['basepath']
     graph_name = ddd['graph_name']
 
-    if continue_inference:
-        if not os.path.isdir(basepath):
-            raise ValueError('You want to continue inference at GIbb step {} but the path ' \
-                '{} does not exist'.format(continue_inference, basepath))
-    else:
-        os.makedirs(basepath, exist_ok=True) # Make the folder
-    config.LoggingConfig(basepath=basepath)
+    config.LoggingConfig() #basepath=basepath)
 
     chain_result_filename = basepath + config.MCMC_FILENAME
     subjset_filename = basepath + config.SUBJSET_FILENAME
@@ -160,11 +153,34 @@ def main_leave_out_single(params, fparams, continue_inference):
     tracer_filename = basepath + config.TRACER_FILENAME
     params_filename = basepath + config.PARAMS_FILENAME
     fparams_filename = basepath + config.FPARAMS_FILENAME
+    seed_restart_filename = basepath + config.RESTART_INFERENCE_SEED_RECORD
 
+    if continue_inference is not None:
+        logging.warning('CONTINUING INFERENCE FROM LAST SAVED PART AT DISK')
+        if not os.path.isdir(basepath):
+            raise ValueError('You want to continue inference with seed {} but the path ' \
+                '{} does not exist'.format(continue_inference, basepath))
+        # Set the seed we are starting at
+        pl.seed(continue_inference)
 
-    # params = config.ModelConfigReal.load(params_filename)
-    # print(str(params))
-    # sys.exit()
+        # Get iteration we are starting at
+        mcmc = pl.inference.BaseMCMC.load(chain_result_filename)
+        iter_start = mcmc.tracer.get_disk_trace_iteration()
+        logging.info('restarting inference at point {}'.format(iter_start))
+
+        dfnew = pd.DataFrame([[iter_start, continue_inference]], columns=['Iteration', 'Seed'])
+        df_old = pd.read_csv(seed_restart_filename, sep='\t')
+        df = df_old.append(dfnew)
+        df.to_csv(seed_restart_filename, sep='\t', index=False)
+
+        # Set continue inference to `iter_start`
+        continue_inference = iter_start
+
+    else:
+        pl.seed(params.DATA_SEED)
+        os.makedirs(basepath, exist_ok=True) # Make the folder
+        dfnew = pd.DataFrame([[0, params.DATA_SEED]], columns=['Iteration', 'Seed'])
+        dfnew.to_csv(seed_restart_filename, sep='\t', index=False)
 
     # Load the real data and separate the subjects
     subjset = pl.SubjectSet.load(params.DATA_FILENAME)
@@ -185,7 +201,7 @@ def main_leave_out_single(params, fparams, continue_inference):
 
     if not ONLY_PLOT:
 
-        if continue_inference:
+        if continue_inference is not None:
             params = config.ModelConfigReal.load(params_filename)
             fparams = config.FilteringConfig.load(fparams_filename)
             subjset = pl.base.SubjectSet.load(subjset_filename)
@@ -241,57 +257,58 @@ def main_leave_out_single(params, fparams, continue_inference):
         else:
             validate_subjset = None
 
-        matrixes = [subj.matrix()['abs'] for subj in subjset]
-        read_depthses = [subj.read_depth() for subj in subjset]
-        qpcrses = [np.sum(subj.matrix()['abs'], axis=0) for subj in subjset]
-
-        # logging.info('Plotting Data')
-        # for asv in subjset.asvs:
-        #     logging.info('{}/{}'.format(asv.idx, len(subjset.asvs)))
-        #     fig = plt.figure(figsize=(20,10))
-        #     fig = filtering.plot_asv(
-        #         subjset=subjset, asv=asv, fparams=fparams, fig=fig,
-        #         legend=True, title_format='Subject %(sname)s',
-        #         suptitle_format='%(index)s: %(name)s\n%(order)s, %(family)s, %(genus)s',
-        #         yscale_log=True, matrixes=matrixes, read_depthses=read_depthses,
-        #         qpcrses=qpcrses)
-        #     plt.savefig(plotbasepath + '{}.pdf'.format(asv.name))
-        #     plt.close()
-
         # Plot data
-        subjs = [subj for subj in subjset]
-        for i, subj in enumerate(subjs):
-            pl.visualization.abundance_over_time(subj=subj, dtype='abs', legend=True,
-                taxlevel='genus', set_0_to_nan=True, yscale_log=True)
-            plt.savefig(basepath + 'data{}.pdf'.format(subj.name))
+        if continue_inference is None:
+            matrixes = [subj.matrix()['abs'] for subj in subjset]
+            read_depthses = [subj.read_depth() for subj in subjset]
+            qpcrses = [np.sum(subj.matrix()['abs'], axis=0) for subj in subjset]
+
+            # logging.info('Plotting Data')
+            # for asv in subjset.asvs:
+            #     logging.info('{}/{}'.format(asv.idx, len(subjset.asvs)))
+            #     fig = plt.figure(figsize=(20,10))
+            #     fig = filtering.plot_asv(
+            #         subjset=subjset, asv=asv, fparams=fparams, fig=fig,
+            #         legend=True, title_format='Subject %(sname)s',
+            #         suptitle_format='%(index)s: %(name)s\n%(order)s, %(family)s, %(genus)s',
+            #         yscale_log=True, matrixes=matrixes, read_depthses=read_depthses,
+            #         qpcrses=qpcrses)
+            #     plt.savefig(plotbasepath + '{}.pdf'.format(asv.name))
+            #     plt.close()
+
+            subjs = [subj for subj in subjset]
+            for i, subj in enumerate(subjs):
+                pl.visualization.abundance_over_time(subj=subj, dtype='abs', legend=True,
+                    taxlevel='genus', set_0_to_nan=True, yscale_log=True)
+                plt.savefig(basepath + 'data{}.pdf'.format(subj.name))
+                plt.close()
+            
+            pl.visualization.abundance_over_time(subj=subjset, dtype='qpcr', include_errorbars=False, grid=True)
+            fig = plt.gcf()
+            fig.tight_layout()
+            plt.savefig(basepath + 'qpcr_data.pdf')
             plt.close()
-        
-        pl.visualization.abundance_over_time(subj=subjset, dtype='qpcr', include_errorbars=False, grid=True)
-        fig = plt.gcf()
-        fig.tight_layout()
-        plt.savefig(basepath + 'qpcr_data.pdf')
-        plt.close()
 
-        pl.visualization.abundance_over_time(subj=subjset, dtype='read-depth', yscale_log=False, grid=True)
-        plt.savefig(basepath + 'read_depths.pdf')
-        plt.close()
+            pl.visualization.abundance_over_time(subj=subjset, dtype='read-depth', yscale_log=False, grid=True)
+            plt.savefig(basepath + 'read_depths.pdf')
+            plt.close()
 
-        if params.QPCR_NORMALIZATION_MAX_VALUE is not None:
-            subjset.normalize_qpcr(max_value=params.QPCR_NORMALIZATION_MAX_VALUE)
-            logging.info('Normalizing qPCR values. Normalization constant: {:.3E}'.format(
-                subjset.qpcr_normalization_factor))
-            old_c_m = params.C_M
-            old_v2 = params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2']
-            params.C_M = params.C_M * subjset.qpcr_normalization_factor
-            params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2'] *= subjset.qpcr_normalization_factor
-            logging.info('Old `c_m`: {:.2E}. New `c_m`: {:.2E}'.format(
-                old_c_m, params.C_M))
-            logging.info('Old `v_2`: {:.2E}. New `v2`: {:.2E}'.format(
-                old_v2, params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2']))
-            params.INITIALIZATION_KWARGS[STRNAMES.SELF_INTERACTION_VALUE]['rescale_value'] = \
-                subjset.qpcr_normalization_factor
+            if params.QPCR_NORMALIZATION_MAX_VALUE is not None:
+                subjset.normalize_qpcr(max_value=params.QPCR_NORMALIZATION_MAX_VALUE)
+                logging.info('Normalizing qPCR values. Normalization constant: {:.3E}'.format(
+                    subjset.qpcr_normalization_factor))
+                old_c_m = params.C_M
+                old_v2 = params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2']
+                params.C_M = params.C_M * subjset.qpcr_normalization_factor
+                params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2'] *= subjset.qpcr_normalization_factor
+                logging.info('Old `c_m`: {:.2E}. New `c_m`: {:.2E}'.format(
+                    old_c_m, params.C_M))
+                logging.info('Old `v_2`: {:.2E}. New `v2`: {:.2E}'.format(
+                    old_v2, params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2']))
+                params.INITIALIZATION_KWARGS[STRNAMES.SELF_INTERACTION_VALUE]['rescale_value'] = \
+                    subjset.qpcr_normalization_factor
 
-        subjset.save(subjset_filename)
+            subjset.save(subjset_filename)
 
         # Run the model
         chain_result = main_base.run(
@@ -304,7 +321,7 @@ def main_leave_out_single(params, fparams, continue_inference):
             mcmc_filename=chain_result_filename,
             checkpoint_iter=params.CHECKPOINT,
             crash_if_error=True,
-            continue_inference=None,
+            continue_inference=continue_inference,
             intermediate_validation_t=params.INTERMEDIATE_VALIDATION_T,
             intermediate_validation_kwargs=params.INTERMEDIATE_VALIDATION_KWARGS,
             intermediate_validation_func=main_base.mdsine2_cv_intermediate_validation_func)

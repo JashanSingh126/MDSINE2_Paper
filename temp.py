@@ -26,6 +26,7 @@ import argparse
 import itertools
 import re
 import pickle
+import datetime 
 
 from multiprocessing import Pool
 
@@ -67,6 +68,13 @@ pl.seed(1)
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
 
+a = [10,55,6,22,88,12121]
+print(a)
+a.remove(88)
+print(a)
+
+sys.exit()
+
 
 # basepaths = [
 #     'output_real/runs/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/',
@@ -97,35 +105,37 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 # sys.exit()
 
 
-# ####################################################
-# # Check bjobs
-# ####################################################
-# fname = 'tmp/bjobs_output.txt'
-# cmd = 'bjobs > {}'.format(fname)
+####################################################
+# Check bjobs
+####################################################
+fname = 'tmp/bjobs_output.txt'
+fname_tabed = 'tmp/bjobs_output_tabed.txt'
+f = open(fname, 'r')
+txt = f.read()
+f.close()
 
-# os.system(cmd)
-# f = open(fname, 'r')
-# txt = f.read()
-# f.close()
-
-# # Regex
-# get_rid_of_date_on_a_single_line = re.compile(r'^(\S+\s*){7}\s*')
-# get_name_of_the_job = re.compile(r'(MC\d+\D[\d\.]+)')
-
-# names_of_jobs = 
-
-# for line in txt.split('\n'):
-#     print('line')
-#     print(line)
-#     everything_but_date = get_rid_of_date_on_a_single_line.search(line)
-#     print('No date')
-#     print(everything_but_date.group())
-
-#     print('get name of job')
-#     name_job = get_name_of_job.search()
+delete_date = r'(\s+Oct.+)'
+delete_date = re.compile(delete_date)
+submit_time_delete = r'(\s+SUBMIT_TIME)'
+submit_time_delete = re.compile(submit_time_delete)
+make_tabs = r'(\ ){1,10}'
+make_tabs = re.compile(make_tabs)
 
 
-#     sys.exit()
+a = delete_date.sub('', txt)
+a = submit_time_delete.sub('', a)
+a = make_tabs.sub(',', a)
+f = open(fname_tabed, 'w')
+f.write(a)
+f.close()
+
+df = pd.read_csv(fname_tabed, sep=',')
+print(df)
+print(df[df['STAT']=='PEND']['JOB_NAME'])
+
+# Check if any job names are missing, if they are then send them to a new queue
+
+sys.exit()
 
 # ####################################################
 # # Adjust metric on metrics

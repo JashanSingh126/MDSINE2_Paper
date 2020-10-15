@@ -102,49 +102,28 @@ def run(params, graph_name, data_filename, tracer_filename,
     # If we are continuing the chain, then we dont have to do the initialization, we can
     # just load the chain and then set the inference starting
     if continue_inference is not None:
-        raise NotImplementedError('Not finished implementing yet')
-        # if not pl.isint(continue_inference):
-        #     raise TypeError('`continue_inference` ({}) must be None or an int'.format(
-        #         type(continue_inference)))
-        # if continue_inference < 0:
-        #     raise ValueError('`continue_inference` ({}) must be  > 0'.format(continue_inference))
-        # REPRNAMES.set(G=GRAPH)
-        # logging.info('Continuing inference at Gibb step {}'.format(continue_inference))
-        # mcmc = pl.inference.BaseMCMC.load(mcmc_filename)
-        # mcmc.continue_inference(gibbs_step_start=continue_inference)
+        if not pl.isint(continue_inference):
+            raise TypeError('`continue_inference` ({}) must be None or an int'.format(
+                type(continue_inference)))
+        if continue_inference < 0:
+            raise ValueError('`continue_inference` ({}) must be  > 0'.format(continue_inference))
+        REPRNAMES.set(G=GRAPH)
+        logging.info('Continuing inference at Gibb step {}'.format(continue_inference))
+        mcmc = pl.inference.BaseMCMC.load(mcmc_filename)
+        mcmc.continue_inference(gibb_step_start=continue_inference)
 
-        # # Set the items to the values they were at that gibbs step
+        # Set the items to the values they were at that gibbs step
 
-        # # Set cluster assignments
-        # cluster_assignments = mcmc.graph[REPRNAMES.CLUSTERING]
-        # clustering = mcmc.graph[REPRNAMES.CLUSTERING_OBJ]
-        # if params.LEARN[STRNAMES.CLUSTERING]:
-        #     coclusters = clustering.coclusters.get_trace_from_disk(section='entire')
-        #     toarray = pl.cluster.toarray_from_cocluster(coclusters[-1])
-        #     clustering.from_array(toarray)
-        # # Else do nothing because it was fixed.
+        # Set cluster assignments
+        cluster_assignments = mcmc.graph[REPRNAMES.CLUSTERING]
 
-        # # Set concentration
-        # concentration = mcmc.grpah[REPRNAMES.CONCENTRATION]
-        # if params.LEARN[STRNAMES.CONCENTRATION]:
-        #     trace = concentration.get_trace_from_disk(section='entire')
-        #     concentration.value = trace[-1]
+        filtering = mcmc.graph[REPRNAMES.FILTERING]
+        Z = mcmc.graph[REPRNAMES.CLUSTER_INTERACTION_INDICATOR]
+        subjset = mcmc.graph.data.subjects
 
-        # # Set interactions
-        # # Set perturbations
-        # # Set growth
-        # # Set self interactions
-        # # Set process variance
-        # # Set filtering
-        # # Build the design matrices from scratch (all of them)
-
-        # filtering = mcmc.graph[REPRNAMES.FILTERING]
-        # Z = mcmc.graph[REPRNAMES.CLUSTER_INTERACTION_INDICATOR]
-        # subjset = mcmc.graph.data.subjects
-
-        # return run_inference(mcmc=mcmc, crash_if_error=crash_if_error, 
-        #     cluster_assignments=cluster_assignments, filtering=filtering, Z=Z,
-        #     subjset=subjset, data_filename=data_filename)
+        return run_inference(mcmc=mcmc, crash_if_error=crash_if_error, 
+            cluster_assignments=cluster_assignments, filtering=filtering, Z=Z,
+            subjset=subjset, data_filename=data_filename)
 
     params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['h5py_filename'] = hdf5_filename
 
@@ -4673,7 +4652,7 @@ def semi_synthetic_intermediate_validation_func(chain, n_samples, burnin, sample
                'Measurement Noise', 'Process Variance', 'Number of Timepoints',
                'Number of Replicates', 'Uniform Samples']
     basepath = chain.graph.get_save_location()
-    path = basepath.replace('graph.pkl', 'intermediate_results.tsv')
+    path = basepath.replace('graph.pkl', config.INTERMEDIATE_RESULTS_FILENAME)
     
 
     ret = [sample_iter]

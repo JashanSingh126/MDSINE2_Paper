@@ -44,6 +44,9 @@ PARAMS_FILENAME = 'params.pkl'
 FPARAMS_FILENAME = 'filtering_params.pkl'
 SYNPARAMS_FILENAME = 'synthetic_params.pkl'
 MLCRR_RESULTS_FILENAME = 'mlcrr_results.pkl'
+RESTART_INFERENCE_SEED_RECORD = 'restart_seed_record.tsv'
+INTERMEDIATE_RESULTS_FILENAME = 'intermediate_results.tsv'
+
 
 PHYLOGENETIC_TREE_FILENAME = 'raw_data/phylogenetic_tree_branch_len_preserved.nhx'
 
@@ -655,8 +658,8 @@ class ModelConfigReal(_BaseModelConfig):
             STRNAMES.PRIOR_MEAN_PERT: True,
             STRNAMES.FILTERING: True,
             STRNAMES.ZERO_INFLATION: False,
-            STRNAMES.CLUSTERING: True,
-            STRNAMES.CONCENTRATION: True, 
+            STRNAMES.CLUSTERING: False,
+            STRNAMES.CONCENTRATION: False, 
             STRNAMES.CLUSTER_INTERACTION_INDICATOR: True,
             STRNAMES.INDICATOR_PROB: True,
             STRNAMES.PERT_INDICATOR: True,

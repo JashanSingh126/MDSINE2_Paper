@@ -764,14 +764,16 @@ class Metrics(pl.Saveable):
             # print('error_asvs', error_ASVs.shape)
             # print('truth.shape', M_truth_.shape)
             # print('given_times_pred_traj_', given_times_pred_traj_.shape)
+            # print('\n', given_times)
+            # print('\n', sim_times)
 
 
             for i in range(len(error_total)):
                 if truth is not None:
                     if error_metric.__name__ == 'spearmanr':
-                        error_total[i] = np.mean(error_metric(M_truth_, given_times_pred_traj_[i], axis=1)[0])
+                        error_total[i] = np.nanmean(error_metric(M_truth_, given_times_pred_traj_[i], axis=1)[0])
                     else:
-                        error_total[i] = np.mean(error_metric(M_truth_, given_times_pred_traj_[i], axis=1))
+                        error_total[i] = np.nanmean(error_metric(M_truth_, given_times_pred_traj_[i], axis=1))
                     for oidx in range(len(subject.asvs)):
                         if error_metric.__name__ == 'spearmanr':
                             error_ASVs[i,oidx] = error_metric(M_truth_[oidx,:], given_times_pred_traj_[i,oidx,:])[0]
@@ -779,9 +781,9 @@ class Metrics(pl.Saveable):
                             error_ASVs[i,oidx] = error_metric(M_truth_[oidx,:], given_times_pred_traj_[i,oidx,:])
                 else:
                     if error_metric.__name__ == 'spearmanr':
-                        error_total[i] = np.mean(error_metric(M_, given_times_pred_traj_[i], axis=1)[0])
+                        error_total[i] = np.nanmean(error_metric(M_, given_times_pred_traj_[i], axis=1)[0])
                     else:
-                        error_total[i] = np.mean(error_metric(M_, given_times_pred_traj_[i], axis=1))
+                        error_total[i] = np.nanmean(error_metric(M_, given_times_pred_traj_[i], axis=1))
                     for oidx in range(len(subject.asvs)):
                         if error_metric.__name__ == 'spearmanr':
                             error_ASVs[i,oidx] = error_metric(M_[oidx,:], given_times_pred_traj_[i,oidx,:])[0]

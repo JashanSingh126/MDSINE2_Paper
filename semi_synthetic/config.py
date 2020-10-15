@@ -47,6 +47,8 @@ FPARAMS_FILENAME = 'filtering_params.pkl'
 SYNPARAMS_FILENAME = 'synthetic_params.pkl'
 MLCRR_RESULTS_FILENAME = 'mlcrr_results.pkl'
 COMPARISON_FILENAME = 'comparison.pkl'
+RESTART_INFERENCE_SEED_RECORD = 'restart_seed_record.txt'
+INTERMEDIATE_RESULTS_FILENAME = 'intermediate_results.tsv'
 
 SEMI_SYNTHETIC_MESHES = [
     (
@@ -295,7 +297,7 @@ class ModelConfigMCMC(_BaseModelConfig):
 
         self.N_QPCR_BUCKETS = 3
 
-        self.INTERMEDIATE_VALIDATION_T = 4*60*60 #8 * 3600 # Every 8 hours
+        self.INTERMEDIATE_VALIDATION_T = 2*60*60 #8 * 3600 # Every 8 hours
         self.INTERMEDIATE_VALIDATION_KWARGS = None
 
         self.LEARN = {
