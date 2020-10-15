@@ -225,7 +225,7 @@ for mesh in arguments_global:
     cnt_queues[i_queue] += 1
     queue = priority_queues[i_queue]
     lsfname = lsfdir + jobname + '.lsf'
-    args = {
+    kwargs_to_save = {
         'jobname':jobname, 
         'logging_loc':logdir + jobname,
         'n_cpus':args.n_cpus, 'queue':queue,
@@ -235,11 +235,11 @@ for mesh in arguments_global:
         'co':co, 'nt':nt, 'db':args.data_path, 'us':uniform_sampling,
         'continue_str':''}
     
-    job_names_master[jobname] = args
+    job_names_master[jobname] = kwargs_to_save
     jobs_left.append(jobname)
 
     f = open(lsfname, 'w')
-    f.write(make_lsf_script(**args))
+    f.write(make_lsf_script(**kwargs_to_save))
     f.close()
     os.system('bsub < {}'.format(lsfname))
 

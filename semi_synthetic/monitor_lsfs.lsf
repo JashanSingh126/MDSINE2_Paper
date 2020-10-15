@@ -57,4 +57,4 @@ module load anaconda
 source activate dispatcher_pylab3
 
 cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/semi_synthetic/
-python dispatch_lsf.py -ns 15000 -nb 5000 -ckpt 1000 -b output/runs_monitor/ -db output/base_data/ -mb output/monitor/ -mt 4 -nc 1 -nmb 4000 -rms 0
+python dispatch_lsf.py -ns 15000 -nb 5000 -ckpt 100 -b output/runs_monitor/ -db output/base_data/ -mb output/monitor/ -mt 4 -nc 1 -nmb 4000 -rms 0
