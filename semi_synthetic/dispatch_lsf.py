@@ -15,13 +15,16 @@ import config
 import pylab as pl
 
 
-priority_queues = ['vlong', 'long', 'normal', 'medium', 'big']
+priority_queues = ['vlong', 'medium', 'long', 'normal', 'big']
 seed_record_fmt = '{basepath}{jobname}/' + config.RESTART_INFERENCE_SEED_RECORD
 intermediate_validation_fmt = '{basepath}{jobname}/' + config.INTERMEDIATE_RESULTS_FILENAME
 max_jobs_per_queue = 35
 
 parser = argparse.ArgumentParser()
 parser = argparse.ArgumentParser()
+parser.add_argument('--dispatch-jobs', '-dj', type=int,
+        help='If 1, use bsub to submit the jobs. Else just monitor',
+        dest='dispatch_jobs', default=0)
 parser.add_argument('--n-samples', '-ns', type=int,
         help='Total number of Gibbs steps to do',
         dest='n_samples', default=6000)
@@ -38,7 +41,7 @@ parser.add_argument('--data-path', '-db', type=str,
     help='Folder to lead the data from', dest='data_path')
 parser.add_argument('--monitor-path', '-mb', type=str,
     help='Folder to monitor the runs', dest='monitor_path')
-parser.add_argument('--monitor-time', '-mt', type=int,
+parser.add_argument('--monitor-time', '-mt', type=float,
     help='How often to monitor the runs (in hours)', dest='monitor_time')
 parser.add_argument('--n-cpus', '-nc', type=int, 
     help='Number of CPUs to reserve', dest='n_cpus', default=1)
@@ -114,6 +117,8 @@ def make_lsf_script(jobname, logging_loc, n_cpus, queue, n_mbs, mn, pv, d, i, b,
     cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/semi_synthetic/
     python main_mcmc.py --job-name {jobname} -m {mn} -p {pv} -d {d} -i {i} -b {b} -nb {burnin} -ns {n_samples} -nr {nr} -c {co} -nt {nt} -db {db} -us {us} {continue_str}
     '''
+    if continue_str != '':
+        continue_str = '--continue {}'.format(continue_str)
     return my_str.format(
         jobname=jobname,
         logging_loc=logging_loc,
@@ -133,6 +138,46 @@ def make_lsf_script(jobname, logging_loc, n_cpus, queue, n_mbs, mn, pv, d, i, b,
         db=db,
         us=us,
         continue_str=continue_str)
+
+def _outer_boxplot(df, only, x):
+    fig = plt.figure(figsize=(10,5))
+    ax = _inner_boxplot(df=df, only=only, x=x, y='rmse_growth',
+        ax=fig.add_subplot(2,3,1), ylabel='RMSE', yscale='linear')
+    ax = _inner_boxplot(df=df, only=only, x=x, y='rmse_interactions',
+        ax=fig.add_subplot(2,3,1), ylabel='RMSE', yscale='linear')
+    ax = _inner_boxplot(df=df, only=only, x=x, y='topology',
+        ax=fig.add_subplot(2,3,1), ylabel='AUCROC', yscale='linear')
+    ax = _inner_boxplot(df=df, only=only, x=x, y='rmse_perturbations',
+        ax=fig.add_subplot(2,3,1), ylabel='RMSE', yscale='linear')
+    ax = _inner_boxplot(df=df, only=only, x=x, y='clustering',
+        ax=fig.add_subplot(2,3,1), ylabel='Normalized Mutual Information', yscale='linear')
+    fig.suptitle(x, fontsize=22, fontweight='bold')
+    fig.tight_layout()
+    fig.subplots_adjust(top=0.87)
+    return fig
+
+def _inner_boxplot(df, only, x, y, ax, ylabel, yscale):
+    dftemp = df
+    if only is not None:
+        for col, val in only.items():
+            dftemp = dftemp[dftemp[col] == val]
+
+        # print(df.columns)
+        # print(dftemp['Measurement Noise'])
+        # sys.exit()
+
+    print(dftemp)
+    
+    sns.boxplot(data=dftemp, x=x, y=y, ax=ax)
+
+    # ax.set_title(title)
+    ax.set_ylabel(ylabel)
+    ax.set_yscale(yscale)
+    ax.get_legend().remove()
+
+    return ax
+
+    
 
 os.makedirs(basepath, exist_ok=True)
 
@@ -242,7 +287,10 @@ for mesh in arguments_global:
     f = open(lsfname, 'w')
     f.write(make_lsf_script(**kwargs_to_save))
     f.close()
-    os.system('bsub < {}'.format(lsfname))
+    cmd = 'bsub < {}'.format(lsfname)
+    print(cmd)
+    if args.dispatch_jobs:
+        os.system(cmd)
 
 # Start monitoring 
 # ----------------
@@ -269,10 +317,12 @@ start_new_seed = 10000
 wait_time_seconds = int(args.monitor_time * 60 *60)
 
 while len(jobs_left) > 0:
+    print('starting to sleep')
     time.sleep(wait_time_seconds)
 
     now = datetime.datetime.now()
-    date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+    date_time = now.strftime("%m.%d.%Y-%H.%M.%S")
+    print(date_time)
 
     # Make intermediate path
     monitor_path = monitor_basepath + date_time + '/'
@@ -285,27 +335,61 @@ while len(jobs_left) > 0:
         path = intermediate_validation_fmt.format(
             basepath=basepath, jobname=job)
         try:
-            df_temp = pd.read_csv(path, sep='\t', index=False)
-        except:
+            df_temp = pd.read_csv(path, sep='\t')
+        except Exception as e:
+            df_temp = None
             n_not_done += 1
-        if df_master is None:
-            df_master = df_temp
-        else:
-            df_master = df_master.append(df_temp.iloc[-1,:])
+        if df_temp is not None:
+            if df_master is None:
+                df_master = df_temp
+            else:
+                df_master = df_master.append(df_temp.iloc[-1,:])
 
-    # Make histogram of samples
-    samples = df_master['sample_iter'].to_numpy().ravel()
-    if n_not_done > 0:
-        samples = np.append(samples, np.zeros(n_not_done))
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.hist(samples, bins=15)
-    ax.set_title('Progress of inference')
-    ax.set_xlabel('Sample iteration')
-    ax.set_ylabel('Number of jobs')
-    plt.savefig(monitor_path + 'sample_progress_of_inference.pdf')
+    if df_master is not None:
 
-    # make boxplots of intermediate results
+        # Make histogram of samples
+        samples = df_master['sample_iter'].to_numpy().ravel()
+        if n_not_done > 0:
+            samples = np.append(samples, np.zeros(n_not_done))
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.hist(samples, bins=15)
+        ax.set_title('Progress of inference')
+        ax.set_xlabel('Sample iteration')
+        ax.set_ylabel('Number of jobs')
+        plt.savefig(monitor_path + 'sample_progress_of_inference.pdf')
+
+        # make boxplots of intermediate results
+        # Measurement noise
+        try:
+            fig = _outer_boxplot(df=df_master, only={'Number of Timepoints': 55, 'Number of Replicates': 5, 
+                'Uniform Samples': False}, x='Measurement Noise')
+            plt.savefig(monitor_path + 'noise.pdf')
+            plt.close()
+        except Exception as e:
+            print('Failed on measurement noise')
+            print(e)
+
+        # Number of replicates
+        try:
+            fig = _outer_boxplot(df=df_master, only={'Number of Timepoints': 55, 'Measurement Noise': 0.3, 
+                'Uniform Samples': False}, x='Number of Replicates')
+            plt.savefig(monitor_path + 'replicates.pdf')
+            plt.close()
+        except Exception as e:
+            print('Failed on number of replicates')
+            print(e)
+
+        # Measurement noise
+        try:
+            fig = _outer_boxplot(df=df_master, only={'Measurement Noise': 0.3, 'Number of Replicates': 4, 
+                'Uniform Samples': True}, x='Measurement Noise')
+            plt.savefig(monitor_path + 'timepoints.pdf')
+            plt.close()
+        except Exception as e:
+            print('Failed on timepoints')
+            print(e)
+
 
 
     # Check if jobs need to be restarted
@@ -327,48 +411,42 @@ while len(jobs_left) > 0:
     f.close()
 
     df_bjobs = pd.read_csv(fname_tabbed, sep=',')
-    
-    jobs_active = df_bjobs['JOB_NAME']
-    
-    for job in jobs_left:
-        if job not in jobs_active:
-            # This job was killed in the process and we need to check if we need to restart
-            path = seed_record_fmt.format(basepath=basepath, jobname=job)
-            df = pd.read_csv(path, sep='\t')
-            data = df.to_numpy()
-            if np.any(np.isnan(data)):
-                # This means that we do not need to restart it and we can take it off of jobs left
-                jobs_left.remove(job)
-            else:
-                # restart it with the designated dataseed, it will record it automatically
-                args = job_names_master[job]
-                args['continue_str'] = start_new_seed
-                start_new_seed += 11
 
-                # figure out the queue it needs to go in
-                for q in priority_queues:
-                    if len(df_bjobs[df_bjobs['QUEUE'] == q]) < max_jobs_per_queue:
-                        args['queue'] = q
-                        break
+    # Get only the jobs that start with MC
+    jobs_active_ = df_bjobs['JOB_NAME']
+    jobs_active = []
+    for job in jobs_active_:
+        if 'MC' in job:
+            jobs_active.append(job)
 
+    if len(jobs_active) != len(jobs_left):
+        print('Number of jobs active ({}) != number of jobs left ({})'.format(
+            len(jobs_active), len(jobs_left)))
+        for job in jobs_left:
+            if job not in jobs_active:
+                # This job was killed in the process and we need to check if we need to restart
+                path = seed_record_fmt.format(basepath=basepath, jobname=job)
+                df = pd.read_csv(path, sep='\t')
+                data = df.to_numpy()
+                if np.any(np.isnan(data)):
+                    # This means that we do not need to restart it and we can take it off of jobs left
+                    jobs_left.remove(job)
+                else:
+                    print('{} not found - needs to restart'.format(job))
+                    # restart it with the designated dataseed, it will record it automatically
+                    args = job_names_master[job]
+                    args['continue_str'] = start_new_seed
+                    start_new_seed += 11
 
-                lsfname = lsfdir + jobname + '_cont{}.lsf'.format(args['continue_str'])
-                f = open(lsfname, 'w')
-                f.write(make_lsf_script(**args))
-                f.close()
-                os.system('bsub < {}'.format(lsfname))
-
-
-
-
+                    # figure out the queue it needs to go in
+                    for q in priority_queues:
+                        if len(df_bjobs[df_bjobs['QUEUE'] == q]) < max_jobs_per_queue:
+                            args['queue'] = q
+                            break
 
 
-    
-
-
-
-
-
-
-
-
+                    lsfname = lsfdir + jobname + '_cont{}.lsf'.format(args['continue_str'])
+                    f = open(lsfname, 'w')
+                    f.write(make_lsf_script(**args))
+                    f.close()
+                    os.system('bsub < {}'.format(lsfname))
