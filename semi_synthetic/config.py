@@ -61,29 +61,29 @@ SEMI_SYNTHETIC_MESHES = [
         [1], # Clustering on/off
         0, # Uniform sampling of timepoints
         0 # Boxplot type
-    ),    
-    (
-        [2,3,4,5], # Number of replicates
-        [55], # Number of timepoints
-        10, # Total number of data seeds
-        1, # Total number of initialization seeds
-        [0.3], # Measurement Noises
-        [0.1], # Process variances
-        [1], # Clustering on/off
-        0, # Uniform sampling of timepoints
-        1 # Boxplot type
-    ),
-    (
-        [4], # Number of replicates
-        [35, 45, 50, 55, 65], # Number of timepoints
-        10, # Total number of data seeds
-        1, # Total number of initialization seeds
-        [0.3], # Measurement Noises
-        [0.1], # Process variances
-        [1], # Clustering on/off
-        1, # Uniform sampling of timepoints
-        2 # Boxplot type
-    )]
+    )] #,    
+    # (
+    #     [2,3,4,5], # Number of replicates
+    #     [55], # Number of timepoints
+    #     10, # Total number of data seeds
+    #     1, # Total number of initialization seeds
+    #     [0.3], # Measurement Noises
+    #     [0.1], # Process variances
+    #     [1], # Clustering on/off
+    #     0, # Uniform sampling of timepoints
+    #     1 # Boxplot type
+    # ),
+    # (
+    #     [4], # Number of replicates
+    #     [35, 45, 50, 55, 65], # Number of timepoints
+    #     10, # Total number of data seeds
+    #     1, # Total number of initialization seeds
+    #     [0.3], # Measurement Noises
+    #     [0.1], # Process variances
+    #     [1], # Clustering on/off
+    #     1, # Uniform sampling of timepoints
+    #     2 # Boxplot type
+    # )]
 
 def calculate_reads_a0a1(desired_percent_variation):
     '''
@@ -148,7 +148,7 @@ def make_val_subjset_name(basepath, ds, pv, mn=None, nt=None, uniform_sampling_t
                 ds, pv, mn, nt, bool(uniform_sampling_timepoints))
 
 
-class _BaseModelConfig(pl.Saveable):
+class _BaseModelConfig(pl.base.Saveable):
 
     def __str__(self):
         s = '{}'.format(self.__class__.__name__)
@@ -297,7 +297,7 @@ class ModelConfigMCMC(_BaseModelConfig):
 
         self.N_QPCR_BUCKETS = 3
 
-        self.INTERMEDIATE_VALIDATION_T = 1.5*60*60 #8 * 3600 # Every 8 hours
+        self.INTERMEDIATE_VALIDATION_T = int(1.5*60*60) #8 * 3600 # Every 8 hours
         self.INTERMEDIATE_VALIDATION_KWARGS = None
 
         self.LEARN = {

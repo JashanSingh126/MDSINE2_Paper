@@ -7,6 +7,7 @@ import pandas as pd
 import time
 import datetime
 import re
+import logging
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -14,17 +15,19 @@ import seaborn as sns
 import config
 import pylab as pl
 
+logging.basicConfig(level=logging.DEBUG)
+
 
 priority_queues = ['vlong', 'medium', 'long', 'normal', 'big']
 seed_record_fmt = '{basepath}{jobname}/' + config.RESTART_INFERENCE_SEED_RECORD
 intermediate_validation_fmt = '{basepath}{jobname}/' + config.INTERMEDIATE_RESULTS_FILENAME
-max_jobs_per_queue = 35
+max_jobs_per_queue = 25
 
 parser = argparse.ArgumentParser()
 parser = argparse.ArgumentParser()
 parser.add_argument('--dispatch-jobs', '-dj', type=int,
         help='If 1, use bsub to submit the jobs. Else just monitor',
-        dest='dispatch_jobs', default=0)
+        dest='dispatch_jobs', default=1)
 parser.add_argument('--n-samples', '-ns', type=int,
         help='Total number of Gibbs steps to do',
         dest='n_samples', default=6000)
@@ -111,8 +114,7 @@ def make_lsf_script(jobname, logging_loc, n_cpus, queue, n_mbs, mn, pv, d, i, b,
 
     # Add your job command here
     # Load module
-    module load anaconda
-    source activate dispatcher_pylab3
+    source activate dispatcher_pylab301
 
     cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/semi_synthetic/
     python main_mcmc.py --job-name {jobname} -m {mn} -p {pv} -d {d} -i {i} -b {b} -nb {burnin} -ns {n_samples} -nr {nr} -c {co} -nt {nt} -db {db} -us {us} {continue_str}
@@ -140,23 +142,28 @@ def make_lsf_script(jobname, logging_loc, n_cpus, queue, n_mbs, mn, pv, d, i, b,
         continue_str=continue_str)
 
 def _outer_boxplot(df, only, x):
-    fig = plt.figure(figsize=(10,5))
+    fig = plt.figure(figsize=(20,10))
     ax = _inner_boxplot(df=df, only=only, x=x, y='rmse_growth',
-        ax=fig.add_subplot(2,3,1), ylabel='RMSE', yscale='linear')
+        ax=fig.add_subplot(2,3,1), ylabel='RMSE', yscale='linear',
+        title='Growth Error')
     ax = _inner_boxplot(df=df, only=only, x=x, y='rmse_interactions',
-        ax=fig.add_subplot(2,3,1), ylabel='RMSE', yscale='linear')
+        ax=fig.add_subplot(2,3,2), ylabel='RMSE', yscale='linear',
+        title='Interactions Error')
     ax = _inner_boxplot(df=df, only=only, x=x, y='topology',
-        ax=fig.add_subplot(2,3,1), ylabel='AUCROC', yscale='linear')
+        ax=fig.add_subplot(2,3,3), ylabel='AUCROC', yscale='linear',
+        title='Topology Error')
     ax = _inner_boxplot(df=df, only=only, x=x, y='rmse_perturbations',
-        ax=fig.add_subplot(2,3,1), ylabel='RMSE', yscale='linear')
+        ax=fig.add_subplot(2,3,4), ylabel='RMSE', yscale='linear',
+        title='Average Perturbation error')
     ax = _inner_boxplot(df=df, only=only, x=x, y='clustering',
-        ax=fig.add_subplot(2,3,1), ylabel='Normalized Mutual Information', yscale='linear')
+        ax=fig.add_subplot(2,3,5), ylabel='Normalized Mutual Information', yscale='linear',
+        title='Clustering Error')
     fig.suptitle(x, fontsize=22, fontweight='bold')
     fig.tight_layout()
     fig.subplots_adjust(top=0.87)
     return fig
 
-def _inner_boxplot(df, only, x, y, ax, ylabel, yscale):
+def _inner_boxplot(df, only, x, y, ax, ylabel, yscale, title):
     dftemp = df
     if only is not None:
         for col, val in only.items():
@@ -165,19 +172,16 @@ def _inner_boxplot(df, only, x, y, ax, ylabel, yscale):
         # print(df.columns)
         # print(dftemp['Measurement Noise'])
         # sys.exit()
-
-    print(dftemp)
     
     sns.boxplot(data=dftemp, x=x, y=y, ax=ax)
 
-    # ax.set_title(title)
+    ax.set_title(title)
     ax.set_ylabel(ylabel)
     ax.set_yscale(yscale)
-    ax.get_legend().remove()
+    # ax.get_legend().remove()
 
     return ax
 
-    
 
 os.makedirs(basepath, exist_ok=True)
 
@@ -231,7 +235,7 @@ if args.run_make_subjsets:
     command = 'python make_subjsets.py -b {basepath} -nr {nrs} -m {mns} -p {pvs} -d {nd} -dset semi-synthetic -nt {nts}'.format(
         basepath=args.data_path, nrs=lst_replicates, mns=lst_measurement_noises,
         pvs=lst_process_variances, nd=max_dataseeds+1, nts=lst_times)
-    print('EXECUTING:', command)
+    logging.debug('EXECUTING: {}'.format(command))
     os.system(command)
 
 job_names_master = {}
@@ -288,9 +292,9 @@ for mesh in arguments_global:
     f.write(make_lsf_script(**kwargs_to_save))
     f.close()
     cmd = 'bsub < {}'.format(lsfname)
-    print(cmd)
-    if args.dispatch_jobs:
-        os.system(cmd)
+    logging.debug(cmd)
+    # if args.dispatch_jobs:
+    #     os.system(cmd)
 
 # Start monitoring 
 # ----------------
@@ -314,15 +318,15 @@ if monitor_basepath[-1] != '/':
 os.makedirs(monitor_basepath, exist_ok=True)
 
 start_new_seed = 10000
-wait_time_seconds = int(args.monitor_time * 60 *60)
+wait_time_seconds = 10*60 ##int(args.monitor_time * 60 *60)
 
 while len(jobs_left) > 0:
-    print('starting to sleep')
+    logging.debug('starting to sleep')
     time.sleep(wait_time_seconds)
 
     now = datetime.datetime.now()
     date_time = now.strftime("%m.%d.%Y-%H.%M.%S")
-    print(date_time)
+    logging.debug(date_time)
 
     # Make intermediate path
     monitor_path = monitor_basepath + date_time + '/'
@@ -367,28 +371,28 @@ while len(jobs_left) > 0:
             plt.savefig(monitor_path + 'noise.pdf')
             plt.close()
         except Exception as e:
-            print('Failed on measurement noise')
-            print(e)
+            logging.debug('Failed on measurement noise')
+            logging.debug(e)
 
-        # Number of replicates
-        try:
-            fig = _outer_boxplot(df=df_master, only={'Number of Timepoints': 55, 'Measurement Noise': 0.3, 
-                'Uniform Samples': False}, x='Number of Replicates')
-            plt.savefig(monitor_path + 'replicates.pdf')
-            plt.close()
-        except Exception as e:
-            print('Failed on number of replicates')
-            print(e)
+        # # Number of replicates
+        # try:
+        #     fig = _outer_boxplot(df=df_master, only={'Number of Timepoints': 55, 'Measurement Noise': 0.3, 
+        #         'Uniform Samples': False}, x='Number of Replicates')
+        #     plt.savefig(monitor_path + 'replicates.pdf')
+        #     plt.close()
+        # except Exception as e:
+        #     print('Failed on number of replicates')
+        #     print(e)
 
-        # Measurement noise
-        try:
-            fig = _outer_boxplot(df=df_master, only={'Measurement Noise': 0.3, 'Number of Replicates': 4, 
-                'Uniform Samples': True}, x='Measurement Noise')
-            plt.savefig(monitor_path + 'timepoints.pdf')
-            plt.close()
-        except Exception as e:
-            print('Failed on timepoints')
-            print(e)
+        # # Measurement noise
+        # try:
+        #     fig = _outer_boxplot(df=df_master, only={'Measurement Noise': 0.3, 'Number of Replicates': 4, 
+        #         'Uniform Samples': True}, x='Measurement Noise')
+        #     plt.savefig(monitor_path + 'timepoints.pdf')
+        #     plt.close()
+        # except Exception as e:
+        #     print('Failed on timepoints')
+        #     print(e)
 
 
 

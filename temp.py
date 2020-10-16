@@ -35,15 +35,25 @@ import seaborn as sns
 import matplotlib.ticker as plticker
 import matplotlib.patches as patches
 
+print('import pylab')
 import pylab as pl
+print('import synthetic')
 import synthetic
+print('import diversity')
 import diversity
+print('import config')
 import config
+print('import filtering')
 import preprocess_filtering as filtering
+print('import model')
 import model
+print('import names')
 import names
+print('import main_base')
 import main_base
+print('import metrics')
 import metrics
+print('import util')
 import util as MDSINE2_util
 
 import ete3
@@ -68,14 +78,10 @@ pl.seed(1)
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
 
-a = [10,55,6,22,88,12121]
-print(a)
-a.remove(88)
-print(a)
 
-sys.exit()
-
-
+# ####################################################
+# # Rename files to transfer onto ErisOne
+# ####################################################
 # basepaths = [
 #     'output_real/runs/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/',
 #     'output_real/runs/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/',
@@ -92,7 +98,7 @@ sys.exit()
 #     graph.set_save_location(basepath+'graph.pkl')
 #     tracer = mcmc.tracer
 #     tracer.set_save_location(basepath+'tracer.pkl')
-#     tracer.filename = basepath + 'tracer.hdf5'
+#     tracer.filename = basepath + 'traces.hdf5'
 
 #     print('save mcmc')
 #     mcmc.save()
@@ -100,42 +106,39 @@ sys.exit()
 #     graph.save()
 #     print('save tracer')
 #     tracer.save()
-
-
 # sys.exit()
 
 
-####################################################
-# Check bjobs
-####################################################
-fname = 'tmp/bjobs_output.txt'
-fname_tabed = 'tmp/bjobs_output_tabed.txt'
-f = open(fname, 'r')
-txt = f.read()
-f.close()
+# ####################################################
+# # Check bjobs
+# ####################################################
+# fname = 'tmp/bjobs_output.txt'
+# fname_tabed = 'tmp/bjobs_output_tabed.txt'
+# f = open(fname, 'r')
+# txt = f.read()
+# f.close()
 
-delete_date = r'(\s+Oct.+)'
-delete_date = re.compile(delete_date)
-submit_time_delete = r'(\s+SUBMIT_TIME)'
-submit_time_delete = re.compile(submit_time_delete)
-make_tabs = r'(\ ){1,10}'
-make_tabs = re.compile(make_tabs)
+# delete_date = r'(\s+Oct.+)'
+# delete_date = re.compile(delete_date)
+# submit_time_delete = r'(\s+SUBMIT_TIME)'
+# submit_time_delete = re.compile(submit_time_delete)
+# make_tabs = r'(\ ){1,10}'
+# make_tabs = re.compile(make_tabs)
 
 
-a = delete_date.sub('', txt)
-a = submit_time_delete.sub('', a)
-a = make_tabs.sub(',', a)
-f = open(fname_tabed, 'w')
-f.write(a)
-f.close()
+# a = delete_date.sub('', txt)
+# a = submit_time_delete.sub('', a)
+# a = make_tabs.sub(',', a)
+# f = open(fname_tabed, 'w')
+# f.write(a)
+# f.close()
 
-df = pd.read_csv(fname_tabed, sep=',')
-print(df)
-print(df[df['STAT']=='PEND']['JOB_NAME'])
+# df = pd.read_csv(fname_tabed, sep=',')
+# print(df)
+# print(df[df['STAT']=='PEND']['JOB_NAME'])
 
-# Check if any job names are missing, if they are then send them to a new queue
-
-sys.exit()
+# # Check if any job names are missing, if they are then send them to a new queue
+# sys.exit()
 
 # ####################################################
 # # Adjust metric on metrics
@@ -223,75 +226,79 @@ echo $TMPDIR
 
 # Add your job command here
 # Load module
-module load anaconda
-source activate dispatcher_pylab3
+
+source activate dispatcher_pylab301
 
 cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/
-python3 keystoneness.py --type leave-one-out --model {chain_fname} --data {input_fname} --output-tbl {basepath}{consortium}_{start}_{end}.tsv
+python keystoneness.py --type leave-one-out --model {chain_fname} --data {input_fname} --output-tbl {basepath}{consortium}_{start}_{end}.tsv --compute-base {computebase}
 '''
 
 chains = {
-    'healthy': 'output_real/runs/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'} #,
-    # 'uc': 'output_real/runs/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
+    'healthy': 'output_real/runs/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    'uc': 'output_real/runs/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
 
 # Clusters
 chains_cluster = {
-    'healthy': 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'} #,
-    # 'uc': 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
-# tmp_folder = 'tmp/keystone_data/'
-# output_basepath = 'tmp/keystone_clusters/'
-# os.makedirs(tmp_folder, exist_ok=True)
-# os.makedirs(output_basepath, exist_ok=True)
+    'healthy': 'output_real/runs/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    'uc': 'output_real/runs/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
+tmp_folder = 'tmp/keystone_data/'
+output_basepath = 'tmp/keystone_clusters/'
+os.makedirs(tmp_folder, exist_ok=True)
+os.makedirs(output_basepath, exist_ok=True)
 
-# fname_fmt = tmp_folder + '{consortium}_clusters.txt'
-# tsv_fmt = output_basepath + '{consortium}_clusters_{start}_{end}.tsv'
-# for consortium in chains_cluster:
-#     # Make the data folder
-#     chain = pl.inference.BaseMCMC.load(chains_cluster[consortium])
-#     asvs = chain.graph.data.asvs
-#     clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
-#     s = ''
-#     for cluster in clustering:
-#         s = s +','.join([asvs.names.order[aaa] for aaa in cluster.members]) + '\n'
-#     input_fname = fname_fmt.format(consortium=consortium)
-#     f = open(input_fname, 'w')
-#     f.write(s)
-#     f.close()
+fname_fmt = tmp_folder + '{consortium}_clusters.txt'
+tsv_fmt = output_basepath + '{consortium}_clusters_{start}_{end}.tsv'
+for consortium in chains_cluster:
+    # Make the data folder
+    chain = pl.inference.BaseMCMC.load(chains_cluster[consortium])
+    asvs = chain.graph.data.asvs
+    clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
+    s = ''
+    for cluster in clustering:
+        s = s +','.join([asvs.names.order[aaa] for aaa in cluster.members]) + '\n'
+    input_fname = fname_fmt.format(consortium=consortium)
+    f = open(input_fname, 'w')
+    f.write(s)
+    f.close()
 
-#     # Make tsv fname
-#     basepath = basepath = input_fname.replace('.txt', '/')
-#     os.makedirs(basepath, exist_ok=True)
-#     start = 0
-#     n_asvs_per_job = 5
+    # Make tsv fname
+    basepath = basepath = input_fname.replace('.txt', '/')
+    os.makedirs(basepath, exist_ok=True)
+    start = 0
+    n_asvs_per_job = 2
 
-#     f = open(input_fname, 'r')
-#     args = f.read().split('\n')\
+    f = open(input_fname, 'r')
+    args = f.read().split('\n')\
 
-#     while start < len(args):
-#         end = start+n_asvs_per_job
-#         if end > len(args):
-#             end = len(args)
+    compute_base = 1
+    while start < len(args):
+        end = start+n_asvs_per_job
+        if end > len(args):
+            end = len(args)
 
-#         # Make input data
-#         input_fname = basepath + 'data_{}_{}.txt'.format(start,end)
-#         f = open(input_fname, 'w')
-#         f.write('\n'.join(args[start:end]))
-#         f.close()
+        # Make input data
+        input_fname = basepath + 'data_{}_{}.txt'.format(start,end)
+        f = open(input_fname, 'w')
+        f.write('\n'.join(args[start:end]))
+        f.close()
 
-#         # Make lsf file
-#         lsf_fname = basepath + 'job_{}_{}.lsf'.format(start,end)
-#         f = open(lsf_fname, 'w')
-#         f.write(my_str.format(
-#             consortium=consortium, start=start, end=end, queue='medium', n_cpus=1, n_mbs=7000,
-#             chain_fname=chains[consortium], input_fname=input_fname, basepath=basepath,
-#             RRR='cluster'))
-#         f.close()
+        # Make lsf file
+        lsf_fname = basepath + 'job_{}_{}.lsf'.format(start,end)
+        f = open(lsf_fname, 'w')
+        f.write(my_str.format(
+            consortium=consortium, start=start, end=end, queue='short', n_cpus=1, n_mbs=7000,
+            chain_fname=chains[consortium], input_fname=input_fname, basepath=basepath,
+            RRR='cluster', computebase=compute_base))
+        f.close()
 
-#         # Submit the job
-#         command = 'bsub < {}'.format(lsf_fname)
-#         print(command)
-#         os.system(command)
-#         start = end
+        # Submit the job
+        command = 'bsub < {}'.format(lsf_fname)
+        print(command)
+        os.system(command)
+        time.sleep(90)
+        if compute_base == 1:
+            compute_base = 0
+        start = end
 # sys.exit()
 
 # Chains and cycles
@@ -328,7 +335,7 @@ for consortium in chains:
         args = f.read().split('\n')
         f.close()
         save_the_table = True
-            
+        
         while start < len(args):
             end = start+n_asvs_per_job
             if end > len(args):
@@ -346,7 +353,7 @@ for consortium in chains:
                 lsf_fname = basepath + 'job_{}_{}.lsf'.format(start,end)
                 f = open(lsf_fname, 'w')
                 f.write(my_str.format(
-                    consortium=consortium, start=start, end=end, queue='medium', n_cpus=1, n_mbs=7000,
+                    consortium=consortium, start=start, end=end, queue='normal', n_cpus=1, n_mbs=7000,
                     chain_fname=chain_fname, input_fname=input_fname, basepath=basepath,
                     RRR='R'))
                 f.close()

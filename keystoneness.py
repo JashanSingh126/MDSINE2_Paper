@@ -37,6 +37,8 @@ def parse_args():
         help='TESTING USE ONLY', default=None)
     parser.add_argument('--n-cpus', '-mp', type=int, dest='n_cpus',
         help='How many cpus to use for multiprocessing', default=None)
+    parser.add_argument('--compute-base', '-cb', type=int, dest='compute_base',
+        help='If 1, compute the base, else do not', default=1)
 
     args = parser.parse_args()
     return args
@@ -50,7 +52,7 @@ def keystoneness_perturbation(chain_fname, fname, outfile_table, initial_conditi
 #     pass
     
 def keystoneness_leave_one_out(chain_fname, fname, outfile_table, initial_conditions=None, 
-    max_posterior=None, mp=None):
+    max_posterior=None, mp=None, compute_base=1):
     '''The file(s) show a list of asvs to delete, comma separated
     All of the asvs on a single line should be deleted at once. Note that 
     this is all a single process
@@ -71,9 +73,43 @@ def keystoneness_leave_one_out(chain_fname, fname, outfile_table, initial_condit
     SECTION = 'posterior'
     if max_posterior is None:
         max_posterior = chain.n_samples - chain.burnin
-    growth_master = chain.graph[names.STRNAMES.GROWTH_VALUE].get_trace_from_disk(section=SECTION)[:max_posterior, ...]
-    si_master =  chain.graph[names.STRNAMES.SELF_INTERACTION_VALUE].get_trace_from_disk(section=SECTION)[:max_posterior, ...]
-    A_master =  chain.graph[names.STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk(section=SECTION)[:max_posterior, ...]
+    
+    read = False
+    i = 0
+    while not read:
+        try:
+            time.sleep(0.5)
+            growth_master = chain.graph[names.STRNAMES.GROWTH_VALUE].get_trace_from_disk(section=SECTION)[:max_posterior, ...]
+            read = True
+        except:
+            print('failed growth')   
+            i += 1
+            if i > 10:
+                raise
+    read = False
+    i = 0
+    while not read:
+        try:
+            time.sleep(0.5)
+            si_master =  chain.graph[names.STRNAMES.SELF_INTERACTION_VALUE].get_trace_from_disk(section=SECTION)[:max_posterior, ...]
+            read = True
+        except:
+            print('failed si')   
+            i += 1
+            if i > 10:
+                raise
+    read = False
+    i = 0
+    while not read:
+        try:
+            time.sleep(0.5)
+            A_master =  chain.graph[names.STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk(section=SECTION)[:max_posterior, ...]
+            read = True
+        except:
+            print('failed A')       
+            i += 1
+            if i > 10:
+                raise
 
     print(growth_master.shape)
 
@@ -99,53 +135,57 @@ def keystoneness_leave_one_out(chain_fname, fname, outfile_table, initial_condit
     BASE_CONCENTRATIONS = np.zeros(shape=growth_master.shape, dtype=float)
     # Generate the base concentrations
 
-    if mp is None:
-        for i in range(growth_master.shape[0]):
-            start_time = time.time()
-            pred_dyn = model.gLVDynamicsSingleClustering(asvs=subjset.asvs, 
-                log_dynamics=True, perturbations_additive=False, sim_max=1e20, start_day=0)
-            pred_dyn.growth = growth_master[i]
-            pred_dyn.self_interactions = si_master[i]
-            pred_dyn.interactions = A_master[i]
-
-            _d = pl.dynamics.integrate(dynamics=pred_dyn, 
-                initial_conditions=initial_conditions,
-                dt=sim_dt, n_days=days, 
-                subsample=True, times=np.arange(days), log_every=None)
-            BASE_CONCENTRATIONS[i] = _d['X'][:,-1]
-            if i %10 == 0:
-                logging.debug('{}/{}: {}'.format(i,growth_master.shape[0], time.time()-start_time))
-            # print(BASE_CONCENTRATIONS[i,:])
-    else:
-        # Integrate over posterior with multiprocessing
-        raise NotImplementedError('Not working on windows')
-        pool = pl.multiprocessing.PersistentPool(ptype='dasw')
-        try:
-            for i in range(mp):
-                pool.add_worker(_ForwardSimWorker(asvs=subjset.asvs,
-                    initial_conditions=initial_conditions, start_day=0,
-                    sim_dt=sim_dt, n_days=days+sim_dt, log_integration=True,
-                    perturbations_additive=False, sim_times=np.arange(days+sim_dt),
-                    name='worker{}'.format(i)))
-                # pool.staged_map_start(func='integrate')
+    if compute_base == 1:
+        if mp is None:
             for i in range(growth_master.shape[0]):
-                kwargs = {
-                    'i': i,
-                    'growth': growth_master[i],
-                    'self_interactions': si_master[i],
-                    'interactions': A_master[i],
-                    'perturbations': None}
-                pool.staged_map_put(kwargs)
+                start_time = time.time()
+                pred_dyn = model.gLVDynamicsSingleClustering(asvs=subjset.asvs, 
+                    log_dynamics=True, perturbations_additive=False, sim_max=1e20, start_day=0)
+                pred_dyn.growth = growth_master[i]
+                pred_dyn.self_interactions = si_master[i]
+                pred_dyn.interactions = A_master[i]
 
-            ret = pool.staged_map_get()
-            pool.kill()
-            BASE_CONCENTRATIONS = np.asarray(ret, dtype=float)
+                _d = pl.dynamics.integrate(dynamics=pred_dyn, 
+                    initial_conditions=initial_conditions,
+                    dt=sim_dt, n_days=days, 
+                    subsample=True, times=np.arange(days), log_every=None)
+                BASE_CONCENTRATIONS[i] = _d['X'][:,-1]
+                if i %10 == 0:
+                    logging.debug('{}/{}: {}'.format(i,growth_master.shape[0], time.time()-start_time))
+                # print(BASE_CONCENTRATIONS[i,:])
+        else:
+            # Integrate over posterior with multiprocessing
+            raise NotImplementedError('Not working on windows')
+            pool = pl.multiprocessing.PersistentPool(ptype='dasw')
+            try:
+                for i in range(mp):
+                    pool.add_worker(_ForwardSimWorker(asvs=subjset.asvs,
+                        initial_conditions=initial_conditions, start_day=0,
+                        sim_dt=sim_dt, n_days=days+sim_dt, log_integration=True,
+                        perturbations_additive=False, sim_times=np.arange(days+sim_dt),
+                        name='worker{}'.format(i)))
+                    # pool.staged_map_start(func='integrate')
+                for i in range(growth_master.shape[0]):
+                    kwargs = {
+                        'i': i,
+                        'growth': growth_master[i],
+                        'self_interactions': si_master[i],
+                        'interactions': A_master[i],
+                        'perturbations': None}
+                    pool.staged_map_put(kwargs)
 
-        except:
-            pool.kill()
-            raise
+                ret = pool.staged_map_get()
+                pool.kill()
+                BASE_CONCENTRATIONS = np.asarray(ret, dtype=float)
 
-    row_names = ['base']
+            except:
+                pool.kill()
+                raise
+
+        row_names = ['base']
+    else:
+        row_names = []
+        BASE_CONCENTRATIONS = None
 
     dists = {}
 
@@ -167,7 +207,8 @@ def keystoneness_leave_one_out(chain_fname, fname, outfile_table, initial_condit
 
     output_tbl = np.zeros(shape=(len(row_names), 
         len(chain.graph.data.asvs)), dtype=float)
-    output_tbl[0] = np.mean(BASE_CONCENTRATIONS, axis=0)
+    if compute_base == 1:
+        output_tbl[0] = np.mean(BASE_CONCENTRATIONS, axis=0)
 
     print('output_tbl.shape', output_tbl.shape)
     
@@ -206,8 +247,8 @@ def keystoneness_leave_one_out(chain_fname, fname, outfile_table, initial_condit
             if i % 20 == 0:
                 logging.debug('\t{}/{}'.format(i, growth_master.shape[0]))
 
-        output_tbl[names_iii + 1, mask] = np.mean(concentrations, axis=0)
-        output_tbl[names_iii+1, ~mask] = np.nan
+        output_tbl[names_iii + compute_base, mask] = np.mean(concentrations, axis=0)
+        output_tbl[names_iii+compute_base, ~mask] = np.nan
         diff = concentrations - BASE_CONCENTRATIONS[:,mask]
         mean_diff = np.mean(diff, axis=0)
         dists[names_to_del] = np.sqrt(np.sum(np.square(mean_diff)))

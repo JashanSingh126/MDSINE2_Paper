@@ -3,25 +3,10 @@
 #BSUB -o output/monitor_output.out
 #BSUB -e output/monitor_error.err
 
-# This is a sample script with specific resource requirements for the
-# **bigmemory** queue with 64GB memory requirement and memory
-# limit settings, which are both needed for reservations of
-# more than 40GB.
-# Copy this script and then submit job as follows:
-# ---
-# cd ~/lsf
-# cp templates/bsub/example_8CPU_bigmulti_64GB.lsf .
-# bsub < example_bigmulti_8CPU_64GB.lsf
-# ---
-# Then look in the ~/lsf/output folder for the script log
-# that matches the job ID number
-
-# Please make a copy of this script for your own modifications
-
 #BSUB -q vlong
 #BSUB -n 1
-#BSUB -M 2000
-#BSUB -R rusage[mem=2000]
+#BSUB -M 3000
+#BSUB -R rusage[mem=3000]
 
 # Some important variables to check (Can be removed later)
 echo '---PROCESS RESOURCE LIMITS---'
@@ -53,8 +38,7 @@ echo $TMPDIR
 
 # Add your job command here
 # Load module
-module load anaconda
 source activate dispatcher_pylab3
 
-cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/semi_synthetic/
+cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/semi_synthetic
 python dispatch_lsf.py -ns 15000 -nb 5000 -ckpt 100 -b output/runs_monitor/ -db output/base_data/ -mb output/runs_monitor/monitor/ -mt 2 -nc 1 -nmb 4000 -rms 0
