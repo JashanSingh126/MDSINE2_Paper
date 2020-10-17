@@ -15,7 +15,11 @@ import seaborn as sns
 import config
 import pylab as pl
 
+<<<<<<< HEAD
 logging.basicConfig(level=logging.DEBUG)
+=======
+logging.basicConfig(level=logging.INFO)
+>>>>>>> 1d4e472e72f1d4eedbff7b01ea537639628a0e14
 
 
 priority_queues = ['vlong', 'medium', 'long', 'normal', 'big']
@@ -235,7 +239,11 @@ if args.run_make_subjsets:
     command = 'python make_subjsets.py -b {basepath} -nr {nrs} -m {mns} -p {pvs} -d {nd} -dset semi-synthetic -nt {nts}'.format(
         basepath=args.data_path, nrs=lst_replicates, mns=lst_measurement_noises,
         pvs=lst_process_variances, nd=max_dataseeds+1, nts=lst_times)
+<<<<<<< HEAD
     logging.debug('EXECUTING: {}'.format(command))
+=======
+    logging.info('EXECUTING: {}'.format(command))
+>>>>>>> 1d4e472e72f1d4eedbff7b01ea537639628a0e14
     os.system(command)
 
 job_names_master = {}
@@ -292,7 +300,11 @@ for mesh in arguments_global:
     f.write(make_lsf_script(**kwargs_to_save))
     f.close()
     cmd = 'bsub < {}'.format(lsfname)
+<<<<<<< HEAD
     logging.debug(cmd)
+=======
+    logging.info(cmd)
+>>>>>>> 1d4e472e72f1d4eedbff7b01ea537639628a0e14
     # if args.dispatch_jobs:
     #     os.system(cmd)
 
@@ -318,15 +330,26 @@ if monitor_basepath[-1] != '/':
 os.makedirs(monitor_basepath, exist_ok=True)
 
 start_new_seed = 10000
+<<<<<<< HEAD
 wait_time_seconds = 10*60 ##int(args.monitor_time * 60 *60)
 
 while len(jobs_left) > 0:
     logging.debug('starting to sleep')
+=======
+wait_time_seconds = 10 ##int(args.monitor_time * 60 *60)
+
+while len(jobs_left) > 0:
+    logging.info('starting to sleep')
+>>>>>>> 1d4e472e72f1d4eedbff7b01ea537639628a0e14
     time.sleep(wait_time_seconds)
 
     now = datetime.datetime.now()
     date_time = now.strftime("%m.%d.%Y-%H.%M.%S")
+<<<<<<< HEAD
     logging.debug(date_time)
+=======
+    logging.info(date_time)
+>>>>>>> 1d4e472e72f1d4eedbff7b01ea537639628a0e14
 
     # Make intermediate path
     monitor_path = monitor_basepath + date_time + '/'
@@ -371,8 +394,13 @@ while len(jobs_left) > 0:
             plt.savefig(monitor_path + 'noise.pdf')
             plt.close()
         except Exception as e:
+<<<<<<< HEAD
             logging.debug('Failed on measurement noise')
             logging.debug(e)
+=======
+            logging.info('Failed on measurement noise')
+            logging.info(e)
+>>>>>>> 1d4e472e72f1d4eedbff7b01ea537639628a0e14
 
         # # Number of replicates
         # try:

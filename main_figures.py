@@ -3044,17 +3044,18 @@ def _inner_semi_synth(df, only, x, y, hue, ax, title, ylabel, yscale, legend):
 # Model performance on new dataset
 # --------------------------------
 def model_performance_benchmark_figure():
+
     fig = plt.figure(figsize=(10,5))
     ax = fig.add_subplot(111)
-    df = _make_fake_model_performance_df()
-    ax = sns.boxplot(hue='Dataset', x='Model', y='Error Trajectories', data=df, ax=ax)
-    ax.set_ylabel('RMSE', fontsize=15)
+    df = pd.read_csv('raw_data/predictive_performance.tsv', sep=',')
+    ax = sns.boxplot(hue='Consortium', x='Model', y='Mean-Predictive', data=df, ax=ax,
+        order=['MDSINE2', 'gLV', 'gLV-RA', 'cLV'])
+    ax.set_ylabel('Spearman Correlation', fontsize=15)
     ax.set_xlabel('Model', fontsize=15)
-    ax.set_yscale('log')
-    fig.suptitle('Hold out Performance on Ulcerative Colitis and Healthy Dataset', 
+    fig.suptitle('Held out Performance on Ulcerative Colitis and Healthy Dataset', 
         fontsize=18, fontweight='bold')
     ax.get_legend().remove()
-    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=15)
+    ax.legend(fontsize=15)
 
     for tick in ax.yaxis.get_major_ticks():
         tick.label.set_fontsize(14)
@@ -3067,27 +3068,6 @@ def model_performance_benchmark_figure():
     plt.savefig(BASEPATH + 'model_performance_benchmark.pdf')
     plt.savefig(BASEPATH + 'model_performance_benchmark.png')
     plt.close()
-
-def _make_fake_model_performance_df():
-    data = {
-        'Model': [],
-        'Error Trajectories': [],
-        'Dataset': []}
-    
-    for ds in ['Ulcerative Colitis', 'Healthy']:
-        for model in ['MDSINE2', 'L2', 'cLV']:
-            if ds == 'Healthy':
-                n = 4
-            else:
-                n = 5
-            
-            for i in range(n):
-                data['Model'].append(model)
-                data['Error Trajectories'].append(_srn())
-                data['Dataset'].append(ds)
-
-    df = pd.DataFrame(data)
-    return df
 
 os.makedirs('output_figures/', exist_ok=True)
 # Alpha diversity
@@ -3108,13 +3088,13 @@ os.makedirs('output_figures/', exist_ok=True)
 
 # Phylogenetic heatmap
 # phylogenetic_heatmap(False)
-phylogenetic_heatmap_side_by_side()
+# phylogenetic_heatmap_side_by_side()
 
 # Semi-synthetic benchmarking
 # semi_synthetic_benchmark_figure()
 
 # Model performance benchmarking
-# model_performance_benchmark_figure()
+model_performance_benchmark_figure()
 
 
 

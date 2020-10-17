@@ -74,10 +74,27 @@ config.LoggingConfig()
 logging.basicConfig(level=logging.INFO)
 pl.seed(1)
 
+HEALTHY_SUBJECTS = ['2','3','4','5']
+UC_SUBJECTS = ['6','7','8','9','10']
 
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
 
+<<<<<<< HEAD
+=======
+a = 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+chain = pl.inference.BaseMCMC.load(a)
+asvs = chain.graph.data.asvs
+
+i = 0
+for asv in asvs:
+    if asv.tax_is_defined('genus'):
+        i += 1
+
+print(i/len(asvs))
+sys.exit()
+
+>>>>>>> 1d4e472e72f1d4eedbff7b01ea537639628a0e14
 
 # ####################################################
 # # Rename files to transfer onto ErisOne
@@ -106,9 +123,104 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 #     graph.save()
 #     print('save tracer')
 #     tracer.save()
+<<<<<<< HEAD
 # sys.exit()
+=======
 
 
+####################################################
+# PERMANOVA
+####################################################
+import skbio.stats.distance
+import skbio.diversity
+
+colonization = 5
+
+# a = skbio.stats.distance.permanova()
+
+labels = []
+reads = []
+grouping = []
+i_uc = 0
+i_he = 0
+for subj in subjset_real:
+    print(subj.name)
+    for t in subj.times:
+        if t < colonization:
+            continue
+        if t >= subjset_real.perturbations[0].start:
+            continue
+        reads.append(subj.reads[t])
+        if subj.name in HEALTHY_SUBJECTS:
+            label = 'Healthy{}'.format(i_he)
+            i_he += 1
+        else:
+            label = 'UC{}'.format(i_uc)
+            i_uc += 1
+        labels.append(label)
+        grouping.append('UC' if subj.name not in HEALTHY_SUBJECTS else 'Healthy')
+
+print(labels)
+
+bc_dm = skbio.diversity.beta_diversity(counts=np.asarray(reads), ids=labels, metric="braycurtis")
+# print(bc_dm)
+
+result = skbio.stats.distance.permanova(
+    distance_matrix=bc_dm, grouping=grouping)
+print(result)
+>>>>>>> 1d4e472e72f1d4eedbff7b01ea537639628a0e14
+
+sys.exit()
+
+<<<<<<< HEAD
+=======
+####################################################
+# Wilcoxon signed-rank tests
+####################################################
+colonization = 5
+
+healthy = {}
+uc = {}
+
+for subj in subjset_real:
+    print(len(subj.times))
+    for t in subj.times:
+        aaa = diversity.alpha.normalized_entropy(subj.reads[t])
+        if subj.name in HEALTHY_SUBJECTS:
+            if t not in healthy:
+                healthy[t] = []
+            healthy[t].append(aaa)
+        else:
+            if t not in uc:
+                uc[t] = []
+            uc[t].append(aaa)
+
+times_healthy = list(healthy.keys())
+median_healthy = []
+for t in times_healthy:
+    if t < colonization:
+        continue
+    if t >= subjset_real.perturbations[0].start:
+        continue
+    median_healthy.append(np.median(healthy[t]))
+
+times_uc = list(uc.keys())
+median_uc = []
+for t in times_uc:
+    if t < colonization:
+        continue
+    if t >= subjset_real.perturbations[0].start:
+        continue
+    median_uc.append(np.median(uc[t]))
+
+print(len(median_uc))
+print(len(median_healthy))
+print(scipy.stats.wilcoxon(median_healthy, median_uc))
+
+
+sys.exit()
+
+>>>>>>> 1d4e472e72f1d4eedbff7b01ea537639628a0e14
 # ####################################################
 # # Check bjobs
 # ####################################################
@@ -117,6 +229,16 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 # f = open(fname, 'r')
 # txt = f.read()
 # f.close()
+<<<<<<< HEAD
+=======
+
+# delete_date = r'(\s+Oct.+)'
+# delete_date = re.compile(delete_date)
+# submit_time_delete = r'(\s+SUBMIT_TIME)'
+# submit_time_delete = re.compile(submit_time_delete)
+# make_tabs = r'(\ ){1,10}'
+# make_tabs = re.compile(make_tabs)
+>>>>>>> 1d4e472e72f1d4eedbff7b01ea537639628a0e14
 
 # delete_date = r'(\s+Oct.+)'
 # delete_date = re.compile(delete_date)
@@ -125,6 +247,7 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 # make_tabs = r'(\ ){1,10}'
 # make_tabs = re.compile(make_tabs)
 
+<<<<<<< HEAD
 
 # a = delete_date.sub('', txt)
 # a = submit_time_delete.sub('', a)
@@ -138,6 +261,21 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 # print(df[df['STAT']=='PEND']['JOB_NAME'])
 
 # # Check if any job names are missing, if they are then send them to a new queue
+=======
+# a = delete_date.sub('', txt)
+# a = submit_time_delete.sub('', a)
+# a = make_tabs.sub(',', a)
+# f = open(fname_tabed, 'w')
+# f.write(a)
+# f.close()
+
+# df = pd.read_csv(fname_tabed, sep=',')
+# print(df)
+# print(df[df['STAT']=='PEND']['JOB_NAME'])
+
+# # Check if any job names are missing, if they are then send them to a new queue
+
+>>>>>>> 1d4e472e72f1d4eedbff7b01ea537639628a0e14
 # sys.exit()
 
 # ####################################################
