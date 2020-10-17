@@ -13,6 +13,7 @@ import warnings
 import pickle
 import numpy as np
 import argparse
+import time
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -146,6 +147,7 @@ def forward_simulate(growth, self_interactions, interactions, perturbations, dt,
     output_basepath : str
         basepath to save the output
     '''
+    logging.info('Inside forward simulate')
     # Set the data
     asvs = subject.asvs
 
@@ -187,7 +189,11 @@ def forward_simulate(growth, self_interactions, interactions, perturbations, dt,
     initial_conditions = initial_conditions.reshape(-1,1)
 
     # Perform inference
+    start_time = time.time()
     for gibb_step in range(n_samples):
+        if gibb_step % 100 == 0:
+            logging.info('{}/{}: {}'.format(gibb_step,n_samples, time.time()-start_time))
+            start_time = time.time()
         dyn = EfficientgLVDynamics(
             asvs=asvs, 
             growth=growth[gibb_step], 
@@ -229,23 +235,34 @@ if __name__ == '__main__':
     args = parse_args()
 
     # Load the inference parameters
-    basepath = args.input_basepaths
+    basepath = args.input_basepath
     if basepath[-1] != '/':
         basepath += '/'
 
+    logging.info('Loading')
     subject = pl.Subject.load(basepath + subject_filename)
     growth = np.load(basepath + growth_filename)
     self_interactions = np.load(basepath + self_interactions_filename)
     interactions = np.load(basepath + interactions_filename)
-    perturbation0 = np.load(basepath + perturbationX_filename.format(0))
-    perturbation1 = np.load(basepath + perturbationX_filename.format(1))
-    perturbation2 = np.load(basepath + perturbationX_filename.format(2))
+    perturbation0 = np.load(basepath + perturbationX_filename.format(pidx=0))
+    perturbation1 = np.load(basepath + perturbationX_filename.format(pidx=1))
+    perturbation2 = np.load(basepath + perturbationX_filename.format(pidx=2))
     perturbations = [perturbation0, perturbation1, perturbation2]
+
+    logging.info('shapes')
+    logging.info('growth {}'.format(growth.shape))
+    logging.info('self_interactions {}'.format(self_interactions.shape))
+    logging.info('interactions {}'.format(interactions.shape))
+    logging.info('perturbation0 {}'.format(perturbation0.shape))
+    logging.info('perturbation1 {}'.format(perturbation1.shape))
+    logging.info('perturbation2 {}'.format(perturbation2.shape))
 
     for t in args.times_to_start_on:
 
         if t not in subject.times:
             raise ValueError('t ({}) not in subject times ({})'.format(t, subject.times))
+
+        logging.info('dispatching start {}, {} days'.format(t, args.n_days))
 
         forward_simulate(
             growth=growth, self_interactions=self_interactions, interactions=interactions,
