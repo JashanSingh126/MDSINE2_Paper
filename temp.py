@@ -80,8 +80,6 @@ UC_SUBJECTS = ['6','7','8','9','10']
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
 
-<<<<<<< HEAD
-=======
 a = 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
 chain = pl.inference.BaseMCMC.load(a)
 asvs = chain.graph.data.asvs
@@ -94,7 +92,6 @@ for asv in asvs:
 print(i/len(asvs))
 sys.exit()
 
->>>>>>> 1d4e472e72f1d4eedbff7b01ea537639628a0e14
 
 # ####################################################
 # # Rename files to transfer onto ErisOne
@@ -123,9 +120,6 @@ sys.exit()
 #     graph.save()
 #     print('save tracer')
 #     tracer.save()
-<<<<<<< HEAD
-# sys.exit()
-=======
 
 
 ####################################################
@@ -168,12 +162,9 @@ bc_dm = skbio.diversity.beta_diversity(counts=np.asarray(reads), ids=labels, met
 result = skbio.stats.distance.permanova(
     distance_matrix=bc_dm, grouping=grouping)
 print(result)
->>>>>>> 1d4e472e72f1d4eedbff7b01ea537639628a0e14
 
 sys.exit()
 
-<<<<<<< HEAD
-=======
 ####################################################
 # Wilcoxon signed-rank tests
 ####################################################
@@ -220,7 +211,6 @@ print(scipy.stats.wilcoxon(median_healthy, median_uc))
 
 sys.exit()
 
->>>>>>> 1d4e472e72f1d4eedbff7b01ea537639628a0e14
 # ####################################################
 # # Check bjobs
 # ####################################################
@@ -229,16 +219,6 @@ sys.exit()
 # f = open(fname, 'r')
 # txt = f.read()
 # f.close()
-<<<<<<< HEAD
-=======
-
-# delete_date = r'(\s+Oct.+)'
-# delete_date = re.compile(delete_date)
-# submit_time_delete = r'(\s+SUBMIT_TIME)'
-# submit_time_delete = re.compile(submit_time_delete)
-# make_tabs = r'(\ ){1,10}'
-# make_tabs = re.compile(make_tabs)
->>>>>>> 1d4e472e72f1d4eedbff7b01ea537639628a0e14
 
 # delete_date = r'(\s+Oct.+)'
 # delete_date = re.compile(delete_date)
@@ -247,7 +227,12 @@ sys.exit()
 # make_tabs = r'(\ ){1,10}'
 # make_tabs = re.compile(make_tabs)
 
-<<<<<<< HEAD
+# delete_date = r'(\s+Oct.+)'
+# delete_date = re.compile(delete_date)
+# submit_time_delete = r'(\s+SUBMIT_TIME)'
+# submit_time_delete = re.compile(submit_time_delete)
+# make_tabs = r'(\ ){1,10}'
+# make_tabs = re.compile(make_tabs)
 
 # a = delete_date.sub('', txt)
 # a = submit_time_delete.sub('', a)
@@ -261,21 +246,7 @@ sys.exit()
 # print(df[df['STAT']=='PEND']['JOB_NAME'])
 
 # # Check if any job names are missing, if they are then send them to a new queue
-=======
-# a = delete_date.sub('', txt)
-# a = submit_time_delete.sub('', a)
-# a = make_tabs.sub(',', a)
-# f = open(fname_tabed, 'w')
-# f.write(a)
-# f.close()
 
-# df = pd.read_csv(fname_tabed, sep=',')
-# print(df)
-# print(df[df['STAT']=='PEND']['JOB_NAME'])
-
-# # Check if any job names are missing, if they are then send them to a new queue
-
->>>>>>> 1d4e472e72f1d4eedbff7b01ea537639628a0e14
 # sys.exit()
 
 # ####################################################
