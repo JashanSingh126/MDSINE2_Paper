@@ -1,5 +1,17 @@
 '''Memory and computationally efficient script for time lookahead for MDSINE2. Not
 designed to be flexible, just efficient and readable.
+
+Before running this script, you need to save the traces for the variables as numpy arrays (.npy)
+in a single folder with the structure:
+    folder_name/
+        growth.npy  # shape = (n_samples, n_asvs)
+        self_interactions.npy # shape = (n_samples, n_asvs, n_asvs)
+        interactions.npy # shape = (n_samples, n_asvs)
+        perturbation1.npy # shape = (n_samples, n_asvs)
+        perturbation2.npy # shape = (n_samples, n_asvs)
+        perturbation3.npy # shape = (n_samples, n_asvs)
+
+`n_asvs` are the number of ASVs, `n_samples` are how many samples in the posterior.
 '''
 
 import logging
@@ -39,7 +51,8 @@ def parse_args():
     parser.add_argument('--n-days', type=float, dest='n_days',
         help='Maximum number of days to look ahead')
     parser.add_argument('--times-to-start-on', type=float, dest='times_to_start_on', nargs='+',
-        help='comma separated times to start the forward simulation on')
+        help='comma separated times to start the forward simulation on. If nothing is' \
+        ' provided, then we will do all of the timepoints in the subject.', default=None)
     parser.add_argument('--input-basepaths', type=str, dest='input_basepath',
         help='The path to find the growth, interaction, and perturbation traces as wll as the subject')
     parser.add_argument('--validation-subject', type=str, dest='input',
@@ -124,7 +137,6 @@ class EfficientgLVDynamics(pl.BaseDynamics):
     def finish_integration(self):
         self._pert_intervals = None
         self._adjusted_growth = None
-
 
 def forward_simulate(growth, self_interactions, interactions, perturbations, dt, 
     subject, start, n_days, output_basepath, limit_of_detection=1e5):
@@ -257,7 +269,12 @@ if __name__ == '__main__':
     logging.info('perturbation1 {}'.format(perturbation1.shape))
     logging.info('perturbation2 {}'.format(perturbation2.shape))
 
-    for t in args.times_to_start_on:
+    if args.times_to_start_on is None:
+        times_ = subject.times
+    else:
+        times_ = args.times_to_start_on
+
+    for t in times_:
 
         if t not in subject.times:
             raise ValueError('t ({}) not in subject times ({})'.format(t, subject.times))

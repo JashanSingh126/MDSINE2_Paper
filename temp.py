@@ -35,25 +35,15 @@ import seaborn as sns
 import matplotlib.ticker as plticker
 import matplotlib.patches as patches
 
-print('import pylab')
 import pylab as pl
-print('import synthetic')
 import synthetic
-print('import diversity')
 import diversity
-print('import config')
 import config
-print('import filtering')
 import preprocess_filtering as filtering
-print('import model')
 import model
-print('import names')
 import names
-print('import main_base')
 import main_base
-print('import metrics')
 import metrics
-print('import util')
 import util as MDSINE2_util
 
 import ete3
@@ -83,172 +73,20 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 s1 = 'time_look_ahead/Healthy_subject2/output/MDSINE2-subj2-tla6.0-start1.0-pred.npy'
 s2 = 'time_look_ahead/Healthy_subject2/output/MDSINE2-subj2-tla6.0-start1.0-truth.npy'
 
-my_str = '''
-#!/bin/bash
-#BSUB -J {jobname}
-#BSUB -o {logging_loc}_output.out
-#BSUB -e {logging_loc}_error.err
 
-# This is a sample script with specific resource requirements for the
-# **bigmemory** queue with 64GB memory requirement and memory
-# limit settings, which are both needed for reservations of
-# more than 40GB.
-# Copy this script and then submit job as follows:
-# ---
-# cd ~/lsf
-# cp templates/bsub/example_8CPU_bigmulti_64GB.lsf .
-# bsub < example_bigmulti_8CPU_64GB.lsf
-# ---
-# Then look in the ~/lsf/output folder for the script log
-# that matches the job ID number
+a = np.arange(4).reshape(2,2)
 
-# Please make a copy of this script for your own modifications
+c = np.arange(24, step=2).reshape(3,2,2)
 
-#BSUB -q {queue}
-#BSUB -n {n_cpus}
-#BSUB -M {n_mbs}
-#BSUB -R rusage[mem={n_mbs}]
-
-# Some important variables to check (Can be removed later)
-echo '---PROCESS RESOURCE LIMITS---'
-ulimit -a
-echo '---SHARED LIBRARY PATH---'
-echo $LD_LIBRARY_PATH
-echo '---APPLICATION SEARCH PATH:---'
-echo $PATH
-echo '---LSF Parameters:---'
-printenv | grep '^LSF'
-echo '---LSB Parameters:---'
-printenv | grep '^LSB'
-echo '---LOADED MODULES:---'
-module list
-echo '---SHELL:---'
-echo $SHELL
-echo '---HOSTNAME:---'
-hostname
-echo '---GROUP MEMBERSHIP (files are created in the first group listed):---'
-groups
-echo '---DEFAULT FILE PERMISSIONS (UMASK):---'
-umask
-echo '---CURRENT WORKING DIRECTORY:---'
-pwd
-echo '---DISK SPACE QUOTA---'
-df .
-echo '---TEMPORARY SCRATCH FOLDER ($TMPDIR):---'
-echo $TMPDIR
-
-# Add your job command here
-# Load module
-source activate dispatcher_pylab301
-
-cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/time_look_ahead
-python forward_simulate.py --n-days {n_days} --times-to-start-on {time_to_start_on} --input-basepaths {consortium}_subject{subjectname}/data/ --validation-subject {consortium}_subject{subjectname}/data/subject.pkl --output-basepath {consortium}_subject{subjectname}/output/ 
-'''
-
-lsfdir = 'time_look_ahead/lsfs/'
-os.makedirs(lsfdir, exist_ok=True)
-
-
-####################################################
-# Send data to numpy
-####################################################
-
-basepaths =[
-    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out0/',
-    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out1/',
-    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out2/',
-    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out3/',
-    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out4/',
-
-    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out0/',
-    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out1/',
-    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out2/',
-    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out3/',
-]
-
-for i, basepath in enumerate(basepaths):
-
-    mcmc = pl.inference.BaseMCMC.load(basepath+'mcmc.pkl')
-    subjset = pl.SubjectSet.load(basepath + 'validate_subjset.pkl')
-    subject = subjset.iloc(0)
-
-    consortium = 'UC' if i <= 4 else 'Healthy'
-
-    for t in subject.times:
-
-        lsfname = lsfdir + consortium + 'subject' + subject.name + '_{}.lsf'.format(t)
-        f = open(lsfname, 'w')
-        f.write(my_str.format(
-            consortium=consortium, subjectname=subject.name, time_to_start_on=t, n_days=8,
-            n_mbs=4000, n_cpus=1, queue='short', jobname='{}_{}_{}'.format(consortium, subject.name, t),
-            logging_loc=lsfdir))
-        f.close()
-
-        cmd = 'bsub < {}'.format(lsfname)
-        os.system(cmd)
+print(a)
+print()
+print(c)
+print()
+print(c-a)
+print()
+print(np.mean(c-a, axis=1))
 
 sys.exit()
-
-
-
-    # savepath = 'time_look_ahead/{}_subject{}/'.format(consortium, subject.name)
-    # os.makedirs(savepath, exist_ok=True)
-    # os.makedirs(savepath+'data/', exist_ok=True)
-    # os.makedirs(savepath+'output/', exist_ok=True)
-    # subject.save(savepath+'data/subject.pkl')
-
-    
-
-    # growth = mcmc.graph[names.STRNAMES.GROWTH_VALUE].get_trace_from_disk(section='posterior')
-    # np.save(savepath+'data/growth.npy', growth)
-    # si = mcmc.graph[names.STRNAMES.SELF_INTERACTION_VALUE].get_trace_from_disk(section='posterior')
-    # np.save(savepath+'data/self_interactions.npy', si)
-
-    # interactions = mcmc.graph[names.STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk(section='posterior')
-    # interactions[np.isnan(interactions)] = 0
-    # np.save(savepath+'data/interactions.npy', interactions)
-
-    # perturbations = mcmc.graph.perturbations
-    # for pidx, pert in enumerate(perturbations):
-    #     pert_ = pert.get_trace_from_disk(section='posterior')
-    #     pert_[np.isnan(pert_)] = 0
-    #     np.save(savepath+'data/perturbation{}.npy'.format(pidx), pert_)
-
-    
-
-    # print(subject.name)
-
-
-sys.exit()
-
-# ####################################################
-# # Rename files to transfer onto ErisOne
-# ####################################################
-# basepaths = [
-#     'output_real/runs/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/',
-#     'output_real/runs/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/',
-#     'output_real/runs/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/',
-#     'output_real/runs/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/']
-
-# for basepath in basepaths:
-#     print('basepath\n', basepath)
-#     mcmc = pl.inference.BaseMCMC.load(basepath + 'mcmc.pkl')
-
-#     print('set locations')
-#     mcmc.set_save_location(basepath+'mcmc.pkl')
-#     graph = mcmc.graph
-#     graph.set_save_location(basepath+'graph.pkl')
-#     tracer = mcmc.tracer
-#     tracer.set_save_location(basepath+'tracer.pkl')
-#     tracer.filename = basepath + 'traces.hdf5'
-
-#     print('save mcmc')
-#     mcmc.save()
-#     print('save graph')
-#     graph.save()
-#     print('save tracer')
-#     tracer.save()
-
 
 ####################################################
 # PERMANOVA
