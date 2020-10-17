@@ -1,0 +1,68 @@
+#!/bin/bash
+#BSUB -J calculate_error
+#BSUB -o calculate_error_output.out
+#BSUB -e calculate_error_error.err
+
+# This is a sample script with specific resource requirements for the
+# **bigmemory** queue with 64GB memory requirement and memory
+# limit settings, which are both needed for reservations of
+# more than 40GB.
+# Copy this script and then submit job as follows:
+# ---
+# cd ~/lsf
+# cp templates/bsub/example_8CPU_bigmulti_64GB.lsf .
+# bsub < example_bigmulti_8CPU_64GB.lsf
+# ---
+# Then look in the ~/lsf/output folder for the script log
+# that matches the job ID number
+
+# Please make a copy of this script for your own modifications
+
+#BSUB -q short
+#BSUB -n 1
+#BSUB -M 3000
+#BSUB -R rusage[mem=3000]
+
+# Some important variables to check (Can be removed later)
+echo '---PROCESS RESOURCE LIMITS---'
+ulimit -a
+echo '---SHARED LIBRARY PATH---'
+echo $LD_LIBRARY_PATH
+echo '---APPLICATION SEARCH PATH:---'
+echo $PATH
+echo '---LSF Parameters:---'
+printenv | grep '^LSF'
+echo '---LSB Parameters:---'
+printenv | grep '^LSB'
+echo '---LOADED MODULES:---'
+module list
+echo '---SHELL:---'
+echo $SHELL
+echo '---HOSTNAME:---'
+hostname
+echo '---GROUP MEMBERSHIP (files are created in the first group listed):---'
+groups
+echo '---DEFAULT FILE PERMISSIONS (UMASK):---'
+umask
+echo '---CURRENT WORKING DIRECTORY:---'
+pwd
+echo '---DISK SPACE QUOTA---'
+df .
+echo '---TEMPORARY SCRATCH FOLDER ($TMPDIR):---'
+echo $TMPDIR
+
+# Add your job command here
+# Load module
+source activate dispatcher_pylab301
+
+cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/time_look_ahead
+python calculate_error.py --basepath output/Healthy_subject2/output/ --output Healthy_subject2/error.tsv --metric relRMSE --dataset Healthy --model MDSINE2 --stat mean
+python calculate_error.py --basepath output/Healthy_subject3/output/ --output Healthy_subject3/error.tsv --metric relRMSE --dataset Healthy --model MDSINE2 --stat mean
+python calculate_error.py --basepath output/Healthy_subject4/output/ --output Healthy_subject4/error.tsv --metric relRMSE --dataset Healthy --model MDSINE2 --stat mean
+python calculate_error.py --basepath output/Healthy_subject5/output/ --output Healthy_subject5/error.tsv --metric relRMSE --dataset Healthy --model MDSINE2 --stat mean
+
+python calculate_error.py --basepath output/UC_subject6/output/ --output UC_subject6/error.tsv --metric relRMSE --dataset Healthy --model MDSINE2 --stat mean
+python calculate_error.py --basepath output/UC_subject7/output/ --output UC_subject7/error.tsv --metric relRMSE --dataset Healthy --model MDSINE2 --stat mean
+python calculate_error.py --basepath output/UC_subject8/output/ --output UC_subject8/error.tsv --metric relRMSE --dataset Healthy --model MDSINE2 --stat mean
+python calculate_error.py --basepath output/UC_subject9/output/ --output UC_subject9/error.tsv --metric relRMSE --dataset Healthy --model MDSINE2 --stat mean
+python calculate_error.py --basepath output/UC_subject10/output/ --output UC_subject10/error.tsv --metric relRMSE --dataset Healthy --model MDSINE2 --stat mean

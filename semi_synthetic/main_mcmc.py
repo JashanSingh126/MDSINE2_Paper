@@ -242,7 +242,7 @@ if __name__ == '__main__':
 
         # check if the inference is finished yet
         df_old = pd.read_csv(seed_restart_filename, sep='\t')
-        if np.any(np.isnan(df.to_numpy())):
+        if np.any(np.isnan(df_old.to_numpy())):
             # This means it is finished. Set ONLY_PLOT to true
             ONLY_PLOT = True
             logging.warning('Inference is finished. Only plotting')

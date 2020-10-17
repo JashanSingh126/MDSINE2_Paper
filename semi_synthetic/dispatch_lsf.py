@@ -318,7 +318,7 @@ if monitor_basepath[-1] != '/':
 os.makedirs(monitor_basepath, exist_ok=True)
 
 start_new_seed = 10000
-wait_time_seconds = 10 ##int(args.monitor_time * 60 *60)
+wait_time_seconds = 5*50 ##int(args.monitor_time * 60 *60)
 
 while len(jobs_left) > 0:
     logging.info('starting to sleep')
