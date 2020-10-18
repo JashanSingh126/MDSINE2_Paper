@@ -84,8 +84,8 @@ echo $TMPDIR
 # Load module
 source activate dispatcher_pylab301
 
-cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/time_look_ahead
-python forward_simulate.py --n-days {n_days} --times-to-start-on {time_to_start_on} --input-basepaths {input_basepath} --validation-subject {subject_path} --output-basepath {output_basepath}
+cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/keystoneness
+python keystoneness.py --type {type} --input-basepaths {input_basepath} --output-basepath {output_basepath} --simulation-dt {dt} --leave-out {leave_out} --leave-out-table {leave_out_table}
 '''
 
 if __name__ == '__main__':
@@ -93,79 +93,122 @@ if __name__ == '__main__':
     # ---------------
     parser = argparse.ArgumentParser()
     parser.add_argument('--queue', '-q', type=str, dest='queue',
-        help='This is the queue we are submitting to')
-    parser.add_argument('--input', '-i', type=str, dest='input_paths',
+        help='This is the queue we are submitting to', default='short')
+    parser.add_argument('--leave-out-table', type=str, dest='leave_out_table',
         help='This is where we are getting the data from')
-    parser.add_argument('--n-days', type=int, dest='n_days',
-        help='Furthest day to simulate out to')
+    parser.add_argument('--type', type=str, dest='type',
+        help='What kind of keystoneness')
     parser.add_argument('--run-jobs', type=int, dest='run_jobs',
         help='Run the jobs using lsf', default=0)
     parser.add_argument('--n-cpus', type=int, dest='n_cpus',
         help='Number of CPUs for each job', default=1)
     parser.add_argument('--n-mbs', type=int, dest='n_mbs',
         help='Number of megabytes to save for the job', default=4000)
+    # parser.add_argument('--job-folder', type=str, dest='job_folder',
+    #     help='Where the jobs are')
+    parser.add_argument('--mcmc-paths', type=str, dest='mcmc_paths',
+        help='Where the chains are')
+    parser.add_argument('--output-basepath', type=str, dest='output_basepath',
+        help='Base folder for the output')
     
     args = parser.parse_args()
 
-    f = open(args.input_paths, 'r')
+    # Parse the chains
+    # ----------------
+    f = open(args.mcmc_paths, 'r')
     txt = f.read()
     f.close()
 
+    output_basepath = args.output_basepath
+    os.makedirs(output_basepath, exist_ok=True)
+    if output_basepath[-1] != '/':
+        output_basepath += '/'
+
+
     for line in txt.split('\n'):
-        # Save the traces
-        # ---------------
-        jobname, chain_basepath = line.split(',')
+        try:
+            dset, path = line.split(',')
+        except:
+            print('line ({}) failed. skipping'.format(line))
+            continue
 
-        if chain_basepath[-1] != '/':
-            chain_basepath += '/'
+        # Make the data folder
+        dset_basepath = output_basepath + dset + '/'
+        dset_input_basepath = dset_basepath + 'input/'
+        dset_output_basepath = dset_basepath + 'output/'
+        os.makedirs(dset_basepath, exist_ok=True)
+        os.makedirs(dset_input_basepath, exist_ok=True)
+        os.makedirs(dset_output_basepath, exist_ok=True)
+        
 
-        mcmc = pl.inference.BaseMCMC.load(chain_basepath + 'mcmc.pkl')
-        subjset = pl.SubjectSet.load(chain_basepath + 'validate_subjset.pkl')
-
-        input_basepath = jobname + '/data/'
-        output_basepath = jobname + '/output/'
-        lsf_basepath = input_basepath + 'lsfs/'
-        os.makedirs(jobname, exist_ok=True)
-        os.makedirs(input_basepath, exist_ok=True)
-        os.makedirs(output_basepath, exist_ok=True)
-        os.makedirs(lsf_basepath, exist_ok=True)
-
-        # Save the traces and subject
-        subjectpath = input_basepath+'subject.pkl'
-        subject = subjset.iloc(0)
-        subject.save(subjectpath)
+        # Get the traces
+        mcmc = pl.inference.BaseMCMC.load(path + 'mcmc.pkl')
+        mcmc.tracer.filename = '../' + mcmc.tracer.filename
 
         growth = mcmc.graph[names.STRNAMES.GROWTH_VALUE].get_trace_from_disk(section='posterior')
-        np.save(input_basepath+'growth.npy', growth)
+        np.save(dset_input_basepath+'growth.npy', growth)
         si = mcmc.graph[names.STRNAMES.SELF_INTERACTION_VALUE].get_trace_from_disk(section='posterior')
-        np.save(input_basepath+'self_interactions.npy', si)
+        np.save(dset_input_basepath+'self_interactions.npy', si)
 
         interactions = mcmc.graph[names.STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk(section='posterior')
         interactions[np.isnan(interactions)] = 0
-        np.save(input_basepath+'interactions.npy', interactions)
+        np.save(dset_input_basepath+'interactions.npy', interactions)
 
         perturbations = mcmc.graph.perturbations
         for pidx, pert in enumerate(perturbations):
             pert_ = pert.get_trace_from_disk(section='posterior')
             pert_[np.isnan(pert_)] = 0
-            np.save(input_basepath+'perturbation{}.npy'.format(pidx), pert_)
+            np.save(dset_input_basepath+'perturbation{}.npy'.format(pidx), pert_)
 
-        # Submit the jobs if necessary
-        # ----------------------------
-        if args.run_jobs:
-            for t in subject.times:
+        subjset = mcmc.graph.data.subjects
+        subjset.save(dset_input_basepath + 'subjset.pkl')
 
-                lsfname = lsf_basepath + jobname + '_{n_days}_{start}.lsf'.format(n_days=args.n_days, start=t)
+        # Run the chains
+        # --------------
+        onlyfiles = [f for f in os.listdir(dset_basepath) if os.path.isfile(dset_basepath+f)]
+
+        for fname in onlyfiles:
+            print(fname)
+            fpath = fname.replace('.txt', '/')
+            jobpath = dset_basepath + fpath
+            lsfpath = dset_basepath + 'lsfs/'
+            os.makedirs(jobpath, exist_ok=True)
+            os.makedirs(lsfpath, exist_ok=True)
+
+            f = open(dset_basepath + fname, 'r')
+            lll = f.read()
+            f.close()
+            n_jobs = len(lll.split('\n'))
+
+            # Calculate base
+            lsfname = lsfpath + '{}_{}.lsf'.format(fname.replace('.txt', ''), None)
+            f = open(lsfname, 'w')
+            f.write(lsf_format.format(
+                jobname=fpath.replace('/', '{}'.format(None)),
+                input_basepath=dset_input_basepath,
+                queue=args.queue, n_cpus=args.n_cpus, n_mbs=args.n_mbs,
+                type=args.type, dt=0.1, leave_out=None,
+                output_basepath=jobpath,
+                leave_out_table=dset_basepath+fname))
+            f.close()
+            command = 'bsub < {}'.format(lsfname)
+            os.system(command)
+
+            # Calculate all others
+            for i in range(n_jobs):
+                lsfname = lsfpath + '{}_{}.lsf'.format(fname.replace('.txt', ''), i)
                 f = open(lsfname, 'w')
-                f.write(lsf_format.format(jobname=jobname, input_basepath=input_basepath, queue=args.queue,
-                    n_cpus=args.n_cpus, n_mbs=args.n_mbs, n_days=args.n_days, time_to_start_on=t, 
-                    subject_path=subjectpath, output_basepath=output_basepath))
+                f.write(lsf_format.format(
+                    jobname=fpath.replace('/', '{}'.format(i)),
+                    input_basepath=dset_input_basepath,
+                    queue=args.queue, n_cpus=args.n_cpus, n_mbs=args.n_mbs,
+                    type=args.type, dt=0.01, leave_out=i,
+                    output_basepath=jobpath,
+                    leave_out_table=dset_basepath+fname))
                 f.close()
 
                 command = 'bsub < {}'.format(lsfname)
                 os.system(command)
 
 
-
-
-    
+               

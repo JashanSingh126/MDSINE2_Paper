@@ -21,7 +21,7 @@ logging.basicConfig(level=logging.INFO)
 priority_queues = ['vlong', 'medium', 'long', 'normal', 'big']
 seed_record_fmt = '{basepath}{jobname}/' + config.RESTART_INFERENCE_SEED_RECORD
 intermediate_validation_fmt = '{basepath}{jobname}/' + config.INTERMEDIATE_RESULTS_FILENAME
-max_jobs_per_queue = 25
+max_jobs_per_queue = 10
 
 parser = argparse.ArgumentParser()
 parser = argparse.ArgumentParser()
@@ -318,7 +318,7 @@ if monitor_basepath[-1] != '/':
 os.makedirs(monitor_basepath, exist_ok=True)
 
 start_new_seed = 10000
-wait_time_seconds = 5*50 ##int(args.monitor_time * 60 *60)
+wait_time_seconds = 5 ##int(args.monitor_time * 60 *60)
 
 while len(jobs_left) > 0:
     logging.info('starting to sleep')

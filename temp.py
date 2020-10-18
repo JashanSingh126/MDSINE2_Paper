@@ -70,21 +70,17 @@ UC_SUBJECTS = ['6','7','8','9','10']
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
 
-s1 = 'time_look_ahead/Healthy_subject2/output/MDSINE2-subj2-tla6.0-start1.0-pred.npy'
-s2 = 'time_look_ahead/Healthy_subject2/output/MDSINE2-subj2-tla6.0-start1.0-truth.npy'
+path = 'output_real/runs/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
 
+mcmc = pl.inference.BaseMCMC.load(path)
 
-a = np.arange(4).reshape(2,2)
+f = open('keystoneness/input/uc_asvs.txt', 'w')
 
-c = np.arange(24, step=2).reshape(3,2,2)
+for asv in mcmc.graph.data.asvs.names.order:
+    f.write(asv + '\n')
 
-print(a)
-print()
-print(c)
-print()
-print(c-a)
-print()
-print(np.mean(c-a, axis=1))
+f.close()
+
 
 sys.exit()
 

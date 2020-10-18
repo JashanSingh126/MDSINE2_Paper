@@ -54,7 +54,7 @@ def parse_args():
         help='comma separated times to start the forward simulation on. If nothing is' \
         ' provided, then we will do all of the timepoints in the subject.', default=None)
     parser.add_argument('--input-basepaths', type=str, dest='input_basepath',
-        help='The path to find the growth, interaction, and perturbation traces as wll as the subject')
+        help='The path to find the growth, interaction, and perturbation traces')
     parser.add_argument('--validation-subject', type=str, dest='input',
         help='Pylab.base.Subject obejct we want to do the inference over')
     parser.add_argument('--output-basepath', type=str, dest='output_basepath',

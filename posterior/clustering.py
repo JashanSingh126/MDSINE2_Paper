@@ -960,7 +960,7 @@ class ClusterAssignments(pl.graph.Node):
                 ' Use `mp=None`')
         DMI = self.G.data.design_matrices[REPRNAMES.CLUSTER_INTERACTION_VALUE]
         DMP = self.G.data.design_matrices[REPRNAMES.PERT_VALUE]
-        if self.clustering.n_clusters.sample_iter == 0:
+        if self.clustering.n_clusters.sample_iter == 0 or self.pool == []:
             kwargs = {
                 'n_asvs': len(self.G.data.asvs),
                 'total_n_dts_per_asv': self.G.data.total_n_dts_per_asv,
