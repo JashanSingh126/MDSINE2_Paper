@@ -1,0 +1,295 @@
+Taxonomic Key
+-------------
+* : Family
+** : Order
+*** : Class
+**** : Phylum
+***** : Kingdom
+
+
+Cluster 1
+----------
+	* Ruminococcaceae: ASV_220
+	Clostridium_IV: ASV_148
+	Clostridium_XlVa: ASV_99
+	Clostridium_IV: ASV_243
+	Anaerofilum: ASV_244
+	Holdemanella: ASV_160
+	Butyricicoccus: ASV_263
+	Butyricicoccus: ASV_277
+
+
+Cluster 2
+----------
+	Bacteroides nordii: ASV_17
+	Bacteroides massiliensis: ASV_29
+	Escherichia/Shigella: ASV_14
+	Bilophila wadsworthia: ASV_23
+
+
+Cluster 3
+----------
+	Paraprevotella: ASV_40
+	Bacteroides cellulosilyticus/timonensis/intestinalis: ASV_3
+	Parasutterella excrementihominis: ASV_5
+	Bacteroides koreensis/ovatus/fragilis/kribbi: ASV_6
+	Bacteroides uniformis: ASV_12
+	Parabacteroides distasonis: ASV_13
+	Odoribacter: ASV_275
+	* Lachnospiraceae: ASV_183
+	Anaerosporobacter: ASV_120
+	Paraprevotella: ASV_25
+	Paraprevotella: ASV_28
+
+
+Cluster 4
+----------
+	Parabacteroides distasonis: ASV_67
+	Parabacteroides distasonis: ASV_33
+
+
+Cluster 5
+----------
+	Pseudoflavonifractor: ASV_286
+	Ruminococcus2: ASV_41
+	Clostridium_XlVa: ASV_150
+	* Lachnospiraceae: ASV_56
+	Flavonifractor: ASV_106
+	Oscillibacter: ASV_57
+	Flavonifractor plautii: ASV_61
+	Blautia hydrogenotrophica: ASV_182
+	Flavonifractor: ASV_188
+	Christensenella massiliensis: ASV_307
+
+
+Cluster 6
+----------
+	Parabacteroides distasonis: ASV_47
+	Parabacteroides distasonis: ASV_21
+
+
+Cluster 7
+----------
+	Bacteroides ovatus/fragilis: ASV_1
+	Bacteroides ovatus: ASV_7
+	* Ruminococcaceae: ASV_236
+	Bacteroides faecis/faecichinchillae/finegoldii/thetaiotaomicron: ASV_11
+	Clostridium_XlVa bolteae/clostridioforme: ASV_18
+	Odoribacter: ASV_264
+	Clostridium_XlVa: ASV_42
+	Bacteroides finegoldii: ASV_44
+	Clostridium_XlVa: ASV_46
+	Blautia massiliensis: ASV_48
+	Barnesiella: ASV_50
+	Clostridium_XlVa: ASV_86
+	Clostridium_XlVa asparagiforme/lavalense: ASV_89
+	Bacteroides intestinalis: ASV_96
+	Clostridium_XlVa citroniae: ASV_116
+	Clostridium_XlVa aldenense: ASV_119
+	* Lachnospiraceae: ASV_131
+	Butyricicoccus faecihominis: ASV_134
+	* Ruminococcaceae: ASV_135
+	Clostridium_III: ASV_173
+	Odoribacter splanchnicus: ASV_174
+
+
+Cluster 8
+----------
+	Pseudoflavonifractor: ASV_209
+	Clostridium_XlVa: ASV_39
+	* Ruminococcaceae: ASV_83
+	Blautia: ASV_95
+	Clostridium_XlVa scindens: ASV_102
+	* Lachnospiraceae: ASV_51
+	Hungatella: ASV_55
+	Murimonas intestini: ASV_19
+	Faecalibacterium: ASV_114
+	**** Firmicutes: ASV_118
+	Lactococcus lactis/taiwanensis/garvieae: ASV_184
+	* Ruminococcaceae: ASV_186
+	* Lachnospiraceae: ASV_76
+
+
+Cluster 9
+----------
+	Holdemania: ASV_80
+	Terrisporobacter othiniensis/mayombei/glycolicus: ASV_108
+	Catabacter: ASV_124
+	Murimonas: ASV_256
+
+
+Cluster 10
+----------
+	Alistipes indistinctus: ASV_216
+	Gemmiger formicilis: ASV_154
+	Coprobacter fastidiosus: ASV_125
+	Butyricimonas: ASV_181
+	* Desulfovibrionaceae: ASV_198
+	Bacteroides: ASV_399
+
+
+Cluster 11
+----------
+	Holdemania filiformis: ASV_37
+	Subdoligranulum: ASV_45
+	Bacteroides intestinalis: ASV_100
+	Parabacteroides goldsteinii: ASV_15
+	Phascolarctobacterium faecium: ASV_16
+	Bacteroides: ASV_60
+	Parabacteroides merdae: ASV_20
+	Bacteroides uniformis: ASV_64
+	Coprobacillus cateniformis: ASV_71
+	Clostridium_XVIII ramosum: ASV_77
+
+
+Cluster 12
+----------
+	Akkermansia muciniphila: ASV_4
+	Alistipes: ASV_34
+	Alistipes finegoldii: ASV_78
+
+
+Cluster 13
+----------
+	** Clostridiales: ASV_259
+	*** Deltaproteobacteria: ASV_59
+	Butyricimonas paravirosa: ASV_93
+
+
+Cluster 14
+----------
+	Paraprevotella: ASV_169
+	Paraprevotella: ASV_178
+
+
+Cluster 15
+----------
+	Clostridium_XlVa: ASV_81
+	* Lachnospiraceae: ASV_153
+	Anaerostipes caccae: ASV_112
+	Ruminococcus: ASV_117
+	Coprococcus: ASV_27
+	Gemmiger: ASV_294
+	* Lachnospiraceae: ASV_196
+	Blautia: ASV_199
+	Butyricicoccus: ASV_127
+
+
+Cluster 16
+----------
+	* Ruminococcaceae: ASV_241
+	Christensenella minuta: ASV_388
+	Pseudoflavonifractor: ASV_257
+
+
+Cluster 17
+----------
+	* Clostridiales_Incertae_Sedis_XIII: ASV_194
+	* Lachnospiraceae: ASV_63
+	* Erysipelotrichaceae: ASV_35
+
+
+Cluster 18
+----------
+	Pseudoflavonifractor: ASV_144
+	** Clostridiales: ASV_94
+	* Ruminococcaceae: ASV_151
+	* Ruminococcaceae: ASV_163
+	Butyricicoccus: ASV_274
+	Ruminococcus gauvreauii: ASV_279
+	* Oxalobacteraceae: ASV_203
+
+
+Cluster 19
+----------
+	Ruminococcus bromii: ASV_139
+	* Ruminococcaceae: ASV_231
+	Clostridium_XlVa: ASV_152
+	Alistipes onderdonkii/finegoldii: ASV_66
+	Faecalibacterium: ASV_122
+
+
+Cluster 20
+----------
+	Bacteroides vulgatus/dorei: ASV_0
+	Akkermansia muciniphila: ASV_2
+	* Lachnospiraceae: ASV_227
+	** Clostridiales: ASV_228
+	Ruminococcus2: ASV_156
+
+
+Cluster 21
+----------
+	Roseburia intestinalis: ASV_58
+	Hungatella hathewayi/effluvii: ASV_24
+
+
+Cluster 22
+----------
+	Ruminococcus bicirculans: ASV_107
+	Blautia caecimuris: ASV_49
+	Clostridium_XlVa: ASV_320
+	Blautia: ASV_103
+
+
+Cluster 23
+----------
+	Clostridium_XlVa: ASV_235
+	*** Clostridia: ASV_310
+
+
+Cluster 24
+----------
+	Oscillibacter: ASV_211
+	Butyricimonas faecihominis: ASV_101
+
+
+Cluster 25
+----------
+	Holdemania massiliensis: ASV_133
+	Bacteroides caccae: ASV_9
+	Butyricicoccus: ASV_261
+	Phascolarctobacterium: ASV_161
+
+
+Cluster 26
+----------
+	Acetitomaculum: ASV_214
+	Clostridium_IV: ASV_73
+	Blautia faecis: ASV_74
+	Blautia wexlerae/provencensis/obeum: ASV_30
+
+
+Cluster 27
+----------
+	Clostridium_XlVa: ASV_123
+	Butyricimonas: ASV_126
+
+
+Cluster 28
+----------
+	Blautia: ASV_164
+	Eisenbergiella massiliensis: ASV_43
+	Clostridium_XlVa: ASV_208
+
+
+Cluster 29
+----------
+	* Lachnospiraceae: ASV_234
+	Faecalibacterium: ASV_92
+
+
+Cluster 30
+----------
+	Coprobacter: ASV_65
+
+
+Cluster 31
+----------
+	Bacteroides salyersiae: ASV_10
+	Alistipes shahii: ASV_266
+
+
+Cluster 32
+----------
+	Bacteroides dorei/fragilis: ASV_8

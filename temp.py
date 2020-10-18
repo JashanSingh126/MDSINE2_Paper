@@ -70,16 +70,79 @@ UC_SUBJECTS = ['6','7','8','9','10']
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
 
-path = 'output_real/runs/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+paths = {
+    'uc': 'output_real/runs/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    'healthy': 'output_real/runs/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+}
+n_clusters = {'uc': 23, 'healthy': 32}
 
-mcmc = pl.inference.BaseMCMC.load(path)
+data = []
+columns = ['kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species']
+index = []
 
-f = open('keystoneness/input/uc_asvs.txt', 'w')
+for k in paths:
 
-for asv in mcmc.graph.data.asvs.names.order:
-    f.write(asv + '\n')
+    chain = pl.inference.BaseMCMC.load(paths[k])
+    subjset = chain.graph.data.subjects
 
-f.close()
+
+    f = open('{}_clustering.txt'.format(k), 'w')
+    f.write('Taxonomic Key\n')
+    f.write('-------------\n')
+    f.write('* : Family\n')
+    f.write('** : Order\n')
+    f.write('*** : Class\n')
+    f.write('**** : Phylum\n')
+    f.write('***** : Kingdom\n')
+
+    clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
+
+    for cidx, cluster in enumerate(clustering):
+        f.write('\n\nCluster {}\n'.format(cidx+1))
+        f.write('----------\n')
+        for iii in cluster.members:
+            asv = subjset.asvs[iii]
+
+            if asv.tax_is_defined('species'):
+                f.write('\t{} {}: {}\n'.format(
+                    asv.taxonomy['genus'], asv.taxonomy['species'],
+                    asv.name.replace('OTU_', 'ASV_')))
+            elif asv.tax_is_defined('genus'):
+                f.write('\t{}: {}\n'.format(
+                    asv.taxonomy['genus'],
+                    asv.name.replace('OTU_', 'ASV_')))
+            elif asv.tax_is_defined('family'):
+                f.write('\t* {}: {}\n'.format(
+                    asv.taxonomy['family'],
+                    asv.name.replace('OTU_', 'ASV_')))
+            elif asv.tax_is_defined('order'):
+                f.write('\t** {}: {}\n'.format(
+                    asv.taxonomy['order'],
+                    asv.name.replace('OTU_', 'ASV_')))
+            elif asv.tax_is_defined('class'):
+                f.write('\t*** {}: {}\n'.format(
+                    asv.taxonomy['class'],
+                    asv.name.replace('OTU_', 'ASV_')))
+            elif asv.tax_is_defined('phylum'):
+                f.write('\t**** {}: {}\n'.format(
+                    asv.taxonomy['phylum'],
+                    asv.name.replace('OTU_', 'ASV_')))
+            elif asv.tax_is_defined('kingdom'):
+                f.write('\t***** {}: {}\n'.format(
+                    asv.taxonomy['kingdom'],
+                    asv.name.replace('OTU_', 'ASV_')))
+                
+
+            
+
+
+
+
+    # print(len(clustering))
+    # for cluster in clustering:
+    #     print(cluster)
+
+    
 
 
 sys.exit()

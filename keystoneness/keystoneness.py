@@ -150,6 +150,8 @@ def keystoneness_leave_one_out_single(growth, self_interactions, interactions, d
         Which index to leave out
     '''
     mask = np.ones(growth.shape[1], dtype=bool)
+    if leave_out == -1:
+        leave_out = None
     if leave_out is not None:
         asvs_names = leave_out_array[leave_out]
         asvs_names = asvs_names.split(',')
@@ -162,8 +164,9 @@ def keystoneness_leave_one_out_single(growth, self_interactions, interactions, d
 
     growth = growth[:, mask]
     self_interactions = self_interactions[:, mask]
-    interactions = np.delete(interactions, idxs, 1)
-    interactions = np.delete(interactions, idxs, 2)
+    if leave_out is not None:
+        interactions = np.delete(interactions, idxs, 1)
+        interactions = np.delete(interactions, idxs, 2)
 
     self_interactions = -np.absolute(self_interactions)
     for i in range(self_interactions.shape[1]):

@@ -18,10 +18,10 @@ import pylab as pl
 logging.basicConfig(level=logging.INFO)
 
 
-priority_queues = ['vlong', 'medium', 'long', 'normal', 'big']
+priority_queues = ['vlong', 'medium']
 seed_record_fmt = '{basepath}{jobname}/' + config.RESTART_INFERENCE_SEED_RECORD
 intermediate_validation_fmt = '{basepath}{jobname}/' + config.INTERMEDIATE_RESULTS_FILENAME
-max_jobs_per_queue = 10
+max_jobs_per_queue = 25
 
 parser = argparse.ArgumentParser()
 parser = argparse.ArgumentParser()
@@ -168,6 +168,8 @@ def _inner_boxplot(df, only, x, y, ax, ylabel, yscale, title):
     if only is not None:
         for col, val in only.items():
             dftemp = dftemp[dftemp[col] == val]
+
+    dftemp = dftemp[dftemp['sample_iter']>=1000]
 
         # print(df.columns)
         # print(dftemp['Measurement Noise'])

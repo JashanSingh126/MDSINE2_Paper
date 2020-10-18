@@ -169,6 +169,7 @@ if __name__ == '__main__':
 
         for fname in onlyfiles:
             print(fname)
+
             fpath = fname.replace('.txt', '/')
             jobpath = dset_basepath + fpath
             lsfpath = dset_basepath + 'lsfs/'
@@ -187,7 +188,7 @@ if __name__ == '__main__':
                 jobname=fpath.replace('/', '{}'.format(None)),
                 input_basepath=dset_input_basepath,
                 queue=args.queue, n_cpus=args.n_cpus, n_mbs=args.n_mbs,
-                type=args.type, dt=0.1, leave_out=None,
+                type=args.type, dt=0.1, leave_out=-1,
                 output_basepath=jobpath,
                 leave_out_table=dset_basepath+fname))
             f.close()
