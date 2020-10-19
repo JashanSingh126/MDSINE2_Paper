@@ -68,12 +68,9 @@ HEALTHY_SUBJECTS = ['2','3','4','5']
 UC_SUBJECTS = ['6','7','8','9','10']
 
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
+asvs = subjset_real.asvs
 
 
-paths = {
-    'uc': 'output_real/runs/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-    'healthy': 'output_real/runs/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
-}
 n_clusters = {'uc': 23, 'healthy': 32}
 
 data = []
@@ -86,14 +83,16 @@ for k in paths:
     subjset = chain.graph.data.subjects
 
 
-    f = open('{}_clustering.txt'.format(k), 'w')
+
+    f = open('tmp/{}_consensus_clustering_with_taxonomy.txt'.format(k), 'w')
     f.write('Taxonomic Key\n')
     f.write('-------------\n')
-    f.write('* : Family\n')
-    f.write('** : Order\n')
-    f.write('*** : Class\n')
-    f.write('**** : Phylum\n')
-    f.write('***** : Kingdom\n')
+    f.write('* : Genus\n')
+    f.write('** : Family\n')
+    f.write('*** : Order\n')
+    f.write('**** : Class\n')
+    f.write('***** : Phylum\n')
+    f.write('****** : Kingdom\n')
 
     clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
 
@@ -103,34 +102,32 @@ for k in paths:
         for iii in cluster.members:
             asv = subjset.asvs[iii]
 
+            nname = int(asv.name.replace('OTU_', ''))
+            aname = 'ASV_{}'.format(nname+1)
+
             if asv.tax_is_defined('species'):
-                f.write('\t{} {}: {}\n'.format(
-                    asv.taxonomy['genus'], asv.taxonomy['species'],
-                    asv.name.replace('OTU_', 'ASV_')))
+                f.write('{}: {} {}\n'.format(
+                    aname, asv.taxonomy['genus'], asv.taxonomy['species']))
             elif asv.tax_is_defined('genus'):
-                f.write('\t{}: {}\n'.format(
-                    asv.taxonomy['genus'],
-                    asv.name.replace('OTU_', 'ASV_')))
+                f.write('* {}: {}\n'.format(
+                    aname, asv.taxonomy['genus']))
             elif asv.tax_is_defined('family'):
-                f.write('\t* {}: {}\n'.format(
-                    asv.taxonomy['family'],
-                    asv.name.replace('OTU_', 'ASV_')))
+                f.write('** {}: {}\n'.format(
+                    aname, asv.taxonomy['family']))
             elif asv.tax_is_defined('order'):
-                f.write('\t** {}: {}\n'.format(
-                    asv.taxonomy['order'],
-                    asv.name.replace('OTU_', 'ASV_')))
+                f.write('*** {}: {}\n'.format(
+                    aname, asv.taxonomy['order']))
             elif asv.tax_is_defined('class'):
-                f.write('\t*** {}: {}\n'.format(
-                    asv.taxonomy['class'],
-                    asv.name.replace('OTU_', 'ASV_')))
+                f.write('**** {}: {}\n'.format(
+                    aname, asv.taxonomy['class']))
             elif asv.tax_is_defined('phylum'):
-                f.write('\t**** {}: {}\n'.format(
-                    asv.taxonomy['phylum'],
-                    asv.name.replace('OTU_', 'ASV_')))
+                f.write('***** {}: {}\n'.format(
+                    aname, asv.taxonomy['phylum']))
             elif asv.tax_is_defined('kingdom'):
-                f.write('\t***** {}: {}\n'.format(
-                    asv.taxonomy['kingdom'],
-                    asv.name.replace('OTU_', 'ASV_')))
+                f.write('****** {}: {}\n'.format(
+                    aname, asv.taxonomy['kingdom']))
+
+    f.close()
                 
 
             
@@ -862,7 +859,7 @@ sys.exit()
 # totalnames = copy.deepcopy(asvnames)
 # # tree = ete3.Tree(tree_loc)
 # # for name in tree.get_leaf_names():
-# #     if 'OTU_' not in name:
+# #     if 'ASV_' not in name:
 # #         totalnames.append(name)
 
 # # # print(totalnames)
@@ -1157,7 +1154,7 @@ sys.exit()
 # seqs = temp
 # print(seqs.keys())
 
-# l = len(seqs['OTU_0'])
+# l = len(seqs['ASV_1'])
 # M = np.zeros(shape=(len(seqs), l), dtype=bool)
 # seqs_arr = np.zeros(shape=(len(seqs), l), dtype=str)
 # for i, (k,v) in enumerate(seqs.items()):
@@ -1304,7 +1301,7 @@ sys.exit()
 #     print('n clostridiales', n)
 
 
-# # print(subjset_real.asvs['OTU_220'].taxonomy)
+# # print(subjset_real.asvs['ASV_221'].taxonomy)
 # for asv in subjset_real.asvs:
 #     if asv.taxonomy['genus'] == 'Butyricicoccus':
 #         print(asv.name)

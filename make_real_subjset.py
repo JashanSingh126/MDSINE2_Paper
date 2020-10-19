@@ -414,6 +414,7 @@ for subj in subjset:
 logging.info('Did not record qPCR measurements for the inoculum subjectset')
 
 # Rename the perturbations
+# ------------------------
 for perturbation in subjset.perturbations:
     if perturbation.name == 'Gram + ABX':
         perturbation.name = 'Vancomycin'
