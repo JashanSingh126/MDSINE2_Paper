@@ -421,6 +421,21 @@ for perturbation in subjset.perturbations:
     if perturbation.name == 'Gram - ABX':
         perturbation.name = 'Gentamicin'
 
+# Rename the OTUs to ASVs (start at 1, replace OTU with ASV)
+# ----------------------------------------------------------
+for asv in subjset_inoculum.asvs:
+    asvname = asv.name
+    oldname = asvname
+    # print(asvname)
+    n = int(asvname.replace('OTU_', ''))
+    asv.name = 'ASV_{}'.format(n+1)
+    newname = asv.name
+
+    subjset_inoculum.asvs.names.pop(oldname)
+    subjset_inoculum.asvs.names[newname] = asv
+    subjset_inoculum.asvs.names.update_order()
+
+
 # # Set the phylogenetic tree
 # subjset_inoculum.asvs.set_phylogenetic_tree(PHYLOGENETIC_TREE_FILENAME)
 # subjset.asvs.set_phylogenetic_tree(PHYLOGENETIC_TREE_FILENAME)

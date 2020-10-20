@@ -2584,7 +2584,7 @@ def _get_top_asvs_species_heatmap(n_consec, min_rel_abund, dtype='abs'):
             label = ''
         if asv.tax_is_defined(level='species'):
             label += asv.taxonomy['species'] + ' '
-        label += asv.name.replace('OTU', 'ASV')
+        label += asv.name
         labels.append(label)
 
     d = {}
@@ -3088,13 +3088,13 @@ os.makedirs('output_figures/', exist_ok=True)
 
 # Phylogenetic heatmap
 # phylogenetic_heatmap(False)
-# phylogenetic_heatmap_side_by_side()
+phylogenetic_heatmap_side_by_side()
 
 # Semi-synthetic benchmarking
 # semi_synthetic_benchmark_figure()
 
 # Model performance benchmarking
-model_performance_benchmark_figure()
+# model_performance_benchmark_figure()
 
 
 

@@ -68,170 +68,147 @@ HEALTHY_SUBJECTS = ['2','3','4','5']
 UC_SUBJECTS = ['6','7','8','9','10']
 
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
-asvs = subjset_real.asvs
 
 
-n_clusters = {'uc': 23, 'healthy': 32}
+paths = [
+    'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
 
-data = []
-columns = ['kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species']
-index = []
+asvs_healthy = pl.inference.BaseMCMC.load(paths[1]).graph.data.asvs
+asvs_uc = pl.inference.BaseMCMC.load(paths[0]).graph.data.asvs
 
-for k in paths:
+n_shared = 0
+for asv in asvs_healthy:
+    if asv.name in asvs_uc.names:
+        n_shared += 1
 
-    chain = pl.inference.BaseMCMC.load(paths[k])
-    subjset = chain.graph.data.subjects
-
-
-
-    f = open('tmp/{}_consensus_clustering_with_taxonomy.txt'.format(k), 'w')
-    f.write('Taxonomic Key\n')
-    f.write('-------------\n')
-    f.write('* : Genus\n')
-    f.write('** : Family\n')
-    f.write('*** : Order\n')
-    f.write('**** : Class\n')
-    f.write('***** : Phylum\n')
-    f.write('****** : Kingdom\n')
-
-    clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
-
-    for cidx, cluster in enumerate(clustering):
-        f.write('\n\nCluster {}\n'.format(cidx+1))
-        f.write('----------\n')
-        for iii in cluster.members:
-            asv = subjset.asvs[iii]
-
-            nname = int(asv.name.replace('OTU_', ''))
-            aname = 'ASV_{}'.format(nname+1)
-
-            if asv.tax_is_defined('species'):
-                f.write('{}: {} {}\n'.format(
-                    aname, asv.taxonomy['genus'], asv.taxonomy['species']))
-            elif asv.tax_is_defined('genus'):
-                f.write('* {}: {}\n'.format(
-                    aname, asv.taxonomy['genus']))
-            elif asv.tax_is_defined('family'):
-                f.write('** {}: {}\n'.format(
-                    aname, asv.taxonomy['family']))
-            elif asv.tax_is_defined('order'):
-                f.write('*** {}: {}\n'.format(
-                    aname, asv.taxonomy['order']))
-            elif asv.tax_is_defined('class'):
-                f.write('**** {}: {}\n'.format(
-                    aname, asv.taxonomy['class']))
-            elif asv.tax_is_defined('phylum'):
-                f.write('***** {}: {}\n'.format(
-                    aname, asv.taxonomy['phylum']))
-            elif asv.tax_is_defined('kingdom'):
-                f.write('****** {}: {}\n'.format(
-                    aname, asv.taxonomy['kingdom']))
-
-    f.close()
-                
-
-            
-
-
-
-
-    # print(len(clustering))
-    # for cluster in clustering:
-    #     print(cluster)
-
-    
-
-
+print(n_shared)
 sys.exit()
 
-####################################################
-# PERMANOVA
-####################################################
-import skbio.stats.distance
-import skbio.diversity
 
-colonization = 5
+# asvs = subjset_real.asvs
+# asvs.save('tmp/asvset.pkl')
+# for asv in asvs:
+#     print(asv.name)
+# sys.exit()
 
-# a = skbio.stats.distance.permanova()
+# paths = [
+#     'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+# ]
 
-labels = []
-reads = []
-grouping = []
-i_uc = 0
-i_he = 0
-for subj in subjset_real:
-    print(subj.name)
-    for t in subj.times:
-        if t < colonization:
-            continue
-        if t >= subjset_real.perturbations[0].start:
-            continue
-        reads.append(subj.reads[t])
-        if subj.name in HEALTHY_SUBJECTS:
-            label = 'Healthy{}'.format(i_he)
-            i_he += 1
-        else:
-            label = 'UC{}'.format(i_uc)
-            i_uc += 1
-        labels.append(label)
-        grouping.append('UC' if subj.name not in HEALTHY_SUBJECTS else 'Healthy')
+# for path in paths:
+#     print(path)
+#     mcmc = pl.inference.BaseMCMC.load(path)
+#     subjset = mcmc.graph.data.subjects
 
-print(labels)
+#     for asv in subjset.asvs:
+#         aname = asv.name
+#         newname = asv.name
+#         nname = int(aname.replace('ASV_', ''))
+#         oldname = 'OTU_{}'.format(nname-1)
 
-bc_dm = skbio.diversity.beta_diversity(counts=np.asarray(reads), ids=labels, metric="braycurtis")
-# print(bc_dm)
+#         subjset.asvs.names.pop(oldname)
+#         subjset.asvs.names[aname] = asv
+#         subjset.asvs.names.update_order()
 
-result = skbio.stats.distance.permanova(
-    distance_matrix=bc_dm, grouping=grouping)
-print(result)
+#     mcmc.save()
+#     graph = mcmc.graph.save()
+#     tracer = mcmc.tracer.save()
+#     subjset.save(path.replace('mcmc.pkl', 'subjset.pkl'))
 
-sys.exit()
+# sys.exit()
 
-####################################################
-# Wilcoxon signed-rank tests
-####################################################
-colonization = 5
+# ####################################################
+# # PERMANOVA
+# ####################################################
+# import skbio.stats.distance
+# import skbio.diversity
 
-healthy = {}
-uc = {}
+# colonization = 5
 
-for subj in subjset_real:
-    print(len(subj.times))
-    for t in subj.times:
-        aaa = diversity.alpha.normalized_entropy(subj.reads[t])
-        if subj.name in HEALTHY_SUBJECTS:
-            if t not in healthy:
-                healthy[t] = []
-            healthy[t].append(aaa)
-        else:
-            if t not in uc:
-                uc[t] = []
-            uc[t].append(aaa)
+# # a = skbio.stats.distance.permanova()
 
-times_healthy = list(healthy.keys())
-median_healthy = []
-for t in times_healthy:
-    if t < colonization:
-        continue
-    if t >= subjset_real.perturbations[0].start:
-        continue
-    median_healthy.append(np.median(healthy[t]))
+# labels = []
+# reads = []
+# grouping = []
+# i_uc = 0
+# i_he = 0
+# for subj in subjset_real:
+#     print(subj.name)
+#     for t in subj.times:
+#         if t < colonization:
+#             continue
+#         if t >= subjset_real.perturbations[0].start:
+#             continue
+#         reads.append(subj.reads[t])
+#         if subj.name in HEALTHY_SUBJECTS:
+#             label = 'Healthy{}'.format(i_he)
+#             i_he += 1
+#         else:
+#             label = 'UC{}'.format(i_uc)
+#             i_uc += 1
+#         labels.append(label)
+#         grouping.append('UC' if subj.name not in HEALTHY_SUBJECTS else 'Healthy')
 
-times_uc = list(uc.keys())
-median_uc = []
-for t in times_uc:
-    if t < colonization:
-        continue
-    if t >= subjset_real.perturbations[0].start:
-        continue
-    median_uc.append(np.median(uc[t]))
+# print(labels)
 
-print(len(median_uc))
-print(len(median_healthy))
-print(scipy.stats.wilcoxon(median_healthy, median_uc))
+# bc_dm = skbio.diversity.beta_diversity(counts=np.asarray(reads), ids=labels, metric="braycurtis")
+# # print(bc_dm)
+
+# result = skbio.stats.distance.permanova(
+#     distance_matrix=bc_dm, grouping=grouping)
+# print(result)
+
+# sys.exit()
+
+# ####################################################
+# # Wilcoxon signed-rank tests
+# ####################################################
+# colonization = 5
+
+# healthy = {}
+# uc = {}
+
+# for subj in subjset_real:
+#     print(len(subj.times))
+#     for t in subj.times:
+#         aaa = diversity.alpha.normalized_entropy(subj.reads[t])
+#         if subj.name in HEALTHY_SUBJECTS:
+#             if t not in healthy:
+#                 healthy[t] = []
+#             healthy[t].append(aaa)
+#         else:
+#             if t not in uc:
+#                 uc[t] = []
+#             uc[t].append(aaa)
+
+# times_healthy = list(healthy.keys())
+# median_healthy = []
+# for t in times_healthy:
+#     if t < colonization:
+#         continue
+#     if t >= subjset_real.perturbations[0].start:
+#         continue
+#     median_healthy.append(np.median(healthy[t]))
+
+# times_uc = list(uc.keys())
+# median_uc = []
+# for t in times_uc:
+#     if t < colonization:
+#         continue
+#     if t >= subjset_real.perturbations[0].start:
+#         continue
+#     median_uc.append(np.median(uc[t]))
+
+# print(len(median_uc))
+# print(len(median_healthy))
+# print(scipy.stats.wilcoxon(median_healthy, median_uc))
 
 
-sys.exit()
+# sys.exit()
 
 # ####################################################
 # # Check bjobs
@@ -298,229 +275,227 @@ sys.exit()
 
 # sys.exit()
 
-####################################################
-# Submit keystoneness jobs 
-####################################################
-my_str = '''
-#!/bin/bash
-#BSUB -J {RRR}_{consortium}_{start}_{end}
-#BSUB -o {basepath}{consortium}_{start}_{end}_output.out
-#BSUB -e {basepath}{consortium}_{start}_{end}_error.err
+# ####################################################
+# # Submit keystoneness jobs 
+# ####################################################
+# my_str = '''
+# #!/bin/bash
+# #BSUB -J {RRR}_{consortium}_{start}_{end}
+# #BSUB -o {basepath}{consortium}_{start}_{end}_output.out
+# #BSUB -e {basepath}{consortium}_{start}_{end}_error.err
 
-# This is a sample script with specific resource requirements for the
-# **bigmemory** queue with 64GB memory requirement and memory
-# limit settings, which are both needed for reservations of
-# more than 40GB.
-# Copy this script and then submit job as follows:
-# ---
-# cd ~/lsf
-# cp templates/bsub/example_8CPU_bigmulti_64GB.lsf .
-# bsub < example_bigmulti_8CPU_64GB.lsf
-# ---
-# Then look in the ~/lsf/output folder for the script log
-# that matches the job ID number
+# # This is a sample script with specific resource requirements for the
+# # **bigmemory** queue with 64GB memory requirement and memory
+# # limit settings, which are both needed for reservations of
+# # more than 40GB.
+# # Copy this script and then submit job as follows:
+# # ---
+# # cd ~/lsf
+# # cp templates/bsub/example_8CPU_bigmulti_64GB.lsf .
+# # bsub < example_bigmulti_8CPU_64GB.lsf
+# # ---
+# # Then look in the ~/lsf/output folder for the script log
+# # that matches the job ID number
 
-# Please make a copy of this script for your own modifications
+# # Please make a copy of this script for your own modifications
 
-#BSUB -q {queue}
-#BSUB -n {n_cpus}
-#BSUB -M {n_mbs}
-#BSUB -R rusage[mem={n_mbs}]
+# #BSUB -q {queue}
+# #BSUB -n {n_cpus}
+# #BSUB -M {n_mbs}
+# #BSUB -R rusage[mem={n_mbs}]
 
-# Some important variables to check (Can be removed later)
-echo '---PROCESS RESOURCE LIMITS---'
-ulimit -a
-echo '---SHARED LIBRARY PATH---'
-echo $LD_LIBRARY_PATH
-echo '---APPLICATION SEARCH PATH:---'
-echo $PATH
-echo '---LSF Parameters:---'
-printenv | grep '^LSF'
-echo '---LSB Parameters:---'
-printenv | grep '^LSB'
-echo '---LOADED MODULES:---'
-module list
-echo '---SHELL:---'
-echo $SHELL
-echo '---HOSTNAME:---'
-hostname
-echo '---GROUP MEMBERSHIP (files are created in the first group listed):---'
-groups
-echo '---DEFAULT FILE PERMISSIONS (UMASK):---'
-umask
-echo '---CURRENT WORKING DIRECTORY:---'
-pwd
-echo '---DISK SPACE QUOTA---'
-df .
-echo '---TEMPORARY SCRATCH FOLDER ($TMPDIR):---'
-echo $TMPDIR
+# # Some important variables to check (Can be removed later)
+# echo '---PROCESS RESOURCE LIMITS---'
+# ulimit -a
+# echo '---SHARED LIBRARY PATH---'
+# echo $LD_LIBRARY_PATH
+# echo '---APPLICATION SEARCH PATH:---'
+# echo $PATH
+# echo '---LSF Parameters:---'
+# printenv | grep '^LSF'
+# echo '---LSB Parameters:---'
+# printenv | grep '^LSB'
+# echo '---LOADED MODULES:---'
+# module list
+# echo '---SHELL:---'
+# echo $SHELL
+# echo '---HOSTNAME:---'
+# hostname
+# echo '---GROUP MEMBERSHIP (files are created in the first group listed):---'
+# groups
+# echo '---DEFAULT FILE PERMISSIONS (UMASK):---'
+# umask
+# echo '---CURRENT WORKING DIRECTORY:---'
+# pwd
+# echo '---DISK SPACE QUOTA---'
+# df .
+# echo '---TEMPORARY SCRATCH FOLDER ($TMPDIR):---'
+# echo $TMPDIR
 
-# Add your job command here
-# Load module
+# # Add your job command here
+# # Load module
 
-source activate dispatcher_pylab301
+# source activate dispatcher_pylab301
 
-cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/
-python keystoneness.py --type leave-one-out --model {chain_fname} --data {input_fname} --output-tbl {basepath}{consortium}_{start}_{end}.tsv --compute-base {computebase}
-'''
+# cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/
+# python keystoneness.py --type leave-one-out --model {chain_fname} --data {input_fname} --output-tbl {basepath}{consortium}_{start}_{end}.tsv --compute-base {computebase}
+# '''
 
-chains = {
-    'healthy': 'output_real/runs/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-    'uc': 'output_real/runs/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
+# chains = {
+#     'healthy': 'output_real/runs/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'uc': 'output_real/runs/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
 
-# Clusters
-chains_cluster = {
-    'healthy': 'output_real/runs/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-    'uc': 'output_real/runs/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
-tmp_folder = 'tmp/keystone_data/'
-output_basepath = 'tmp/keystone_clusters/'
-os.makedirs(tmp_folder, exist_ok=True)
-os.makedirs(output_basepath, exist_ok=True)
+# # Clusters
+# chains_cluster = {
+#     'healthy': 'output_real/runs/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'uc': 'output_real/runs/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
+# tmp_folder = 'tmp/keystone_data/'
+# output_basepath = 'tmp/keystone_clusters/'
+# os.makedirs(tmp_folder, exist_ok=True)
+# os.makedirs(output_basepath, exist_ok=True)
 
-fname_fmt = tmp_folder + '{consortium}_clusters.txt'
-tsv_fmt = output_basepath + '{consortium}_clusters_{start}_{end}.tsv'
-for consortium in chains_cluster:
-    # Make the data folder
-    chain = pl.inference.BaseMCMC.load(chains_cluster[consortium])
-    asvs = chain.graph.data.asvs
-    clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
-    s = ''
-    for cluster in clustering:
-        s = s +','.join([asvs.names.order[aaa] for aaa in cluster.members]) + '\n'
-    input_fname = fname_fmt.format(consortium=consortium)
-    f = open(input_fname, 'w')
-    f.write(s)
-    f.close()
+# fname_fmt = tmp_folder + '{consortium}_clusters.txt'
+# tsv_fmt = output_basepath + '{consortium}_clusters_{start}_{end}.tsv'
+# for consortium in chains_cluster:
+#     # Make the data folder
+#     chain = pl.inference.BaseMCMC.load(chains_cluster[consortium])
+#     asvs = chain.graph.data.asvs
+#     clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
+#     s = ''
+#     for cluster in clustering:
+#         s = s +','.join([asvs.names.order[aaa] for aaa in cluster.members]) + '\n'
+#     input_fname = fname_fmt.format(consortium=consortium)
+#     f = open(input_fname, 'w')
+#     f.write(s)
+#     f.close()
 
-    # Make tsv fname
-    basepath = basepath = input_fname.replace('.txt', '/')
-    os.makedirs(basepath, exist_ok=True)
-    start = 0
-    n_asvs_per_job = 2
+#     # Make tsv fname
+#     basepath = basepath = input_fname.replace('.txt', '/')
+#     os.makedirs(basepath, exist_ok=True)
+#     start = 0
+#     n_asvs_per_job = 2
 
-    f = open(input_fname, 'r')
-    args = f.read().split('\n')\
+#     f = open(input_fname, 'r')
+#     args = f.read().split('\n')\
 
-    compute_base = 1
-    while start < len(args):
-        end = start+n_asvs_per_job
-        if end > len(args):
-            end = len(args)
+#     compute_base = 1
+#     while start < len(args):
+#         end = start+n_asvs_per_job
+#         if end > len(args):
+#             end = len(args)
 
-        # Make input data
-        input_fname = basepath + 'data_{}_{}.txt'.format(start,end)
-        f = open(input_fname, 'w')
-        f.write('\n'.join(args[start:end]))
-        f.close()
+#         # Make input data
+#         input_fname = basepath + 'data_{}_{}.txt'.format(start,end)
+#         f = open(input_fname, 'w')
+#         f.write('\n'.join(args[start:end]))
+#         f.close()
 
-        # Make lsf file
-        lsf_fname = basepath + 'job_{}_{}.lsf'.format(start,end)
-        f = open(lsf_fname, 'w')
-        f.write(my_str.format(
-            consortium=consortium, start=start, end=end, queue='short', n_cpus=1, n_mbs=7000,
-            chain_fname=chains[consortium], input_fname=input_fname, basepath=basepath,
-            RRR='cluster', computebase=compute_base))
-        f.close()
+#         # Make lsf file
+#         lsf_fname = basepath + 'job_{}_{}.lsf'.format(start,end)
+#         f = open(lsf_fname, 'w')
+#         f.write(my_str.format(
+#             consortium=consortium, start=start, end=end, queue='short', n_cpus=1, n_mbs=7000,
+#             chain_fname=chains[consortium], input_fname=input_fname, basepath=basepath,
+#             RRR='cluster', computebase=compute_base))
+#         f.close()
 
-        # Submit the job
-        command = 'bsub < {}'.format(lsf_fname)
-        print(command)
-        os.system(command)
-        time.sleep(90)
-        if compute_base == 1:
-            compute_base = 0
-        start = end
-# sys.exit()
+#         # Submit the job
+#         command = 'bsub < {}'.format(lsf_fname)
+#         print(command)
+#         os.system(command)
+#         time.sleep(90)
+#         if compute_base == 1:
+#             compute_base = 0
+#         start = end
+# # sys.exit()
 
-# Chains and cycles
-fnames_ddd = {
-    'healthy': [
-        'tmp/keystone_data/healthy_chain_2.txt',
-        'tmp/keystone_data/healthy_chain_3.txt',
-        'tmp/keystone_data/healthy_cycle_2.txt',
-        'tmp/keystone_data/healthy_cycle_3.txt',
-        'tmp/keystone_data/healthy_chain_1.txt'],
-    'uc': [
-        'tmp/keystone_data/uc_chain_2.txt',
-        'tmp/keystone_data/uc_chain_3.txt',
-        'tmp/keystone_data/uc_cycle_2.txt',
-        'tmp/keystone_data/uc_cycle_3.txt',
-        'tmp/keystone_data/uc_chain_1.txt']}
-# If agglomerate is True, condense all of the separate tsv files together
-agglomerate = False
-tbl_format = '{basepath}{consortium}_{start}_{end}.tsv'
+# # Chains and cycles
+# fnames_ddd = {
+#     'healthy': [
+#         'tmp/keystone_data/healthy_chain_2.txt',
+#         'tmp/keystone_data/healthy_chain_3.txt',
+#         'tmp/keystone_data/healthy_cycle_2.txt',
+#         'tmp/keystone_data/healthy_cycle_3.txt',
+#         'tmp/keystone_data/healthy_chain_1.txt'],
+#     'uc': [
+#         'tmp/keystone_data/uc_chain_2.txt',
+#         'tmp/keystone_data/uc_chain_3.txt',
+#         'tmp/keystone_data/uc_cycle_2.txt',
+#         'tmp/keystone_data/uc_cycle_3.txt',
+#         'tmp/keystone_data/uc_chain_1.txt']}
+# # If agglomerate is True, condense all of the separate tsv files together
+# agglomerate = False
+# tbl_format = '{basepath}{consortium}_{start}_{end}.tsv'
 
-if agglomerate:
-    df_master = None
+# if agglomerate:
+#     df_master = None
 
-for consortium in chains:
-    chain_fname = chains[consortium]
-    for input_fname in fnames_ddd[consortium]:
-        print('\n\nInput fname: {}'.format(input_fname))
-        basepath = basepath = input_fname.replace('.txt', '/')
-        os.makedirs(basepath, exist_ok=True)
-        start = 0
-        n_asvs_per_job = 5
+# for consortium in chains:
+#     chain_fname = chains[consortium]
+#     for input_fname in fnames_ddd[consortium]:
+#         print('\n\nInput fname: {}'.format(input_fname))
+#         basepath = basepath = input_fname.replace('.txt', '/')
+#         os.makedirs(basepath, exist_ok=True)
+#         start = 0
+#         n_asvs_per_job = 5
 
-        f = open(input_fname, 'r')
-        args = f.read().split('\n')
-        f.close()
-        save_the_table = True
+#         f = open(input_fname, 'r')
+#         args = f.read().split('\n')
+#         f.close()
+#         save_the_table = True
         
-        while start < len(args):
-            end = start+n_asvs_per_job
-            if end > len(args):
-                end = len(args)
+#         while start < len(args):
+#             end = start+n_asvs_per_job
+#             if end > len(args):
+#                 end = len(args)
 
-            if not agglomerate:
+#             if not agglomerate:
 
-                # Make input data
-                input_fname = basepath + 'data_{}_{}.txt'.format(start,end)
-                f = open(input_fname, 'w')
-                f.write('\n'.join(args[start:end]))
-                f.close()
+#                 # Make input data
+#                 input_fname = basepath + 'data_{}_{}.txt'.format(start,end)
+#                 f = open(input_fname, 'w')
+#                 f.write('\n'.join(args[start:end]))
+#                 f.close()
 
-                # Make lsf file
-                lsf_fname = basepath + 'job_{}_{}.lsf'.format(start,end)
-                f = open(lsf_fname, 'w')
-                f.write(my_str.format(
-                    consortium=consortium, start=start, end=end, queue='normal', n_cpus=1, n_mbs=7000,
-                    chain_fname=chain_fname, input_fname=input_fname, basepath=basepath,
-                    RRR='R'))
-                f.close()
+#                 # Make lsf file
+#                 lsf_fname = basepath + 'job_{}_{}.lsf'.format(start,end)
+#                 f = open(lsf_fname, 'w')
+#                 f.write(my_str.format(
+#                     consortium=consortium, start=start, end=end, queue='normal', n_cpus=1, n_mbs=7000,
+#                     chain_fname=chain_fname, input_fname=input_fname, basepath=basepath,
+#                     RRR='R'))
+#                 f.close()
 
-                # Submit the job
-                command = 'bsub < {}'.format(lsf_fname)
-                print(command)
-                os.system(command)
-            else:
-                tbl_fname = tbl_format.format(basepath=basepath, consortium=consortium,
-                    start=start, end=end)
-                try:
-                    df = pd.read_csv(tbl_fname, sep='\t', index_col=0)
-                    print('found')
-                except Exception as e:
-                    print('NO FILE ', tbl_fname)
-                    print(e)
-                    save_the_table = False
-                    start = end
-                    continue
-                if df_master is None:
-                    df_master = df
-                else:
-                    df = df.drop('base', axis='index')
-                    df_master = df_master.append(df)
+#                 # Submit the job
+#                 command = 'bsub < {}'.format(lsf_fname)
+#                 print(command)
+#                 os.system(command)
+#             else:
+#                 tbl_fname = tbl_format.format(basepath=basepath, consortium=consortium,
+#                     start=start, end=end)
+#                 try:
+#                     df = pd.read_csv(tbl_fname, sep='\t', index_col=0)
+#                     print('found')
+#                 except Exception as e:
+#                     print('NO FILE ', tbl_fname)
+#                     print(e)
+#                     save_the_table = False
+#                     start = end
+#                     continue
+#                 if df_master is None:
+#                     df_master = df
+#                 else:
+#                     df = df.drop('base', axis='index')
+#                     df_master = df_master.append(df)
                 
 
                     
-            start = end
+#             start = end
         
-        if agglomerate and save_the_table:
-            # print(df_master)
-            print(df_master.index)
-            df_master.to_csv(basepath + 'master_tbl.tsv', sep='\t', index=True, header=True)
-
-
+#         if agglomerate and save_the_table:
+#             # print(df_master)
+#             print(df_master.index)
+#             df_master.to_csv(basepath + 'master_tbl.tsv', sep='\t', index=True, header=True)
 
 # # Each ASV
 # start = 0
@@ -556,8 +531,7 @@ for consortium in chains:
 #     print(command)
 #     os.system(command)
 #     start = end
-
-sys.exit()
+# sys.exit()
 
 
 # ####################################################
@@ -835,144 +809,162 @@ sys.exit()
 
 # sys.exit()
 
-# ####################################################
-# # Make family level plots of the ASVs in the phylogenetic trees
-# ####################################################
-# chain_locs = [
-#     'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-#     'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
+####################################################
+# Make family level plots of the ASVs in the phylogenetic trees
+####################################################
+chain_locs = [
+    'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
 
-# # tree_loc = 'raw_data/phylogenetic_tree_w_reference_seq.nhx'
-# os.makedirs('tmp', exist_ok=True)
-# os.makedirs('tmp/subtrees_125percentmedian', exist_ok=True)
-# asvnames = set([])
-# for chainloc in chain_locs:
-#     chain = pl.inference.BaseMCMC.load(chainloc)
-#     asvs = chain.graph.data.asvs
+# tree_loc = 'raw_data/phylogenetic_tree_w_reference_seq.nhx'
+os.makedirs('tmp', exist_ok=True)
+os.makedirs('tmp/subtrees_125percentmedian', exist_ok=True)
+asvnames = set([])
+for chainloc in chain_locs:
+    chain = pl.inference.BaseMCMC.load(chainloc)
+    asvs = chain.graph.data.asvs
 
-#     for asv in asvs:
-#         asvnames.add(asv.name)
+    print(asvs.names.keys())
 
-# asvnames = list(asvnames)
-# set_asvnames = set(asvnames)
+    for asv in asvs:
+        asvnames.add(asv.name)
+
+# print(subjset_real.asvs.names.keys())
+
+asvnames = list(asvnames)
+set_asvnames = set(asvnames)
 
 # totalnames = copy.deepcopy(asvnames)
-# # tree = ete3.Tree(tree_loc)
-# # for name in tree.get_leaf_names():
-# #     if 'ASV_' not in name:
-# #         totalnames.append(name)
+# tree = ete3.Tree(tree_loc)
+# for name in tree.get_leaf_names():
+#     if 'ASV_' not in name:
+#         totalnames.append(name)
 
-# # # print(totalnames)
+# # print(totalnames)
 
-# # # tree.prune(totalnames, preserve_branch_length=True)
-# # # tree.write(outfile='tmp/tree_temp.nhx')
-# # # # sys.exit()
-# tree_name = 'tmp/tree_temp.nhx'
-# tree = ete3.Tree(tree_name)
-
-# d = {}
-# for i, aname in enumerate(asvnames):
-#     print('{}/{}'.format(i,len(asvnames)))
-#     asv = subjset_real.asvs[aname]
-#     if asv.tax_is_defined('family'):
-#         family = asv.taxonomy['family']
-#         if family in d:
-#             continue
-#         else:
-#             d[family] = []
-#             for iii, bname in enumerate(asvnames):
-#                 if bname == aname:
-#                     continue
-#                 basv = subjset_real.asvs[bname]
-#                 if basv.taxonomy['family'] != family:
-#                     continue
-#                 d[family].append(tree.get_distance(aname, bname))
-
-# f = open('tmp/subtrees_125percentmedian/family_dists_asv.txt', 'w')
-# for family in d:
-#     f.write(family + '\n')
-#     arr = np.asarray(d[family])
-#     summ = pl.variables.summary(arr)
-#     for k,v in summ.items():
-#         f.write('\t{}: {}\n'.format(k,v))
-# f.write('total\n')
-# arr = []
-# for ele in d.values():
-#     arr += ele
-# arr = np.asarray(arr)
-# summ = pl.variables.summary(arr)
-# for k,v in summ.items():
-#     f.write('\t{}:{}\n'.format(k,v))
-
-
-# # Set the radius to 125% the median
-# radius = summ['median'] * 1.25
-# f.write('Radius set to 125% of median ({}): {}'.format(summ['median'], radius))
-# f.close()
-
-# # Make the distance matrix
-# print(len(tree))
-# names = tree.get_leaf_names()
-# names.sort()
-
-# with open('tmp/phylo_dist.pkl', 'rb') as handle:
-#     df = pickle.load(handle)
-
-
-# i = 0
-# f = open('tmp/subtrees_125percentmedian/table.tsv', 'w')
-# for asvname in asvnames:
-#     asv = subjset_real.asvs[asvname]
-#     if not asv.tax_is_defined('species'):
-#         i += 1
-#         print('\n\nLooking at {}, {}'.format(i,asv))
-#         print('-------------------------')
-
-#         row = df[asv.name].to_numpy()
-#         idxs = np.argsort(row)
-
-#         iii = 0
-#         for idx in idxs:
-#             if names[idx] not in set_asvnames:
-#                 iii = idx 
-#                 break
-
-#         cnr = names[iii]
-#         f.write('{}\n'.format(asv.name))
-
-#         tree = ete3.Tree(tree_name)
-#         # Get the all elements within `radius`
-#         names_to_keep = []
-#         row = df[asv.name].to_numpy()
-#         idxs = np.argsort(row)
-
-#         for idx in idxs:
-#             if row[idx] > radius:
-#                 break
-#             if names[idx] in set_asvnames:
-#                 continue
-#             names_to_keep.append(names[idx])
-
-#         print(names_to_keep)
-
-#         # Make subtree of just these names
-#         names_to_keep.append(asv.name)
-#         tree.prune(names_to_keep, preserve_branch_length=False)
-
-#         for node in tree.traverse():
-#             node.name = node.name.replace('OTU','ASV')
-
-#             if 'ASV' in node.name:
-#                 face = ete3.TextFace(node.name)
-#                 face.background.color='LightGreen'
-#                 node.add_face(face, column=0)
-
-#         ts = ete3.TreeStyle()
-#         ts.title.add_face(ete3.TextFace('{}, Phylogenetic radius: {:.4f}'.format(
-#             asv.name.replace('OTU', 'ASV'), radius), fsize=15), column=1)
-#         tree.render('tmp/subtrees_125percentmedian/{}.pdf'.format(asv.name.replace('OTU','ASV')), tree_style=ts)
-# f.close()
+# tree.prune(totalnames, preserve_branch_length=True)
+# print('here')
+# tree.write(outfile='tmp/tree_temp.nhx')
+# print('here2')
 # sys.exit()
+tree_name = 'tmp/tree_temp.nhx'
+tree = ete3.Tree(tree_name)
+
+d = {}
+for i, aname in enumerate(asvnames):
+    print('{}/{}'.format(i,len(asvnames)))
+    asv = subjset_real.asvs[aname]
+    if asv.tax_is_defined('family'):
+        family = asv.taxonomy['family']
+        if family in d:
+            continue
+        else:
+            d[family] = []
+            for iii, bname in enumerate(asvnames):
+                if bname == aname:
+                    continue
+                basv = subjset_real.asvs[bname]
+                if basv.taxonomy['family'] != family:
+                    continue
+                d[family].append(tree.get_distance(aname, bname))
+
+f = open('tmp/subtrees_125percentmedian/family_dists_asv.txt', 'w')
+for family in d:
+    f.write(family + '\n')
+    arr = np.asarray(d[family])
+    summ = pl.variables.summary(arr)
+    for k,v in summ.items():
+        f.write('\t{}: {}\n'.format(k,v))
+f.write('total\n')
+arr = []
+for ele in d.values():
+    arr += ele
+arr = np.asarray(arr)
+summ = pl.variables.summary(arr)
+for k,v in summ.items():
+    f.write('\t{}:{}\n'.format(k,v))
+
+
+# Set the radius to 125% the median
+radius = summ['median'] * 1.25
+f.write('Radius set to 125% of median ({}): {}'.format(summ['median'], radius))
+f.close()
+
+# Make the distance matrix
+print(len(tree))
+names = tree.get_leaf_names()
+names.sort()
+
+with open('tmp/phylo_dist.pkl', 'rb') as handle:
+    df = pickle.load(handle)
+# Rename the columns and indices
+d_cols = {}
+d_idx = {}
+
+for row in df.index:
+    if 'OTU_' in row:
+        d_idx[row] = 'ASV_{}'.format(int(row.replace('OTU_', ''))+1)
+for col in df.columns:
+    if 'OTU_' in col:
+        d_cols[col] = 'ASV_{}'.format(int(col.replace('OTU_', ''))+1)
+df = df.rename(columns=d_cols, index=d_idx)
+
+
+
+i = 0
+f = open('tmp/subtrees_125percentmedian/table.tsv', 'w')
+for asvname in asvnames:
+    asv = subjset_real.asvs[asvname]
+    if not asv.tax_is_defined('species'):
+        i += 1
+        print('\n\nLooking at {}, {}'.format(i,asv))
+        print('-------------------------')
+
+        row = df[asv.name].to_numpy()
+        idxs = np.argsort(row)
+
+        iii = 0
+        for idx in idxs:
+            if names[idx] not in set_asvnames:
+                iii = idx 
+                break
+
+        cnr = names[iii]
+        f.write('{}\n'.format(asv.name))
+
+        tree = ete3.Tree(tree_name)
+        # Get the all elements within `radius`
+        names_to_keep = []
+        row = df[asv.name].to_numpy()
+        idxs = np.argsort(row)
+
+        for idx in idxs:
+            if row[idx] > radius:
+                break
+            if names[idx] in set_asvnames:
+                continue
+            names_to_keep.append(names[idx])
+
+        print(names_to_keep)
+
+        # Make subtree of just these names
+        names_to_keep.append(asv.name)
+        tree.prune(names_to_keep, preserve_branch_length=False)
+
+        for node in tree.traverse():
+            node.name = node.name.replace('OTU','ASV')
+
+            if 'ASV' in node.name:
+                face = ete3.TextFace(node.name)
+                face.background.color='LightGreen'
+                node.add_face(face, column=0)
+
+        ts = ete3.TreeStyle()
+        ts.title.add_face(ete3.TextFace('{}, Phylogenetic radius: {:.4f}'.format(
+            asv.name.replace('OTU', 'ASV'), radius), fsize=15), column=1)
+        tree.render('tmp/subtrees_125percentmedian/{}.pdf'.format(asv.name.replace('OTU','ASV')), tree_style=ts)
+f.close()
+sys.exit()
 
 # ####################################################
 # # Make plots of the ASVs

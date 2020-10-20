@@ -1410,7 +1410,7 @@ def readify_chain(src_basepath, params, dst_basepath=None, plot_diagnostic_varia
         f.write('\n\n###################################\n')
         f.write('Clustering Assignments\n')
         f.write('###################################\n')
-        ca = CLUSTERING.generate_cluster_assignments_posthoc(n_clusters='mean', section=SECTION)
+        ca = CLUSTERING.generate_cluster_assignments_posthoc(n_clusters='mode', section=SECTION)
         cluster_assignments = {}
         for idx, assignment in enumerate(ca):
             if assignment in cluster_assignments:
