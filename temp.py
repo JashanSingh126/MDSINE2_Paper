@@ -70,20 +70,59 @@ UC_SUBJECTS = ['6','7','8','9','10']
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
 
+
 paths = [
-    'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-    'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
+    'time_look_ahead/output/Healthy_subject2/error.tsv',
+    'time_look_ahead/output/Healthy_subject3/error.tsv',
+    'time_look_ahead/output/Healthy_subject4/error.tsv',
+    'time_look_ahead/output/Healthy_subject5/error.tsv',
+    'time_look_ahead/output/UC_subject6/error.tsv',
+    'time_look_ahead/output/UC_subject7/error.tsv',
+    'time_look_ahead/output/UC_subject8/error.tsv',
+    'time_look_ahead/output/UC_subject9/error.tsv',
+    'time_look_ahead/output/UC_subject10/error.tsv',
+    'time_look_ahead/output/time_lookahead_other_models.tsv']
 
-asvs_healthy = pl.inference.BaseMCMC.load(paths[1]).graph.data.asvs
-asvs_uc = pl.inference.BaseMCMC.load(paths[0]).graph.data.asvs
+dfmaster = None
+for path in paths:
+    print(path)
+    df = pd.read_csv(path, sep='\t')
+    print(df.shape)
+    if dfmaster is None:
+        dfmaster = df
+    else:
+        dfmaster = dfmaster.append(df)
 
-n_shared = 0
-for asv in asvs_healthy:
-    if asv.name in asvs_uc.names:
-        n_shared += 1
+print(dfmaster)
+dfmaster.to_csv('results/time_lookahead_all_models.tsv', sep='\t')
 
-print(n_shared)
 sys.exit()
+
+# paths = [
+#     'output_real/runs/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'output_real/runs/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
+
+# f = open('keystoneness/output/UC/uc_asvs.txt', 'w')
+# mcmc = pl.inference.BaseMCMC.load(paths[0])
+# for iii, asv in enumerate(mcmc.graph.data.asvs):
+#     f.write('{}'.format(asv.name))
+#     if iii != len(mcmc.graph.data.asvs)-1:
+#         f.write('\n')
+# f.close()
+
+
+# sys.exit()
+
+# asvs_healthy = pl.inference.BaseMCMC.load(paths[1]).graph.data.asvs
+# asvs_uc = pl.inference.BaseMCMC.load(paths[0]).graph.data.asvs
+
+# n_shared = 0
+# for asv in asvs_healthy:
+#     if asv.name in asvs_uc.names:
+#         n_shared += 1
+
+# print(n_shared)
+# sys.exit()
 
 
 # asvs = subjset_real.asvs
@@ -92,34 +131,48 @@ sys.exit()
 #     print(asv.name)
 # sys.exit()
 
-# paths = [
-#     'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-#     'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-#     'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-#     'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-# ]
+paths = [
+    'output_real/runs/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    'output_real/runs/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    
+    'output_real/runs/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    'output_real/runs/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    
+    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out0/mcmc.pkl',
+    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out1/mcmc.pkl',
+    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out2/mcmc.pkl',
+    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out3/mcmc.pkl',
 
-# for path in paths:
-#     print(path)
-#     mcmc = pl.inference.BaseMCMC.load(path)
-#     subjset = mcmc.graph.data.subjects
+    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out0/mcmc.pkl',
+    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out1/mcmc.pkl',
+    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out2/mcmc.pkl',
+    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out3/mcmc.pkl',
+    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out4/mcmc.pkl']
 
-#     for asv in subjset.asvs:
-#         aname = asv.name
-#         newname = asv.name
-#         nname = int(aname.replace('ASV_', ''))
-#         oldname = 'OTU_{}'.format(nname-1)
+for path in paths:
+    print(path)
+    mcmc = pl.inference.BaseMCMC.load(path)
+    subjset = mcmc.graph.data.subjects
 
-#         subjset.asvs.names.pop(oldname)
-#         subjset.asvs.names[aname] = asv
-#         subjset.asvs.names.update_order()
+    # for asv in (subjset.asvs):
+    #     # print(asv.name)
+    #     oldname = asv.name
+    #     nname = int(oldname.replace('OTU_', ''))
+    #     newname = 'ASV_{}'.format(nname+1)
 
-#     mcmc.save()
-#     graph = mcmc.graph.save()
-#     tracer = mcmc.tracer.save()
-#     subjset.save(path.replace('mcmc.pkl', 'subjset.pkl'))
+    #     asv.name = newname
+    #     subjset.asvs.names.pop(oldname)
+    #     subjset.asvs.names[newname] = asv
+    #     subjset.asvs.names.update_order()
 
-# sys.exit()
+    mcmc.graph.data.asvs = subjset.asvs
+
+    mcmc.save()
+    graph = mcmc.graph.save()
+    tracer = mcmc.tracer.save()
+    subjset.save(path.replace('mcmc.pkl', 'subjset.pkl'))
+
+sys.exit()
 
 # ####################################################
 # # PERMANOVA

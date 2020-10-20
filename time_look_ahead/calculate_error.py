@@ -171,7 +171,7 @@ if __name__ == '__main__':
         day = tla+start
         logging.info('{}/{}: tla{}-start{} {:.3E}'.format(idx_fname, len(onlyfiles),tla, start, error))
 
-        data.append([args.dataset, args.model, day, tla, error, args.metric])
+        data.append([args.dataset.replace('_', ' '), args.model, day, tla, error, args.metric])
 
     df = pd.DataFrame(data, columns=columns)
     df.to_csv(args.output, index=False, header=True, sep='\t')

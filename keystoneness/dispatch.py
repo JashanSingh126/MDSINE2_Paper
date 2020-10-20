@@ -170,7 +170,15 @@ if __name__ == '__main__':
         for fname in onlyfiles:
             print(fname)
 
-            fpath = fname.replace('.txt', '/')
+            suffix = None
+            if '.txt' in fname:
+                suffix = '.txt'
+            elif '.csv' in fname:
+                suffix = '.csv'
+            else:
+                raise ValueError('Suffix not recognized (only parsing .csv and .txt).')
+
+            fpath = fname.replace(suffix, '/')
             jobpath = dset_basepath + fpath
             lsfpath = dset_basepath + 'lsfs/'
             os.makedirs(jobpath, exist_ok=True)
@@ -182,7 +190,7 @@ if __name__ == '__main__':
             n_jobs = len(lll.split('\n'))
 
             # Calculate base
-            lsfname = lsfpath + '{}_{}.lsf'.format(fname.replace('.txt', ''), None)
+            lsfname = lsfpath + '{}_{}.lsf'.format(fname.replace(suffix, ''), None)
             f = open(lsfname, 'w')
             f.write(lsf_format.format(
                 jobname=fpath.replace('/', '{}'.format(None)),
@@ -197,7 +205,7 @@ if __name__ == '__main__':
 
             # Calculate all others
             for i in range(n_jobs):
-                lsfname = lsfpath + '{}_{}.lsf'.format(fname.replace('.txt', ''), i)
+                lsfname = lsfpath + '{}_{}.lsf'.format(fname.replace(suffix, ''), i)
                 f = open(lsfname, 'w')
                 f.write(lsf_format.format(
                     jobname=fpath.replace('/', '{}'.format(i)),

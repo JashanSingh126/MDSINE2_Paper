@@ -31,7 +31,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     subjset = pl.SubjectSet.load(args.subjset)
-    run_basepath = args.leave_out_table.replace('.txt', '/')
+    suffix = None
+    if '.txt' in args.leave_out_table:
+        suffix = '.txt'
+    elif '.csv' in args.leave_out_table:
+        suffix = '.csv'
+    else:
+        raise ValueError('Suffix not recognized (only parsing .csv and .txt).')
+    run_basepath = args.leave_out_table.replace(suffix, '/')
     
     # Get the list of ASVs
     rev_idx = {}
@@ -79,7 +86,7 @@ if __name__ == '__main__':
         data.append(ret)
 
     df = pd.DataFrame(data, columns=[asv.name for asv in subjset.asvs], index=index)
-    fname = args.leave_out_table.replace('.txt', '.tsv')
+    fname = args.leave_out_table.replace(suffix, '.tsv')
     df.to_csv(fname, sep='\t', index=True, header=True)
 
     
