@@ -34,6 +34,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.ticker as plticker
 import matplotlib.patches as patches
+import matplotlib.image as mpimg
+from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationBbox
 
 import pylab as pl
 import synthetic
@@ -69,6 +71,35 @@ UC_SUBJECTS = ['6','7','8','9','10']
 
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
+# asvnames = ['ASV_95', 'ASV_229', 'ASV_243', 
+#     'ASV_260', 'ASV_325', 'ASV_330', 'ASV_331', 
+#     'ASV_356', 'ASV_363', 'ASV_393', 'ASV_397', 
+#     'ASV_403', 'ASV_480', 'ASV_483', 'ASV_528', 
+#     'ASV_530', 'ASV_540', 'ASV_550', 'ASV_591', 
+#     'ASV_650', 'ASV_717', 'ASV_737', 'ASV_803', 
+#     'ASV_863', 'ASV_868', 'ASV_896', 'ASV_983', 
+#     'ASV_1011', 'ASV_1028', 'ASV_1109', 'ASV_1127', 
+#     'ASV_1157', 'ASV_1181', 'ASV_1196', 'ASV_1220', 
+#     'ASV_1255', 'ASV_1324', 'ASV_1411', 'ASV_1413', 
+#     'ASV_1471', 'ASV_1477', 'ASV_1478', 'ASV_1542']
+
+# Ms = [subj.matrix()['abs'] for subj in subjset_real]
+# basepath = 'tmp/plot_asvs/'
+# os.makedirs(basepath, exist_ok=True)
+
+# for asvname in asvnames:
+#     print(asvname)
+#     asv = subjset_real.asvs[asvname]
+#     fig = plt.figure(figsize=(10,10))
+#     for sidx, subj in enumerate(subjset_real):
+#         ax = fig.add_subplot(3,3,sidx+1)
+#         ax.set_title('Subject {}'.format(subj.name))
+#         ax.plot(subj.times, Ms[sidx][asv.idx, :], marker='x')
+#         ax.set_yscale('log')
+#     fig.suptitle(pl.asvname_formatter(asv=asv, asvs=subjset_real.asvs,
+#         format='%(name)s: %(order)s, %(family)s'))
+
+#     plt.savefig(basepath + asv.name + 'pdf')
 
 
 paths = [
