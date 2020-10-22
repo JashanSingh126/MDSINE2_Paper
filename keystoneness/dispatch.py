@@ -28,9 +28,9 @@ sys.path.append('..')
 import names
 
 lsf_format = '''#!/bin/bash
-#BSUB -J {jobname}
-#BSUB -o {input_basepath}{jobname}_output.out
-#BSUB -e {input_basepath}{jobname}_error.err
+#BSUB -J {jobname}_{perturbation_index}
+#BSUB -o {input_basepath}{jobname}_{perturbation_index}_output.out
+#BSUB -e {input_basepath}{jobname}_{perturbation_index}_error.err
 
 # This is a sample script with specific resource requirements for the
 # **bigmemory** queue with 64GB memory requirement and memory
@@ -85,7 +85,7 @@ echo $TMPDIR
 source activate dispatcher_pylab301
 
 cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/keystoneness
-python keystoneness.py --type {type} --input-basepaths {input_basepath} --output-basepath {output_basepath} --simulation-dt {dt} --leave-out {leave_out} --leave-out-table {leave_out_table}
+python keystoneness.py --type {type} --input-basepaths {input_basepath} --output-basepath {output_basepath} --simulation-dt {dt} --leave-out {leave_out} --leave-out-table {leave_out_table} --perturbation-idx {perturbation_index}
 '''
 
 if __name__ == '__main__':
@@ -94,8 +94,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--queue', '-q', type=str, dest='queue',
         help='This is the queue we are submitting to', default='short')
-    parser.add_argument('--leave-out-table', type=str, dest='leave_out_table',
-        help='This is where we are getting the data from')
     parser.add_argument('--type', type=str, dest='type',
         help='What kind of keystoneness')
     parser.add_argument('--run-jobs', type=int, dest='run_jobs',
@@ -139,6 +137,9 @@ if __name__ == '__main__':
         os.makedirs(dset_basepath, exist_ok=True)
         os.makedirs(dset_input_basepath, exist_ok=True)
         os.makedirs(dset_output_basepath, exist_ok=True)
+
+        print()
+        print(path)
         
 
         # Get the traces
@@ -166,7 +167,10 @@ if __name__ == '__main__':
         # Run the chains
         # --------------
         onlyfiles = [f for f in os.listdir(dset_basepath) if os.path.isfile(dset_basepath+f)]
+        print('onlyfiles')
+        print(onlyfiles)
 
+        iiii = 0
         for fname in onlyfiles:
             print(fname)
 
@@ -175,6 +179,10 @@ if __name__ == '__main__':
                 suffix = '.txt'
             elif '.csv' in fname:
                 suffix = '.csv'
+            elif '.tsv' in fname:
+                # This is a result, dont do anything with this
+                print('continue')
+                continue
             else:
                 raise ValueError('Suffix not recognized (only parsing .csv and .txt).')
 
@@ -184,40 +192,66 @@ if __name__ == '__main__':
             os.makedirs(jobpath, exist_ok=True)
             os.makedirs(lsfpath, exist_ok=True)
 
+            if args.type == 'perturbations':
+                jobpath = jobpath + 'perturbations/'
+                os.makedirs(jobpath, exist_ok=True)
+
             f = open(dset_basepath + fname, 'r')
             lll = f.read()
             f.close()
             n_jobs = len(lll.split('\n'))
 
             # Calculate base
-            lsfname = lsfpath + '{}_{}.lsf'.format(fname.replace(suffix, ''), None)
-            f = open(lsfname, 'w')
-            f.write(lsf_format.format(
-                jobname=fpath.replace('/', '{}'.format(None)),
-                input_basepath=dset_input_basepath,
-                queue=args.queue, n_cpus=args.n_cpus, n_mbs=args.n_mbs,
-                type=args.type, dt=0.1, leave_out=-1,
-                output_basepath=jobpath,
-                leave_out_table=dset_basepath+fname))
-            f.close()
-            command = 'bsub < {}'.format(lsfname)
-            os.system(command)
+            if args.type == 'leave-one-out':
+                plen = 1
+            elif args.type == 'perturbations':
+                plen = len(perturbations)
+            else:
+                raise ValueError('plens')
+            for pidx in range(plen):
+                lsfname = lsfpath + '{}_{}_{}.lsf'.format(fname.replace(suffix, ''), None, pidx)
+                f = open(lsfname, 'w')
+                f.write(lsf_format.format(
+                    jobname=fpath.replace('/', '{}'.format(None)),
+                    input_basepath=dset_input_basepath,
+                    queue=args.queue, n_cpus=args.n_cpus, n_mbs=args.n_mbs,
+                    type=args.type, dt=0.1, leave_out=-1,
+                    output_basepath=jobpath,
+                    perturbation_index=pidx,
+                    leave_out_table=dset_basepath+fname))
+                f.close()
+                command = 'bsub < {}'.format(lsfname)
+                print(command)
+                os.system(command)
 
             # Calculate all others
             for i in range(n_jobs):
-                lsfname = lsfpath + '{}_{}.lsf'.format(fname.replace(suffix, ''), i)
-                f = open(lsfname, 'w')
-                f.write(lsf_format.format(
-                    jobname=fpath.replace('/', '{}'.format(i)),
-                    input_basepath=dset_input_basepath,
-                    queue=args.queue, n_cpus=args.n_cpus, n_mbs=args.n_mbs,
-                    type=args.type, dt=0.01, leave_out=i,
-                    output_basepath=jobpath,
-                    leave_out_table=dset_basepath+fname))
-                f.close()
+                if args.type == 'leave-one-out':
+                    plen = 1
+                elif args.type == 'perturbations':
+                    plen = len(perturbations)
+                else:
+                    raise ValueError('plens')
+                for pidx in range(plen):
+                    lsfname = lsfpath + '{}_{}_{}.lsf'.format(fname.replace(suffix, ''), i, pidx)
+                    f = open(lsfname, 'w')
+                    f.write(lsf_format.format(
+                        jobname=fpath.replace('/', '{}'.format(i)),
+                        input_basepath=dset_input_basepath,
+                        queue=args.queue, n_cpus=args.n_cpus, n_mbs=args.n_mbs,
+                        type=args.type, dt=0.01, leave_out=i,
+                        output_basepath=jobpath,
+                        perturbation_index=pidx,
+                        leave_out_table=dset_basepath+fname))
+                    f.close()
 
-                command = 'bsub < {}'.format(lsfname)
-                os.system(command)
+                    command = 'bsub < {}'.format(lsfname)
+                    print(command)
+                    os.system(command)
+
+                # if i == 4:
+                #     sys.exit()
+
 
 
                
