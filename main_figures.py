@@ -23,6 +23,7 @@ import matplotlib.ticker as plticker
 from matplotlib.ticker import ScalarFormatter, LogFormatter, LogFormatterSciNotation, FixedLocator
 import matplotlib.patches as patches
 import matplotlib.lines as mlines
+import matplotlib.colors as mcolors
 # from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 from mpl_toolkits.axes_grid1.inset_locator import TransformedBbox, BboxPatch, BboxConnector 
 from matplotlib.patches import Rectangle
@@ -386,11 +387,21 @@ def _make_cluster_membership_heatmap(chainname, ax, order, binary, fig, make_col
                 matrix[oidx, cidx] = rel_abund[oidx]
 
     index = [str(name) for name in subjset.asvs.names.order]
+
+    iii = 0
+    for asvnew in order:
+        if asvnew not in index:
+            index.append(asvnew)
+            iii += 1
+
+    # Add in nan rows in places that order is not in index
+    matrix = np.vstack((matrix, np.zeros(shape=(iii, matrix.shape[1]))*np.nan))
     order = [str(a).replace(' ', '') for a in order]
 
     df = pd.DataFrame(matrix,
         columns=_make_names_of_clusters(len(clusters)),
         index=index)
+
     
     # indices = {}
     # for name in df.index:
@@ -433,7 +444,11 @@ def _make_cluster_membership_heatmap(chainname, ax, order, binary, fig, make_col
         kwargs = {}
 
     cmap = sns.cubehelix_palette(n_colors=100, as_cmap=True, start=2, rot=0, dark=0, light=0.5)
-    im = ax.imshow(df.values, cmap=cmap, aspect='auto', **kwargs)
+    cmap.set_bad(color='silver')
+    cmap.set_under(color='white')
+    vals = df.values
+    vals += min_rel - 1e-10
+    im = ax.imshow(vals, cmap=cmap, aspect='auto', **kwargs)
     ax.yaxis.set_major_locator(plt.NullLocator())
     ax.yaxis.set_major_locator(plt.NullLocator())
 
@@ -447,7 +462,7 @@ def _make_cluster_membership_heatmap(chainname, ax, order, binary, fig, make_col
     
     # Make grid
     ax.set_xticks(np.arange(0.5, len(df.columns), 1), minor=True)
-    ax.set_yticks(np.arange(0.5, len(subjset.asvs), 1), minor=True)
+    ax.set_yticks(np.arange(0.5, len(df.index), 1), minor=True)
     ax.grid(which='minor', color='gray', linestyle='-', linewidth=0.1)
 
     ax.tick_params(axis='both', which='minor', left=False, bottom=False)
@@ -460,7 +475,8 @@ def _make_cluster_membership_heatmap(chainname, ax, order, binary, fig, make_col
 
     return ax, newcolnames
 
-def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig, make_colorbar=True, figlabel=None):
+def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig, make_colorbar=True, figlabel=None,
+    render_labels=True):
     chain = pl.inference.BaseMCMC.load(chainname)
     subjset = chain.graph.data.subjects
     clustering = chain.graph[names.STRNAMES.CLUSTERING_OBJ]
@@ -508,27 +524,28 @@ def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig, m
     ax.tick_params(axis='both', which='minor', left=False, bottom=False)
     
     if make_colorbar:
-        cbaxes = fig.add_axes([0.92, 0.75, 0.02, 0.1]) # left, bottom, width, height
+        cbaxes = fig.add_axes([0.92, 0.5, 0.02, 0.1]) # left, bottom, width, height
         cbar = plt.colorbar(im, cax=cbaxes, orientation='vertical', ticks=[-5,-2.5,0,2.5,5])
         cbar.ax.set_yticklabels(['<-5', '-2.5', '0', '2.5', '>5'], fontsize=15)
         cbar.ax.set_title('Perturbation\nEffect', fontsize=18, fontweight='bold')
 
-    ax.set_yticks(np.arange(len(subjset.perturbations)), minor=False)
-    ax.set_yticklabels(list(df.index))
+    if render_labels:
+        ax.set_yticks(np.arange(len(subjset.perturbations)), minor=False)
+        ax.set_yticklabels(list(df.index))
+        for tick in ax.yaxis.get_major_ticks():
+            tick.label.set_rotation(0)
+            tick.label.set_fontsize(25)
+    else:
+        ax.set_yticks([])
 
-    for tick in ax.yaxis.get_major_ticks():
-        tick.label.set_rotation(0)
-        tick.label.set_fontsize(18)
     return ax
 
-def _make_phylogenetic_tree(treename, chainname, ax, fig, healthy, side_by_side=False, figlabel=None):
-    chain = pl.inference.BaseMCMC.load(chainname)
-    asvs = chain.graph.data.asvs
-    names = [str(name) for name in asvs.names.order]
+def _make_phylogenetic_tree(treename, names, asvs, ax, fig, healthy, side_by_side=False, figlabel=None):
 
     tree = ete3.Tree(treename)
     tree.prune(names, True)
     tree.write(outfile='tmp/temp.nhx')
+    fontsize=15.9
 
     taxonomies = ['family', 'order', 'class', 'phylum', 'kingdom']
     suffix_taxa = {'family': '*', 'order': '**', 'class': '***', 'phylum': '****', 'kingdom': '*****'}
@@ -548,8 +565,11 @@ def _make_phylogenetic_tree(treename, chainname, ax, fig, healthy, side_by_side=
             if asv.tax_is_defined('species'):
                 spec = asv.taxonomy['species']
                 l = spec.split('/')
-                if len(l) <= 3:
+                if len(l) < 3:
                     spec = '/'.join(l)
+                    asvname = asvname + ' {}'.format(spec)
+                elif len(l) >= 3:
+                    spec = '/'.join(l[:2])
                     asvname = asvname + ' {}'.format(spec)
         else:
             found = False
@@ -568,11 +588,8 @@ def _make_phylogenetic_tree(treename, chainname, ax, fig, healthy, side_by_side=
         asvname += ' ' + asv.name
         asvname = ' ' + suffix + asvname
         text._text = str(asvname.replace('OTU_', 'ASV'))   
-        if healthy:  
-            text._text = text._text + '- ' * 45
-        else:
-            text._text = text._text + '- ' * 55
-        text.set_fontsize(9.7)
+        text._text = text._text + '- ' * 55
+        text.set_fontsize(fontsize)
 
     if figlabel is not None:
         ax.text(x=0.15, y=1.03, s=figlabel, fontsize=45, fontweight='bold',
@@ -644,26 +661,59 @@ def phylogenetic_heatmap(healthy):
 
 def phylogenetic_heatmap_side_by_side():
 
-    fig = plt.figure(figsize=(24,20))
-    gs = fig.add_gridspec(12,21)
-    ax_phyl_healthy = fig.add_subplot(gs[1:,:3])
-    ax_clus_healthy = fig.add_subplot(gs[1:,6:10])
-    ax_pert_healthy = fig.add_subplot(gs[0,6:10])
+    chainnamehealthy = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/' \
+        'ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+    chainnameuc = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/' \
+            'ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
 
-    ax_phyl_uc = fig.add_subplot(gs[1:,10:10+3])
-    ax_clus_uc = fig.add_subplot(gs[1:,10+6:10+10])
-    ax_pert_uc = fig.add_subplot(gs[0,10+6:10+10])
+    names = set([])
+    for chainname in [chainnamehealthy, chainnameuc]:
+        chain = pl.inference.BaseMCMC.load(chainname)
+        asvs = chain.graph.data.asvs
+        for asvname in asvs.names.order:
+            names.add(str(asvname))
+
+    names = list(names)
+
+    fig = plt.figure(figsize=(30,45))
+    gs = fig.add_gridspec(17,21)
+    ax_phyl_healthy = fig.add_subplot(gs[3+1:,:3])
+    ax_clus_healthy = fig.add_subplot(gs[3+1:,9:14])
+    ax_pert_healthy = fig.add_subplot(gs[3+0,9:14])
+
+    ax_clus_uc = fig.add_subplot(gs[3+1:,15:20])
+    ax_pert_uc = fig.add_subplot(gs[3+0,15:20])
+
+    ax_network_healthy = fig.add_subplot(gs[0:3, 9:14], zorder=-50)
+    ax_network_uc = fig.add_subplot(gs[0:3, 15:20], zorder=-50)
+
+    arr_man = mpimg.imread('figures/hairball_network_healthy.jpg')
+    imagebox = OffsetImage(arr_man, zoom=0.2)
+    ab = AnnotationBbox(imagebox, (0.5, 0.475), pad=0, box_alignment=(0.5,0.5))
+    ax_network_healthy.add_artist(ab)
+    ax_network_healthy.text(x=-0.1, y=0.9, s='A', fontsize=45, fontweight='bold',
+        transform=ax_network_healthy.transAxes)
+
+    arr_man = mpimg.imread('figures/hairball_network_uc.jpg')
+    imagebox = OffsetImage(arr_man, zoom=0.2)
+    ab = AnnotationBbox(imagebox, (0.5, 0.475), pad=0, box_alignment=(0.5,0.5))
+    ax_network_uc.add_artist(ab)
+    ax_network_uc.text(x=-0.1, y=0.9, s='B', fontsize=45, fontweight='bold',
+        transform=ax_network_uc.transAxes)
 
     treename = 'raw_data/phylogenetic_tree_branch_len_preserved.nhx'
 
     # Healthy
-    chainname = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/' \
-        'ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
-    ax_phyl_healthy, order = _make_phylogenetic_tree(treename=treename, chainname=chainname, ax=ax_phyl_healthy, 
-        fig=fig, healthy=True, side_by_side=True, figlabel='A')
-    ax_clus_healthy, colorder = _make_cluster_membership_heatmap(chainname=chainname, ax=ax_clus_healthy, 
+    subjset = loaddata(None)
+    asvs = subjset.asvs
+    ax_phyl_healthy, order = _make_phylogenetic_tree(treename=treename, names=names, asvs=asvs, ax=ax_phyl_healthy, 
+        fig=fig, healthy=True, side_by_side=True, figlabel='C')
+    plt.savefig(BASEPATH + 'phylo_clustering_heatmap_side_by_side_RDP_alignment.pdf')
+    plt.savefig(BASEPATH + 'phylo_clustering_heatmap_side_by_side_RDP_alignment.png')
+
+    ax_clus_healthy, colorder = _make_cluster_membership_heatmap(chainname=chainnamehealthy, ax=ax_clus_healthy, 
         order=order, binary=False, fig=fig, make_colorbar=False)
-    ax_pert_healthy = _make_perturbation_heatmap(chainname=chainname, min_bayes_factor=10, 
+    ax_pert_healthy = _make_perturbation_heatmap(chainname=chainnamehealthy, min_bayes_factor=10, 
         ax=ax_pert_healthy, colorder=colorder, fig=fig, make_colorbar=False)
 
     ax_phyl_healthy.spines['top'].set_visible(False)
@@ -676,34 +726,46 @@ def phylogenetic_heatmap_side_by_side():
     ax_phyl_healthy.yaxis.set_minor_locator(plt.NullLocator())
     ax_phyl_healthy.set_xlabel('')
     ax_phyl_healthy.set_ylabel('')
-    ax_pert_healthy.set_title('Healthy Consortium', fontsize=30)
+    ax_pert_healthy.set_title('Healthy Cohort', fontsize=30)
+    ax_pert_healthy.text(x=-0.1, y=1.05, s='D', fontsize=45, fontweight='bold', 
+        transform=ax_pert_healthy.transAxes)
+
+    ax_pert_uc.set_title('Ulcerative Colitis Cohort', fontsize=30)
 
     # UC
-    chainname = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/' \
-            'ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
-    ax_phyl_uc, order = _make_phylogenetic_tree(treename=treename, chainname=chainname, ax=ax_phyl_uc, 
-        fig=fig, healthy=True, side_by_side=None, figlabel='B')
-    ax_clus_uc, colorder = _make_cluster_membership_heatmap(chainname=chainname, ax=ax_clus_uc, 
+    ax_clus_uc, colorder = _make_cluster_membership_heatmap(chainname=chainnameuc, ax=ax_clus_uc, 
         order=order, binary=False, fig=fig)
-    ax_pert_uc = _make_perturbation_heatmap(chainname=chainname, min_bayes_factor=10, 
-        ax=ax_pert_uc, colorder=colorder, fig=fig)
+    ax_pert_uc = _make_perturbation_heatmap(chainname=chainnameuc, min_bayes_factor=10, 
+        ax=ax_pert_uc, colorder=colorder, fig=fig, render_labels=False)
+    ax_pert_uc.text(x=-0.1, y=1.05, s='E', fontsize=45, fontweight='bold', 
+        transform=ax_pert_uc.transAxes)
 
-    ax_phyl_uc.spines['top'].set_visible(False)
-    ax_phyl_uc.spines['bottom'].set_visible(False)
-    ax_phyl_uc.spines['left'].set_visible(False)
-    ax_phyl_uc.spines['right'].set_visible(False)
-    ax_phyl_uc.xaxis.set_major_locator(plt.NullLocator())
-    ax_phyl_uc.xaxis.set_minor_locator(plt.NullLocator())
-    ax_phyl_uc.yaxis.set_major_locator(plt.NullLocator())
-    ax_phyl_uc.yaxis.set_minor_locator(plt.NullLocator())
-    ax_phyl_uc.set_xlabel('')
-    ax_phyl_uc.set_ylabel('')
-    ax_pert_uc.set_title('Ulcerative Colitis Consortium', fontsize=30)
-
-    fig.subplots_adjust(wspace=0.30, left=0.02, right=0.92, hspace=0.01,
-        top=0.95, bottom=0.03)
+    fig.subplots_adjust(wspace=0.20, left=0.02, right=0.92, hspace=0.01,
+        top=.99, bottom=0.03)
 
     # fig.suptitle('Test', fontsize=30)
+
+    ax_network_healthy.spines['top'].set_visible(False)
+    ax_network_healthy.spines['bottom'].set_visible(False)
+    ax_network_healthy.spines['left'].set_visible(False)
+    ax_network_healthy.spines['right'].set_visible(False)
+    ax_network_healthy.xaxis.set_major_locator(plt.NullLocator())
+    ax_network_healthy.xaxis.set_minor_locator(plt.NullLocator())
+    ax_network_healthy.yaxis.set_major_locator(plt.NullLocator())
+    ax_network_healthy.yaxis.set_minor_locator(plt.NullLocator())
+    ax_network_healthy.set_xlabel('')
+    ax_network_healthy.set_ylabel('')
+
+    ax_network_uc.spines['top'].set_visible(False)
+    ax_network_uc.spines['bottom'].set_visible(False)
+    ax_network_uc.spines['left'].set_visible(False)
+    ax_network_uc.spines['right'].set_visible(False)
+    ax_network_uc.xaxis.set_major_locator(plt.NullLocator())
+    ax_network_uc.xaxis.set_minor_locator(plt.NullLocator())
+    ax_network_uc.yaxis.set_major_locator(plt.NullLocator())
+    ax_network_uc.yaxis.set_minor_locator(plt.NullLocator())
+    ax_network_uc.set_xlabel('')
+    ax_network_uc.set_ylabel('')
 
     plt.savefig(BASEPATH + 'phylo_clustering_heatmap_side_by_side_RDP_alignment.pdf')
     plt.savefig(BASEPATH + 'phylo_clustering_heatmap_side_by_side_RDP_alignment.png')
@@ -2279,13 +2341,20 @@ def preprocess_filtering(healthy):
     fig = plt.figure(figsize=(20,10))
     ax = fig.add_subplot(111, facecolor=None)
 
-    caption = 'How many ASVs pass initial filtering given the criteria. To pass the filtering,\nan ASV must ' \
-        'have be greater than a given relative abundance for a given number of consecutive\n' \
-        'time points in at least a given number of subjects.'
+    # caption = 'How many ASVs pass initial filtering given the criteria. To pass the filtering,\nan ASV must ' \
+    #     'have be greater than a given relative abundance for a given number of consecutive\n' \
+    #     'time points in at least a given number of subjects.'
 
     ax.text(0.4, -0.08, 'Minimum relative abundance', fontsize=22)
     ax.text(-0.08, 0.3, 'Number of ASVs remaining', fontsize=22, rotation='vertical')
-    ax.text(0.5, -0.23, caption, fontsize=18, horizontalalignment='center')
+
+    if healthy:
+        title = 'Healthy Cohort'
+    else:
+        title = 'Ulcerative Colitis Cohort'
+    ax.text(0.4, 1.075, s=title, fontsize=30)
+
+    # ax.text(0.5, -0.23, caption, fontsize=18, horizontalalignment='center')
 
     ax.spines['top'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
@@ -2314,20 +2383,17 @@ def preprocess_filtering(healthy):
             ax.legend(bbox_to_anchor=(1.05,1), loc='upper left', fontsize=14)
 
         for tick in ax.yaxis.get_major_ticks():
-            tick.label.set_fontsize(14)
+            tick.label.set_fontsize(16)
         for tick in ax.xaxis.get_major_ticks():
-            tick.label.set_fontsize(14)
+            tick.label.set_fontsize(16)
 
-    if not healthy:
-        title = 'Preprocess Filtering, Ulcerative Colitis Consortium'
-    else:
-        title = 'Preprocess Filtering, Healthy Consortium'
-    fig.subplots_adjust(right=0.85, bottom=0.185)
+    # fig.tight_layout()
+    fig.subplots_adjust(left=0.095, right=0.865)
 
-    fig.suptitle(title, fontsize=30, fontweight='bold')
+    # fig.suptitle(title, fontsize=30, fontweight='bold')
     # plt.show()
     plt.savefig(BASEPATH + 'preprocess_filtering_healthy{}.pdf'.format(healthy))
-    plt.savefig(BASEPATH + 'preprocess_filtering_healthy{}.png'.format(healthy))
+    # plt.savefig(BASEPATH + 'preprocess_filtering_healthy{}.png'.format(healthy))
     plt.close()
 
 def _consistency(subjset, matrices, dtype, threshold, min_num_consecutive, colonization_time=None, 
@@ -2646,19 +2712,273 @@ def _inner_semi_synth(df, only, x, y, hue, ax, title, ylabel, yscale, legend):
 
     return ax
  
+# Bayes Factors
+# -------------
+def make_bayes_factor():
+    '''Make the bayes factors
+    '''
+
+    chainhealthy = pl.inference.BaseMCMC.load('output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl')
+    chainuc = pl.inference.BaseMCMC.load('output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl')
+
+    _bayes_factor(chainhealthy, healthy=True)
+    _bayes_factor(chainuc, healthy=False)
+
+def _bayes_factor(chain, healthy):
+    # Get the bayes factors
+    subjset = chain.graph.data.subjects
+    asvs = subjset.asvs
+    interactions = chain.graph[names.STRNAMES.INTERACTIONS_OBJ]
+    bayes_factors = interactions.generate_bayes_factors_posthoc(
+        prior=chain.graph[names.STRNAMES.CLUSTER_INTERACTION_INDICATOR].prior,
+        section='posterior')
+    
+    # Get the asv order (same as coclustering)
+    if healthy:
+        fname = 'tmp/network_matrix_order/Healthy_order_co_cluster.txt'
+    else:
+        fname = 'tmp/network_matrix_order/UC_order_co_clusters.txt'
+    f = open(fname, 'r')
+    txt = f.read()
+    f.close()
+    order = txt.split('\n')
+    for i in range(len(order)):
+        order[i] = order[i].replace(' ', '_')
+    print(order)
+
+    # Make the labels
+    ylabels = []
+    reorder = []
+    for aidx, asvname in enumerate(order):
+        print(asvname)
+        asv = asvs[asvname]
+        reorder.append(asv.idx)
+        if asv.tax_is_defined('species'):
+            species = asv.taxonomy['species']
+            species = species.split('/')
+            if len(species) >= 3:
+                species = species[:2]
+            species = '/'.join(species)
+            label = pl.asvname_formatter(
+                format='%(genus)s {spec} %(name)s | {idx}'.format(
+                    spec=species, idx=aidx+1), 
+                asv=asv, asvs=asvs)
+        elif asv.tax_is_defined('genus'):
+            label = pl.asvname_formatter(
+                format='* %(genus)s %(name)s | {idx}'.format(idx=aidx+1),
+                asv=asv, asvs=asvs)
+        elif asv.tax_is_defined('family'):
+            label = pl.asvname_formatter(
+                format='** %(family)s %(name)s | {idx}'.format(idx=aidx+1),
+                asv=asv, asvs=asvs)
+        elif asv.tax_is_defined('order'):
+            label = pl.asvname_formatter(
+                format='*** %(order)s %(name)s | {idx}'.format(idx=aidx+1),
+                asv=asv, asvs=asvs)
+        elif asv.tax_is_defined('class'):
+            label = pl.asvname_formatter(
+                format='**** %(class)s %(name)s | {idx}'.format(idx=aidx+1),
+                asv=asv, asvs=asvs)
+        elif asv.tax_is_defined('phylum'):
+            label = pl.asvname_formatter(
+                format='***** %(phylum)s %(name)s | {idx}'.format(idx=aidx+1),
+                asv=asv, asvs=asvs)
+        elif asv.tax_is_defined('kingdom'):
+            label = pl.asvname_formatter(
+                format='****** %(kingdom)s %(name)s | {idx}'.format(idx=aidx+1),
+                asv=asv, asvs=asvs)
+        else:
+            raise ValueError('Something went wrong: {}'.format(str(asv)))
+
+        label = label.replace('_', ' ')
+        ylabels.append(label)
+
+    bayes_factors = bayes_factors[reorder, :]
+    bayes_factors = bayes_factors[:, reorder]
+
+    # Make the plot
+    fig = plt.figure(figsize=(40,55))
+    ax = fig.add_subplot(111)
+    for i in range(bayes_factors.shape[0]):
+        bayes_factors[i,i] = np.nan
+    cmap = sns.color_palette("Blues", as_cmap=True)
+    im = ax.imshow(bayes_factors, cmap=cmap, vmax=10, aspect='auto')
+
+    xticks = np.arange(len(asvs), step=2, dtype=int)
+    xlabels = [str(i+1) for i in xticks]
+
+    ax.set_xticks(xticks)
+    ax.set_yticks(np.arange(len(asvs)))
+    ax.set_xticklabels(xlabels)
+    ax.set_yticklabels(ylabels)
+
+    for tick in ax.xaxis.get_major_ticks():
+        tick.label.set_fontsize(22)
+        tick.label.set_rotation(90)
+    for tick in ax.yaxis.get_major_ticks():
+        tick.label.set_fontsize(24)
+
+    if healthy:
+        ax.set_title('Healthy Cohort', fontsize=50)
+    else:
+        ax.set_title('Ulcerative Colitis Cohort', fontsize=50)
+
+    s = 'Taxonomy Key\n'
+    for taxidx, tax in enumerate(TAXLEVEL_INTS[1:]):
+        s += '*'*(taxidx+1) + ': ' + tax
+        if taxidx < len(TAXLEVEL_INTS) -2:
+            s += ', '
+    ax.text(x=-0.25, y=-0.05, s=s, fontsize=40, fontweight='bold', 
+        transform=ax.transAxes)
+
+
+    
+
+    cbar = fig.colorbar(im, orientation='vertical', shrink=0.75)
+    cbar.ax.get_yaxis().set_ticks([0,2,4,6,8,10])
+    cbar.ax.get_yaxis().set_ticklabels(['0', '2', '4', '6', '8', '>10'], fontsize=40)
+    cbar.ax.set_title('Bayes Factor', fontsize=40, fontweight='bold', y=1.03)
+
+    
+    fig.subplots_adjust(top=0.95, bottom=0.08,right=1., left=0.25)
+    plt.savefig('output_figures/bayes_factors_healthy{}.pdf'.format(healthy))
+    plt.close()
+
+# Interactions
+# ------------
+def make_interactions():
+    '''Make the bayes factors
+    '''
+
+    chainhealthy = pl.inference.BaseMCMC.load('output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl')
+    # chainuc = pl.inference.BaseMCMC.load('output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl')
+
+    _interactions(chainhealthy, healthy=True)
+    # _interactions(chainuc, healthy=False)
+
+def _interactions(chain, healthy):
+    # Get the bayes factors
+    subjset = chain.graph.data.subjects
+    asvs = subjset.asvs
+    interactions = chain.graph[names.STRNAMES.INTERACTIONS_OBJ]
+    interactions = pl.variables.summary(interactions, only='mean', section='posterior',
+        set_nan_to_0=True)['mean']
+    
+    # Get the asv order (same as coclustering)
+    if healthy:
+        fname = 'tmp/network_matrix_order/Healthy_order_co_cluster.txt'
+    else:
+        fname = 'tmp/network_matrix_order/UC_order_co_clusters.txt'
+    f = open(fname, 'r')
+    txt = f.read()
+    f.close()
+    order = txt.split('\n')
+    for i in range(len(order)):
+        order[i] = order[i].replace(' ', '_')
+    print(order)
+
+    # Make the labels
+    ylabels = []
+    reorder = []
+    for aidx, asvname in enumerate(order):
+        print(asvname)
+        asv = asvs[asvname]
+        reorder.append(asv.idx)
+        if asv.tax_is_defined('species'):
+            species = asv.taxonomy['species']
+            species = species.split('/')
+            if len(species) >= 3:
+                species = species[:2]
+            species = '/'.join(species)
+            label = pl.asvname_formatter(
+                format='%(genus)s {spec} %(name)s | {idx}'.format(
+                    spec=species, idx=aidx+1), 
+                asv=asv, asvs=asvs)
+        elif asv.tax_is_defined('genus'):
+            label = pl.asvname_formatter(
+                format='* %(genus)s %(name)s | {idx}'.format(idx=aidx+1),
+                asv=asv, asvs=asvs)
+        elif asv.tax_is_defined('family'):
+            label = pl.asvname_formatter(
+                format='** %(family)s %(name)s | {idx}'.format(idx=aidx+1),
+                asv=asv, asvs=asvs)
+        elif asv.tax_is_defined('order'):
+            label = pl.asvname_formatter(
+                format='*** %(order)s %(name)s | {idx}'.format(idx=aidx+1),
+                asv=asv, asvs=asvs)
+        elif asv.tax_is_defined('class'):
+            label = pl.asvname_formatter(
+                format='**** %(class)s %(name)s | {idx}'.format(idx=aidx+1),
+                asv=asv, asvs=asvs)
+        elif asv.tax_is_defined('phylum'):
+            label = pl.asvname_formatter(
+                format='***** %(phylum)s %(name)s | {idx}'.format(idx=aidx+1),
+                asv=asv, asvs=asvs)
+        elif asv.tax_is_defined('kingdom'):
+            label = pl.asvname_formatter(
+                format='****** %(kingdom)s %(name)s | {idx}'.format(idx=aidx+1),
+                asv=asv, asvs=asvs)
+        else:
+            raise ValueError('Something went wrong: {}'.format(str(asv)))
+
+        label = label.replace('_', ' ')
+        ylabels.append(label)
+
+    interactions = interactions[reorder, :]
+    interactions = interactions[:, reorder]
+
+    # Make the plot
+    fig = plt.figure(figsize=(40,55))
+    ax = fig.add_subplot(111)
+    for i in range(interactions.shape[0]):
+        interactions[i,i] = np.nan
+    maxval = np.nanmax(np.absolute(interactions))
+    im = ax.imshow(interactions, cmap='RdBu', aspect='auto',
+        norm=mcolors.SymLogNorm(linthresh=10, linscale=1e-12, vmax=maxval,
+            vmin=-maxval))
+
+    xticks = np.arange(len(asvs), step=2, dtype=int)
+    xlabels = [str(i+1) for i in xticks]
+
+    ax.set_xticks(xticks)
+    ax.set_yticks(np.arange(len(asvs)))
+    ax.set_xticklabels(xlabels)
+    ax.set_yticklabels(ylabels)
+
+    for tick in ax.xaxis.get_major_ticks():
+        tick.label.set_fontsize(22)
+        tick.label.set_rotation(90)
+    for tick in ax.yaxis.get_major_ticks():
+        tick.label.set_fontsize(24)
+
+    if healthy:
+        ax.set_title('Healthy Cohort', fontsize=50)
+    else:
+        ax.set_title('Ulcerative Colitis Cohort', fontsize=50)
+
+    
+
+    cbar = fig.colorbar(im, orientation='vertical', shrink=0.75)
+    cbar.ax.get_yaxis().set_ticks([-1e-6, -1e-8, -1e-10, 1e-10, 1e-8, 1e-6])
+    cbar.ax.get_yaxis().set_ticklabels(['-1e-6', '-1e-8', '-1e-10', '1e-10', '1e-8', '1e-6'], fontsize=40)
+    cbar.ax.set_title('Interaction\nStrength', fontsize=40, fontweight='bold', y=1.03)
+
+    
+    fig.subplots_adjust(top=0.95, bottom=0.08,right=1., left=0.25)
+    plt.savefig('output_figures/interactions_healthy{}.pdf'.format(healthy))
+    plt.close()
+
 # Model performance on new dataset
 # --------------------------------
 def model_performance_benchmark_figure():
 
     fig = plt.figure(figsize=(10,5))
     ax = fig.add_subplot(111)
-    df = pd.read_csv('raw_data/predictive_performance.tsv', sep=',')
+    df = pd.read_csv('results/full_predictive_performance.tsv', sep=',')
     ax = sns.boxplot(hue='Consortium', x='Model', y='Mean-Predictive', data=df, ax=ax,
         order=['MDSINE2', 'gLV', 'gLV-RA', 'cLV'])
     ax.set_ylabel('Spearman Correlation', fontsize=15)
     ax.set_xlabel('Model', fontsize=15)
-    fig.suptitle('Held out Performance on Ulcerative Colitis and Healthy Dataset', 
-        fontsize=18, fontweight='bold')
     ax.get_legend().remove()
     ax.legend(fontsize=15)
 
@@ -2734,10 +3054,9 @@ def time_lookahead_figure():
         x=0.35, y=-0.075, transform=ax.transAxes)
     ax.text(s='Relative RMSE', fontsize=15,
         x=-0.125, y=0.5, transform=ax.transAxes, rotation='vertical')
-    fig.suptitle('Held Out Time Look Ahead Predictive Performance\non Ulcerative Colitis and Healthy Dataset',
-        fontsize=20, fontweight='bold')
     fig.subplots_adjust(right=0.75, left=0.11, bottom=0.12, top=0.87, hspace=0.225)
-    plt.show()
+    plt.savefig('output_figures/time_look_ahead.pdf')
+    plt.close()
 
 
 os.makedirs('output_figures/', exist_ok=True)
@@ -2748,14 +3067,14 @@ os.makedirs('output_figures/', exist_ok=True)
 # beta_diversity_figure()
 
 # Data figure
-data_figure_rel_and_qpcr(horizontal=True)
+# data_figure_rel_and_qpcr(horizontal=True)
 
 # Species heatmap
 # species_heatmap()
 
 # Preprocess filtering
-# preprocess_filtering(True)
-# preprocess_filtering(False)
+preprocess_filtering(True)
+preprocess_filtering(False)
 
 # Phylogenetic heatmap
 # phylogenetic_heatmap(False)
@@ -2769,3 +3088,9 @@ data_figure_rel_and_qpcr(horizontal=True)
 
 # Time lookahead
 # time_lookahead_figure()
+
+# Bayes Factors
+# make_bayes_factor()
+
+# Interactions
+# make_interactions()
