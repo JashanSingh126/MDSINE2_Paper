@@ -165,7 +165,7 @@ if __name__ == '__main__':
     continue_inference = args.continue_inference
 
     # Constants
-    ONLY_PLOT = False
+    ONLY_PLOT = True
     
     # Start
     ##############################

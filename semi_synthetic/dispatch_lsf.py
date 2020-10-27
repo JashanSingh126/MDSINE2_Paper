@@ -18,10 +18,10 @@ import pylab as pl
 logging.basicConfig(level=logging.INFO)
 
 
-priority_queues = ['vlong', 'medium']
+priority_queues = ['medium', 'medium']
 seed_record_fmt = '{basepath}{jobname}/' + config.RESTART_INFERENCE_SEED_RECORD
 intermediate_validation_fmt = '{basepath}{jobname}/' + config.INTERMEDIATE_RESULTS_FILENAME
-max_jobs_per_queue = 25
+max_jobs_per_queue = 35
 
 parser = argparse.ArgumentParser()
 parser = argparse.ArgumentParser()
@@ -169,7 +169,7 @@ def _inner_boxplot(df, only, x, y, ax, ylabel, yscale, title):
         for col, val in only.items():
             dftemp = dftemp[dftemp[col] == val]
 
-    dftemp = dftemp[dftemp['sample_iter']>=1000]
+    dftemp = dftemp[dftemp['sample_iter']>=3000]
 
         # print(df.columns)
         # print(dftemp['Measurement Noise'])
@@ -353,6 +353,8 @@ while len(jobs_left) > 0:
 
     if df_master is not None:
 
+        df_master = df_master[df_master['Data Seed']> 0]
+
         # Make histogram of samples
         samples = df_master['sample_iter'].to_numpy().ravel()
         if n_not_done > 0:
@@ -364,6 +366,16 @@ while len(jobs_left) > 0:
         ax.set_xlabel('Sample iteration')
         ax.set_ylabel('Number of jobs')
         plt.savefig(monitor_path + 'sample_progress_of_inference.pdf')
+
+        sample_iters = df_master['sample_iter'].to_numpy()
+        mn = df_master['Measurement Noise'].to_numpy()
+        ds = df_master['Data Seed'].to_numpy()
+
+        f = open(monitor_path + 'sample_iter.txt', 'w')
+        for i in range(len(sample_iters)):
+            f.write('MC{}m{}: {}\n'.format(
+                ds[i], mn[i], sample_iters[i]))
+        f.close()
 
         # make boxplots of intermediate results
         # Measurement noise

@@ -59,9 +59,13 @@ def parse_args():
     parser.add_argument('--n-times', '-nt', type=int,
         help='Number of time points', 
         dest='n_times', default=[30, 45, 60, 75, 90], nargs='+')
+    parser.add_argument('--read-depth', '-rd', type=int,
+        help='Read depth', 
+        dest='read_depth', default=75000)
+    
     return parser.parse_args()
 
-def make_full_objects_single_data_seed(data_seed, val_seed, params, basepath):
+def make_full_objects_single_data_seed(data_seed, val_seed, params, basepath, read_depth):
     '''Make the full size subject set and validation set for a specific 
     set of dynamics.
     What we cannot subsample:
@@ -188,22 +192,20 @@ def make_full_objects_single_data_seed(data_seed, val_seed, params, basepath):
                 uniform_sampling_timepoints=uniform_sampling_timepoints))
             master_times = syndata.master_times
 
+            # simulate reads
+            pl.seed(data_seed)
+            syndata.simulate_reads(a0=config.NEGBIN_A0, a1=config.NEGBIN_A1, 
+                read_depth=read_depth)
+            
+
             # Make the measurement noises
             for mn_idx, mn in enumerate(params.MEASUREMENT_NOISE_LEVELS):
 
                 logging.info('measurement {}. {}/{}'.format(mn, mn_idx, len(params.MEASUREMENT_NOISE_LEVELS)))
+                pl.seed(data_seed)
+                syndata.simulate_qpcr(qpcr_noise_scale=mn)
 
-                # a0 = params.NEGBIN_A0S[mn_idx]
-                # a1 = params.NEGBIN_A1S[mn_idx]
-                # qpcr_std = params.QPCR_NOISE_SCALES[mn_idx]
-
-                a0,a1 = config.calculate_reads_a0a1(mn)
-                qpcr_std = mn
-                print(a0,a1)
-
-                subjset_master = syndata.simulateRealRegressionDataNegBinMD( 
-                    a0=a0, a1=a1, qpcr_noise_scale=qpcr_std, 
-                    subjset=params.DATA_FILENAME)
+                subjset_master = syndata.get_subjset()
                 subjset_exact_master = syndata.simulateExactSubjset()
 
                 # ax = pl.visualization.abundance_over_time(subj=subjset_master.iloc(0), dtype='abs', legend=True,
@@ -328,6 +330,7 @@ if __name__ == '__main__':
         logging.info('\n\n\nData seed {}/{}'.format(ds, args.n_data_seeds))
 
         make_full_objects_single_data_seed(data_seed=ds, params=params, 
-            val_seed=args.validation_data_seed, basepath=args.save_path)
+            val_seed=args.validation_data_seed, basepath=args.save_path,
+            read_depth=args.read_depth)
 
     
