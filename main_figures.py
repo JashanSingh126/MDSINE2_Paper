@@ -28,6 +28,8 @@ from mpl_toolkits.axes_grid1.inset_locator import TransformedBbox, BboxPatch, Bb
 from matplotlib.patches import Rectangle
 import matplotlib.legend as mlegend
 from matplotlib.colors import LogNorm
+import matplotlib.image as mpimg
+from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationBbox
 
 import ete3
 # from ete3 import TreeStyle
@@ -286,9 +288,10 @@ def colorplot():
     sns.palplot(colors)
     plt.show()
 
-def _get_top(df, cutoff_frac_abundance, taxlevel):
+def _get_top(df, cutoff_frac_abundance, taxlevel, asvname_map=None):
     matrix = df.values
     abunds = np.sum(matrix, axis=1)
+    namemap = {}
 
     a = abunds / abunds.sum()
     a = np.sort(a)[::-1]
@@ -305,6 +308,11 @@ def _get_top(df, cutoff_frac_abundance, taxlevel):
     idxs = np.argsort(abunds)[-cutoff_num:][::-1]
     dfnew = df.iloc[idxs, :]
 
+    if asvname_map is not None:
+        indexes = df.index
+        for idx in idxs:
+            namemap[indexes[idx]] = asvname_map[indexes[idx]]
+
     # Add everything else as 'Other'
     vals = None
     for idx in range(len(df.index)):
@@ -317,6 +325,16 @@ def _get_top(df, cutoff_frac_abundance, taxlevel):
     dfother = pd.DataFrame([vals], columns=df.columns, index=['{} with <{}% total abund'.format(
         TAXLEVEL_PLURALS[taxlevel], cutoff_frac_abundance*100)])
     df = dfnew.append(dfother)
+
+    if asvname_map is not None:
+        print('\n\n')
+        print('Name map')
+        print('--------')
+        for k,v in namemap.items():
+            print()
+            print(k)
+            print(v)
+
     return df
 
 
@@ -1523,540 +1541,6 @@ def beta_diversity_figure_no_zoom_2_colors(axleft=None, axright=None, axcenter=N
 
 # Data Figure
 # -----------
-def data_figure(HEALTHY, axtop=None, axmiddle=None, axbottom=None, axpert=None, figlabel=None):
-    '''Dada summarization figure for the paper
-    '''
-    
-    TAXLEVEL = 'family'
-    DTYPE = 'abs'
-    # if not HEALTHY:
-    #     CUTOFF_FRAC_ABUNDANCE = 0.001
-    # else:
-    CUTOFF_FRAC_ABUNDANCE = 0.001
-
-    subjset = loaddata(healthy=HEALTHY)
-
-    # Make the data frame
-    df = None
-    times = []
-    for subj in subjset:
-        times = np.append(times, subj.times)
-    times = np.sort(np.unique(times))
-    t2idx = {}
-    for i,t in enumerate(times):
-        t2idx[t] = i
-    times_cnts = np.zeros(len(times))
-        
-    # Aggregate at a taxonomic level and average over all of the subjects
-    df = None
-    # for subj in [subjset.iloc(1)]:
-    for subj in subjset:
-        dfnew = subj.cluster_by_taxlevel(dtype=DTYPE, lca=False, taxlevel=TAXLEVEL, 
-            index_formatter='%({})s'.format(TAXLEVEL), smart_unspec=True)
-        df, times_cnts = _add_unequal_col_dataframes(df=df, dfother=dfnew, times=times, 
-            times_cnts=times_cnts, t2idx=t2idx)
-        print('name', subj.name)
-    df = df / times_cnts
-
-    # Only plot the OTUs that have a totol percent abundance over a threshold
-    if CUTOFF_FRAC_ABUNDANCE is not None:
-        df = _get_top(df, cutoff_frac_abundance=CUTOFF_FRAC_ABUNDANCE, taxlevel=TAXLEVEL)
-
-    # Plot
-    labels = np.asarray(list(df.index))
-    labels = labels[::-1]
-    matrix = df.values
-    matrix = np.flipud(matrix)
-    times = np.asarray(list(df.columns))
-
-    # transform the indicies for the perturbations (we're in index space not time space)
-    for perturbation in subj.perturbations:
-        start_t = perturbation.start
-        end_t = perturbation.end
-
-        startidx = np.searchsorted(times, start_t)
-        endidx = np.searchsorted(times, end_t)
-        perturbation.start = startidx - 0.5
-        perturbation.end = endidx + 0.5
-
-    # Make a gridspec into 4 rows, with the middle taking up 2
-    if axtop is None:
-        fig = plt.figure(figsize=(20,10))
-        gs = fig.add_gridspec(4,1)
-        verticle_gridspec_offset = 0
-        axtop = fig.add_subplot(gs[verticle_gridspec_offset,:])
-        axmiddle = fig.add_subplot(gs[verticle_gridspec_offset+1:verticle_gridspec_offset+3, :])
-        axbottom = fig.add_subplot(gs[verticle_gridspec_offset+3,:])
-
-    # Plot on every axis
-    for ix, ax in enumerate([axbottom, axmiddle, axtop]):
-
-        # Create a stacked bar chart
-        offset = np.zeros(matrix.shape[1])
-        colors = sns.xkcd_palette(colors=XKCD_COLORS)
-        # colors = sns.color_palette('muted')
-
-        for row in range(matrix.shape[0]):
-            # if labels[row] == 'Other':
-            #     color = OTHERCOLOR
-            # else:
-            color = colors[row]
-            ax.bar(np.arange(len(times)), matrix[row,:], bottom=offset, color=color, label=labels[row],
-                width=1)
-            offset = offset + matrix[row,:]
-
-        # Set ylims
-        ix0top = 5e9
-        ix1top = 5e10
-        if ix == 0:
-            ax.set_ylim(bottom=0, top=ix0top)
-        elif ix == 1:
-            ax.set_ylim(bottom=0, top=ix1top)
-        else:
-            # ax.set_ylim(bottom=ix1top)
-            pass
-
-        ax.set_xlim(-1, len(times))
-
-        # Set Y tickers and tick labels
-        #### TODO : Why is this getting rid of the ticks????????
-        if ix == 0:
-            ax.yaxis.set_major_locator(FixedLocator(np.arange(0, ix0top, step=ix0top/4)))
-        elif ix == 1:
-            step = ix1top/5
-            ax.yaxis.set_major_locator(FixedLocator(np.arange(0, ix1top+step, step=step)))
-        # else:
-        #     _,top = ax.get_ylim()
-        #     ax.yaxis.set_major_locator(FixedLocator(np.arange(ix1top, top, step=(top-ix1top)/4)))
-
-
-        ax.yaxis.set_major_formatter(LogFormatter(labelOnlyBase=False))
-        for tick in ax.yaxis.get_major_ticks():
-            tick.label.set_fontsize(13)
-            tick.label.set_fontweight('bold')
-        
-
-        # Color in perturbations, only set label for the top
-        label = ix == 2
-        pl.visualization.shade_in_perturbations(ax, perturbations=subjset.perturbations, textsize=15, 
-            label=label, alpha=0)
-        
-    
-    # Set X tickers and tick labels
-    l = np.arange(len(times), step=5)
-    axbottom.set_xticks(ticks=l)
-    axbottom.set_xticklabels(labels=times[l], fontsize=13, fontweight='bold')
-    axtop.xaxis.set_major_locator(plt.NullLocator())
-    axmiddle.xaxis.set_major_locator(plt.NullLocator())
-    axmiddle.spines['top'].set_visible(False)
-    axmiddle.spines['bottom'].set_visible(False)
-    axbottom.spines['top'].set_visible(False)
-    axtop.spines['bottom'].set_visible(False)
-
-    # Set legend - make \n if there is an unspecified
-    axtop.legend()
-    handles, labels = axtop.get_legend_handles_labels()
-    to_replace_label = '{} NA'.format(TAXLEVEL.capitalize())
-    replace_label = '\n{} NA'.format(TAXLEVEL.capitalize())
-    for iii in range(len(labels)):
-        labels[iii] = labels[iii].replace(to_replace_label, replace_label)
-            
-    axtop.legend(handles[::-1], labels[::-1], 
-        bbox_to_anchor=(1,1), 
-        title='$\\bf{' + TAXLEVEL.capitalize() + '}$', 
-        title_fontsize=14, fontsize=15)
-
-    # # Make breakpoints between top and middle axes
-    # d = .005  # how big to make the diagonal lines in axes coordinates
-    # # arguments to pass to plot, just so we don't keep repeating them
-    # kwargs = dict(transform=axtop.transAxes, color='k', clip_on=False)
-    # axtop.plot((-d, +d), (-d, +d), **kwargs)        # top-left diagonal
-    # axtop.plot((1 - d, 1 + d), (-d, +d), **kwargs)  # top-right diagonal
-
-    # kwargs.update(transform=axmiddle.transAxes)  # switch to the bottom axes
-    # axmiddle.plot((-d, +d), (1 - d, 1 + d), **kwargs)  # bottom-left diagonal
-    # axmiddle.plot((1 - d, 1 + d), (1 - d, 1 + d), **kwargs)  # bottom-right diagonal
-
-    # Make lines for perturbations
-    if axpert is None:
-        axpert = fig.add_subplot(gs[
-            verticle_gridspec_offset:verticle_gridspec_offset+4,:], facecolor='none')
-    axpert.set_xlim(axmiddle.get_xlim())
-    axpert.spines['top'].set_visible(False)
-    axpert.spines['bottom'].set_visible(False)
-    axpert.spines['left'].set_visible(False)
-    axpert.spines['right'].set_visible(False)
-    axpert.xaxis.set_major_locator(plt.NullLocator())
-    axpert.xaxis.set_minor_locator(plt.NullLocator())
-    axpert.yaxis.set_major_locator(plt.NullLocator())
-    axpert.yaxis.set_minor_locator(plt.NullLocator())
-    for perturbation in subjset.perturbations:
-        axpert.axvline(x=perturbation.start, color='black', linestyle=':', lw=3)
-        axpert.axvline(x=perturbation.end, color='black', linestyle=':', linewidth=3)
-
-    if figlabel is not None:
-        axpert.text(x = -0.1, y= 1.1,
-            s=figlabel, fontsize=30, fontweight='bold',
-            transform=axpert.transAxes)
-
-
-    # fig.subplots_adjust(left=0.07, right=0.82, hspace=0.1)
-
-    # Set titles
-    if DTYPE == 'abs':
-        label = 'CFUs/g'
-    elif DTYPE == 'rel':
-        label = 'Relative Abundance'
-    else:
-        label = 'Counts'
-    axmiddle.set_ylabel(label, size=20, fontweight='bold')
-    axmiddle.yaxis.set_label_coords(-0.06, 0.5)
-    axbottom.set_xlabel('Time (d)', size=20, fontweight='bold', va='center')
-    axbottom.xaxis.set_label_coords(0.5,-0.5)
-    
-    if HEALTHY:
-        title = 'Healthy Microbes'
-    else:
-        title = 'Ulcerative Colitis Microbes'
-    axtop.set_title(title, fontsize=35, fontweight='bold')
-    # plt.savefig(BASEPATH + 'datafigure_healthy{}_{}.pdf'.format(HEALTHY, TAXLEVEL))
-
-    # plt.show()
-
-def data_figure_both():
-
-    fig = plt.figure(figsize=(20,10))
-
-    gs = fig.add_gridspec(2,18)
-    axinoculum = fig.add_subplot(gs[0,0:2])
-    axleft = fig.add_subplot(gs[0,3:10])
-    axright = fig.add_subplot(gs[0,11:])
-    axwhole = fig.add_subplot(gs[0, :], facecolor='none')
-
-    data_figure_side_by_side(True, fig, axleft=axleft, axright=axright, axinoculum=axinoculum, 
-        axwhole=axwhole, figlabelleft='B', figlabelright='C', figlabelinoculum='A',
-        make_legend=True)
-
-    axinoculum = fig.add_subplot(gs[1,0:2])
-    axleft = fig.add_subplot(gs[1,3:10])
-    axright = fig.add_subplot(gs[1,11:])
-    axwhole = fig.add_subplot(gs[1, :], facecolor='none')
-
-    data_figure_side_by_side(False, fig, axleft=axleft, axright=axright, axinoculum=axinoculum, 
-        axwhole=axwhole, figlabelleft='E', figlabelright='F', figlabelinoculum='D')
-
-
-    fig.subplots_adjust(right=0.68, wspace=0.31, hspace=0.38, left=0.08)
-
-def data_figure_side_by_side(HEALTHY, fig, axleft, axright, axinoculum, axwhole, figlabelleft=None,
-    figlabelright=None, figlabelinoculum=None, make_legend=False):
-    '''Dada summarization figure for the paper
-    '''
-    global DATA_FIGURE_COLORS
-    global XKCD_COLORS_IDX
-    
-    TAXLEVEL = 'family'
-
-    taxidx = TAXLEVEL_REV_IDX[TAXLEVEL]
-    upper_tax = TAXLEVEL_INTS[taxidx+1]
-    lower_tax = TAXLEVEL_INTS[taxidx]
-
-    DTYPE = 'abs'
-    # if not HEALTHY:
-    #     CUTOFF_FRAC_ABUNDANCE = 0.001
-    # else:
-    CUTOFF_FRAC_ABUNDANCE = 0.01
-
-    subjset = loaddata(healthy=HEALTHY)
-
-    # Make the data frame
-    df = None
-    times = []
-    for subj in subjset:
-        times = np.append(times, subj.times)
-    times = np.sort(np.unique(times))
-    t2idx = {}
-    for i,t in enumerate(times):
-        t2idx[t] = i
-    times_cnts = np.zeros(len(times))
-        
-    # Aggregate at a taxonomic level and average over all of the subjects
-    df = None
-    # for subj in [subjset.iloc(1)]:
-    for subj in subjset:
-        dfnew = subj.cluster_by_taxlevel(dtype=DTYPE, lca=False, taxlevel=TAXLEVEL, 
-            index_formatter='%({})s %({})s'.format(upper_tax, lower_tax), smart_unspec=False)
-        df, times_cnts = _add_unequal_col_dataframes(df=df, dfother=dfnew, times=times, 
-            times_cnts=times_cnts, t2idx=t2idx)
-        print('name', subj.name)
-    df = df / times_cnts
-
-    # Only plot the OTUs that have a totol percent abundance over a threshold
-    if CUTOFF_FRAC_ABUNDANCE is not None:
-        df = _get_top(df, cutoff_frac_abundance=CUTOFF_FRAC_ABUNDANCE, 
-            taxlevel=TAXLEVEL)
-
-    # Plot
-    labels = np.asarray(list(df.index))
-    labels = labels[::-1]
-    matrix = df.values
-    matrix = np.flipud(matrix)
-    times = np.asarray(list(df.columns))
-
-    # transform the indicies for the perturbations (we're in index space not time space)
-    for perturbation in subj.perturbations:
-        start_t = perturbation.start
-        end_t = perturbation.end
-
-        startidx = np.searchsorted(times, start_t)
-        endidx = np.searchsorted(times, end_t)
-        perturbation.start = startidx - 0.5
-        perturbation.end = endidx + 0.5        
-
-    # Plot on every axis
-    for ix, ax in enumerate([axleft, axright]):
-
-        # Create a stacked bar chart
-        offset = np.zeros(matrix.shape[1])
-        # colors = sns.xkcd_palette(colors=XKCD_COLORS)
-        # colors = sns.color_palette('muted')
-
-        for row in range(matrix.shape[0]):
-            label = labels[row]
-            if label in DATA_FIGURE_COLORS:
-                color = DATA_FIGURE_COLORS[label]
-            else:
-                color = XKCD_COLORS[XKCD_COLORS_IDX]
-                XKCD_COLORS_IDX += 1
-                DATA_FIGURE_COLORS[label] = color
-            ax.bar(np.arange(len(times)), matrix[row,:], bottom=offset, color=color, label=label,
-                width=1)
-            offset = offset + matrix[row,:]
-
-        # Set ylims
-        if ix == 1:
-            ax.set_ylim(bottom=0, top=5e10)  
-
-        # Color in perturbations, only set label for the top
-        pl.visualization.shade_in_perturbations(ax, perturbations=subjset.perturbations, textsize=10, 
-            alpha=0)
-        for perturbation in subjset.perturbations:
-            ax.axvline(x=perturbation.start, color='black', linestyle='--', lw=2)
-            ax.axvline(x=perturbation.end, color='black', linestyle='--', linewidth=2)
-
-        # Set y ticks
-
-        # Set X ticks
-        l = np.arange(len(times), step=10)
-        ax.set_xticks(ticks=l)
-        ax.set_xticklabels(labels=times[l], fontsize=13, fontweight='bold')
-
-        ax.set_ylabel('CFUs/g', size=13, fontweight='bold')
-
-    # # Make breakpoints between top and middle axes
-    # d = .005  # how big to make the diagonal lines in axes coordinates
-    # # arguments to pass to plot, just so we don't keep repeating them
-    # kwargs = dict(transform=axtop.transAxes, color='k', clip_on=False)
-    # axtop.plot((-d, +d), (-d, +d), **kwargs)        # top-left diagonal
-    # axtop.plot((1 - d, 1 + d), (-d, +d), **kwargs)  # top-right diagonal
-
-    # Make lines for perturbations
-    axwhole.set_xlim(axleft.get_xlim())
-
-    if figlabelleft is not None:
-        axleft.text(x = 0, y= 1.05,
-            s=figlabelleft, fontsize=20, fontweight='bold',
-            transform=axleft.transAxes)
-    if figlabelright is not None:
-        axright.text(x = 0, y= 1.05,
-            s=figlabelright, fontsize=20, fontweight='bold',
-            transform=axright.transAxes)
-    if figlabelinoculum is not None:
-        axinoculum.text(x = 0, y= 1.05,
-            s=figlabelinoculum, fontsize=20, fontweight='bold',
-            transform=axinoculum.transAxes)
-    # Set titles
-    if DTYPE == 'abs':
-        label = 'CFUs/g'
-    elif DTYPE == 'rel':
-        label = 'Relative Abundance'
-    else:
-        label = 'Counts'
-    axleft.set_xlabel('Time (d)', size=15, fontweight='bold', va='center', labelpad=-0.1, 
-        transform=axleft.transAxes)
-    axright.set_xlabel('Time (d)', size=15, fontweight='bold', va='center', labelpad=-0.1, 
-        transform=axleft.transAxes)
-    
-    if HEALTHY:
-        title = 'Healthy'
-    else:
-        title = 'Ulcerative Colitis'
-
-    axwhole.text(x = 0.5, y= 1.15,
-        s=title, fontsize=25, fontweight='bold',
-        transform=axwhole.transAxes)
-
-    # axwhole.set_title(title, fontsize=25, fontweight='bold', pad=5, 
-    #     transform=axwhole.transAxes)
-
-    mark_inset(parent_axes=axleft, inset_axes=axright, loc1a=2, loc1b=1, 
-        loc2a=3, loc2b=4, fc='none', ec='crimson')
-    axright.spines['top'].set_color('crimson')
-    axright.spines['bottom'].set_color('crimson')
-    axright.spines['left'].set_color('crimson')
-    axright.spines['right'].set_color('crimson')
-    axright.tick_params(axis='both', color='crimson')
-
-    # Make the Inoculum
-    inoculum_subjset = loadinoculum()
-    if HEALTHY:
-        inoculum = inoculum_subjset['healthy']
-    else:
-        inoculum = inoculum_subjset['ulcerative colitis']
-
-    # print(inoculum.df()['raw'].head())
-
-    df = inoculum.cluster_by_taxlevel(dtype='raw', lca=False, taxlevel=TAXLEVEL,
-        index_formatter='%({})s %({})s'.format(upper_tax, lower_tax), smart_unspec=False)
-
-    # print(df.head())
-    # print('cutoff abund', CUTOFF_FRAC_ABUNDANCE)
-
-    df = _get_top(df, cutoff_frac_abundance=CUTOFF_FRAC_ABUNDANCE, 
-        taxlevel=TAXLEVEL)
-
-    matrix = df.to_numpy()
-    matrix = np.flipud(matrix)
-    matrix = matrix / np.sum(matrix)
-    labels = np.asarray(list(df.index))
-    labels = labels[::-1]
-
-    offset = 0
-    for row in range(matrix.shape[0]):
-        label = labels[row]
-        if label in DATA_FIGURE_COLORS:
-            color = DATA_FIGURE_COLORS[label]
-        else:
-            color = XKCD_COLORS[XKCD_COLORS_IDX]
-            XKCD_COLORS_IDX += 1
-            DATA_FIGURE_COLORS[label] = color
-        axinoculum.bar([0], matrix[row], bottom=[offset], label=labels, width=1, color=color)
-        offset += matrix[row,0]
-    axinoculum.set_ylabel('Relative Abundance', size=13, fontweight='bold')
-    axinoculum.xaxis.set_major_locator(plt.NullLocator())
-    axinoculum.xaxis.set_minor_locator(plt.NullLocator())
-
-    # plt.savefig(BASEPATH + 'datafigure_healthy{}_{}.pdf'.format(HEALTHY, TAXLEVEL))
-
-    # plt.show()
-    if make_legend:
-        # Last one is the one that aggregates the rest of the taxonomies
-        # axwhole = fig.add_subplot(111, facecolor='none')
-
-        labels = list(DATA_FIGURE_COLORS.keys())
-        labels.sort()
-
-        print(labels)
-
-        # Put aggregate last
-        last_label = None
-        for label in labels:
-            if len(label.split(' ')) > 2:
-                last_label = label
-                break
-        if last_label is None:
-            raise ValueError('mer sauce')
-        labels.remove(last_label)
-        labels.append(last_label)
-
-        ims = []
-        for label in labels:
-            im, = axwhole.bar([0],[0],color=DATA_FIGURE_COLORS[label], label=label)
-            ims.append(im)
-
-        extra = Rectangle((0, 0), 1, 1, fc="w", fill=False, edgecolor='none', linewidth=0)
-        legend_handle = [extra]
-        legend_handle = legend_handle + ims
-        extra_col = [extra]*(len(ims)+1)
-        legend_handle = legend_handle + extra_col + extra_col
-        
-
-        empty_label = ''
-        legend_labels = [empty_label]* (len(ims)+1) + ['$\\bf{' + upper_tax.capitalize() + '}$']
-        for label in labels[:-1]:
-            l1,_ = label.split(' ')
-            if l1 == 'nan':
-                l1 = 'Uncultured'
-            legend_labels = legend_labels + [l1.capitalize()]
-        legend_labels = legend_labels + ['Other < {}%'.format(CUTOFF_FRAC_ABUNDANCE*100)]
-        legend_labels = legend_labels + ['$\\bf{' + lower_tax.capitalize() + '}$']
-        for label in labels[:-1]:
-            _,l2 = label.split(' ')
-            if l2 == 'nan':
-                l2 = ''
-            legend_labels = legend_labels + [l2.capitalize()]
-
-        axwhole.legend(legend_handle, legend_labels, ncol=3, loc='upper left', 
-            bbox_to_anchor=(1.02, 1), fontsize=12)
-    axwhole.spines['top'].set_visible(False)
-    axwhole.spines['bottom'].set_visible(False)
-    axwhole.spines['left'].set_visible(False)
-    axwhole.spines['right'].set_visible(False)
-    axwhole.xaxis.set_major_locator(plt.NullLocator())
-    axwhole.xaxis.set_minor_locator(plt.NullLocator())
-    axwhole.yaxis.set_major_locator(plt.NullLocator())
-    axwhole.yaxis.set_minor_locator(plt.NullLocator())
-
-def _sum_qpcr(healthy):
-    subjset = loaddata(healthy)
-    qpcr = {}
-
-    for subj in subjset.times:
-        for t in subj.times:
-            if t not in qpcr:
-                qpcr[t] = []
-            qpcr[t].append(subj.qpcr[t].mean())
-
-    times = np.asarray(list(qpcr.keys()))
-    qpcr = np.asarray(list(qpcr.values()))
-
-    idxs = np.argsort(times)
-
-    times= times[idxs]
-    qpcr = qpcr[idxs]
-    return times, qpcr
-
-def _make_full_df(HEALTHY, TAXLEVEL, CUTOFF_FRAC_ABUNDANCE):
-    subjset = loaddata(HEALTHY)
-    # Make the data frame
-    taxidx = TAXLEVEL_REV_IDX[TAXLEVEL]
-    upper_tax = TAXLEVEL_INTS[taxidx+1]
-    lower_tax = TAXLEVEL_INTS[taxidx]
-
-    df = None
-    times = []
-    for subj in subjset:
-        times = np.append(times, subj.times)
-    times = np.sort(np.unique(times))
-    t2idx = {}
-    for i,t in enumerate(times):
-        t2idx[t] = i
-    times_cnts = np.zeros(len(times))
-
-    for subj in subjset:
-        dfnew = subj.cluster_by_taxlevel(dtype='abs', lca=False, taxlevel=TAXLEVEL, 
-            index_formatter='%({})s %({})s'.format(upper_tax, lower_tax), smart_unspec=False)
-        df, times_cnts = _add_unequal_col_dataframes(df=df, dfother=dfnew, times=times, 
-            times_cnts=times_cnts, t2idx=t2idx)
-        print('name', subj.name)
-    df = df / df.sum(axis=0)
-
-    # Only plot the OTUs that have a totol percent abundance over a threshold
-    if CUTOFF_FRAC_ABUNDANCE is not None:
-        df = _get_top(df, cutoff_frac_abundance=CUTOFF_FRAC_ABUNDANCE, taxlevel=TAXLEVEL)
-
-    return df
-
 def data_figure_rel_and_qpcr(horizontal):
     '''Plot the relative abundance and the qpcr plot above it
     '''
@@ -2066,19 +1550,22 @@ def data_figure_rel_and_qpcr(horizontal):
     global XKCD_COLORS_IDX
 
     # Make the dataframs for healthy and unhealthy
-    df_healthy = _make_full_df(True, TAXLEVEL, CUTOFF_FRAC_ABUNDANCE)
-    df_unhealthy = _make_full_df(False, TAXLEVEL, CUTOFF_FRAC_ABUNDANCE)
+    df_healthy, asvname_map_healthy = _make_full_df(True, TAXLEVEL, CUTOFF_FRAC_ABUNDANCE)
+    df_unhealthy, asvname_map_unhealthy = _make_full_df(False, TAXLEVEL, CUTOFF_FRAC_ABUNDANCE)
 
     # Set the colors from most to least abundant - only consider healthy
     M = df_healthy.to_numpy()
     a = np.sum(M, axis=1)
     idxs = np.argsort(a)[::-1] # reverse the indexes so it goes from largest to smallest
 
+    asvname_map_keys = list(asvname_map_healthy.keys())
+    print('Label, beginning')
     for idx in idxs:
         label = df_healthy.index[idx]
         color = XKCD_COLORS[XKCD_COLORS_IDX]
         XKCD_COLORS_IDX += 1
         DATA_FIGURE_COLORS[label] = color
+        print(label)
 
     if horizontal:
         fig = plt.figure(figsize=(34,12))
@@ -2105,8 +1592,8 @@ def data_figure_rel_and_qpcr(horizontal):
         df=df_healthy, CUTOFF_FRAC_ABUNDANCE=CUTOFF_FRAC_ABUNDANCE,
         axqpcr=axqpcr1, axrel=axrel1, axpert=axpert1,
         axinoculum=axinoculum1, make_ylabels=True,
-        figlabelinoculum='C', figlabelqpcr='B', figlabelrel='D',
-        make_legend=False)
+        figlabelinoculum='D', figlabelqpcr='B', figlabelrel='E',
+        make_legend=False, asvname_map=asvname_map_healthy)
 
     if horizontal:
         axqpcr2 = fig.add_subplot(gs[2:4,17*squeeze:30*squeeze])
@@ -2123,8 +1610,8 @@ def data_figure_rel_and_qpcr(horizontal):
         df=df_unhealthy, CUTOFF_FRAC_ABUNDANCE=CUTOFF_FRAC_ABUNDANCE,
         axqpcr=axqpcr2, axrel=axrel2, axpert=axpert2,
         axinoculum=axinoculum2, make_ylabels=True,
-        figlabelinoculum='F', figlabelqpcr='E', figlabelrel='G',
-        make_legend=False)
+        figlabelinoculum='F', figlabelqpcr='C', figlabelrel='G',
+        make_legend=False, asvname_map=asvname_map_unhealthy)
 
     # Set the same max and min value for the qpcr measurements
     max_qpcr_value = np.max([max_qpcr_value1, max_qpcr_value2])
@@ -2143,8 +1630,9 @@ def data_figure_rel_and_qpcr(horizontal):
 
     # Make animation at the top
     if horizontal:
-        axanimation = fig.add_subplot(gs[0, 5*squeeze:35*squeeze], facecolor='none')
-        _data_figure_experiment_animation(ax=axanimation, figlabel='A')
+        axanimation = fig.add_subplot(gs[0, 7*squeeze:35*squeeze], facecolor='none')
+        axfigures = fig.add_subplot(gs[0, :], facecolor='none')
+        _data_figure_experiment_animation(ax=axanimation, axfigures=axfigures, figlabel='A')
 
 
     # Make the legend
@@ -2183,7 +1671,7 @@ def data_figure_rel_and_qpcr(horizontal):
     plt.savefig(BASEPATH + 'datafigure_rel_horizonal{}.png'.format(horizontal))
     plt.close()
 
-def _data_figure_experiment_animation(ax, figlabel):
+def _data_figure_experiment_animation(ax, axfigures, figlabel):
     subjset_real = pl.base.SubjectSet.load(DATAPATH)
     times = []
     for subj in subjset_real:
@@ -2201,6 +1689,18 @@ def _data_figure_experiment_animation(ax, figlabel):
     ax.xaxis.set_minor_locator(plt.NullLocator())
     ax.yaxis.set_major_locator(plt.NullLocator())
     ax.yaxis.set_minor_locator(plt.NullLocator())
+
+    axfigures.spines['top'].set_visible(False)
+    axfigures.spines['bottom'].set_visible(False)
+    axfigures.spines['left'].set_visible(False)
+    axfigures.spines['right'].set_visible(False)
+    axfigures.xaxis.set_major_locator(plt.NullLocator())
+    axfigures.xaxis.set_minor_locator(plt.NullLocator())
+    axfigures.yaxis.set_major_locator(plt.NullLocator())
+    axfigures.yaxis.set_minor_locator(plt.NullLocator())
+    axfigures.set_xlim(0,1)
+    axfigures.set_ylim(0,1)
+
     markerline, stemlines, baseline = ax.stem(times, y, linefmt='none')
     baseline.set_color('black')
     markerline.set_color('black')
@@ -2240,13 +1740,14 @@ def _data_figure_experiment_animation(ax, figlabel):
         ax.barh(y=[0 for i in range(len(starts))], width=ends-starts, height=0.1, left=starts, color='darkgrey')
 
     ax.text(0, 0.17, 'Colonization', horizontalalignment='center', fontsize=28)
+
     # ax.arrow(0, 0.17, 0, -0.14, length_includes_head=True, head_width=0.25, head_length=0.05)
 
     # stool collection
     xpos = np.max(times)* 1.05
     y = 0.05
     ax.scatter([xpos], [y], c='black', s=25)
-    ax.text(xpos+1, y, 'Stool Collection', horizontalalignment='left', fontsize=28, 
+    ax.text(xpos+1, y, 'Fecal Sample Collection', horizontalalignment='left', fontsize=28, 
         verticalalignment='center')
 
     ax.set_ylim(-0.15,0.4)
@@ -2255,6 +1756,51 @@ def _data_figure_experiment_animation(ax, figlabel):
         ax.text(x=-0.02, y=1.02, s=figlabel, fontsize=30, fontweight='bold', 
             transform=ax.transAxes)
 
+    # Draw figures ontop of words
+    # ---------------------------
+    # Load man
+    arr_man = mpimg.imread('figures/man.jpg')
+    imagebox = OffsetImage(arr_man, zoom=1)
+    ab = AnnotationBbox(imagebox, (0, 0), pad=0, box_alignment=(0.5,0.2))
+    axfigures.add_artist(ab)
+
+    # Load poop
+    arr_poop = mpimg.imread('figures/poop.jpg')
+    imagebox = OffsetImage(arr_poop, zoom=1)
+    ab = AnnotationBbox(imagebox, (0.01, -0.0075), pad=0, box_alignment=(0,.45))
+    axfigures.add_artist(ab)
+
+    # Load arrow
+    arr_poop = mpimg.imread('figures/arrow.png')
+    imagebox = OffsetImage(arr_poop, zoom=0.4)
+    ab = AnnotationBbox(imagebox, (0.04, 0.5), pad=0, box_alignment=(0,.45))
+    axfigures.add_artist(ab)
+    axfigures.text(s='fmt', x=0.045, y=0.8, fontsize=25, zorder=500)
+
+    # Load mouse
+    arr_poop = mpimg.imread('figures/mouse.jpg')
+    imagebox = OffsetImage(arr_poop, zoom=0.3)
+    ab = AnnotationBbox(imagebox, (0.07, 0.4), pad=0, box_alignment=(0,.45))
+    axfigures.add_artist(ab)
+
+    # High fat diet
+    arr_poop = mpimg.imread('figures/pizza.png')
+    imagebox = OffsetImage(arr_poop, zoom=0.13)
+    ab = AnnotationBbox(imagebox, (0.435, 1), pad=0, box_alignment=(0,0))
+    axfigures.add_artist(ab)
+
+    # Vancomycin
+    arr_poop = mpimg.imread('figures/needle.png')
+    imagebox = OffsetImage(arr_poop, zoom=0.13)
+    ab = AnnotationBbox(imagebox, (0.56, 1), pad=0, box_alignment=(0,0))
+    axfigures.add_artist(ab)
+
+    # Gentamicin
+    arr_poop = mpimg.imread('figures/needle.png')
+    imagebox = OffsetImage(arr_poop, zoom=0.13)
+    ab = AnnotationBbox(imagebox, (0.70, 1), pad=0, box_alignment=(0,0))
+    axfigures.add_artist(ab)
+
     return ax
 
 def _data_figure_rel_and_qpcr_legend(axlegend, TAXLEVEL, CUTOFF_FRAC_ABUNDANCE):
@@ -2262,9 +1808,15 @@ def _data_figure_rel_and_qpcr_legend(axlegend, TAXLEVEL, CUTOFF_FRAC_ABUNDANCE):
     upper_tax = TAXLEVEL_INTS[taxidx+1]
     lower_tax = TAXLEVEL_INTS[taxidx]
 
+    print('TAXLEVEL', TAXLEVEL)
+    print(taxidx)
+    print(upper_tax)
+    print(lower_tax)
+
     # Last one is the one that aggregates the rest of the taxonomies
     labels = list(DATA_FIGURE_COLORS.keys())
     labels.sort()
+    print('here')
     print(labels)
 
     # Put aggregate last if it is there
@@ -2318,9 +1870,9 @@ def _data_figure_rel_and_qpcr_legend(axlegend, TAXLEVEL, CUTOFF_FRAC_ABUNDANCE):
     axlegend.yaxis.set_minor_locator(plt.NullLocator())
 
 def _data_figure_rel_and_qpcr(HEALTHY, TAXLEVEL, df, CUTOFF_FRAC_ABUNDANCE, axqpcr, 
-    axrel, axpert, axinoculum, figlabelinoculum=None, figlabelqpcr=None,
+    axrel, axpert, axinoculum, asvname_map, figlabelinoculum=None, figlabelqpcr=None,
     figlabelrel=None, make_legend=False, make_ylabels=True):
-    '''Dada summarization figure for the paper
+    '''Data summarization figure for the paper
     '''
     global DATA_FIGURE_COLORS
     global XKCD_COLORS_IDX
@@ -2337,6 +1889,8 @@ def _data_figure_rel_and_qpcr(HEALTHY, TAXLEVEL, df, CUTOFF_FRAC_ABUNDANCE, axqp
     matrix = np.flipud(matrix)
     times = np.asarray(list(df.columns))
 
+    print('Plot healthy', HEALTHY)
+    print(labels)
     print(times)
 
     # transform the indicies for the perturbations (we're in index space not time space)
@@ -2413,10 +1967,11 @@ def _data_figure_rel_and_qpcr(HEALTHY, TAXLEVEL, df, CUTOFF_FRAC_ABUNDANCE, axqp
         inoculum = inoculum_subjset['ulcerative colitis']
 
     # print(inoculum.df()['raw'].head())
-    df = inoculum.cluster_by_taxlevel(dtype='raw', lca=False, taxlevel=TAXLEVEL,
+    print('Inoculum')
+    df, asvname_map_inoc = inoculum.cluster_by_taxlevel(dtype='raw', lca=False, taxlevel=TAXLEVEL,
         index_formatter='%({})s %({})s'.format(upper_tax, lower_tax), smart_unspec=False)
     df = _get_top(df, cutoff_frac_abundance=CUTOFF_FRAC_ABUNDANCE, 
-        taxlevel=TAXLEVEL)
+        taxlevel=TAXLEVEL, asvname_map=asvname_map_inoc)
 
     matrix = df.to_numpy()
     matrix = np.flipud(matrix)
@@ -2453,9 +2008,9 @@ def _data_figure_rel_and_qpcr(HEALTHY, TAXLEVEL, df, CUTOFF_FRAC_ABUNDANCE, axqp
     
     
     if HEALTHY:
-        title = 'Healthy Consortium'
+        title = 'Healthy Cohort'
     else:
-        title = 'Ulcerative Colitis Consortium'
+        title = 'Ulcerative Colitis Cohort'
     axqpcr.set_title(title, fontsize=30, fontweight='bold', y=1.3)
         # transform=axqpcr.transAxes)
 
@@ -2480,6 +2035,56 @@ def _data_figure_rel_and_qpcr(HEALTHY, TAXLEVEL, df, CUTOFF_FRAC_ABUNDANCE, axqp
             transform=axrel.transAxes)
 
     return max_qpcr_value
+
+def _sum_qpcr(healthy):
+    subjset = loaddata(healthy)
+    qpcr = {}
+
+    for subj in subjset.times:
+        for t in subj.times:
+            if t not in qpcr:
+                qpcr[t] = []
+            qpcr[t].append(subj.qpcr[t].mean())
+
+    times = np.asarray(list(qpcr.keys()))
+    qpcr = np.asarray(list(qpcr.values()))
+
+    idxs = np.argsort(times)
+
+    times= times[idxs]
+    qpcr = qpcr[idxs]
+    return times, qpcr
+
+def _make_full_df(HEALTHY, TAXLEVEL, CUTOFF_FRAC_ABUNDANCE):
+    subjset = loaddata(HEALTHY)
+    # Make the data frame
+    taxidx = TAXLEVEL_REV_IDX[TAXLEVEL]
+    upper_tax = TAXLEVEL_INTS[taxidx+1]
+    lower_tax = TAXLEVEL_INTS[taxidx]
+
+    df = None
+    times = []
+    for subj in subjset:
+        times = np.append(times, subj.times)
+    times = np.sort(np.unique(times))
+    t2idx = {}
+    for i,t in enumerate(times):
+        t2idx[t] = i
+    times_cnts = np.zeros(len(times))
+
+    for subj in subjset:
+        dfnew, asvname_map = subj.cluster_by_taxlevel(dtype='abs', lca=False, taxlevel=TAXLEVEL, 
+            index_formatter='%({})s %({})s'.format(upper_tax, lower_tax), smart_unspec=False)
+        df, times_cnts = _add_unequal_col_dataframes(df=df, dfother=dfnew, times=times, 
+            times_cnts=times_cnts, t2idx=t2idx)
+
+    df = df / df.sum(axis=0)
+
+    # Only plot the OTUs that have a totol percent abundance over a threshold
+    if CUTOFF_FRAC_ABUNDANCE is not None:
+        df = _get_top(df, cutoff_frac_abundance=CUTOFF_FRAC_ABUNDANCE, taxlevel=TAXLEVEL)
+
+    return df, asvname_map
 
 
 # Species Heatmap
@@ -3069,6 +2674,72 @@ def model_performance_benchmark_figure():
     plt.savefig(BASEPATH + 'model_performance_benchmark.png')
     plt.close()
 
+# Time lookahead predictive performance
+def time_lookahead_figure():
+
+    def _subplot(ax, df, title):
+        
+        
+        ax = sns.boxplot(data=df, x='Lookahead', y='Error', hue='Model', ax=ax)
+        ax.set_yscale('log')
+        ax.set_ylabel('')
+        ax.set_xlabel('')
+
+        for tick in ax.xaxis.get_major_ticks():
+            tick.label.set_fontsize(14)
+        for tick in ax.yaxis.get_major_ticks():
+            tick.label.set_fontsize(14)
+
+        ax.set_title(title, fontsize=15)
+        
+        return ax
+
+
+    path = 'results/time_lookahead_all_models.tsv'
+    df = pd.read_csv(path, sep='\t', index_col=0)    
+    fig = plt.figure(figsize=(10,10))
+    
+
+    # Only get days 1,3,5,7
+    lookaheads = df['Lookahead'].to_numpy()
+    rows = []
+    for row in range(len(lookaheads)):
+        if lookaheads[row] in [1,3,5,7]:
+            rows.append(row)
+    df = df.iloc[rows, :]
+
+    axhealthy = fig.add_subplot(2,1,1)
+    dfhealthy = df[df['Dataset'] == 'Healthy']
+    axhealthy = _subplot(axhealthy, dfhealthy, title='Healthy')
+
+    axhealthy.get_legend().remove()
+    axhealthy.legend(fontsize=15, bbox_to_anchor=(1., 1))
+
+    axuc = fig.add_subplot(2,1,2)
+    dfuc = df[df['Dataset'] == 'Ulcerative Colitis']
+    auc = _subplot(axuc, dfuc, title='Ulcerative Colitis')
+    axuc.get_legend().remove()
+
+    ax = fig.add_subplot(111, facecolor='none')
+    ax.spines['top'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.xaxis.set_major_locator(plt.NullLocator())
+    ax.xaxis.set_minor_locator(plt.NullLocator())
+    ax.yaxis.set_major_locator(plt.NullLocator())
+    ax.yaxis.set_minor_locator(plt.NullLocator())
+    
+    ax.text(s='Time Look Ahead (Days)', fontsize=15,
+        x=0.35, y=-0.075, transform=ax.transAxes)
+    ax.text(s='Relative RMSE', fontsize=15,
+        x=-0.125, y=0.5, transform=ax.transAxes, rotation='vertical')
+    fig.suptitle('Held Out Time Look Ahead Predictive Performance\non Ulcerative Colitis and Healthy Dataset',
+        fontsize=20, fontweight='bold')
+    fig.subplots_adjust(right=0.75, left=0.11, bottom=0.12, top=0.87, hspace=0.225)
+    plt.show()
+
+
 os.makedirs('output_figures/', exist_ok=True)
 # Alpha diversity
 # alpha_diversity_mean_std()
@@ -3077,7 +2748,7 @@ os.makedirs('output_figures/', exist_ok=True)
 # beta_diversity_figure()
 
 # Data figure
-# data_figure_rel_and_qpcr(horizontal=True)
+data_figure_rel_and_qpcr(horizontal=True)
 
 # Species heatmap
 # species_heatmap()
@@ -3088,7 +2759,7 @@ os.makedirs('output_figures/', exist_ok=True)
 
 # Phylogenetic heatmap
 # phylogenetic_heatmap(False)
-phylogenetic_heatmap_side_by_side()
+# phylogenetic_heatmap_side_by_side()
 
 # Semi-synthetic benchmarking
 # semi_synthetic_benchmark_figure()
@@ -3096,6 +2767,5 @@ phylogenetic_heatmap_side_by_side()
 # Model performance benchmarking
 # model_performance_benchmark_figure()
 
-
-
-
+# Time lookahead
+# time_lookahead_figure()
