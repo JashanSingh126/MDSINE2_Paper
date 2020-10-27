@@ -1142,7 +1142,121 @@ class SyntheticData(pl.Saveable):
                 ret_subjset.add_perturbation(perturbation.start, perturbation.end)
         return ret_subjset
 
-    def simulateRealRegressionDataNegBinMD(self, a0, a1, qpcr_noise_scale, subjset, replicates='all'):
+    def simulate_reads(self, a0, a1, read_depth):
+        '''This function converts the synthetic trajectories into "real" data
+        by simulating read counts and qPCR measurements. We base the sampling
+        on parameters that we learn from the real data (MouseSet `subjset`). We assume
+        that the real data has already been filtered.
+
+        Simulating count data
+        ---------------------
+        We first fit the read depth for each day (`r_k`) from a negative binomial from the 
+        read depth of our data (`subjset`) using function minimization. We then use `r_k`, 
+        `a_0`, and `a_1` with the relative abundances to sample from a negative binomial 
+        distirbution. We then use the relative abundances from this sample as the concentrations
+        for a multinomial distribution with read depth `r_k`.
+
+        Parameters
+        ----------
+        subjset : pl.SubjectSet
+            This is the real data that we are fitting to
+        a0, a1 : numeric
+            These are the negative binomial dispersion parameters that we are using to 
+            simulate the data
+        '''
+        if not np.all(pl.itercheck([a0, a1], pl.isnumeric)):
+            raise TypeError('`a0` ({}) and `a1` ({}) must be numerics'.format(
+                type(a0), type(a1)))
+        if a0 < 0 or a1 < 0:
+            raise ValueError('`a0` ({}) and `a1` ({}) must be > 0'.format(a0, a1))
+        
+        # Make data, record the data with noise
+        n_time_points = 0
+        for times in self.times:
+            n_time_points += len(times)
+
+        ret_subjset = pl.SubjectSet(asvs=self.asvs)
+        data = self.data
+        times = self.times
+        for ridx in np.arange(self.n_replicates):
+            mid = str(ridx)
+            ret_subjset.add(name=mid)
+            # self.data_w_noise.append(np.zeros(shape=data[ridx].shape,dtype=float))
+
+            for tidx in range(len(times[ridx])):
+                # make time id
+                t = times[ridx][tidx]
+
+                # Sample counts
+                sum_abund = np.sum(data[ridx][:,tidx])
+                rel = data[ridx][:,tidx] / sum_abund
+
+                phi = read_depth * rel
+                eps = a0 / rel + a1
+
+                reads = pl.random.negative_binomial.sample(phi, eps)
+                # concentration = reads/np.sum(reads)
+                # ret_subjset[mid].reads[t] = scipy.stats.multinomial.rvs(
+                #     r_k, concentration).ravel()
+                ret_subjset[mid].reads[t] = reads
+
+            ret_subjset[mid].times = times[ridx]
+        
+        # Add in the perturbations
+        if self.dynamics.perturbations is not None:
+            for perturbation in self.dynamics.perturbations:
+                ret_subjset.add_perturbation(perturbation.start, perturbation.end)
+        self.subjset_with_noise = ret_subjset
+
+    def simulate_qpcr(self, qpcr_noise_scale):
+        '''This function converts the synthetic trajectories into "real" data
+        by simulating read counts and qPCR measurements. We base the sampling
+        on parameters that we learn from the real data (MouseSet `subjset`). We assume
+        that the real data has already been filtered.
+
+        We assume that the function `simulate_reads`
+
+        Simulating qPCR measurements
+        ----------------------------
+        We simulate the qPCR measurements with a lognormal distribution that was
+        fitted using the data from `subjset`. We use this parameterization to sample
+        a qPCR measurement with mean from the total biomass of the simulated data.
+
+        Parameters
+        ----------
+        qpcr_noise_scale : numeric
+            This is the parameter to scale the `s` parameter learned by the lognormal
+            distribution.
+        '''
+        if not pl.isnumeric(qpcr_noise_scale):
+            raise TypeError('`qpcr_noise_scale` ({}) must either be a float or an int'.format(
+                type(qpcr_noise_scale)))
+        elif qpcr_noise_scale < 0:
+            raise ValueError('`qpcr_noise_scale` ({}) must be greater than 0'.format(
+                qpcr_noise_scale))
+
+        for ridx in np.arange(self.n_replicates):
+            mid = str(ridx)
+            subj = self.subjset_with_noise[mid]
+
+            for tidx, t in enumerate(self.times[ridx]):
+                
+                # Sample qPCR
+                sum_abund = np.sum(self.data[ridx][:,tidx])
+                triplicates = np.exp(np.log(sum_abund) + qpcr_noise_scale * pl.random.normal.sample(size=3))
+                subj.qpcr[t] = pl.qPCRdata(
+                    cfus=triplicates, mass=1., dilution_factor=1.)
+
+    def get_subjset(self):
+        '''Return the subjectset with the noise
+
+        Returns
+        -------
+        pylab.base.SubjectSet
+        '''
+        return self.subjset_with_noise
+
+    def simulateRealRegressionDataNegBinMD(self, a0, a1, qpcr_noise_scale, subjset, replicates='all', read_depth=None):
         '''This function converts the synthetic trajectories into "real" data
         by simulating read counts and qPCR measurements. We base the sampling
         on parameters that we learn from the real data (MouseSet `subjset`). We assume
@@ -1190,11 +1304,6 @@ class SyntheticData(pl.Saveable):
         elif not pl.issubjectset(subjset):
             raise TypeError('`subjset` ({}) must be a pylab.base.SubjsetSet'.format( 
                 type(subjset)))
-        if not np.all(pl.itercheck([a0, a1], pl.isnumeric)):
-            raise TypeError('`a0` ({}) and `a1` ({}) must be numerics'.format(
-                type(a0), type(a1)))
-        if a0 < 0 or a1 < 0:
-            raise ValueError('`a0` ({}) and `a1` ({}) must be > 0'.format(a0, a1))
         if not pl.isnumeric(qpcr_noise_scale):
             raise TypeError('`qpcr_noise_scale` ({}) must either be a float or an int'.format(
                 type(qpcr_noise_scale)))
@@ -1231,12 +1340,13 @@ class SyntheticData(pl.Saveable):
         logging.info('lognormal s: {}'.format(std_biomass))
 
         # Fit read depth with negative binomial
-        read_depths = np.asarray([])
-        for subj in subjset:
-            read_depths = np.append(read_depths, subj.read_depth())
-        n_pred, p_pred = _fit_nbinom(read_depths)
-        logging.info('negbin n: {}, p: {}'.format(n_pred, p_pred))
-        negbin_read_depth = scipy.stats.nbinom(n_pred, p_pred)
+        if read_depth is None:
+            read_depths = np.asarray([])
+            for subj in subjset:
+                read_depths = np.append(read_depths, subj.read_depth())
+            n_pred, p_pred = _fit_nbinom(read_depths)
+            logging.info('negbin n: {}, p: {}'.format(n_pred, p_pred))
+            negbin_read_depth = scipy.stats.nbinom(n_pred, p_pred)
 
         # Make data, record the data with noise
         n_time_points = 0
@@ -1258,7 +1368,10 @@ class SyntheticData(pl.Saveable):
                 # Sample counts
                 sum_abund = np.sum(data[ridx][:,tidx])
                 rel = data[ridx][:,tidx] / sum_abund
-                r_k = negbin_read_depth.rvs()
+                if read_depth is None:
+                    r_k = negbin_read_depth.rvs()
+                else:
+                    r_k = read_depth
 
                 phi = r_k * rel
                 eps = a0 / rel + a1

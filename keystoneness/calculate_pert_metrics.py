@@ -23,23 +23,49 @@ import time
 import argparse
 import re
 
+import pylab as pl
+
+import matplotlib.pyplot as plt
+
 logging.basicConfig(level=logging.INFO)
 
-def mean_absolute_maximum_deviation(trajectories, baseline, start_idx, end_idx):
-    '''Return the mean maximum deviation from the baseline.
-    We calculate this over each ASV trajectory in each gibb step and then we
-    return the mean over all of those at the end. 
+def max_L2_deviation(trajectories, baseline, start_idx, end_idx):
+    '''
+    Mean_gibb(max_t(L2(stability, deviation)))
 
     Parameters
     ----------
     trajectories, baseline : np.ndarray(n_asvs, n_times)
     '''
-    trajectories = trajectories[:, start_idx:end_idx]
-    baseline = baseline[:, start_idx:end_idx]
-    diff = np.absolute(trajectories-baseline)
+    # print(trajectories.shape)
+    # print(baseline.shape)
 
-    max_diff = np.nanmax(diff, axis=1)
-    return np.nanmean(max_diff)
+    baseline = baseline[:trajectories.shape[0], ...]
+
+    trajectories = trajectories[:,:,start_idx:end_idx]
+    baseline = baseline[:,:,start_idx:end_idx]
+
+    # [gibb, time]
+    maxval = 1e13
+    keep = []
+    for gibbstep in range(trajectories.shape[0]):
+        nanmaxtraj = np.nanmax(trajectories[gibbstep])
+        nanmaxbase = np.nanmax(baseline[gibbstep])
+        if nanmaxtraj >= maxval or nanmaxbase >= maxval:
+            continue
+        keep.append(gibbstep)
+    # print(keep)
+    trajectories = trajectories[keep]
+    baseline = baseline[keep]
+    
+    # s = 0
+    # for i in range(inner.shape[1]):
+    #     if np.nansum(inner[])
+    L2_over_time = np.sqrt(np.nansum(np.square(trajectories - baseline), axis=1))
+    maxdiff = np.nanmean(np.max(L2_over_time, axis=1))
+    # mean_max_diff = np.nanmean(diff)
+
+    return maxdiff
 
 def time_return_to_baseline(baseline, end_pert_idx, trajectories, dt, thresh):
     '''Return the mean amount of time it takes for the trajectory to return to the baseline
@@ -59,24 +85,59 @@ def time_return_to_baseline(baseline, end_pert_idx, trajectories, dt, thresh):
         threshold it should be within
         Example: 0.01 ~ must be within 99% of the baseline
     '''
-    trajectories = trajectories[:,end_pert_idx:]
-    baseline = baseline.reshape(baseline.shape[0], 1)
+    # print('time return to baseline')
+    baseline = baseline[:trajectories.shape[0], ...]
+    trajectories = trajectories[:,:,end_pert_idx:]
 
-    diff = np.absolute(trajectories - baseline) / baseline
+    maxval = 1e13
+    keep = []
+    for gibbstep in range(trajectories.shape[0]):
+        nanmaxtraj = np.nanmax(trajectories[gibbstep])
+        nanmaxbase = np.nanmax(baseline[gibbstep])
+        if nanmaxtraj >= maxval or nanmaxbase >= maxval:
+            continue
+        keep.append(gibbstep)
+    # print(keep)
+    trajectories = trajectories[keep]
+    baseline = baseline[keep]
+    baseline = baseline.reshape(trajectories.shape[0], trajectories.shape[1], 1)
+
+    diff = np.absolute(trajectories-baseline)/baseline
+
+    # print(diff)
+    # print(diff.shape)
+
+    # baseline = baseline.reshape(-1,1)
+
+    # print(trajectories.shape)
+    # print(baseline.shape)
+
+    # diff = np.absolute(trajectories - baseline) / baseline
+    # print('diff')
+    # print(diff.shape)
+    # print(diff)
     low_thresh = 1 - thresh
     high_thresh = 1 + thresh
 
-    ret = np.zeros(len(baseline))*np.nan
-    # For each asv
-    for i in range(diff.shape[0]):
-        # for each timepoint
-        if np.isnan(diff[i,0]):
-            continue
-        for j in range(diff.shape[1]):
-            if diff[i,j] >= low_thresh and diff[i,j] <= high_thresh:
-                break
-        ret[i] = j*dt
-    return np.nanmean(ret)
+    ret = np.zeros(diff.shape[0])*np.nan
+    # for each Gibb step
+    for gibbstep in range(diff.shape[0]):
+        temp = np.zeros(diff.shape[1])*np.nan
+        # For each asv
+        for aidx in range(diff.shape[1]):
+            # Get the max time
+
+            if np.any(np.isnan(diff[gibbstep,aidx,0])):
+                continue
+            for j in range(diff.shape[2]):
+                if diff[gibbstep, aidx,j] >= low_thresh and diff[gibbstep, aidx,j] <= high_thresh:
+                    break
+            temp[aidx] = j*dt
+        ret[gibbstep] = np.nanmax(temp)
+
+    a = np.nanmean(ret)
+    print(a)
+    return a
     
 
 if __name__ == '__main__':
@@ -84,6 +145,8 @@ if __name__ == '__main__':
     parser.add_argument('--basepath', type=str, dest='basepath',
         help='This is the path that holds the numpy arrays returned by ' \
         '`keystoneness.keystoneness_perturbation_single`.')
+    parser.add_argument('--outfile', type=str, dest='outfile',
+        help='WHere to save the output')
     parser.add_argument('--pert-start', type=float, dest='pert_start',
         help='This is the timepoint the perturbation started at')
     parser.add_argument('--pert-end', type=float, dest='pert_end',
@@ -97,8 +160,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    columns = ['Perturbation', 'Mean Maximum Deviation', 'Return to Baseline (5%)', 
-        'Return to Baseline (3%)', 'Return to Baseline (1%)']
+    columns = ['Perturbation', 'Maximum L2 Deviation (CFUs/g)', 'Return to Baseline (5%) (days)', 
+        'Return to Baseline (3%) (days)', 'Return to Baseline (1%) (days)']
     index = []
 
     basepath = args.basepath
@@ -112,63 +175,71 @@ if __name__ == '__main__':
     pre_pert_idx = idx_start-1
 
     baselines = []
+    print('loading baseline')
     for pidx in range(len(subjset.perturbations)):
         temp_baseline_path = basepath+'base_{}'.format(pidx)
-        arr = []
+        arrs = []
         nfiles = len(os.listdir(temp_baseline_path))
         for fn in range(nfiles):
-            temp = np.load(temp_baseline_path + 'arr{}.npy'.format(fn))
-            arr = np.append(arr, temp)
+            temp = np.load(temp_baseline_path + '/arr{}.npy'.format(fn))
+            arrs.append(temp)
+        arr = np.asarray(arrs)
         baselines.append(arr)
 
 
     get_loidx = re.compile(r'^leave_out(\d+)_pert\d+')
     get_pidx = re.compile(r'^leave_out\d+_pert(\d+)')
 
-    f = open(args.leave_out_tale, 'r')
+    f = open(args.leave_out_table, 'r')
     leave_out_table = f.read()
     f.close()
     leave_out_table = leave_out_table.split('\n')
 
     data = []
     onlydirs = [f for f in os.listdir(basepath) if os.path.isdir(basepath+f)]
-    for dirname in onlydirs:
+    for idir, dirname in enumerate(onlydirs):
         if 'base' in dirname:
             continue
 
-        loidx = get_loidx.findall(dirname)[0]
-        pidx = get_pidx.findall(dirname)[0]
+        print('on', dirname)
+
+        loidx = int(get_loidx.findall(dirname)[0])
+        pidx = int(get_pidx.findall(dirname)[0])
 
         left_out = tuple(leave_out_table[loidx].split(','))
-        pert_name = subjset.pertubrations[pidx].name
+        pert_name = subjset.perturbations[pidx].name
 
         baseline = baselines[pidx]
 
         trajs = []
         temp_traj_basepath = basepath + dirname + '/'
-        fn = len([f for f in os.listdir(temp_traj_basepath) if os.path.isfil(temp_traj_basepath+f)])
+        fn = len([f for f in os.listdir(temp_traj_basepath) if os.path.isfile(temp_traj_basepath+f)])
         for i in range(fn):
-            temp = np.load(temp_traj_basepath + 'arr{}.npy'.format(i))
-            trajs = np.append(trajs, temp)
+            temp = np.load(temp_traj_basepath + '/arr{}.npy'.format(i))
+            trajs.append(temp)
+        trajs = np.asarray(trajs)
+        print('traj shape', trajs.shape)
 
-        max_deviation = mean_absolute_maximum_deviation(
+        max_deviation = max_L2_deviation(
             trajectories=trajs, baseline=baseline, start_idx=idx_start, 
             end_idx=idx_end)
 
+        print(max_deviation)
+
         retbase5 = time_return_to_baseline(
-            baseline=baseline[:, pre_pert_idx], 
+            baseline=baseline[:, :, pre_pert_idx], 
             end_pert_idx=idx_end, 
             trajectories=trajs, 
             dt=args.dt, thresh=0.05)
 
         retbase3 = time_return_to_baseline(
-            baseline=baseline[:, pre_pert_idx], 
+            baseline=baseline[:, :, pre_pert_idx], 
             end_pert_idx=idx_end, 
             trajectories=trajs, 
             dt=args.dt, thresh=0.03)
 
         retbase1 = time_return_to_baseline(
-            baseline=baseline[:, pre_pert_idx], 
+            baseline=baseline[:, :, pre_pert_idx], 
             end_pert_idx=idx_end, 
             trajectories=trajs, 
             dt=args.dt, thresh=0.01)
@@ -176,8 +247,13 @@ if __name__ == '__main__':
         data.append([pert_name, max_deviation, retbase5, retbase3, retbase1])
         index.append(left_out)
 
+        # if idir == 30:
+        #     break
+
     df = pd.DataFrame(data, columns=columns, index=index)
-    fname
+    print(df)
+    df.to_csv(args.outfile, sep='\t')
+    # fname
 
     
 

@@ -71,32 +71,134 @@ subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
 
 
-paths = [
-    'time_look_ahead/output/Healthy_subject2/error.tsv',
-    'time_look_ahead/output/Healthy_subject3/error.tsv',
-    'time_look_ahead/output/Healthy_subject4/error.tsv',
-    'time_look_ahead/output/Healthy_subject5/error.tsv',
-    'time_look_ahead/output/UC_subject6/error.tsv',
-    'time_look_ahead/output/UC_subject7/error.tsv',
-    'time_look_ahead/output/UC_subject8/error.tsv',
-    'time_look_ahead/output/UC_subject9/error.tsv',
-    'time_look_ahead/output/UC_subject10/error.tsv',
-    'time_look_ahead/output/time_lookahead_other_models.tsv']
 
-dfmaster = None
-for path in paths:
-    print(path)
-    df = pd.read_csv(path, sep='\t')
-    print(df.shape)
-    if dfmaster is None:
-        dfmaster = df
-    else:
-        dfmaster = dfmaster.append(df)
+os.makedirs('tmp/', exist_ok=True)
 
-print(dfmaster)
-dfmaster.to_csv('results/time_lookahead_all_models.tsv', sep='\t')
+pvs = [0.05, 0.1]
+mns = [0.05, 0.1, 0.25, 0.4, 0.5 ]
+
+fmt = 'semi_synthetic/output/trail_base_data/subjset_ds0_nNone_pv{pv}_mn{mn}_nr4_nt55_usFalse_exact{exact}.pkl'
+basepath = 'tmp/newtrajs/'
+os.makedirs(basepath, exist_ok=True)
+
+asvnames = ['OTU_0', 'OTU_1', 'OTU_10', 'OTU_20', 'OTU_34', 'OTU_60', 'OTU_80', 'OTU_93']
+
+subjset = pl.SubjectSet.load(fmt.format(pv=pvs[0], mn=mns[0], exact=True))
+times = subjset.iloc(0).times
+asvs = subjset.asvs
+
+Ms = {}
+
+for pv in pvs:
+    for mn in mns:
+        for exact in [False, True]:
+            path = fmt.format(pv=pv, mn=mn, exact=exact)
+            subj = pl.SubjectSet.load(path).iloc(0)
+            Ms[path] = subj.matrix()['abs']
+
+for pv in pvs:
+    pvpath = basepath + 'pv{}/'.format(pv)
+    os.makedirs(pvpath, exist_ok=True)
+    for asvname in asvnames:
+
+        aidx = asvs[asvname].idx
+        exactM = Ms[fmt.format(pv=pv, mn=mns[0], exact=True)]
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.set_yscale('log')
+        ax.set_title(asvname)
+        ax.plot(times, exactM[aidx, :], label='Truth')
+
+        for mn in mns:
+            tempM = Ms[fmt.format(pv=pv, mn=mn, exact=False)]
+            ax.plot(times, tempM[aidx, :], label=str(mn))
+
+        ax.legend()
+        plt.savefig(pvpath + asvname + '.pdf')
+        plt.close()
 
 sys.exit()
+
+
+def _relRMSE(y, y_pred):
+    err = []
+    for col in range(y.shape[1]):
+        yp = y[:, col]
+        ypt = y_pred[:, col]
+        err.append(np.sqrt(np.square(yp/yp.sum() - ypt/ypt.sum()).mean()))
+    return np.nanmean(err)
+
+
+paths = {
+    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out0/validation/': 'Healthy',
+    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out1/validation/': 'Healthy',
+    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out2/validation/': 'Healthy',
+    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out3/validation/': 'Healthy',
+
+    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out0/validation/': 'Ulcerative Colitis',
+    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out1/validation/': 'Ulcerative Colitis',
+    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out2/validation/': 'Ulcerative Colitis',
+    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out3/validation/': 'Ulcerative Colitis',
+    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out4/validation/': 'Ulcerative Colitis'}
+
+data = []
+
+for path in paths:
+    dset = paths[path]
+    print(path)
+    results = metrics.Metrics.load(path+'results.pkl')
+    subjname = list(results.results.keys())[0]
+    simtype = list(results.results[subjname].keys())[0]
+    results = results.results[subjname][simtype]
+    
+    truth = results['subj-traj']
+    pred = results['pred-traj']
+
+    subj_times = results['subj-times']
+    pred_times = results['pred-times']
+
+    cols = []
+    for t in subj_times:
+        idx = np.searchsorted(pred_times, t)
+        cols.append(idx)
+
+    pred = pred[:, cols]
+
+    err = _relRMSE(y=truth, y_pred=pred)
+    data.append([dset, 'MDSINE2', 0, "full", err, 'relRMSE'])
+    print(err)
+
+sys.exit()
+
+
+
+# paths = [
+#     'time_look_ahead/output/Healthy_subject2/error.tsv',
+#     'time_look_ahead/output/Healthy_subject3/error.tsv',
+#     'time_look_ahead/output/Healthy_subject4/error.tsv',
+#     'time_look_ahead/output/Healthy_subject5/error.tsv',
+#     'time_look_ahead/output/UC_subject6/error.tsv',
+#     'time_look_ahead/output/UC_subject7/error.tsv',
+#     'time_look_ahead/output/UC_subject8/error.tsv',
+#     'time_look_ahead/output/UC_subject9/error.tsv',
+#     'time_look_ahead/output/UC_subject10/error.tsv',
+#     'time_look_ahead/output/time_lookahead_other_models.tsv']
+
+# dfmaster = None
+# for path in paths:
+#     print(path)
+#     df = pd.read_csv(path, sep='\t')
+#     print(df.shape)
+#     if dfmaster is None:
+#         dfmaster = df
+#     else:
+#         dfmaster = dfmaster.append(df)
+
+# print(dfmaster)
+# dfmaster.to_csv('results/time_lookahead_all_models.tsv', sep='\t')
+
+# sys.exit()
 
 # paths = [
 #     'output_real/runs/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
