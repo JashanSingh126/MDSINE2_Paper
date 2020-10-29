@@ -457,7 +457,7 @@ def _make_cluster_membership_heatmap(chainname, ax, order, binary, fig, make_col
     ax.set_xticklabels(labels=xticklabels)
     for i, tick in enumerate(ax.xaxis.get_major_ticks()):
         tick.label.set_rotation(90)
-        tick.label.set_fontsize(15)
+        tick.label.set_fontsize(25)
         # tick.label.set_horizontalalignment('right')
     
     # Make grid
@@ -526,15 +526,15 @@ def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig, m
     if make_colorbar:
         cbaxes = fig.add_axes([0.92, 0.5, 0.02, 0.1]) # left, bottom, width, height
         cbar = plt.colorbar(im, cax=cbaxes, orientation='vertical', ticks=[-5,-2.5,0,2.5,5])
-        cbar.ax.set_yticklabels(['<-5', '-2.5', '0', '2.5', '>5'], fontsize=15)
-        cbar.ax.set_title('Perturbation\nEffect', fontsize=18, fontweight='bold')
+        cbar.ax.set_yticklabels(['<-5', '-2.5', '0', '2.5', '>5'], fontsize=22)
+        cbar.ax.set_title('Perturbation\nEffect', fontsize=22, fontweight='bold')
 
     if render_labels:
         ax.set_yticks(np.arange(len(subjset.perturbations)), minor=False)
         ax.set_yticklabels(list(df.index))
         for tick in ax.yaxis.get_major_ticks():
             tick.label.set_rotation(0)
-            tick.label.set_fontsize(25)
+            tick.label.set_fontsize(30)
     else:
         ax.set_yticks([])
 
@@ -545,10 +545,11 @@ def _make_phylogenetic_tree(treename, names, asvs, ax, fig, healthy, side_by_sid
     tree = ete3.Tree(treename)
     tree.prune(names, True)
     tree.write(outfile='tmp/temp.nhx')
-    fontsize=15.9
+    fontsize=16.5
 
     taxonomies = ['family', 'order', 'class', 'phylum', 'kingdom']
-    suffix_taxa = {'family': '*', 'order': '**', 'class': '***', 'phylum': '****', 'kingdom': '*****'}
+    suffix_taxa = {'genus': '*',
+        'family': '**', 'order': '***', 'class': '****', 'phylum': '*****', 'kingdom': '******'}
     extra_taxa_added = set([])
 
     tree = Phylo.read('tmp/temp.nhx', format='newick')
@@ -571,6 +572,8 @@ def _make_phylogenetic_tree(treename, names, asvs, ax, fig, healthy, side_by_sid
                 elif len(l) >= 3:
                     spec = '/'.join(l[:2])
                     asvname = asvname + ' {}'.format(spec)
+            else:
+                suffix = suffix_taxa['genus']
         else:
             found = False
             for taxa in taxonomies:
@@ -597,7 +600,7 @@ def _make_phylogenetic_tree(treename, names, asvs, ax, fig, healthy, side_by_sid
 
     # Make the taxnonmic key on the right hand side
     text = '$\\bf{Taxonomy} \\bf{Key}$\n'
-    for taxa in taxonomies:
+    for taxa in suffix_taxa:
         text += '{} - {}\n'.format(suffix_taxa[taxa], taxa)
     if side_by_side is not None:
         if not side_by_side:
@@ -677,28 +680,28 @@ def phylogenetic_heatmap_side_by_side():
 
     fig = plt.figure(figsize=(30,45))
     gs = fig.add_gridspec(17,21)
-    ax_phyl_healthy = fig.add_subplot(gs[3+1:,:3])
-    ax_clus_healthy = fig.add_subplot(gs[3+1:,9:14])
-    ax_pert_healthy = fig.add_subplot(gs[3+0,9:14])
+    ax_phyl_healthy = fig.add_subplot(gs[2+1:,:4])
+    ax_clus_healthy = fig.add_subplot(gs[2+1:,9:15])
+    ax_pert_healthy = fig.add_subplot(gs[2+0,9:15])
 
-    ax_clus_uc = fig.add_subplot(gs[3+1:,15:20])
-    ax_pert_uc = fig.add_subplot(gs[3+0,15:20])
+    ax_clus_uc = fig.add_subplot(gs[2+1:,15:20])
+    ax_pert_uc = fig.add_subplot(gs[2+0,15:20])
 
-    ax_network_healthy = fig.add_subplot(gs[0:3, 9:14], zorder=-50)
-    ax_network_uc = fig.add_subplot(gs[0:3, 15:20], zorder=-50)
+    ax_network_healthy = fig.add_subplot(gs[0:2, 9:14], zorder=-50)
+    ax_network_uc = fig.add_subplot(gs[0:2, 15:20], zorder=-50)
 
     arr_man = mpimg.imread('figures/hairball_network_healthy.jpg')
-    imagebox = OffsetImage(arr_man, zoom=0.2)
+    imagebox = OffsetImage(arr_man, zoom=0.13)
     ab = AnnotationBbox(imagebox, (0.5, 0.475), pad=0, box_alignment=(0.5,0.5))
     ax_network_healthy.add_artist(ab)
-    ax_network_healthy.text(x=-0.1, y=0.9, s='A', fontsize=45, fontweight='bold',
+    ax_network_healthy.text(x=0, y=0.9, s='A', fontsize=45, fontweight='bold',
         transform=ax_network_healthy.transAxes)
 
     arr_man = mpimg.imread('figures/hairball_network_uc.jpg')
-    imagebox = OffsetImage(arr_man, zoom=0.2)
+    imagebox = OffsetImage(arr_man, zoom=0.13)
     ab = AnnotationBbox(imagebox, (0.5, 0.475), pad=0, box_alignment=(0.5,0.5))
     ax_network_uc.add_artist(ab)
-    ax_network_uc.text(x=-0.1, y=0.9, s='B', fontsize=45, fontweight='bold',
+    ax_network_uc.text(x=0, y=0.9, s='B', fontsize=45, fontweight='bold',
         transform=ax_network_uc.transAxes)
 
     treename = 'raw_data/phylogenetic_tree_branch_len_preserved.nhx'
@@ -726,22 +729,22 @@ def phylogenetic_heatmap_side_by_side():
     ax_phyl_healthy.yaxis.set_minor_locator(plt.NullLocator())
     ax_phyl_healthy.set_xlabel('')
     ax_phyl_healthy.set_ylabel('')
-    ax_pert_healthy.set_title('Healthy Cohort', fontsize=30)
-    ax_pert_healthy.text(x=-0.1, y=1.05, s='D', fontsize=45, fontweight='bold', 
+    ax_network_healthy.set_title('Healthy Cohort', fontsize=40)
+    ax_pert_healthy.text(x=0, y=1.05, s='D', fontsize=45, fontweight='bold', 
         transform=ax_pert_healthy.transAxes)
 
-    ax_pert_uc.set_title('Ulcerative Colitis Cohort', fontsize=30)
+    ax_network_uc.set_title('Ulcerative Colitis Cohort', fontsize=40)
 
     # UC
     ax_clus_uc, colorder = _make_cluster_membership_heatmap(chainname=chainnameuc, ax=ax_clus_uc, 
         order=order, binary=False, fig=fig)
     ax_pert_uc = _make_perturbation_heatmap(chainname=chainnameuc, min_bayes_factor=10, 
         ax=ax_pert_uc, colorder=colorder, fig=fig, render_labels=False)
-    ax_pert_uc.text(x=-0.1, y=1.05, s='E', fontsize=45, fontweight='bold', 
+    ax_pert_uc.text(x=0, y=1.05, s='E', fontsize=45, fontweight='bold', 
         transform=ax_pert_uc.transAxes)
 
-    fig.subplots_adjust(wspace=0.20, left=0.02, right=0.92, hspace=0.01,
-        top=.99, bottom=0.03)
+    fig.subplots_adjust(wspace=0.2, left=0.02, right=0.92, hspace=0.05,
+        top=.98, bottom=0.02)
 
     # fig.suptitle('Test', fontsize=30)
 
@@ -768,7 +771,6 @@ def phylogenetic_heatmap_side_by_side():
     ax_network_uc.set_ylabel('')
 
     plt.savefig(BASEPATH + 'phylo_clustering_heatmap_side_by_side_RDP_alignment.pdf')
-    plt.savefig(BASEPATH + 'phylo_clustering_heatmap_side_by_side_RDP_alignment.png')
     plt.close()
 
 
@@ -1089,7 +1091,6 @@ def alpha_diversity_mean_std(ax=None, figlabel=None):
         # tick.label.set_fontweight('bold')
 
     # Set the labels
-    ax.set_title('Normalized Entropy', size=15, fontsize=35, fontweight='bold')
     ax.set_ylabel('nat', size=20, fontweight='bold')
     ax.set_xlabel('Time (days)', size=20, fontweight='bold')
 
@@ -1175,8 +1176,8 @@ def beta_diversity_figure(axleft=None, axright=None, axcenter=None, figlabel=Non
 
     if axleft is None:
         fig = plt.figure(figsize=(16,7))
-        axright = fig.add_subplot(122)
-        axleft = fig.add_subplot(121)
+        axright = fig.add_subplot(121)
+        axleft = fig.add_subplot(122)
 
     colors = sns.color_palette('muted')
     colorshealthy = colors[0]
@@ -1334,16 +1335,15 @@ def beta_diversity_figure(axleft=None, axright=None, axcenter=None, figlabel=Non
         fontsize=17, title_fontsize=18)
     axcenter.add_artist(lgnd3)
 
-    axcenter.set_title('Bray-Curtis Similarity', fontsize=35, fontweight='bold', y=1.08)
     axcenter.set_xlabel('PC1: {:.3f}'.format(bc_pcoa.proportion_explained[0]),
         fontsize=20, fontweight='bold')
     axcenter.xaxis.set_label_coords(0.5,-0.08)
 
-    axleft.set_ylabel('PC2: {:.3f}'.format(bc_pcoa.proportion_explained[1]),
+    axright.set_ylabel('PC2: {:.3f}'.format(bc_pcoa.proportion_explained[1]),
         fontsize=20, fontweight='bold')
 
-    mark_inset(parent_axes=axright, inset_axes=axleft, loc1a=1, loc1b=2, 
-        loc2a=4, loc2b=3, fc='none', ec='crimson')
+    mark_inset(parent_axes=axright, inset_axes=axleft, loc1a=2, loc1b=1, 
+        loc2a=3, loc2b=4, fc='none', ec='crimson')
     axleft.spines['top'].set_color('crimson')
     axleft.spines['bottom'].set_color('crimson')
     axleft.spines['left'].set_color('crimson')
@@ -2861,8 +2861,21 @@ def _interactions(chain, healthy):
     subjset = chain.graph.data.subjects
     asvs = subjset.asvs
     interactions = chain.graph[names.STRNAMES.INTERACTIONS_OBJ]
+    bayes_factors = interactions.generate_bayes_factors_posthoc(
+        prior=chain.graph[names.STRNAMES.CLUSTER_INTERACTION_INDICATOR].prior,
+        section='posterior')
     interactions = pl.variables.summary(interactions, only='mean', section='posterior',
         set_nan_to_0=True)['mean']
+    self_interactions = chain.graph[names.STRNAMES.SELF_INTERACTION_VALUE]
+    self_interactions = pl.variables.summary(self_interactions, only='mean', section='posterior')['mean']
+    self_interactions = -np.absolute(self_interactions)
+
+    
+
+    for i in range(interactions.shape[0]):
+        for j in range(interactions.shape[1]):
+            if bayes_factors[i,j] < 10:
+                interactions[i,j] = 0
     
     # Get the asv order (same as coclustering)
     if healthy:
@@ -2881,7 +2894,6 @@ def _interactions(chain, healthy):
     ylabels = []
     reorder = []
     for aidx, asvname in enumerate(order):
-        print(asvname)
         asv = asvs[asvname]
         reorder.append(asv.idx)
         if asv.tax_is_defined('species'):
@@ -2924,6 +2936,8 @@ def _interactions(chain, healthy):
         label = label.replace('_', ' ')
         ylabels.append(label)
 
+    for i in range(interactions.shape[0]):
+        interactions[i,i] = self_interactions[i]
     interactions = interactions[reorder, :]
     interactions = interactions[:, reorder]
 
@@ -2934,7 +2948,7 @@ def _interactions(chain, healthy):
         interactions[i,i] = np.nan
     maxval = np.nanmax(np.absolute(interactions))
     im = ax.imshow(interactions, cmap='RdBu', aspect='auto',
-        norm=mcolors.SymLogNorm(linthresh=10, linscale=1e-12, vmax=maxval,
+        norm=mcolors.SymLogNorm(linthresh=1e-14, linscale=1, vmax=maxval,
             vmin=-maxval))
 
     xticks = np.arange(len(asvs), step=2, dtype=int)
@@ -3073,8 +3087,8 @@ os.makedirs('output_figures/', exist_ok=True)
 # species_heatmap()
 
 # Preprocess filtering
-preprocess_filtering(True)
-preprocess_filtering(False)
+# preprocess_filtering(True)
+# preprocess_filtering(False)
 
 # Phylogenetic heatmap
 # phylogenetic_heatmap(False)

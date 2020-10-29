@@ -630,7 +630,7 @@ class FilteringLogMP(pl.graph.Node):
                 perts.append(perturbation.item_array().reshape(-1,1))
             perts = np.hstack(perts)
 
-        zero_inflation = [self.G[REPRNAMES.ZERO_INFLATION].value[ridx] for ridx in range(self.G.data.n_replicates)]
+        # zero_inflation = [self.G[REPRNAMES.ZERO_INFLATION].value[ridx] for ridx in range(self.G.data.n_replicates)]
         qpcr_vars = []
         for aaa in self.G[REPRNAMES.QPCR_VARIANCES].value:
             qpcr_vars.append(aaa.value)
@@ -638,7 +638,7 @@ class FilteringLogMP(pl.graph.Node):
         
         kwargs = {'growth':growth, 'self_interactions':self_interactions,
             'pv':pv, 'interactions':interactions, 'perturbations':perts, 
-            'zero_inflation_data': zero_inflation, 'qpcr_variances':qpcr_vars}
+            'zero_inflation_data': None, 'qpcr_variances':qpcr_vars}
 
         str_acc = [None]*self.G.data.n_replicates
         if self.mp == 'debug':
@@ -649,8 +649,8 @@ class FilteringLogMP(pl.graph.Node):
                 str_acc[ridx] = '{:.3f}'.format(acc_rate)
 
         else:
-            raise NotImplementedError('Multiprocessing for filtering with zero inflation ' \
-                'is not implemented')
+            # raise NotImplementedError('Multiprocessing for filtering with zero inflation ' \
+            #     'is not implemented')
             ret = self.pool.map(func='persistent_run', args=kwargs)
             for ridx, x, acc_rate in ret:
                 self.x[ridx].value = x

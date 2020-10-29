@@ -29,7 +29,6 @@ import pickle
 import datetime 
 
 from multiprocessing import Pool
-
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.ticker as plticker
@@ -71,241 +70,295 @@ UC_SUBJECTS = ['6','7','8','9','10']
 
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
-# asvnames = ['ASV_95', 'ASV_229', 'ASV_243', 
-#     'ASV_260', 'ASV_325', 'ASV_330', 'ASV_331', 
-#     'ASV_356', 'ASV_363', 'ASV_393', 'ASV_397', 
-#     'ASV_403', 'ASV_480', 'ASV_483', 'ASV_528', 
-#     'ASV_530', 'ASV_540', 'ASV_550', 'ASV_591', 
-#     'ASV_650', 'ASV_717', 'ASV_737', 'ASV_803', 
-#     'ASV_863', 'ASV_868', 'ASV_896', 'ASV_983', 
-#     'ASV_1011', 'ASV_1028', 'ASV_1109', 'ASV_1127', 
-#     'ASV_1157', 'ASV_1181', 'ASV_1196', 'ASV_1220', 
-#     'ASV_1255', 'ASV_1324', 'ASV_1411', 'ASV_1413', 
-#     'ASV_1471', 'ASV_1477', 'ASV_1478', 'ASV_1542']
+xml_output = 'tmp/xml_output_speciesName.xml'
+newick_output = 'tmp/phylogenetic_tree_with_reference.nhx'
 
-# Ms = [subj.matrix()['abs'] for subj in subjset_real]
-# basepath = 'tmp/plot_asvs/'
-# os.makedirs(basepath, exist_ok=True)
-
-# for asvname in asvnames:
-#     print(asvname)
-#     asv = subjset_real.asvs[asvname]
-#     fig = plt.figure(figsize=(10,10))
-#     for sidx, subj in enumerate(subjset_real):
-#         ax = fig.add_subplot(3,3,sidx+1)
-#         ax.set_title('Subject {}'.format(subj.name))
-#         ax.plot(subj.times, Ms[sidx][asv.idx, :], marker='x')
-#         ax.set_yscale('log')
-#     fig.suptitle(pl.asvname_formatter(asv=asv, asvs=subjset_real.asvs,
-#         format='%(name)s: %(order)s, %(family)s'))
-
-#     plt.savefig(basepath + asv.name + 'pdf')
+# Phylo.convert(xml_output, 'phyloxml', newick_output, 'newick')
 
 
-
-os.makedirs('tmp/', exist_ok=True)
-
-pvs = [0.05, 0.1]
-mns = [0.05, 0.1, 0.25, 0.4, 0.5 ]
-
-fmt = 'semi_synthetic/output/trail_base_data/subjset_ds0_nNone_pv{pv}_mn{mn}_nr4_nt55_usFalse_exact{exact}.pkl'
-basepath = 'tmp/newtrajs/'
-os.makedirs(basepath, exist_ok=True)
-
-asvnames = ['OTU_0', 'OTU_1', 'OTU_10', 'OTU_20', 'OTU_34', 'OTU_60', 'OTU_80', 'OTU_93']
-
-subjset = pl.SubjectSet.load(fmt.format(pv=pvs[0], mn=mns[0], exact=True))
-times = subjset.iloc(0).times
-asvs = subjset.asvs
-
-Ms = {}
-
-for pv in pvs:
-    for mn in mns:
-        for exact in [False, True]:
-            path = fmt.format(pv=pv, mn=mn, exact=exact)
-            subj = pl.SubjectSet.load(path).iloc(0)
-            Ms[path] = subj.matrix()['abs']
-
-for pv in pvs:
-    pvpath = basepath + 'pv{}/'.format(pv)
-    os.makedirs(pvpath, exist_ok=True)
-    for asvname in asvnames:
-
-        aidx = asvs[asvname].idx
-        exactM = Ms[fmt.format(pv=pv, mn=mns[0], exact=True)]
-
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.set_yscale('log')
-        ax.set_title(asvname)
-        ax.plot(times, exactM[aidx, :], label='Truth')
-
-        for mn in mns:
-            tempM = Ms[fmt.format(pv=pv, mn=mn, exact=False)]
-            ax.plot(times, tempM[aidx, :], label=str(mn))
-
-        ax.legend()
-        plt.savefig(pvpath + asvname + '.pdf')
-        plt.close()
-
-sys.exit()
+# sys.exit()
 
 
-def _relRMSE(y, y_pred):
-    err = []
-    for col in range(y.shape[1]):
-        yp = y[:, col]
-        ypt = y_pred[:, col]
-        err.append(np.sqrt(np.square(yp/yp.sum() - ypt/ypt.sum()).mean()))
-    return np.nanmean(err)
+# ####################################################
+# # Plot asvs
+# ####################################################
+# paths = {
+#     'uc': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'healthy': 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
+
+# for dset in paths:
+#     basepath = 'tmp/trajectories_{}/'.format(dset)
+#     os.makedirs(basepath, exist_ok=True)
+#     mcmc = pl.inference.BaseMCMC.load(paths[dset])
+#     subjset = mcmc.graph.data.subjects
+
+#     Ms = [subj.matrix()['abs'] for subj in subjset]
+
+#     for asv in subjset.asvs:
+#         print(asv.name)
+#         fig = plt.figure(figsize=(20,10))
+
+#         fig.suptitle(MDSINE2_util.asvname_for_paper(asv=asv, asvs=subjset.asvs),fontsize=30)
+
+#         for sidx, subj in enumerate(subjset):
+#             if len(subjset) == 4:
+#                 pos = (2,2,sidx+1)
+#             else:
+#                 pos = (2,3,sidx+1)
+#             ax = fig.add_subplot(*pos)
+
+#             ax.plot(subj.times, Ms[sidx][asv.idx, :], marker='x', markersize=8)
+#             ax.set_yscale('log')
+#             pl.visualization.shade_in_perturbations(ax=ax, perturbations=subjset.perturbations)
+#             ax.set_title('Subject {}'.format(subj.name), fontsize=20)
+
+#         ax = fig.add_subplot(111, facecolor='none')
+#         ax.spines['top'].set_visible(False)
+#         ax.spines['bottom'].set_visible(False)
+#         ax.spines['left'].set_visible(False)
+#         ax.spines['right'].set_visible(False)
+#         ax.xaxis.set_major_locator(plt.NullLocator())
+#         ax.xaxis.set_minor_locator(plt.NullLocator())
+#         ax.yaxis.set_major_locator(plt.NullLocator())
+#         ax.yaxis.set_minor_locator(plt.NullLocator())
+        
+#         ax.text(x=0.5, y=-0.1, s='Time (days)', fontsize=20)
+#         ax.text(x=-0.1, y=0.5, s='CFUs/g', fontsize=20, rotation=90)
+
+#         ax.text(x=-0.15, y=-0.13, s='Taxonomic Key: * : Genus, ' \
+#             '** : Family, *** : Order, **** : Class, ***** : Phylum, ' \
+#             '****** : Kingdom', fontsize=16)
+        
+
+#         fig.subplots_adjust(top=0.85, hspace=.285)
+#         plt.savefig(basepath + asv.name + '.pdf')
+#         plt.close()
+# sys.exit()
+
+# ###################################################
+# # Save the stability vectors
+# ###################################################
+# paths = {
+#     'uc': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/',
+#     'healthy': 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/'}
+
+# for dset in paths:
+#     mcmc = pl.inference.BaseMCMC.load(paths[dset] + 'mcmc.pkl')
+#     interactions = mcmc.graph[names.STRNAMES.INTERACTIONS_OBJ]
+#     self_interactions = mcmc.graph[names.STRNAMES.SELF_INTERACTION_VALUE]
+#     growth = mcmc.graph[names.STRNAMES.GROWTH_VALUE]
+#     interactions = interactions.get_trace_from_disk(section='posterior')
+#     self_interactions = - np.absolute(self_interactions.get_trace_from_disk(section='posterior'))
+#     growth = growth.get_trace_from_disk(section='posterior')
+#     for i in range(self_interactions.shape[-1]):
+#         interactions[:, i, i] = self_interactions[:, i]
+#     interactions[np.isnan(interactions)] = 0
+#     ret = np.zeros(shape=growth.shape)
+#     for i in range(interactions.shape[0]):
+#         print('{}/{}'.format(i,interactions.shape[0]))
+#         a = -(np.linalg.pinv(interactions[i]) @ growth[i].reshape(-1,1)).ravel()
+#         # print(a)
+#         ret[i] = a
+#     np.save('tmp/{}_pinvAr.npy'.format(dset), ret)
+# sys.exit()
+
+# ####################################################
+# # Plot asvs with diff subjsets
+# ####################################################
+# os.makedirs('tmp/', exist_ok=True)
+
+# pvs = [0.05]
+# mns = [0.05, 0.2, 0.4]
+
+# for dset in ['new']: #, 'old']:
+
+#     fmt = 'semi_synthetic/output/trail_base_data_' + dset+'_a0_3/subjset_ds0_nNone_pv{pv}_mn{mn}_nr4_nt55_usFalse_exact{exact}.pkl'
+#     basepath = 'tmp/' + dset+'_new_a0_3/'
+#     os.makedirs(basepath, exist_ok=True)
+
+#     # asvnames = ['OTU_0', 'OTU_1', 'OTU_10', 'OTU_20', 'OTU_34', 'OTU_60', 'OTU_80', 'OTU_93',
+#     #     'OTU_120', 'OTU_100', 'OTU_112', 'OTU_127', 'OTU_150', 'OTU_161', 'OTU_209', 'OTU_244',
+#     #     'OTU_320']
+
+#     f = open(basepath + 'errors.txt', 'w')
+
+#     subjset = pl.SubjectSet.load(fmt.format(pv=pvs[0], mn=mns[0], exact=True))
+#     times = subjset.iloc(0).times
+#     asvs = subjset.asvs
+#     asvnames = asvs.names.order
+
+#     Ms = {}
+
+#     for pv in pvs:
+#         for mn in mns:
+#             for exact in [False, True]:
+#                 path = fmt.format(pv=pv, mn=mn, exact=exact)
+#                 subj = pl.SubjectSet.load(path).iloc(0)
+#                 Ms[path] = subj.matrix()['abs']
+
+#                 if not exact:
+#                     print(subj.read_depth())
+
+#     for pv in pvs:
+#         f.write('Process Variance {}\n'.format(pv))
+#         f.write('--------------------\n')
+#         f.write('Median Percent error')
+#         pvpath = basepath + 'pv{}/'.format(pv)
+#         os.makedirs(pvpath, exist_ok=True)
+
+#         d_err = {}
+#         d_n0 = {}
+#         for mn in mns:
+#             d_err[mn] = []
+#             d_n0[mn] = 0
+        
+
+#         for asvname in asvnames:
+#             print(asvname)
+#             f.write('{}\n'.format(asvname))
+
+#             aidx = asvs[asvname].idx
+#             exactM = Ms[fmt.format(pv=pv, mn=mns[0], exact=True)]
+
+#             fig = plt.figure()
+#             ax = fig.add_subplot(111)
+#             ax.set_yscale('log')
+#             ax.set_title(asvname)
+#             ax.plot(times, exactM[aidx, :], label='Truth')
+
+#             exact_traj = exactM[aidx, :]
+
+#             for mn in mns:
+#                 tempM = Ms[fmt.format(pv=pv, mn=mn, exact=False)]
+#                 ax.plot(times, tempM[aidx, :], label=str(mn))
+
+#                 noise_traj = tempM[aidx, :]
+#                 sss = []
+#                 for tidx in range(len(noise_traj)):
+#                     if exact_traj[tidx] > 0 and noise_traj[tidx] > 0:
+#                         sss.append((exact_traj[tidx] - noise_traj[tidx])/exact_traj[tidx])
+#                         d_n0[mn] += 1
+
+#                 perr = np.median(np.absolute(sss))
+#                 d_err[mn].append(perr)
+#                 f.write('\t{}: {}\n'.format(mn, perr))
+
+#             ax.legend()
+#             plt.savefig(pvpath + asvname + '.pdf')
+#             plt.close()
+        
+#         f.write('Median Percent error\n')
+#         for mn in mns:
+#             f.write('\t{}: {}\n'.format(mn, np.median(d_err[mn])))
+#         f.write('How many non zeros\n')
+#         for mn in mns:
+#             f.write('\t{}: {}\n'.format(mn, d_n0[mn]))
+
+#     f.close()
+
+# sys.exit()
 
 
-paths = {
-    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out0/validation/': 'Healthy',
-    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out1/validation/': 'Healthy',
-    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out2/validation/': 'Healthy',
-    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out3/validation/': 'Healthy',
+# ####################################################
+# # Calculate relative RMSE in the prediceted
+# ####################################################
 
-    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out0/validation/': 'Ulcerative Colitis',
-    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out1/validation/': 'Ulcerative Colitis',
-    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out2/validation/': 'Ulcerative Colitis',
-    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out3/validation/': 'Ulcerative Colitis',
-    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out4/validation/': 'Ulcerative Colitis'}
-
-data = []
-
-for path in paths:
-    dset = paths[path]
-    print(path)
-    results = metrics.Metrics.load(path+'results.pkl')
-    subjname = list(results.results.keys())[0]
-    simtype = list(results.results[subjname].keys())[0]
-    results = results.results[subjname][simtype]
-    
-    truth = results['subj-traj']
-    pred = results['pred-traj']
-
-    subj_times = results['subj-times']
-    pred_times = results['pred-times']
-
-    cols = []
-    for t in subj_times:
-        idx = np.searchsorted(pred_times, t)
-        cols.append(idx)
-
-    pred = pred[:, cols]
-
-    err = _relRMSE(y=truth, y_pred=pred)
-    data.append([dset, 'MDSINE2', 0, "full", err, 'relRMSE'])
-    print(err)
-
-sys.exit()
+# def _relRMSE(y, y_pred):
+#     err = []
+#     for col in range(y.shape[1]):
+#         yp = y[:, col]
+#         ypt = y_pred[:, col]
+#         err.append(np.sqrt(np.square(yp/yp.sum() - ypt/ypt.sum()).mean()))
+#     return np.nanmean(err)
 
 
+# paths = {
+#     'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out0/validation/': 'Healthy',
+#     'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out1/validation/': 'Healthy',
+#     'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out2/validation/': 'Healthy',
+#     'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out3/validation/': 'Healthy',
 
-# paths = [
-#     'time_look_ahead/output/Healthy_subject2/error.tsv',
-#     'time_look_ahead/output/Healthy_subject3/error.tsv',
-#     'time_look_ahead/output/Healthy_subject4/error.tsv',
-#     'time_look_ahead/output/Healthy_subject5/error.tsv',
-#     'time_look_ahead/output/UC_subject6/error.tsv',
-#     'time_look_ahead/output/UC_subject7/error.tsv',
-#     'time_look_ahead/output/UC_subject8/error.tsv',
-#     'time_look_ahead/output/UC_subject9/error.tsv',
-#     'time_look_ahead/output/UC_subject10/error.tsv',
-#     'time_look_ahead/output/time_lookahead_other_models.tsv']
+#     'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out0/validation/': 'Ulcerative Colitis',
+#     'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out1/validation/': 'Ulcerative Colitis',
+#     'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out2/validation/': 'Ulcerative Colitis',
+#     'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out3/validation/': 'Ulcerative Colitis',
+#     'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out4/validation/': 'Ulcerative Colitis'}
 
-# dfmaster = None
+# data = []
+
 # for path in paths:
+#     dset = paths[path]
 #     print(path)
-#     df = pd.read_csv(path, sep='\t')
-#     print(df.shape)
-#     if dfmaster is None:
-#         dfmaster = df
-#     else:
-#         dfmaster = dfmaster.append(df)
+#     results = metrics.Metrics.load(path+'results.pkl')
+#     subjname = list(results.results.keys())[0]
+#     simtype = list(results.results[subjname].keys())[0]
+#     results = results.results[subjname][simtype]
+    
+#     truth = results['subj-traj']
+#     pred = results['pred-traj']
 
-# print(dfmaster)
-# dfmaster.to_csv('results/time_lookahead_all_models.tsv', sep='\t')
+#     subj_times = results['subj-times']
+#     pred_times = results['pred-times']
+
+#     cols = []
+#     for t in subj_times:
+#         idx = np.searchsorted(pred_times, t)
+#         cols.append(idx)
+
+#     pred = pred[:, cols]
+
+#     err = _relRMSE(y=truth, y_pred=pred)
+#     data.append([dset, 'MDSINE2', 0, "full", err, 'relRMSE'])
+#     print(err)
 
 # sys.exit()
+
+# ####################################################
+# # Change names of asvs
+# ####################################################
 
 # paths = [
-#     'output_real/runs/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-#     'output_real/runs/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
-
-# f = open('keystoneness/output/UC/uc_asvs.txt', 'w')
-# mcmc = pl.inference.BaseMCMC.load(paths[0])
-# for iii, asv in enumerate(mcmc.graph.data.asvs):
-#     f.write('{}'.format(asv.name))
-#     if iii != len(mcmc.graph.data.asvs)-1:
-#         f.write('\n')
-# f.close()
-
-
-# sys.exit()
-
-# asvs_healthy = pl.inference.BaseMCMC.load(paths[1]).graph.data.asvs
-# asvs_uc = pl.inference.BaseMCMC.load(paths[0]).graph.data.asvs
-
-# n_shared = 0
-# for asv in asvs_healthy:
-#     if asv.name in asvs_uc.names:
-#         n_shared += 1
-
-# print(n_shared)
-# sys.exit()
-
-
-# asvs = subjset_real.asvs
-# asvs.save('tmp/asvset.pkl')
-# for asv in asvs:
-#     print(asv.name)
-# sys.exit()
-
-paths = [
-    'output_real/runs/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-    'output_real/runs/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/',
+#     'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/',
     
-    'output_real/runs/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-    'output_real/runs/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/',
+#     'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/']
+
+# newpaths = [
+#     'output_real/runs/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/',
+#     'output_real/runs/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/',
     
-    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out0/mcmc.pkl',
-    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out1/mcmc.pkl',
-    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out2/mcmc.pkl',
-    'output_real/pred/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out3/mcmc.pkl',
+#     'output_real/runs/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/',
+#     'output_real/runs/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/']
 
-    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out0/mcmc.pkl',
-    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out1/mcmc.pkl',
-    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out2/mcmc.pkl',
-    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out3/mcmc.pkl',
-    'output_real/pred/healthy0_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out4/mcmc.pkl']
+# for iii, path in enumerate(paths):
+#     print(path)
+#     mcmc = pl.inference.BaseMCMC.load(path + 'mcmc.pkl')
+#     # subjset = mcmc.graph.data.subjects
 
-for path in paths:
-    print(path)
-    mcmc = pl.inference.BaseMCMC.load(path)
-    subjset = mcmc.graph.data.subjects
+#     # for asv in (subjset.asvs):
+#     #     # print(asv.name)
+#     #     oldname = asv.name
+#     #     nname = int(oldname.replace('OTU_', ''))
+#     #     newname = 'ASV_{}'.format(nname+1)
 
-    # for asv in (subjset.asvs):
-    #     # print(asv.name)
-    #     oldname = asv.name
-    #     nname = int(oldname.replace('OTU_', ''))
-    #     newname = 'ASV_{}'.format(nname+1)
+#     #     asv.name = newname
+#     #     subjset.asvs.names.pop(oldname)
+#     #     subjset.asvs.names[newname] = asv
+#     #     subjset.asvs.names.update_order()
 
-    #     asv.name = newname
-    #     subjset.asvs.names.pop(oldname)
-    #     subjset.asvs.names[newname] = asv
-    #     subjset.asvs.names.update_order()
+#     # mcmc.graph.data.asvs = subjset.asvs
 
-    mcmc.graph.data.asvs = subjset.asvs
+#     mcmc.set_save_location(newpaths[iii] + 'mcmc.pkl')
+#     mcmc.graph.set_save_location(newpaths[iii] + 'graph.pkl')
+#     mcmc.tracer.set_save_location(newpaths[iii] + 'tracer.pkl')
+#     mcmc.tracer.filename = newpaths[iii] + 'traces.hdf5'
 
-    mcmc.save()
-    graph = mcmc.graph.save()
-    tracer = mcmc.tracer.save()
-    subjset.save(path.replace('mcmc.pkl', 'subjset.pkl'))
+#     mcmc.save()
+#     graph = mcmc.graph.save()
+#     tracer = mcmc.tracer.save()
 
-sys.exit()
+# sys.exit()
 
 # ####################################################
 # # PERMANOVA
@@ -320,30 +373,61 @@ sys.exit()
 # labels = []
 # reads = []
 # grouping = []
-# i_uc = 0
-# i_he = 0
-# for subj in subjset_real:
+# i = 0
+# for subjidx, subj in enumerate(subjset_real):
 #     print(subj.name)
 #     for t in subj.times:
 #         if t < colonization:
 #             continue
-#         if t >= subjset_real.perturbations[0].start:
-#             continue
-#         reads.append(subj.reads[t])
+#         # if t >= subjset_real.perturbations[0].start:
+#         #     continue
 #         if subj.name in HEALTHY_SUBJECTS:
-#             label = 'Healthy{}'.format(i_he)
-#             i_he += 1
+#             cohort = 'Healthy'
+#             continue
 #         else:
-#             label = 'UC{}'.format(i_uc)
-#             i_uc += 1
-#         labels.append(label)
-#         grouping.append('UC' if subj.name not in HEALTHY_SUBJECTS else 'Healthy')
+#             cohort = 'UC'
+#         reads.append(subj.reads[t])
+#         if t < subjset_real.perturbations[0].start:
+#             area = 'post colonization'
+#         elif t >= subjset_real.perturbations[0].start and t <=subjset_real.perturbations[0].end:
+#             area = subjset_real.perturbations[0].name
+#         elif t > subjset_real.perturbations[0].end and t < subjset_real.perturbations[1].start:
+#             area = 'post {}'.format(subjset_real.perturbations[0].name)
+#         elif t >= subjset_real.perturbations[1].start and t <= subjset_real.perturbations[1].end:
+#             area = subjset_real.perturbations[1].name
+#         elif t > subjset_real.perturbations[1].end and t < subjset_real.perturbations[2].start:
+#             area = 'post {}'.format(subjset_real.perturbations[1].name)
+#         elif t >= subjset_real.perturbations[2].start and t <= subjset_real.perturbations[2].end:
+#             area = subjset_real.perturbations[2].name
+#         else:
+#             area = 'post {}'.format(subjset_real.perturbations[2].name)
 
-# print(labels)
+#         label = '{}-{}-{}'.format(cohort,area,i)
+#         i += 1
+#         group = '-'.join(label.split('-')[:-1])
+#         # if np.random.uniform() > 0.5:
+#         #     group = 'group1'
+#         # else:
+#         #     group = 'group2'
+        
+#         # print(group)
+#         # if area == 'post ' + subjset_real.perturbations[0].name: #'post colonization':
+#         #     group = 'group1'
+#         # else:
+#         #     group = 'group2'
+#         grouping.append(group)
+#         labels.append(label)
+
+# # sys.exit()
+# # print(labels)
+# # print(grouping)
 
 # bc_dm = skbio.diversity.beta_diversity(counts=np.asarray(reads), ids=labels, metric="braycurtis")
 # # print(bc_dm)
 
+# result = skbio.stats.distance.anosim(
+#     distance_matrix=bc_dm, grouping=grouping)
+# print(result)
 # result = skbio.stats.distance.permanova(
 #     distance_matrix=bc_dm, grouping=grouping)
 # print(result)
@@ -353,6 +437,7 @@ sys.exit()
 # ####################################################
 # # Wilcoxon signed-rank tests
 # ####################################################
+# subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 # colonization = 5
 
 # healthy = {}
@@ -392,7 +477,6 @@ sys.exit()
 # print(len(median_uc))
 # print(len(median_healthy))
 # print(scipy.stats.wilcoxon(median_healthy, median_uc))
-
 
 # sys.exit()
 
@@ -995,213 +1079,153 @@ sys.exit()
 
 # sys.exit()
 
-####################################################
-# Make family level plots of the ASVs in the phylogenetic trees
-####################################################
-chain_locs = [
-    'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-    'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
-
-# tree_loc = 'raw_data/phylogenetic_tree_w_reference_seq.nhx'
-os.makedirs('tmp', exist_ok=True)
-os.makedirs('tmp/subtrees_125percentmedian', exist_ok=True)
-asvnames = set([])
-for chainloc in chain_locs:
-    chain = pl.inference.BaseMCMC.load(chainloc)
-    asvs = chain.graph.data.asvs
-
-    print(asvs.names.keys())
-
-    for asv in asvs:
-        asvnames.add(asv.name)
-
-# print(subjset_real.asvs.names.keys())
-
-asvnames = list(asvnames)
-set_asvnames = set(asvnames)
-
-# totalnames = copy.deepcopy(asvnames)
-# tree = ete3.Tree(tree_loc)
-# for name in tree.get_leaf_names():
-#     if 'ASV_' not in name:
-#         totalnames.append(name)
-
-# # print(totalnames)
-
-# tree.prune(totalnames, preserve_branch_length=True)
-# print('here')
-# tree.write(outfile='tmp/tree_temp.nhx')
-# print('here2')
-# sys.exit()
-tree_name = 'tmp/tree_temp.nhx'
-tree = ete3.Tree(tree_name)
-
-d = {}
-for i, aname in enumerate(asvnames):
-    print('{}/{}'.format(i,len(asvnames)))
-    asv = subjset_real.asvs[aname]
-    if asv.tax_is_defined('family'):
-        family = asv.taxonomy['family']
-        if family in d:
-            continue
-        else:
-            d[family] = []
-            for iii, bname in enumerate(asvnames):
-                if bname == aname:
-                    continue
-                basv = subjset_real.asvs[bname]
-                if basv.taxonomy['family'] != family:
-                    continue
-                d[family].append(tree.get_distance(aname, bname))
-
-f = open('tmp/subtrees_125percentmedian/family_dists_asv.txt', 'w')
-for family in d:
-    f.write(family + '\n')
-    arr = np.asarray(d[family])
-    summ = pl.variables.summary(arr)
-    for k,v in summ.items():
-        f.write('\t{}: {}\n'.format(k,v))
-f.write('total\n')
-arr = []
-for ele in d.values():
-    arr += ele
-arr = np.asarray(arr)
-summ = pl.variables.summary(arr)
-for k,v in summ.items():
-    f.write('\t{}:{}\n'.format(k,v))
-
-
-# Set the radius to 125% the median
-radius = summ['median'] * 1.25
-f.write('Radius set to 125% of median ({}): {}'.format(summ['median'], radius))
-f.close()
-
-# Make the distance matrix
-print(len(tree))
-names = tree.get_leaf_names()
-names.sort()
-
-with open('tmp/phylo_dist.pkl', 'rb') as handle:
-    df = pickle.load(handle)
-# Rename the columns and indices
-d_cols = {}
-d_idx = {}
-
-for row in df.index:
-    if 'OTU_' in row:
-        d_idx[row] = 'ASV_{}'.format(int(row.replace('OTU_', ''))+1)
-for col in df.columns:
-    if 'OTU_' in col:
-        d_cols[col] = 'ASV_{}'.format(int(col.replace('OTU_', ''))+1)
-df = df.rename(columns=d_cols, index=d_idx)
-
-
-
-i = 0
-f = open('tmp/subtrees_125percentmedian/table.tsv', 'w')
-for asvname in asvnames:
-    asv = subjset_real.asvs[asvname]
-    if not asv.tax_is_defined('species'):
-        i += 1
-        print('\n\nLooking at {}, {}'.format(i,asv))
-        print('-------------------------')
-
-        row = df[asv.name].to_numpy()
-        idxs = np.argsort(row)
-
-        iii = 0
-        for idx in idxs:
-            if names[idx] not in set_asvnames:
-                iii = idx 
-                break
-
-        cnr = names[iii]
-        f.write('{}\n'.format(asv.name))
-
-        tree = ete3.Tree(tree_name)
-        # Get the all elements within `radius`
-        names_to_keep = []
-        row = df[asv.name].to_numpy()
-        idxs = np.argsort(row)
-
-        for idx in idxs:
-            if row[idx] > radius:
-                break
-            if names[idx] in set_asvnames:
-                continue
-            names_to_keep.append(names[idx])
-
-        print(names_to_keep)
-
-        # Make subtree of just these names
-        names_to_keep.append(asv.name)
-        tree.prune(names_to_keep, preserve_branch_length=False)
-
-        for node in tree.traverse():
-            node.name = node.name.replace('OTU','ASV')
-
-            if 'ASV' in node.name:
-                face = ete3.TextFace(node.name)
-                face.background.color='LightGreen'
-                node.add_face(face, column=0)
-
-        ts = ete3.TreeStyle()
-        ts.title.add_face(ete3.TextFace('{}, Phylogenetic radius: {:.4f}'.format(
-            asv.name.replace('OTU', 'ASV'), radius), fsize=15), column=1)
-        tree.render('tmp/subtrees_125percentmedian/{}.pdf'.format(asv.name.replace('OTU','ASV')), tree_style=ts)
-f.close()
-sys.exit()
-
 # ####################################################
-# # Make plots of the ASVs
+# # Make family level plots of the ASVs in the phylogenetic trees
 # ####################################################
+# # import treeswift
+# # Make the distance matrix
+# # tree = treeswift.read_tree_newick('tmp/tree_temp.nhx')
+# # print('here')
+# # M = tree.distance_matrix(leaf_labels=True)
+# # print('done')
+# # df = pd.DataFrame(M)
+# # df.to_csv('tmp/dist_matrix_tree_temp.tsv', sep='\t', index=True, header=True)
+# # print(df)
+# # sys.exit()
+
+
 # chain_locs = [
 #     'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
 #     'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
-# folder_base = ['./healthy/', './unhealthy/']
 
-# for iii, chain_loc in enumerate(chain_locs):
+# # tree_loc = 'raw_data/phylogenetic_tree_w_reference_seq.nhx'
+# os.makedirs('tmp', exist_ok=True)
+# os.makedirs('tmp/subtrees_125percentmedian', exist_ok=True)
+# asvnames = set([])
+# for chainloc in chain_locs:
+#     chain = pl.inference.BaseMCMC.load(chainloc)
+#     asvs = chain.graph.data.asvs
 
-#     basepath = folder_base[iii]
-#     os.makedirs(basepath, exist_ok=True)
-    
-
-#     chain = pl.inference.BaseMCMC.load(chain_loc)
-#     subjset = chain.graph.data.subjects
-#     asvs = subjset.asvs
-
-#     subj_matrices = [subj.matrix()['abs'] for subj in subjset]
-#     subj_times = [subj.times for subj in subjset]
-#     subjnames = [subj.name for subj in subjset]
-
-#     titlefmt = '%(name)s\n%(family)s, %(genus)s, %(species)s'
+#     print(asvs.names.keys())
 
 #     for asv in asvs:
-#         aidx = asv.idx
+#         asvnames.add(str(asv.name))
 
-#         print('{}/{}'.format(aidx,len(asvs)))
+# # print(subjset_real.asvs.names.keys())
 
-#         fig = plt.figure()
-#         ax = fig.add_subplot(111)
-#         for i, M in enumerate(subj_matrices):
-#             times = subj_times[i]
-            
-#             ax.plot(times, M[aidx,:], marker='o', label=subjnames[i])
+# asvnames = list(asvnames)
+# set_asvnames = set(asvnames)
 
-#         pl.visualization.shade_in_perturbations(ax, perturbations=subjset.perturbations)
+# # totalnames = copy.deepcopy(asvnames)
+# # tree = ete3.Tree(tree_loc)
+# # for name in tree.get_leaf_names():
+# #     if 'ASV_' not in name:
+# #         totalnames.append(name)
+
+# # # print(totalnames)
+
+# # tree.prune(totalnames, preserve_branch_length=True)
+# # print('here')
+# # tree.write(outfile='tmp/tree_temp.nhx')
+# # print('here2')
+# # sys.exit()
+# tree_name = 'tmp/tree_temp.nhx'
+# tree = ete3.Tree(tree_name)
+
+# # print(tree.get_leaf_names())
+# # sys.exit()
+
+# d = {}
+# for i, aname in enumerate(asvnames):
+#     print('{}/{}'.format(i,len(asvnames)))
+#     asv = subjset_real.asvs[aname]
+#     if asv.tax_is_defined('family'):
+#         family = asv.taxonomy['family']
+#         if family in d:
+#             continue
+#         else:
+#             d[family] = []
+#             for iii, bname in enumerate(asvnames):
+#                 if bname == aname:
+#                     continue
+#                 basv = subjset_real.asvs[bname]
+#                 if basv.taxonomy['family'] != family:
+#                     continue
+#                 d[family].append(tree.get_distance(aname, bname))
+
+# f = open('tmp/subtrees_125percentmedian/family_dists_asv.txt', 'w')
+# for family in d:
+#     f.write(family + '\n')
+#     arr = np.asarray(d[family])
+#     summ = pl.variables.summary(arr)
+#     for k,v in summ.items():
+#         f.write('\t{}: {}\n'.format(k,v))
+# f.write('total\n')
+# arr = []
+# for ele in d.values():
+#     arr += ele
+# arr = np.asarray(arr)
+# summ = pl.variables.summary(arr)
+# for k,v in summ.items():
+#     f.write('\t{}:{}\n'.format(k,v))
+
+
+# # Set the radius to 125% the median
+# radius = summ['median'] * 1.25
+# f.write('Radius set to 125% of median ({}): {}'.format(summ['median'], radius))
+# f.close()
+
+# # Make the distance matrix
+# print('reading')
+# df = pd.read_csv('tmp/dist_matrix_tree_temp.tsv', sep='\t', index_col=0)
+# print('read')
+# names = df.index.to_numpy()
+
+# i = 0
+# f = open('tmp/subtrees_125percentmedian/table.tsv', 'w')
+# for asvname in asvnames:
+#     asv = subjset_real.asvs[asvname]
+#     if True:
+#         i += 1
+#         print('\n\nLooking at {}, {}'.format(i,asv))
+#         print('-------------------------')
         
-#         ax.set_yscale('log')
-#         title = pl.asvname_formatter(titlefmt, asv=asv, asvs=asvs, lca=False).replace('OTU', 'ASV')
-#         ax.set_title(title, fontsize=15, fontweight='bold')
-#         ax.set_xlabel('Days', fontsize=12)
-#         ax.set_ylabel('CFUs/g', fontsize=12)
-#         fig.tight_layout()
+#         f.write('{}\n'.format(asv.name))
 
-#         name = asv.name.replace('OTU', 'ASV')
+#         tree = ete3.Tree(tree_name)
+#         # Get the all elements within `radius`
+#         names_to_keep = []
+#         row = df[asv.name].to_numpy()
+#         idxs = np.argsort(row)
 
-#         plt.savefig(basepath + name + '.pdf')
-#         plt.close()
-    
+#         for idx in idxs:
+#             if row[idx] > radius:
+#                 break
+#             if names[idx] in set_asvnames:
+#                 continue
+#             names_to_keep.append(names[idx])
+
+#         names_to_keep
+#         print(names_to_keep)
+
+#         # Make subtree of just these names
+#         names_to_keep.append(asv.name)
+#         tree.prune(names_to_keep, preserve_branch_length=False)
+
+#         for node in tree.traverse():
+#             node.name = node.name.replace('OTU','ASV')
+
+#             if 'ASV' in node.name:
+#                 face = ete3.TextFace(node.name)
+#                 face.background.color='LightGreen'
+#                 node.add_face(face, column=0)
+
+#         ts = ete3.TreeStyle()
+#         ts.title.add_face(ete3.TextFace('{}, Phylogenetic radius: {:.4f}'.format(
+#             asv.name, radius), fsize=15), column=1)
+#         tree.render('tmp/subtrees_125percentmedian/{}.pdf'.format(asv.name.replace('OTU','ASV')), tree_style=ts)
+# f.close()
+# sys.exit()
 
 # ####################################################
 # # 16S v4 gapless sequences and taxonomy

@@ -188,3 +188,168 @@ def make_data_like_mdsine1(subjset, basepath):
         'measurementid': measurementid,
         'perturbid': perturbid})
     df_metadata.to_csv(basepath + 'metadata.txt', sep='\t', header=True, index=False)
+
+def asvname_for_paper(asv, asvs):
+    '''Makes the name in the format needed for the paper
+
+    Parameters
+    ----------
+    asv : pylab.base.ASV
+        This is the ASV we are making the name for
+    asvs : pylab.base.ASVSet
+        This is the ASVSet object that contains the ASV
+
+    Returns
+    -------
+    '''
+    if asv.tax_is_defined('species'):
+        species = asv.taxonomy['species']
+        species = species.split('/')
+        if len(species) >= 3:
+            species = species[:2]
+        species = '/'.join(species)
+        label = pl.asvname_formatter(
+            format='%(genus)s {spec} %(name)s'.format(
+                spec=species), 
+            asv=asv, asvs=asvs)
+    elif asv.tax_is_defined('genus'):
+        label = pl.asvname_formatter(
+            format='* %(genus)s %(name)s',
+            asv=asv, asvs=asvs)
+    elif asv.tax_is_defined('family'):
+        label = pl.asvname_formatter(
+            format='** %(family)s %(name)s',
+            asv=asv, asvs=asvs)
+    elif asv.tax_is_defined('order'):
+        label = pl.asvname_formatter(
+            format='*** %(order)s %(name)s',
+            asv=asv, asvs=asvs)
+    elif asv.tax_is_defined('class'):
+        label = pl.asvname_formatter(
+            format='**** %(class)s %(name)s',
+            asv=asv, asvs=asvs)
+    elif asv.tax_is_defined('phylum'):
+        label = pl.asvname_formatter(
+            format='***** %(phylum)s %(name)s',
+            asv=asv, asvs=asvs)
+    elif asv.tax_is_defined('kingdom'):
+        label = pl.asvname_formatter(
+            format='****** %(kingdom)s %(name)s',
+            asv=asv, asvs=asvs)
+    else:
+        raise ValueError('Something went wrong - no taxnonomy: {}'.format(str(asv)))
+
+    return label
+
+def is_gram_negative(asv):
+    '''Return true if the asv is gram - or gram positive
+    '''
+    if not asv.tax_is_defined('phylum'):
+        return None
+    if asv.taxonomy['phylum'].lower() == 'bacteroidetes':
+        return True
+    if asv.taxonomy['phylum'].lower() == 'firmicutes':
+        return False
+    if asv.taxonomy['phylum'].lower() == 'verrucomicrobia':
+        return True
+    if asv.taxonomy['phylum'].lower() != 'proteobacteria':
+        print(asv)
+        print('Not included')
+        return None
+
+    # Deltaproteobacteria are all gram -
+    return True
+
+def is_gram_negative_taxa(taxa, taxalevel, asvs):
+    '''Checks if the taxa `taxa` at the taxonomic level `taxalevel`
+    is a gram negative or gram positive
+    '''
+    for asv in asvs:
+        if asv.taxonomy[taxalevel] == taxa:
+            return is_gram_negative(asv)
+
+    else:
+        raise ValueError('`taxa` ({}) not found at taxonomic level ({})'.format(
+            taxa. taxalevel))
+
+def analyze_clusters_df(chain, taxlevel, include_nan=False, prop_total=True):
+    '''Do analysis on the clusters and return the results as a dataframe
+    '''
+    asvs = chain.graph.data.asvs
+    clustering = chain.graph[STRNAMES.CLUSTERING_OBJ]
+    # clustering.generate_cluster_assignments_posthoc(n_clusters='mean', set_as_value=True)
+
+    # # Order the clusters from largest to smallest
+    # cids = []
+    # cids_sizes = []
+    # for cluster in clustering:
+    #     cids.append(cluster.id)
+    #     cids_sizes.append(len(cluster))
+
+    # idxs = np.argsort(cids_sizes)
+    # idxs = idxs[::-1]
+    # cids = np.asarray(cids)
+    # cids = cids[idxs]
+
+    s = {}
+    for asv in chain.graph.data.subjects.asvs:
+        if asv.tax_is_defined(taxlevel):
+            tax = asv.taxonomy[taxlevel]
+        else:
+            if include_nan:
+                tax = 'NA'
+            else:
+                continue
+        if tax in s:
+            s[tax] += 1
+        else:
+            s[tax] = 1
+
+    columns = list(s.keys())
+    tax2taxidx = {}
+    for i,v in enumerate(columns):
+        tax2taxidx[v] = i
+
+    M = np.zeros(shape=(len(clustering), len(columns)))
+    index = clustering.order
+
+
+    for cidx, cid in enumerate(clustering.order):
+        cluster = clustering[cid]
+
+        # print('\nCluster {}'.format(cidx))
+        # print(cluster.members)
+        # print(len(cluster))
+
+
+        taxas_each_asv = {}
+        # gram_each_asv = {}
+        for aidx in cluster.members:
+            asv = asvs[aidx]
+            asv_taxa = asv.taxonomy[taxlevel]
+            if not asv.tax_is_defined(taxlevel):
+                if include_nan:
+                    asv_taxa = 'NA'
+                else:
+                    continue
+            if asv_taxa not in taxas_each_asv:
+                taxas_each_asv[asv_taxa] = 0
+            taxas_each_asv[asv_taxa] += 1
+
+            # gram_status = is_gram_negative(asv)
+            # if gram_status not in gram_each_asv:
+            #     gram_each_asv[gram_status] = 0
+            # gram_each_asv[gram_status] += 1
+
+        for taxa in taxas_each_asv:
+            if prop_total is None:
+                M[cidx, tax2taxidx[taxa]] = taxas_each_asv[taxa]
+
+            else:
+                if prop_total:
+                    M[cidx, tax2taxidx[taxa]] = taxas_each_asv[taxa] / s[taxa]
+                else:
+                    M[cidx, tax2taxidx[taxa]] = taxas_each_asv[taxa] / len(cluster)
+
+    df = pd.DataFrame(M, columns=columns, index=index)
+    return df

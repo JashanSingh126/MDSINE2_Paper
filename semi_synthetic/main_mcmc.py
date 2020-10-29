@@ -165,7 +165,7 @@ if __name__ == '__main__':
     continue_inference = args.continue_inference
 
     # Constants
-    ONLY_PLOT = True
+    ONLY_PLOT = False
     
     # Start
     ##############################
@@ -173,9 +173,11 @@ if __name__ == '__main__':
         n_asvs=args.n_asvs, healthy=args.healthy, uniform_sampling_timepoints=args.uniform_sampling,
         process_variance_level=args.process_variance_level,
         measurement_noise_level=args.measurement_noise_level)
+
+    a0,a1 = config.calculate_reads_a0a1_new(args.measurement_noise_level)
     params = config.ModelConfigMCMC(output_basepath=args.basepath, data_seed=args.data_seed,
         data_path=args.data_path, checkpoint=args.checkpoint,
-        init_seed=args.init_seed, a0=synparams.NEGBIN_A0, a1=synparams.NEGBIN_A1,
+        init_seed=args.init_seed, a0=a0, a1=a1,
         n_samples=args.n_samples, burnin=args.burnin, pcc=args.percent_change_clustering,
         clustering_on=args.clustering_on)
  

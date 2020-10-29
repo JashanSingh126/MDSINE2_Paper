@@ -98,6 +98,35 @@ def calculate_reads_a0a1(desired_percent_variation):
     p = desired_percent_variation / 0.05
     return NEGBIN_A0*p, NEGBIN_A1*p
 
+def calculate_reads_a0a1_new(desired_percent_variation):
+    '''
+    When we scale the a0 and a1 terms, we are assuming that you want to
+    scale the high abundance bacteria for that signal and we scale the
+    a0 parameter such that they stay relative to each other.
+
+    If == -1 we set to the full noise
+    '''
+    # if desired_percent_variation == -1:
+    #     desired_percent_variation = 0.05
+    # p = desired_percent_variation / 0.05
+    # return NEGBIN_A0*p, NEGBIN_A1*p
+    d_a1 = {
+        0.05: 3e-6,
+        0.2: 6e-3,
+        0.4: 2e-1}
+    d_a0 = {
+        0.05: 5e-8,
+        0.2: 5e-5,
+        0.4: 5e-4}
+    return d_a0[desired_percent_variation], d_a1[desired_percent_variation]
+
+def get_qpcr_noise(desired_percent_variation):
+    d_qpcr = {
+        0.05: 0.01,
+        0.2: 0.1,
+        0.4: 0.4}
+    return d_qpcr[desired_percent_variation]
+
 def isModelConfig(x):
     '''Checks if the input array is a model config object
 
@@ -282,9 +311,9 @@ class ModelConfigMCMC(_BaseModelConfig):
         self.PERTURBATIONS_ADDITIVE = False
         self.ZERO_INFLATION_TRANSITION_POLICY = None
 
-        self.MP_FILTERING = 'debug'
+        self.MP_FILTERING = 'full'
         self.MP_INDICATORS = None
-        self.MP_CLUSTERING = 'debug'
+        self.MP_CLUSTERING = 'full-5'
         self.MP_ZERO_INFLATION = None
         self.RELATIVE_LOG_MARGINAL_INDICATORS = True
         self.RELATIVE_LOG_MARGINAL_PERT_INDICATORS = True
@@ -297,7 +326,7 @@ class ModelConfigMCMC(_BaseModelConfig):
 
         self.N_QPCR_BUCKETS = 3
 
-        self.INTERMEDIATE_VALIDATION_T = int(1.5*60*60) #8 * 3600 # Every 8 hours
+        self.INTERMEDIATE_VALIDATION_T = 10 * 60 #8 * 3600 # Every 8 hours
         self.INTERMEDIATE_VALIDATION_KWARGS = None
 
         self.LEARN = {
@@ -463,11 +492,11 @@ class ModelConfigMCMC(_BaseModelConfig):
                 'a1': self.NEGBIN_A1,
                 'v1': 1e-4,
                 'v2': 1e-4,
-                'proposal_init_scale':.001,
+                'proposal_init_scale':.0001,
                 'intermediate_interpolation': 'linear-interpolation',
                 'intermediate_step': None, #('step', (1, None)), 
                 'essential_timepoints': 'union',
-                'delay': 100000,
+                'delay': 2,
                 'window': 6,
                 'plot_initial': False,
                 'target_acceptance_rate': 0.44},

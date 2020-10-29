@@ -1372,6 +1372,7 @@ class SyntheticData(pl.Saveable):
                     r_k = negbin_read_depth.rvs()
                 else:
                     r_k = read_depth
+                read_depth = 75000
 
                 phi = r_k * rel
                 eps = a0 / rel + a1

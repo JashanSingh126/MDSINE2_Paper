@@ -36,7 +36,7 @@ import model as model_module
 import preprocess_filtering as filtering
 import metrics
 from names import STRNAMES, LATEXNAMES, REPRNAMES
-import analyze_clusters
+import util as MDSINE_UTIL
 
 AUX_COLOR = 'green'
 LATENT_COLOR = 'red'
@@ -4307,7 +4307,7 @@ def readify_chain_fixed_topology(src_basepath, piechart_axis_layout, healthy,
         fig.suptitle(prefix + 'Bayes factor >= {}'.format(minimum_bayes_factor),
             fontsize=25)
 
-        df = analyze_clusters.analyze_clusters_df(chain, taxlevel=heatmaptaxlevel)
+        df = MDSINE_UTIL.analyze_clusters_df(chain, taxlevel=heatmaptaxlevel)
         # Sort the columns in alphabetical order
         cols = np.asarray(list(df.columns))
         cols = np.sort(cols)
@@ -4331,7 +4331,7 @@ def readify_chain_fixed_topology(src_basepath, piechart_axis_layout, healthy,
 
         for idx, tick in enumerate(axtaxa.xaxis.get_major_ticks()):
             taxa = df.columns[idx]
-            if analyze_clusters.is_gram_negative_taxa(taxa, heatmaptaxlevel, chain.graph.data.asvs):
+            if MDSINE_UTIL.is_gram_negative_taxa(taxa, heatmaptaxlevel, chain.graph.data.asvs):
                 color = gramneg_color
             else:
                 color = grampos_color
@@ -4381,7 +4381,7 @@ def readify_chain_fixed_topology(src_basepath, piechart_axis_layout, healthy,
     # M = subjects.matrix(agg='mean', times=times, dtype='abs')
 
 
-    # df = analyze_clusters.analyze_clusters_df(chain, taxlevel=datataxlevel, 
+    # df = MDSINE_UTIL.analyze_clusters_df(chain, taxlevel=datataxlevel, 
     #     prop_total=None, include_nan=True)
     # print(df)
     # M = df.to_numpy()
