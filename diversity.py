@@ -15,6 +15,7 @@ import scipy.special
 from scipy.spatial import distance
 
 class alpha:
+    @staticmethod
     def entropy(counts):
         '''Calculate the entropy
         
@@ -40,6 +41,7 @@ class alpha:
         a = -np.sum(a)
         return a
 
+    @staticmethod
     def normalized_entropy(counts):
         '''Calculate the normailized entropy
         
@@ -65,6 +67,7 @@ class alpha:
         a = -np.sum(a) / np.log(len(rel))
         return a
 
+    @staticmethod
     def shannon_entropy(counts, base=2):
         '''Calculates the Shannon entropy
 
@@ -89,15 +92,19 @@ class alpha:
 
 
 class beta:
+    @staticmethod
     def braycurtis(u,v):
         return distance.braycurtis(u,v)
 
+    @staticmethod
     def jaccard(u,v):
         return distance.jaccard(u,v)
 
+    @staticmethod
     def hamming(u,v):
         return distance.hamming(u,v)
 
+    @staticmethod
     def unifrac(*args,**kwargs):
         raise NotImplementedError('Not implemented')
 
