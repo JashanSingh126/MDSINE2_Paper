@@ -256,6 +256,9 @@ for mesh in arguments_global:
     us = mesh[6]
     boxplot_type = mesh[7]
 
+    if d == 1:
+        continue
+
     # Make name
     if boxplot_type == 0:
         # Do measurement 
@@ -295,8 +298,8 @@ for mesh in arguments_global:
     f.close()
     cmd = 'bsub < {}'.format(lsfname)
     logging.info(cmd)
-    # if args.dispatch_jobs:
-    #     os.system(cmd)
+    if args.dispatch_jobs:
+        os.system(cmd)
 
 # Start monitoring 
 # ----------------
