@@ -1014,7 +1014,8 @@ class SubjectLogTrajectorySetMP(pl.multiprocessing.PersistentWorker):
         self.pv_std = np.sqrt(pv)
         self.qpcr_stds = np.sqrt(qpcr_variances[self.ridx])
         self.qpcr_stds_d = {}
-        self.zero_inflation_data = zero_inflation_data[self.ridx]
+        # self.zero_inflation_data = zero_inflation_data[self.ridx]
+        self.zero_inflation_data = None
 
         for tidx,t in enumerate(self.qpcr_log_measurements):
             self.qpcr_stds_d[t] = self.qpcr_stds[tidx]

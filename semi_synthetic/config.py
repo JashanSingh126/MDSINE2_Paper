@@ -311,9 +311,9 @@ class ModelConfigMCMC(_BaseModelConfig):
         self.PERTURBATIONS_ADDITIVE = False
         self.ZERO_INFLATION_TRANSITION_POLICY = None
 
-        self.MP_FILTERING = 'full'
+        self.MP_FILTERING = 'debug'
         self.MP_INDICATORS = None
-        self.MP_CLUSTERING = 'full-5'
+        self.MP_CLUSTERING = 'debug'
         self.MP_ZERO_INFLATION = None
         self.RELATIVE_LOG_MARGINAL_INDICATORS = True
         self.RELATIVE_LOG_MARGINAL_PERT_INDICATORS = True

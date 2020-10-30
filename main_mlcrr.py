@@ -31,7 +31,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', type=str,
         help='Dataset to do inference on',
-        dest='dataset', default='mdsine2-real-data')
+        dest='dataset', default='gibson')
     parser.add_argument('--data-seed', '-d', type=int,
         help='Seed to initialize the data',
         dest='data_seed')
@@ -145,7 +145,7 @@ if __name__ == '__main__':
         # Get the steady states of the real data
         subjset_real = pl.SubjectSet.load(params.DATA_FILENAME)
         # Filtering and abundance normalization
-        if fparams.DATASET == 'mdsine2-real-data':
+        if fparams.DATASET == 'gibson':
             subjset = filtering.consistency(subjset, dtype=fparams.DTYPE,
                 threshold=fparams.THRESHOLD, union_both_consortia=fparams.HEALTHY==-1,
                 min_num_consecutive=fparams.MIN_NUM_CONSECUTIVE,

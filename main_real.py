@@ -18,7 +18,7 @@ import pylab as pl
 import config
 import posterior
 import base
-import diversity.alpha
+import diversity
 from names import STRNAMES
 import preprocess_filtering as filtering
 from preprocess_filtering import HEALTHY_SUBJECTS, UNHEALTHY_SUBJECTS
@@ -136,7 +136,7 @@ def parse_args():
 
 def main_leave_out_single(params, fparams, continue_inference):
     # Constants
-    ONLY_PLOT = False
+    ONLY_PLOT = True
 
     ddd = _make_basepath(params=params, fparams=fparams)
     params.OUTPUT_BASEPATH = ddd['output_basepath']
@@ -210,7 +210,7 @@ def main_leave_out_single(params, fparams, continue_inference):
             fparams.save(fparams_filename)
 
             # Filtering and abundance normalization
-            if fparams.DATASET == 'mdsine2-real-data':
+            if fparams.DATASET == 'gibson':
                 subjset = filtering.consistency(subjset, dtype=fparams.DTYPE,
                     threshold=fparams.THRESHOLD, union_both_consortia=fparams.HEALTHY==-1,
                     min_num_consecutive=fparams.MIN_NUM_CONSECUTIVE,
@@ -332,14 +332,14 @@ def main_leave_out_single(params, fparams, continue_inference):
     fparams = config.FilteringConfig.load(fparams_filename)
     chain_result = pl.inference.BaseMCMC.load(chain_result_filename)
 
-    # base.readify_chain(
-    #     src_basepath=basepath, params=params, yscale_log=True, 
-    #     center_color_for_strength=True, run_on_copy=False,
-    #     asv_prefix_formatter='%(index)s: (%(name)s) %(genus)s %(species)s',
-    #     yticklabels='(%(name)s) %(lca)s: %(index)s',
-    #     plot_name_filtering='%(order)s, %(family)s, %(genus)s', 
-    #     sort_interactions_by_cocluster=True, plot_filtering_thresh=False, 
-    #     plot_gif_filtering=False)
+    base.readify_chain(
+        src_basepath=basepath, params=params, yscale_log=True, 
+        center_color_for_strength=True, run_on_copy=False,
+        asv_prefix_formatter='%(index)s: (%(name)s) %(genus)s %(species)s',
+        yticklabels='(%(name)s) %(lca)s: %(index)s',
+        plot_name_filtering='%(order)s, %(family)s, %(genus)s', 
+        sort_interactions_by_cocluster=True, plot_filtering_thresh=False, 
+        plot_gif_filtering=False)
 
     # # base.readify_chain_fixed_topology(src_basepath=basepath,
     # #     abund_times_start=7, abund_times_end=21,

@@ -429,7 +429,7 @@ class ClusterAssignments(pl.graph.Node):
             clusters = [val for val in clusters.values()]
 
         elif value_option == 'sequence':
-            import diversity.beta
+            import diversity
 
             logging.info('Making affinity matrix from sequences')
             evenness = np.diag(np.ones(len(self.G.data.asvs), dtype=float))

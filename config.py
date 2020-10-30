@@ -598,7 +598,7 @@ class ModelConfigReal(_BaseModelConfig):
         self.N_CPUS = 12
         self.N_GBS = 10000
 
-        if dataset == 'mdsine2-real-data':
+        if dataset == 'gibson':
             self.DATA_FILENAME = 'pickles/real_subjectset.pkl'
             zero_inflation_value_option = None
             n_clusters = 30
@@ -1030,7 +1030,7 @@ class FilteringConfig(pl.Saveable):
     def __init__(self, healthy, dataset):
         self.DATASET = dataset
 
-        if self.DATASET == 'mdsine2-real-data':
+        if self.DATASET == 'gibson':
             self.COLONIZATION_TIME = 5
             self.THRESHOLD = 0.0001
             self.DTYPE = 'rel'
@@ -1043,7 +1043,7 @@ class FilteringConfig(pl.Saveable):
             raise ValueError('`dataset` ({}) not recognized'.format(self.DATASET))
 
     def __str__(self):
-        if self.DATASET == 'mdsine2-real-data':
+        if self.DATASET == 'gibson':
             return 'healthy{}_{}_{}_{}_{}_{}'.format(
                 self.HEALTHY,
                 self.COLONIZATION_TIME,
