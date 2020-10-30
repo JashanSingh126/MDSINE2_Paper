@@ -54,10 +54,10 @@ SEMI_SYNTHETIC_MESHES = [
     (
         [5], # Number of replicates
         [55], # Number of timepoints
-        10, # Total number of data seeds
+        2, # Total number of data seeds
         1, # Total number of initialization seeds
-        [0.1, 0.2, 0.25, 0.3, 0.4], # Measurement Noises
-        [0.1], # Process variances
+        [0.05, 0.2, 0.4], # Measurement Noises
+        [0.05], # Process variances
         [1], # Clustering on/off
         0, # Uniform sampling of timepoints
         0 # Boxplot type
