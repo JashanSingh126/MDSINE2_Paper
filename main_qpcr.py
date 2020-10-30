@@ -27,6 +27,9 @@ def parse_args():
     parser.add_argument('--output-basepath', '-o', type=str,
         help='Location to save the output txt file',
         dest='output_basepath', default='./output_qpcr/')
+    parser.add_argument('--param-filename', '-po', type=str,
+        help='Location to save the parameter output to use in inference',
+        dest='param_filename')
     return parser.parse_args()
 
 def plot_log_historgram(logdata, logdeviations, suptitle, nbins=25):
@@ -71,7 +74,7 @@ def plot_log_historgram(logdata, logdeviations, suptitle, nbins=25):
 
     return ax
 
-def learn_qpcr_parameter(subjset, basepath):
+def learn_qpcr_parameter(subjset, basepath, param_filename):
     '''Gather all of the deviations from the goemetric mean of the qPCR triplicates
     and then learn that variance.
 
@@ -85,6 +88,8 @@ def learn_qpcr_parameter(subjset, basepath):
     basepath : str
         Folder to save the file summarizing the learning.
     '''
+    data = []
+    index = []
     f = open(basepath + 'overview.txt', 'w')
     f.write('Learning qPCR scaling parameter\n')
     f.write('-------------------------------\n\n')
@@ -102,8 +107,9 @@ def learn_qpcr_parameter(subjset, basepath):
     logdeviations_d = {}
     logdata_d = {}
     for subjname in qpcr_log_data:
-
-        f.write('Subject {}\n'.format(subjname))
+        s = 'Subject {}'.format(subjname)
+        f.write(s + '\n')
+        index.append(s)
         logdata = []
         logdeviations = []
         for t,devs in qpcr_log_data[subjname].items():
@@ -113,6 +119,7 @@ def learn_qpcr_parameter(subjset, basepath):
         # Learn the scale parameter
         s = np.std(logdeviations)
         f.write('\tLearned lognormal scale parameter: {}\n'.format(s))
+        data.append(s)
 
         _ = plot_log_historgram(logdata=logdata, logdeviations=logdeviations, 
             suptitle='Subject {}, lognormal scale = {:.3f}'.format(subjname, s),
@@ -133,6 +140,8 @@ def learn_qpcr_parameter(subjset, basepath):
         logdata = np.append(logdata, logdata_d[subjname])
 
     s = np.std(logdevs)
+    index.append('healthy')
+    data.append(s)
     f.write('Learned lognormal scale parameter: {}\n'.format(s))
 
     _ = plot_log_historgram(logdata=logdata, logdeviations=logdevs, 
@@ -151,6 +160,8 @@ def learn_qpcr_parameter(subjset, basepath):
 
     s = np.std(logdevs)
     f.write('Learned lognormal scale parameter: {}\n'.format(s))
+    index.append('ulcerative colitis')
+    data.append(s)
 
     _ = plot_log_historgram(logdata=logdata, logdeviations=logdevs, 
         suptitle='Ulcerative Colitis Consortium, lognormal scale = {:.3f}'.format(s),
@@ -172,6 +183,8 @@ def learn_qpcr_parameter(subjset, basepath):
 
     s = np.std(logdevs)
     f.write('Learned lognormal scale parameter: {}\n'.format(s))
+    index.append('all data')
+    data.append(s)
 
     _ = plot_log_historgram(logdata=logdata, logdeviations=logdevs, 
         suptitle='All data, lognormal scale = {:.3f}'.format(s),
@@ -179,19 +192,8 @@ def learn_qpcr_parameter(subjset, basepath):
     plt.savefig(basepath + 'all_data.pdf')
     plt.close()
 
-
-
-
-
-    
-
-        
-
-        
-        
-
-    
-
+    df = pd.DataFrame(np.asarray(data).reshape(1,-1), index=['scale'], columns=index)
+    df.to_csv(param_filename, sep='\t', index=True, header=True)
 
 if __name__ == '__main__':
 
@@ -208,5 +210,5 @@ if __name__ == '__main__':
         raise FileNotFoundError('Location ({}) does not have a subjectset file.'.format(
             args.data_filename))
 
-    learn_qpcr_parameter(subjset=subjset, basepath=basepath)
+    learn_qpcr_parameter(subjset=subjset, basepath=basepath, param_filename=args.param_filename)
 

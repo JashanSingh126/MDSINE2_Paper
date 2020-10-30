@@ -27,7 +27,7 @@ import pylab as pl
 sys.path.append('..')
 import synthetic
 import config
-import main_base
+import base
 import model
 from config import make_subj_name, make_syndata_base_name, make_syndata_data_name
 

@@ -296,6 +296,15 @@ for name in range(len(asvs_rdp)):
 
 asvs = asvs_rdp
 
+# Only keep ASV species identification if there are 2 or less options
+for asv in asvs:
+    if asv.tax_is_defined('species'):
+        species = asv.taxonomy['species'].split('/')
+        if len(species) >= 3:
+            # Too long
+            asv.taxonomy['species'] = pl.base.DEFAULT_TAXA_NAME
+
+
 #################################################################################
 # Read the relvative abudnance (reads) and the ASVs, set the perturbations
 #################################################################################

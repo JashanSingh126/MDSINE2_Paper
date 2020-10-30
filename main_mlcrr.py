@@ -24,7 +24,7 @@ import synthetic
 from names import STRNAMES, REPRNAMES
 import preprocess_filtering as filtering
 import data
-import main_base
+import base
 import mlcrr
 
 def parse_args():
@@ -229,7 +229,7 @@ if __name__ == '__main__':
     mlcrr_result = pl.inference.MLRR.load(mlcrr_filename)
 
     if os.path.isfile(validate_subjset_filename):
-        main_base.validate(
+        base.validate(
             src_basepath=basepath, model=mlcrr_result, 
             forward_sims=['sim-full'],
             yscale_log=True, run_on_copy=True,

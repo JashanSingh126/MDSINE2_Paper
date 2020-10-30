@@ -8,22 +8,17 @@ import sys
 import os
 import shutil
 import h5py
-import numba
-import warnings
 import pickle
 import numpy as np
 import pandas as pd
-import json
 import sklearn.metrics
 
 # Plotting
 import matplotlib.pyplot as plt
 import seaborn as sns
-import matplotlib.lines as mlines
 
 # Network
 import networkx as nx
-from py2cytoscape.util import from_networkx
 import ete3
 
 # Custom modules
@@ -32,7 +27,6 @@ import data
 import pylab as pl
 import config
 import synthetic
-import model as model_module
 import preprocess_filtering as filtering
 import metrics
 from names import STRNAMES, LATEXNAMES, REPRNAMES
@@ -4554,7 +4548,6 @@ def _condense_interactions(matrix, clustering):
 
     return ret
 
-# @numba.jit(nopython=True)
 def calc_eigan_over_gibbs(ret, growth, si, interactions):
     '''Calculate the stability of dynamical system with the growth rates 
     `growth`, self-limiting terms `si`, and interaction matrix `interactions`

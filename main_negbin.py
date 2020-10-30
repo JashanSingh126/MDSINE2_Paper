@@ -55,7 +55,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--synth', '-s', type=int,
         help='1 if run synthetic, 0 if run real data',
-        dest='synthetic')
+        dest='synthetic', default=0)
     parser.add_argument('--data-seed', '-d', type=int,
         help='Seed to initialize the data', default=0,
         dest='data_seed')
@@ -1206,7 +1206,7 @@ if __name__ == '__main__':
 
     args = parse_args()
     params = config.NegBinConfig(seed=args.data_seed, burnin=args.burnin, 
-        n_samples=args.n_samples, synth=args.synthetic, basepath=args.basepath)
+        n_samples=args.n_samples, synth=False, basepath=args.basepath)
     
     graph_name = 'graph_' + params.suffix()
     basepath = params.OUTPUT_BASEPATH + graph_name + '/'

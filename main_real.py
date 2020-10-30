@@ -17,7 +17,7 @@ import seaborn as sns
 import pylab as pl
 import config
 import posterior
-import main_base
+import base
 import diversity.alpha
 from names import STRNAMES
 import preprocess_filtering as filtering
@@ -86,7 +86,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', type=str,
         help='Dataset to do inference on',
-        dest='dataset', default='mdsine2-real-data')
+        dest='dataset', default='gibson')
     parser.add_argument('--data-seed', '-d', type=int,
         help='Seed to initialize the data',
         dest='data_seed')
@@ -184,7 +184,7 @@ def main_leave_out_single(params, fparams, continue_inference):
 
     # Load the real data and separate the subjects
     subjset = pl.SubjectSet.load(params.DATA_FILENAME)
-    if fparams.DATASET == 'mdsine2-real-data':
+    if fparams.DATASET == 'gibson':
         if fparams.HEALTHY == -1:
             logging.info('Run the union')
         else:
@@ -311,7 +311,7 @@ def main_leave_out_single(params, fparams, continue_inference):
             subjset.save(subjset_filename)
 
         # Run the model
-        chain_result = main_base.run(
+        chain_result = base.run(
             params=params,
             graph_name=graph_name,
             data_filename=subjset_filename,
@@ -324,7 +324,7 @@ def main_leave_out_single(params, fparams, continue_inference):
             continue_inference=continue_inference,
             intermediate_validation_t=params.INTERMEDIATE_VALIDATION_T,
             intermediate_validation_kwargs=params.INTERMEDIATE_VALIDATION_KWARGS,
-            intermediate_validation_func=main_base.mdsine2_cv_intermediate_validation_func)
+            intermediate_validation_func=base.mdsine2_cv_intermediate_validation_func)
         chain_result.save(chain_result_filename)
         params.save(params_filename)
 
@@ -332,7 +332,7 @@ def main_leave_out_single(params, fparams, continue_inference):
     fparams = config.FilteringConfig.load(fparams_filename)
     chain_result = pl.inference.BaseMCMC.load(chain_result_filename)
 
-    # main_base.readify_chain(
+    # base.readify_chain(
     #     src_basepath=basepath, params=params, yscale_log=True, 
     #     center_color_for_strength=True, run_on_copy=False,
     #     asv_prefix_formatter='%(index)s: (%(name)s) %(genus)s %(species)s',
@@ -341,13 +341,13 @@ def main_leave_out_single(params, fparams, continue_inference):
     #     sort_interactions_by_cocluster=True, plot_filtering_thresh=False, 
     #     plot_gif_filtering=False)
 
-    # # main_base.readify_chain_fixed_topology(src_basepath=basepath,
+    # # base.readify_chain_fixed_topology(src_basepath=basepath,
     # #     abund_times_start=7, abund_times_end=21,
     # #     piechart_axis_layout='auto', healthy=bool(args.healthy))
     
     # If the validation subjset exists, run the validation function
     if os.path.isfile(validate_subjset_filename):
-        main_base.validate(
+        base.validate(
             src_basepath=basepath, model=chain_result, dst_basepath=basepath+'validation_RMSE_w_lookahead/', 
             forward_sims=['sim-full'],
             yscale_log=True, run_on_copy=False,
@@ -363,7 +363,7 @@ def main_leave_out_single(params, fparams, continue_inference):
             si_error_metric=pl.metrics.PE,
             clus_error_metric=pl.metrics.variation_of_information)
 
-        # main_base.validate(
+        # base.validate(
         #     src_basepath=basepath, model=chain_result, dst_basepath=basepath+'validation_RMSE/',
         #     forward_sims=['sim-full'],
         #     yscale_log=True, run_on_copy=False,

@@ -21,7 +21,7 @@ import config
 
 sys.path.append('..')
 import synthetic
-import main_base
+import base
 from names import STRNAMES
 import preprocess_filtering as filtering
 import model
@@ -345,7 +345,7 @@ if __name__ == '__main__':
             synparams = config.SimulationConfig.load(synparams_filename)        
             
         # Run the model
-        chain_result = main_base.run(
+        chain_result = base.run(
             params=params, 
             graph_name=graph_name, 
             data_filename=subjset_filename,
@@ -356,7 +356,7 @@ if __name__ == '__main__':
             checkpoint_iter=params.CHECKPOINT,
             continue_inference=continue_inference,
             crash_if_error=True,
-            intermediate_validation_func=main_base.semi_synthetic_intermediate_validation_func,
+            intermediate_validation_func=base.semi_synthetic_intermediate_validation_func,
             intermediate_validation_t=params.INTERMEDIATE_VALIDATION_T,
             intermediate_validation_kwargs=params.INTERMEDIATE_VALIDATION_KWARGS)
         chain_result.save(chain_result_filename)
@@ -369,7 +369,7 @@ if __name__ == '__main__':
         df.to_csv(seed_restart_filename, sep='\t', index=False)
 
     params = config.ModelConfigMCMC.load(params_filename)
-    # main_base.readify_chain(
+    # base.readify_chain(
     #     src_basepath=basepath, 
     #     params=params,
     #     yscale_log=params.DATA_LOGSCALE, 
@@ -386,7 +386,7 @@ if __name__ == '__main__':
         nt=args.n_times, uniform_sampling_timepoints=args.uniform_sampling))
     noise_subjset.save(basepath + config.VALIDATION_SUBJSET_FILENAME)
 
-    main_base.validate(
+    base.validate(
         src_basepath=basepath, model=chain_result, 
         forward_sims=['sim-full'],
         yscale_log=True, run_on_copy=True,

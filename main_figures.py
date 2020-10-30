@@ -40,7 +40,7 @@ from Bio import Phylo
 import pylab as pl
 import diversity
 import synthetic
-import main_base
+import base
 import names
 
 DATAPATH = './pickles/real_subjectset.pkl'

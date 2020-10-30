@@ -45,8 +45,8 @@ print('import model')
 import model
 print('import names')
 import names
-print('import main_base')
-import main_base
+print('import base')
+import base
 print('import metrics')
 import metrics
 print('import util')
@@ -61,7 +61,7 @@ from Bio import SeqIO, AlignIO
 import psutil
 import scipy.signal
 # import torch
-# import main_base
+# import base
 
 import io
 from sklearn.metrics.cluster import normalized_mutual_info_score

@@ -16,7 +16,7 @@ import synthetic
 from names import STRNAMES, REPRNAMES
 import preprocess_filtering as filtering
 import data
-import main_base
+import base
 import config
 
 

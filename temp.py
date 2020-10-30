@@ -43,7 +43,7 @@ import config
 import preprocess_filtering as filtering
 import model
 import names
-import main_base
+import base
 import metrics
 import util as MDSINE2_util
 
@@ -56,7 +56,7 @@ from Bio import SeqIO, AlignIO
 import psutil
 import scipy.signal
 # import torch
-# import main_base
+# import base
 
 import io
 from sklearn.metrics.cluster import normalized_mutual_info_score
@@ -74,6 +74,26 @@ xml_output = 'tmp/xml_output_speciesName.xml'
 newick_output = 'tmp/phylogenetic_tree_with_reference.nhx'
 
 # Phylo.convert(xml_output, 'phyloxml', newick_output, 'newick')
+
+paths = {
+    'uc': 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    'healthy': 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
+
+for dset in paths:
+    print()
+
+    f = open('tmp/{}_cluster.csv'.format(dset), 'w')
+    mcmc = pl.inference.BaseMCMC.load(paths[dset])
+    clustering = mcmc.graph[names.STRNAMES.CLUSTERING_OBJ]
+    print(len(clustering))
+    asvs = mcmc.graph.data.subjects.asvs
+    for cluster in clustering:
+        s = ','.join([asvs[aidx].name for aidx in cluster.members])
+        print(s)
+        f.write(s + '\n')
+
+    f.close()
+    
 
 
 # sys.exit()
@@ -1465,13 +1485,13 @@ newick_output = 'tmp/phylogenetic_tree_with_reference.nhx'
 #     asvs = clustering.items
 
 #     asv_interaction_trace = interactions.get_trace_from_disk(section='posterior')
-#     clus_interactions = main_base._condense_interactions(asv_interaction_trace, clustering=clustering)
+#     clus_interactions = base._condense_interactions(asv_interaction_trace, clustering=clustering)
 #     expected_interactions = pl.variables.summary(clus_interactions, only='mean', set_nan_to_0=True)['mean']
 
 #     bf_asvs = interactions.generate_bayes_factors_posthoc(
 #         prior=chain.graph[names.STRNAMES.CLUSTER_INTERACTION_INDICATOR].prior,
 #         section='posterior')
-#     bf_clus = main_base._condense_interactions(bf_asvs, clustering=clustering)
+#     bf_clus = base._condense_interactions(bf_asvs, clustering=clustering)
 
 #     np.save('interactions_over_gibbs_{}.npy'.format(names_loop[i]), clus_interactions)
 #     np.save('bayes_factors_{}.npy'.format(names_loop[i]), bf_clus)
@@ -1743,12 +1763,12 @@ newick_output = 'tmp/phylogenetic_tree_with_reference.nhx'
 
 #     asv_interaction_trace = interactions.get_trace_from_disk(section='posterior')
 #     asv_interactions = pl.variables.summary(asv_interaction_trace, only='mean', set_nan_to_0=True)['mean']
-#     clus_interactions = main_base._condense_interactions(asv_interactions, clustering=clustering)
+#     clus_interactions = base._condense_interactions(asv_interactions, clustering=clustering)
 
 #     bf_asvs = interactions.generate_bayes_factors_posthoc(
 #         prior=chain.graph[names.STRNAMES.CLUSTER_INTERACTION_INDICATOR].prior,
 #         section='posterior')
-#     bf_clus = main_base._condense_interactions(bf_asvs, clustering=clustering)
+#     bf_clus = base._condense_interactions(bf_asvs, clustering=clustering)
 
 #     mask_clus = bf_clus < 10
 #     mask_asvs = bf_asvs < 10
@@ -1907,12 +1927,12 @@ newick_output = 'tmp/phylogenetic_tree_with_reference.nhx'
 
 #     asv_interaction_trace = interactions.get_trace_from_disk(section='posterior')
 #     asv_interactions = pl.variables.summary(asv_interaction_trace, only='mean', set_nan_to_0=True)['mean']
-#     clus_interactions = main_base._condense_interactions(asv_interactions, clustering=clustering)
+#     clus_interactions = base._condense_interactions(asv_interactions, clustering=clustering)
 
 #     bf_asvs = interactions.generate_bayes_factors_posthoc(
 #         prior=chain.graph[names.STRNAMES.CLUSTER_INTERACTION_INDICATOR].prior,
 #         section='posterior')
-#     bf_clus = main_base._condense_interactions(bf_asvs, clustering=clustering)
+#     bf_clus = base._condense_interactions(bf_asvs, clustering=clustering)
 
 #     mask_clus = bf_clus < 10
 #     mask_asvs = bf_asvs < 10
@@ -2163,12 +2183,12 @@ newick_output = 'tmp/phylogenetic_tree_with_reference.nhx'
 # M = np.zeros(shape=(len(perturbations), len(clustering)))
 # for pidx, pert in enumerate(perturbations):
 #     pert_trace = pert.get_trace_from_disk(section='posterior')
-#     pert_trace = main_base._condense_perturbations(pert_trace, clustering)
+#     pert_trace = base._condense_perturbations(pert_trace, clustering)
 #     pert_vals = pl.variables.summary(pert_trace)['mean']
 
 #     for cidx in range(len(clustering)):
 #         oidx = list(clustering[clustering.order[cidx]].members)[0]
-#         bf = main_base.perturbation_bayes_factor(pert, oidx)
+#         bf = base.perturbation_bayes_factor(pert, oidx)
 #         if bf >= 10:
 #             M[pidx, cidx] = pert_vals[cidx]
 
@@ -2625,20 +2645,20 @@ newick_output = 'tmp/phylogenetic_tree_with_reference.nhx'
 # # Making boxplots
 # ####################################################
 
-# df = main_base.make_df(basepath='output_ICML/boxplots/')
-# df = main_base.make_df(basepath='output_mlcrr/boxplots/', df=df)
+# df = base.make_df(basepath='output_ICML/boxplots/')
+# df = base.make_df(basepath='output_mlcrr/boxplots/', df=df)
 
 # print(df)
 # print(df.columns)
 
 # fig = plt.figure(figsize=(10,10))
 # # for i in range(1,5):
-# #     ax = main_base.make_boxplots(df, y='RMSE-interactions', x='Replicates',
+# #     ax = base.make_boxplots(df, y='RMSE-interactions', x='Replicates',
 # #         only={'Replicates': i}, yscale='log', 
 # #         # hue='Model', 
 # #         ax=fig.add_subplot(2,2,i))
 # for i,mn in enumerate([0.05, 0.1, 0.2, 0.3]):
-#     ax = main_base.make_boxplots(df, y='Variation of Information', x='Replicates',
+#     ax = base.make_boxplots(df, y='Variation of Information', x='Replicates',
 #             only={'Measurement Noise': mn}, yscale='linear', 
 #             # hue='Model', 
 #             ax=fig.add_subplot(2,2,i+1))
@@ -3230,7 +3250,7 @@ newick_output = 'tmp/phylogenetic_tree_with_reference.nhx'
 #         fig.suptitle(title)
 #         ax = fig.add_subplot(111)
 
-#         ax = main_base.plot_single_trajectory(given_times=subj.times, times=None, 
+#         ax = base.plot_single_trajectory(given_times=subj.times, times=None, 
 #             data=matrix[oidx, :], latent=None, aux=None, truth=None, min_traj=min_traj,
 #             ax=ax, title=asv.name, yscale_log=True, subjset=subjset, c_m=c_m)
 

@@ -22,7 +22,7 @@ import seaborn as sns
 
 import pylab as pl
 import model
-import diversity.beta
+import diversity
 
 class SyntheticData(pl.Saveable):
     '''This class is used to generate synthetic data using fixed

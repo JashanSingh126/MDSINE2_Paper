@@ -38,7 +38,7 @@ import config
 import preprocess_filtering as filtering
 import model
 import names
-# import main_base
+# import base
 
 import ete3
 #from ete3 import TreeStyle
@@ -49,7 +49,7 @@ from Bio import Phylo
 import psutil
 import scipy.signal
 # import torch
-# import main_base
+# import base
 
 import io
 
@@ -664,20 +664,20 @@ plt.savefig('eiganvalue_heatmap_both.pdf')
 # # Making boxplots
 # ####################################################
 
-# df = main_base.make_df(basepath='output_ICML/boxplots/')
-# df = main_base.make_df(basepath='output_mlcrr/boxplots/', df=df)
+# df = base.make_df(basepath='output_ICML/boxplots/')
+# df = base.make_df(basepath='output_mlcrr/boxplots/', df=df)
 
 # print(df)
 # print(df.columns)
 
 # fig = plt.figure(figsize=(10,10))
 # # for i in range(1,5):
-# #     ax = main_base.make_boxplots(df, y='RMSE-interactions', x='Replicates',
+# #     ax = base.make_boxplots(df, y='RMSE-interactions', x='Replicates',
 # #         only={'Replicates': i}, yscale='log',
 # #         # hue='Model',
 # #         ax=fig.add_subplot(2,2,i))
 # for i,mn in enumerate([0.05, 0.1, 0.2, 0.3]):
-#     ax = main_base.make_boxplots(df, y='Variation of Information', x='Replicates',
+#     ax = base.make_boxplots(df, y='Variation of Information', x='Replicates',
 #             only={'Measurement Noise': mn}, yscale='linear',
 #             # hue='Model',
 #             ax=fig.add_subplot(2,2,i+1))
@@ -1269,7 +1269,7 @@ plt.savefig('eiganvalue_heatmap_both.pdf')
 #         fig.suptitle(title)
 #         ax = fig.add_subplot(111)
 
-#         ax = main_base.plot_single_trajectory(given_times=subj.times, times=None,
+#         ax = base.plot_single_trajectory(given_times=subj.times, times=None,
 #             data=matrix[oidx, :], latent=None, aux=None, truth=None, min_traj=min_traj,
 #             ax=ax, title=asv.name, yscale_log=True, subjset=subjset, c_m=c_m)
 
