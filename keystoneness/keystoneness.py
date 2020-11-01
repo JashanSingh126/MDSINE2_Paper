@@ -178,16 +178,16 @@ def keystoneness_perturbation_single(growth, self_interactions, interactions, pe
         interactions[:, i, i] = self_interactions[:, i]
 
     perts_start = [20]
-    perts_end = [30]
+    perts_end = [40]
     perturbation = perturbations[perturbation_index]
     perturbation = perturbation[:, mask]
 
     total_n_samples = growth.shape[0]
     n_asvs = growth.shape[1]
     n_asvs_originally = len(mask)
-    n_days = 40
+    n_days = 60
     temp_n_samples = 50
-    pred_matrix = np.zeros(shape=(temp_n_samples, n_asvs_originally, 401), dtype=float)*np.nan
+    pred_matrix = np.zeros(shape=(temp_n_samples, n_asvs_originally, 601), dtype=float)*np.nan
 
     start_time = time.time()
     temp_n = 0
@@ -216,7 +216,7 @@ def keystoneness_perturbation_single(growth, self_interactions, interactions, pe
                 leng = temp_n_samples
             
 
-            pred_matrix = np.zeros(shape=(leng, n_asvs_originally, 401), dtype=float)*np.nan
+            pred_matrix = np.zeros(shape=(leng, n_asvs_originally, 601), dtype=float)*np.nan
             temp_n = 0
             master_temp_n += 1
 
