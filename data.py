@@ -65,7 +65,7 @@ class Data(DataNode):
     **kwargs
         - These are the extra arguments for DataNode
     '''
-    def __init__(self, asvs, subjects, data_logscale, min_rel_abund=None, 
+    def __init__(self, asvs, subjects, min_rel_abund=None, 
         zero_inflation_transition_policy=None, **kwargs):
         if 'name' not in kwargs:
             kwargs['name'] = 'data'
@@ -78,12 +78,9 @@ class Data(DataNode):
         if not pl.issubjectset(subjects):
             raise ValueError('`subjects` ({}) must be a pylab SubjectSet'.format(
                 type(subjects)))
-        if not pl.isbool(data_logscale):
-            raise TypeError('`data_logscale` ({}) must be a bool'.format(type(data_logscale)))
 
         self.asvs = asvs
         self.subjects = subjects
-        self.data_logscale = data_logscale
         self.zero_inflation_transition_policy = zero_inflation_transition_policy
 
         self.raw_data = []
@@ -829,16 +826,11 @@ class DesignMatrix(Node):
 class LHSVector(ObservationVector):
     '''This builds the Left-Hand-Side (LHS) vector
     '''
-    def __init__(self, data_logscale, **kwargs):
+    def __init__(self, **kwargs):
         ObservationVector.__init__(self, **kwargs)
         logging.info('Initializing LHS vector')
 
-        if not pl.isbool(data_logscale):
-            raise TypeError('`data_logscale` ({}) must be a bool'.format(
-                type(data_logscale)))
-        self.data_logscale = data_logscale
-
-    def build(self, override_logscale=None, subjects='all'):
+    def build(self, subjects='all'):
         '''Build the observation vector
 
         (log(x_{k+1}) - log(x_{k}))/dt
@@ -850,10 +842,6 @@ class LHSVector(ObservationVector):
             for all the subjects. If you want to pass in an array, we do it with 
             the subject index
         '''
-        if override_logscale is not None:
-            log = override_logscale
-        else:
-            log = self.data_logscale
         if pl.isint(subjects):
             subjects = [subjects]
         if subjects == 'all':
@@ -870,20 +858,12 @@ class LHSVector(ObservationVector):
                 # skip subject
                 continue
             l = self.G.data.n_dts_for_replicate[ridx] * self.G.data.n_asvs
-            if log:
-                LHSVector._fast_build_log(
-                    ret=self.vector[i:i+l],
-                    data=self.G.data.data[ridx],
-                    dt=self.G.data.dt[ridx],
-                    n_ts=self.G.data.n_dts_for_replicate[ridx],
-                    n_asvs=self.G.data.n_asvs)
-            else:
-                LHSVector._fast_build(
-                    ret=self.vector[i:i+l],
-                    data=self.G.data.data[ridx],
-                    dt=self.G.data.dt[ridx],
-                    n_ts=self.G.data.n_dts_for_replicate[ridx],
-                    n_asvs=self.G.data.n_asvs)
+            LHSVector._fast_build_log(
+                ret=self.vector[i:i+l],
+                data=self.G.data.data[ridx],
+                dt=self.G.data.dt[ridx],
+                n_ts=self.G.data.n_dts_for_replicate[ridx],
+                n_asvs=self.G.data.n_asvs)
             i += l
 
         if self.G.data.zero_inflation_transition_policy is not None:
@@ -892,17 +872,6 @@ class LHSVector(ObservationVector):
 
     def __len__(self):
         return len(self.vector)
-
-    @staticmethod
-    @numba.jit(nopython=True, cache=True, fastmath=True)
-    def _fast_build(ret, data, dt, n_ts, n_asvs):
-        '''About 99.4% faster than regular python looping
-        '''
-        i = 0
-        for tidx in range(n_ts):
-            for oidx in range(n_asvs):
-                ret[i] = (data[oidx, tidx+1] - data[oidx,tidx])/dt[tidx]
-                i += 1
 
     @staticmethod
     @numba.jit(nopython=True, cache=True, fastmath=True)
@@ -941,14 +910,10 @@ class SelfInteractionDesignMatrix(DesignMatrix):
     Since the dynamics subtract the self-interaction parameter, we set the
     parameter to positive, which means our data is negative.
     '''
-    def __init__(self, data_logscale, **kwargs):
+    def __init__(self, **kwargs):
         DesignMatrix.__init__(self,
             varname=STRNAMES.SELF_INTERACTION_VALUE,
             update=True, **kwargs)
-        if not pl.isbool(data_logscale):
-            raise TypeError('`data_logscale` ({}) must be a bool'.format(
-                type(data_logscale)))
-        self.data_logscale = data_logscale
         self.n_cols_master = self.G.data.n_asvs
         total_n_dts = self.G.data.total_n_dts_per_asv
         self.n_rows_master = self.n_cols_master * total_n_dts
@@ -958,25 +923,18 @@ class SelfInteractionDesignMatrix(DesignMatrix):
                 np.arange(self.G.data.n_asvs,dtype=int))
         logging.info('Initializing self-interactions design matrix')
 
-    def build(self, override_logscale=None):
+    def build(self):
         '''Builds the matrix. Flatten Fortran style
         '''
         self.rows = self.master_rows
         self.cols = self.master_cols
-        if override_logscale is not None:
-            log = override_logscale
-        else:
-            log = self.data_logscale
 
         self.data = np.zeros(self.n_rows_master, dtype=float)
         data = self.G.data.data
         i = 0
         for ridx in range(self.G.data.n_replicates):
             l = (self.G.data.n_dts_for_replicate[ridx]) * self.G.data.n_asvs
-            if log:
-                self.data[i:i+l] = -data[ridx][:,:-1].ravel('F')
-            else:
-                self.data[i:i+l] = -np.square(data[ridx][:,:-1].ravel('F'))
+            self.data[i:i+l] = -data[ridx][:,:-1].ravel('F')
             i += l
             
         shape = (self.n_rows_master, self.n_cols_master)
@@ -1008,18 +966,18 @@ class SelfInteractionDesignMatrix(DesignMatrix):
 class GrowthDesignMatrix(DesignMatrix):
     '''Builds the design matrix for the growth
 
-    We need two different matrices for growth, depending on if we are learning
+    We need two different matrices for growth, depending on if we are conditioning on the
     perturbations or not. If we are setting the growth to the RHS, that means
     that we are trying to learn the growth values and we have to keep the
     perturbation parameters fixed, so:
-        a_1 * (1 + \\gamma) * x_k
-    we need to put the perturbation parameters on the rhs
+        a_1 * (1 + \\gamma)
+    we need to put the perturbation parameters on the rhs matrix factored into the data matrix
 
     If we are putting the growth on the LHS, that means that we are either
     trying to learn the perturbations or we are marginalizing over the parameters
     dependent on the cluster assignments:
-        x_k * a_1 + x_k * \\gamma * a_1
-        ---------
+        a_1 + \\gamma * a_1
+        ---
     The underlined part goes to the LHS.
 
     If there are no perturbations, the rhs and the lhs are equal and are set to
@@ -1027,20 +985,13 @@ class GrowthDesignMatrix(DesignMatrix):
 
     Parameters
     ----------
-    data_logscale : bool
-        If True, we build the dynamics with a log-dyanmics
-        If False we build with nonlog dynamics
     perturbations_additive : bool
         If False, when we build the matrix with multiplicative perturbations when we call `build`.
         If True, we do not build.
     '''
-    def __init__(self, data_logscale, perturbations_additive, **kwargs):
+    def __init__(self, perturbations_additive, **kwargs):
         DesignMatrix.__init__(self,
             varname=STRNAMES.GROWTH_VALUE, update=True, **kwargs)
-        if not pl.isbool(data_logscale):
-            raise TypeError('`data_logscale` ({}) must be a bool'.format(
-                type(data_logscale)))
-        self.data_logscale = data_logscale
         self.perturbations_additive = perturbations_additive
         self.n_cols_master = self.G.data.n_asvs
         total_n_dts = self.G.data.total_n_dts_per_asv
@@ -1052,30 +1003,17 @@ class GrowthDesignMatrix(DesignMatrix):
         logging.info('Initializing growth design matrix')
 
     def build(self):
-        '''Build RHS and LHS matrices, depending on if we are learning perturbations
-        or not
+        '''Build RHS matrices with perturbations multiplied in and not multiplied in.
         '''
         self.build_without_perturbations()
         self.build_with_perturbations()
 
-    def build_without_perturbations(self, override_logscale=None):
-        '''builds the matrix without perturbations factored in.
-        Flatten fortran style
+    def build_without_perturbations(self):
+        '''Builds the matrix without perturbations factored in.
         '''
         self.cols = self.master_cols
         self.rows = self.master_rows
-        if override_logscale is not None:
-            log = override_logscale
-        else:
-            log = self.data_logscale
         self.data = np.ones(self.n_rows_master, dtype=float)
-        if not log:
-            data = self.G.data.data
-            i = 0
-            for ridx in range(self.G.data.n_replicates):
-                l = (self.G.data.n_dts_for_replicate[ridx]) * self.G.data.n_asvs
-                self.data[i:i+l] = data[ridx][:,:-1].ravel('F')
-                i += l
 
         shape = (self.n_rows_master, self.n_cols_master)
 
@@ -1085,7 +1023,7 @@ class GrowthDesignMatrix(DesignMatrix):
         if self.G.data.zero_inflation_transition_policy is not None:
             self.matrix_without_perturbations = self.matrix_without_perturbations[self.G.data.rows_to_include_zero_inflation, :]
 
-    def build_with_perturbations(self, override_logscale=None):
+    def build_with_perturbations(self):
         '''Incorporate perturbation factors while building the data structure.
 
         NOTE: This will automatically exit if `perturbations_additive` is True.
@@ -1121,10 +1059,6 @@ class GrowthDesignMatrix(DesignMatrix):
         '''
         self.cols = self.master_cols
         self.rows = self.master_rows
-        if override_logscale is not None:
-            log = override_logscale
-        else:
-            log = self.data_logscale
 
         if self.G.perturbations is None:
             self.matrix_with_perturbations = None
@@ -1136,10 +1070,7 @@ class GrowthDesignMatrix(DesignMatrix):
         self.data_w_perts = np.zeros(self.n_rows_master, dtype=float)
         d = []
         for ridx in range(self.G.data.n_replicates):
-            if log:
-                d.append(np.ones(shape=self.G.data.data[ridx].shape))
-            else:
-                d.append(np.array(self.G.data.data[ridx]))
+            d.append(np.ones(shape=self.G.data.data[ridx].shape))
 
         for pidx, pert in enumerate(self.G.perturbations):
             val = (pert.item_array(only_pos_ind=True) + 1).reshape(-1,1)
@@ -1232,20 +1163,14 @@ class PerturbationBaseDesignMatrix(DesignMatrix):
     
     Parameters
     ----------
-    data_logscale : bool
-        If True, we are using log dyanmics with multiplicative noise. Otherwise we
-        are using additive noise for the process variance.
     perturbations_additive : bool
         If True, we are using the additive parameterization of the perturbations. Else
         we are using the multiplicative parameterization of the perturbations.
     '''
-    def __init__(self, data_logscale, perturbations_additive, name=None, **kwargs):
+    def __init__(self, perturbations_additive, name=None, **kwargs):
         if name is None:
             name = STRNAMES.PERT_VALUE+'_base_data'
         DesignMatrix.__init__(self, varname=name, **kwargs)
-        if not pl.isbool(data_logscale):
-            raise TypeError('`data_logscale` ({}) must be a bool'.format(
-                type(data_logscale)))
         if not pl.isbool(perturbations_additive):
             raise TypeError('`perturbations_additive` ({}) must be a bool'.format(
                 type(perturbations_additive)))
@@ -1253,7 +1178,6 @@ class PerturbationBaseDesignMatrix(DesignMatrix):
         if self.G.data.zero_inflation_transition_policy is not None:
             raise NotImplementedError('Not Implemented')
 
-        self.data_logscale = data_logscale
         self.perturbations = self.G.perturbations
         self.n_perturbations = len(self.perturbations)
         self.n_replicates = self.G.data.n_replicates
@@ -1345,7 +1269,7 @@ class PerturbationBaseDesignMatrix(DesignMatrix):
     @staticmethod
     @numba.jit(nopython=True, cache=True, fastmath=True)
     def fast_build(ret, n_perturbations, n_asvs, n_replicates, tidxs_in_perturbation, 
-        growths, data, log):
+        growths, data):
 
         i = 0
         for pidx in range(n_perturbations):
@@ -1354,18 +1278,13 @@ class PerturbationBaseDesignMatrix(DesignMatrix):
                 continue
             for oidx in range(n_asvs):
                 growth = growths[oidx]
-                if log:
-                    ret[i:(i+end-start)] = growth
-                    i += end-start
-                else:
-                    for tidx in range(start, end):
-                        ret[i] = data[oidx, tidx] * growth
-                        i = i + 1
+                ret[i:(i+end-start)] = growth
+                i += end-start
     
     @staticmethod
     @numba.jit(nopython=True, cache=True, fastmath=True)
     def fast_build_additive(ret, n_perturbations, n_asvs, n_replicates, tidxs_in_perturbation, 
-        growths, data, log):
+        growths, data):
 
         i = 0
         for pidx in range(n_perturbations):
@@ -1373,23 +1292,12 @@ class PerturbationBaseDesignMatrix(DesignMatrix):
             if start == -1:
                 continue
             for oidx in range(n_asvs):
-                if log:
-                    ret[i:(i+end-start)] = 1
-                    i += end-start
-                else:
-                    for tidx in range(start, end):
-                        ret[i] = data[oidx, tidx]
-                        i = i + 1
+                ret[i:(i+end-start)] = 1
+                i += end-start
 
-    def build(self, override_logscale=None, cuda=False):
+    def build(self, cuda=False):
         '''If cuda is True, we build on the available device
         '''
-        # build the base matrix
-        if override_logscale is not None:
-            log = override_logscale
-        else:
-            log = self.data_logscale
-
         if self.perturbations_additive:
             growths = None
             func = PerturbationBaseDesignMatrix.fast_build_additive
@@ -1406,8 +1314,7 @@ class PerturbationBaseDesignMatrix(DesignMatrix):
                 n_replicates=self.n_replicates, 
                 tidxs_in_perturbation=self.tidxs_in_perturbation[ridx], 
                 growths=growths, 
-                data=self.G.data.data[ridx],
-                log=log)
+                data=self.G.data.data[ridx])
             i += l
 
         # if cuda:
@@ -1537,22 +1444,18 @@ class PerturbationMixingDesignMatrix(DesignMatrix):
 class PerturbationDesignMatrix(DesignMatrix):
     '''Builds the design matrix for the perturbations
     '''
-    def __init__(self, data_logscale, perturbations_additive, **kwargs):
+    def __init__(self, perturbations_additive, **kwargs):
         DesignMatrix.__init__(self, varname=STRNAMES.PERT_VALUE, **kwargs)
 
-        if not pl.isbool(data_logscale):
-            raise TypeError('`data_logscale` ({}) must be a bool'.format(
-                type(data_logscale)))
         if not pl.isbool(perturbations_additive):
             raise TypeError('`perturbations_additive` ({}) must be a bool'.format(
                 type(perturbations_additive)))
-        self.data_logscale = data_logscale
         self.perturbations_additive = perturbations_additive
 
         self.n_rows = self.G.data.total_n_dts_per_asv * self.G.data.n_asvs
         self.n_cols = None
 
-        self.base = PerturbationBaseDesignMatrix(add_to_dict=False, data_logscale=data_logscale, 
+        self.base = PerturbationBaseDesignMatrix(add_to_dict=False, 
             perturbations_additive=perturbations_additive, **kwargs)
         self.M = PerturbationMixingDesignMatrix(add_to_dict=False, parent=self, **kwargs)
 
@@ -1579,14 +1482,10 @@ class PerturbationDesignMatrix(DesignMatrix):
 class InteractionsBaseDesignMatrix(DesignMatrix):
     '''This is the base data for the design matrix of the interactions
     '''
-    def __init__(self, data_logscale, name=None, **kwargs):
+    def __init__(self, name=None, **kwargs):
         if name is None:
             name = STRNAMES.CLUSTER_INTERACTION_VALUE+'_base_data'
         DesignMatrix.__init__(self,varname=name, **kwargs)
-        if not pl.isbool(data_logscale):
-            raise TypeError('`data_logscale` ({}) must be a bool'.format(
-                type(data_logscale)))
-        self.data_logscale = data_logscale
 
         # Initialize and set up rows and cols for base matrix
         total_n_dts = self.G.data.total_n_dts_per_asv
@@ -1612,16 +1511,11 @@ class InteractionsBaseDesignMatrix(DesignMatrix):
         logging.info('Initializing interactions base design matrix')
 
     # @profile
-    def build(self, override_logscale=None, cuda=False):
+    def build(self, cuda=False):
         '''Build the base matrix
 
         If cuda is true then build on a device
         '''
-        if override_logscale is not None:
-            log = override_logscale
-        else:
-            log = self.data_logscale
-
         n_asvs = self.G.data.n_asvs
         data = self.G.data.data
 
@@ -1633,7 +1527,7 @@ class InteractionsBaseDesignMatrix(DesignMatrix):
         for ridx in range(self.G.data.n_replicates):
             i = InteractionsBaseDesignMatrix._fast_build(
                 ret=self.master_data, data=data[ridx], n_asvs=n_asvs,
-                n_dts=self.G.data.n_dts_for_replicate[ridx], log=log, i=i)
+                n_dts=self.G.data.n_dts_for_replicate[ridx], i=i)
             
         if self.G.data.zero_inflation_transition_policy is not None:
             # All of the rows that need to be taken out will be taken out. All of the 
@@ -1652,7 +1546,7 @@ class InteractionsBaseDesignMatrix(DesignMatrix):
 
     @staticmethod
     @numba.jit(nopython=True, cache=True, fastmath=True)
-    def _fast_build(ret, data, n_dts, n_asvs, log, i):
+    def _fast_build(ret, data, n_dts, n_asvs, i):
         '''About 99.5% faster than regular python looping
         '''
         for tidx in range(n_dts):
@@ -1660,17 +1554,13 @@ class InteractionsBaseDesignMatrix(DesignMatrix):
                 for soidx in range(n_asvs):
                     if toidx == soidx:
                         continue
-                    if log:
-                        ret[i] = data[soidx, tidx]
-                    else:
-                        ret[i] = data[toidx,tidx] * data[soidx, tidx]
-                    
+                    ret[i] = data[soidx, tidx]
                     i = i + 1
         return i
 
     @staticmethod
     @numba.jit(nopython=True, cache=True, fastmath=True)
-    def _fast_build_zi_ignore(ret, data, n_dts, n_asvs, log, i, zero_inflation, zi_mask):
+    def _fast_build_zi_ignore(ret, data, n_dts, n_asvs, i, zero_inflation, zi_mask):
         '''About 99.5% faster than regular python looping
 
         Only set to include if target asv current timepoint and future timepoint are there and
@@ -1685,11 +1575,8 @@ class InteractionsBaseDesignMatrix(DesignMatrix):
                     if not (zero_inflation[soidx, tidx] and zero_inflation[toidx, tidx] and \
                         zero_inflation[toidx, tidx+1]):
                         zi_mask[i] = False
-                    elif log:
-                        ret[i] = data[soidx, tidx]
-                        zi_mask[i] = True
                     else:
-                        ret[i] = data[toidx,tidx] * data[soidx, tidx]
+                        ret[i] = data[soidx, tidx]
                         zi_mask[i] = True
                     
                     i = i + 1
@@ -2039,15 +1926,11 @@ class InteractionsDesignMatrix(DesignMatrix):
         - A_{c_i,c_j} is the cluster-cluster interaction matrix
 
     '''
-    def __init__(self, data_logscale, **kwargs):
+    def __init__(self, **kwargs):
         DesignMatrix.__init__(self,
             varname=STRNAMES.CLUSTER_INTERACTION_VALUE,
             update=True, **kwargs)
 
-        if not pl.isbool(data_logscale):
-            raise TypeError('`data_logscale` ({}) must be a bool'.format(
-                type(data_logscale)))
-        self.data_logscale = data_logscale
         # Initialize and set up rows and cols for base matrix
         total_n_dts = self.G.data.total_n_dts_per_asv
         n_asvs = self.G.data.n_asvs
@@ -2055,11 +1938,9 @@ class InteractionsDesignMatrix(DesignMatrix):
         self.n_rows = int(n_asvs * total_n_dts)
         self.clustering = self.G[STRNAMES.CLUSTER_INTERACTION_VALUE].clustering
 
-        self.base = InteractionsBaseDesignMatrix(
-            add_to_dict=False, data_logscale=data_logscale, **kwargs)
+        self.base = InteractionsBaseDesignMatrix(add_to_dict=False, **kwargs)
         self.base.build()
-        self.M = InteractionsMixingDesignMatrix(
-            add_to_dict=False, parent=self,**kwargs)
+        self.M = InteractionsMixingDesignMatrix(add_to_dict=False, parent=self,**kwargs)
         self.build()
         self.interactions = self.M.interactions
         logging.info('Initializing interactions matrix')

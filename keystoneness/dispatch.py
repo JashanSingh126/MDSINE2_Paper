@@ -174,9 +174,6 @@ if __name__ == '__main__':
         for fname in onlyfiles:
             print(fname)
 
-            if 'cluster' in fname:
-                continue
-
             suffix = None
             if '.txt' in fname:
                 suffix = '.txt'

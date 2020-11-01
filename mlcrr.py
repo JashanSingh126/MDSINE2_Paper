@@ -104,7 +104,7 @@ def run(params, graph_name, subjset):
     GRAPH.as_default()
 
     d = data.Data(asvs=subjset.asvs, subjects=subjset, 
-        min_rel_abund=False, data_logscale=True, G=GRAPH, add_eps_to_data=True)
+        min_rel_abund=False, G=GRAPH, add_eps_to_data=True)
     n_asvs = len(subjset.asvs)
 
     # Initialize the variables
@@ -155,14 +155,13 @@ def run(params, graph_name, subjset):
 
     # Set up the design matrices
     growthDM = data.GrowthDesignMatrix(G=GRAPH, name='growth_design_matrix', 
-        data_logscale=True, perturbations_additive=True)
+        perturbations_additive=True)
     selfinteractionsDM = data.SelfInteractionDesignMatrix(G=GRAPH,
-        name='self_interactions_design_matrix',
-        data_logscale=True)
-    interactionsDM = data.InteractionsBaseDesignMatrix(G=GRAPH, data_logscale=True,
+        name='self_interactions_design_matrix')
+    interactionsDM = data.InteractionsBaseDesignMatrix(G=GRAPH,
         name=STRNAMES.CLUSTER_INTERACTION_VALUE)
     if subjset.perturbations is not None:
-        perturbationsDM = data.PerturbationBaseDesignMatrix(data_logscale=True, additive=True, 
+        perturbationsDM = data.PerturbationBaseDesignMatrix(additive=True, 
             name=STRNAMES.PERT_VALUE, G=GRAPH)
         perturbationsDM.build()
 
@@ -171,7 +170,7 @@ def run(params, graph_name, subjset):
     interactionsDM.build()
 
     # Set up observation matrices
-    lhs = data.LHSVector(G=GRAPH, data_logscale=True, name='lhs_vector')
+    lhs = data.LHSVector(G=GRAPH, name='lhs_vector')
     lhs.build()
 
     y = d.construct_lhs()
@@ -222,7 +221,7 @@ def runCV(params, graph_name, subjset):
     GRAPH.as_default()
 
     d = data.Data(asvs=subjset.asvs, subjects=subjset, 
-        min_rel_abund=False, data_logscale=True, G=GRAPH)
+        min_rel_abund=False,  G=GRAPH)
     n_asvs = len(subjset.asvs)
 
     # Initialize the variables
@@ -266,14 +265,13 @@ def runCV(params, graph_name, subjset):
 
     # Set up the design matrices
     growthDM = data.GrowthDesignMatrix(G=GRAPH, name='growth_design_matrix', 
-        data_logscale=True, perturbations_additive=True)
+        perturbations_additive=True)
     selfinteractionsDM = data.SelfInteractionDesignMatrix(G=GRAPH,
-        name='self_interactions_design_matrix',
-        data_logscale=True)
-    interactionsDM = data.InteractionsBaseDesignMatrix(G=GRAPH, data_logscale=True,
+        name='self_interactions_design_matrix')
+    interactionsDM = data.InteractionsBaseDesignMatrix(G=GRAPH,
         name=STRNAMES.CLUSTER_INTERACTION_VALUE)
     if subjset.perturbations is not None:
-        perturbationsDM = data.PerturbationBaseDesignMatrix(data_logscale=True, 
+        perturbationsDM = data.PerturbationBaseDesignMatrix(
             perturbations_additive=True, name=STRNAMES.PERT_VALUE, G=GRAPH)
         perturbationsDM.build()
 
@@ -282,7 +280,7 @@ def runCV(params, graph_name, subjset):
     interactionsDM.build()
 
     # Set up observation matrices
-    lhs = data.LHSVector(G=GRAPH, data_logscale=True, name='lhs_vector')
+    lhs = data.LHSVector(G=GRAPH, name='lhs_vector')
     lhs.build()
 
     y = d.construct_lhs()

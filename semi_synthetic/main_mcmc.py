@@ -100,8 +100,7 @@ def make_comparison(syndata_filename, exact_subjset):
 
     # Set the variables in the graph
     GRAPH = pl.graph.Graph(name='synthetic')
-    d = data.Data(asvs=exact_subjset.asvs, subjects=exact_subjset, G=GRAPH, 
-        data_logscale=True)
+    d = data.Data(asvs=exact_subjset.asvs, subjects=exact_subjset, G=GRAPH)
     n_asvs = d.n_asvs
     
     clustering = pl.cluster.Clustering(clusters=synth.dynamics.clustering.toarray(),
@@ -300,14 +299,14 @@ if __name__ == '__main__':
             # Plot
             for i, subj in enumerate(subjset):
                 ax = pl.visualization.abundance_over_time(subj=subj, dtype='abs', legend=True,
-                    taxlevel=None, set_0_to_nan=True, yscale_log=params.DATA_LOGSCALE, lca=False,
+                    taxlevel=None, set_0_to_nan=True, lca=False,
                     color_code_clusters=True, clustering=syndata.dynamics.clustering, )
                 plt.savefig(basepath + 'data{}.pdf'.format(i))
             pl.visualization.abundance_over_time(subj=subjset, dtype='qpcr', taxlevel=None, 
-                set_0_to_nan=True, yscale_log=params.DATA_LOGSCALE, clustering=syndata.dynamics.clustering)
+                set_0_to_nan=True, clustering=syndata.dynamics.clustering)
             plt.savefig(basepath + 'qpcr.pdf')
             pl.visualization.abundance_over_time(subj=subjset, dtype='read-depth', taxlevel=None, 
-                set_0_to_nan=True, yscale_log=params.DATA_LOGSCALE, clustering=syndata.dynamics.clustering)
+                set_0_to_nan=True, clustering=syndata.dynamics.clustering)
             plt.savefig(basepath + 'read_depth.pdf')
 
             logging.info('Measurement noise level: {}'.format(args.measurement_noise_level))
@@ -372,7 +371,6 @@ if __name__ == '__main__':
     # base.readify_chain(
     #     src_basepath=basepath, 
     #     params=params,
-    #     yscale_log=params.DATA_LOGSCALE, 
     #     center_color_for_strength=True,
     #     run_on_copy=False,
     #     plot_filtering_thresh=False,

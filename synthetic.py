@@ -1926,7 +1926,7 @@ def make_semisynthetic(chain, min_bayes_factor, set_times=True, init_dist_timepo
     PERTURBATIONS = GRAPH.perturbations
     perturbations_additive = GROWTH.perturbations_additive
 
-    synth = SyntheticData(log_dynamics=DATA.data_logscale, n_days=n_days,
+    synth = SyntheticData(n_days=n_days,
         perturbations_additive=perturbations_additive)
 
     synth.set_asvs(asvs=DATA.asvs)

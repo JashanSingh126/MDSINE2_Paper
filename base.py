@@ -128,8 +128,7 @@ def run(params, graph_name, data_filename, tracer_filename,
     subjset = pl.SubjectSet.load(filename=data_filename)
     asvs = subjset.asvs
     d = data.Data(asvs=subjset.asvs, subjects=subjset, 
-        min_rel_abund=params.ADD_MIN_REL_ABUNDANCE,
-        data_logscale=params.DATA_LOGSCALE, G=GRAPH,
+        min_rel_abund=params.ADD_MIN_REL_ABUNDANCE, G=GRAPH,
         zero_inflation_transition_policy=params.ZERO_INFLATION_TRANSITION_POLICY)
     clustering = pl.cluster.Clustering(clusters=None, items=asvs, G=GRAPH, 
         name=STRNAMES.CLUSTERING_OBJ)
@@ -208,17 +207,13 @@ def run(params, graph_name, data_filename, tracer_filename,
         prior=prior_self_interactions, G=GRAPH)
 
     # Process variance
-    if params.DATA_LOGSCALE:
-        prior_process_var = pl.variables.SICS( 
-            dof=pl.variables.Constant(None, G=GRAPH),
-            scale=pl.variables.Constant(None, G=GRAPH),
-            G=GRAPH)
-        process_var = posterior.ProcessVarGlobal(
-            G=GRAPH, c_m=params.C_M, prior=prior_process_var,
-            perturbations_additive=params.PERTURBATIONS_ADDITIVE)
-    else:
-        process_var = posterior.ProcessVarHeteroscedasticGlobal(G=GRAPH, c_m=params.C_M, 
-            data_logscale=params.DATA_LOGSCALE)
+    prior_process_var = pl.variables.SICS( 
+        dof=pl.variables.Constant(None, G=GRAPH),
+        scale=pl.variables.Constant(None, G=GRAPH),
+        G=GRAPH)
+    process_var = posterior.ProcessVarGlobal(
+        G=GRAPH, c_m=params.C_M, prior=prior_process_var,
+        perturbations_additive=params.PERTURBATIONS_ADDITIVE)
 
     # Concentration
     prior_concentration = pl.variables.Gamma(
@@ -236,12 +231,9 @@ def run(params, graph_name, data_filename, tracer_filename,
         relative=params.RELATIVE_LOG_MARGINAL_CLUSTERING)
 
     # Filtering and zero inflation
-    if params.DATA_LOGSCALE:
-        filtering = posterior.FilteringLogMP(G=GRAPH, mp=params.MP_FILTERING, 
-            perturbations_additive=params.PERTURBATIONS_ADDITIVE,
-            zero_inflation_transition_policy=params.ZERO_INFLATION_TRANSITION_POLICY)
-    else:
-        filtering = posterior.FilteringMP(G=GRAPH, mp=params.MP_FILTERING)
+    filtering = posterior.FilteringLogMP(G=GRAPH, mp=params.MP_FILTERING, 
+        perturbations_additive=params.PERTURBATIONS_ADDITIVE,
+        zero_inflation_transition_policy=params.ZERO_INFLATION_TRANSITION_POLICY)
     zero_inflation = posterior.ZeroInflation(G=GRAPH, mp=params.MP_ZERO_INFLATION)
 
     # Perturbations - first initialize theperturbation objects and then the
@@ -402,23 +394,21 @@ def run(params, graph_name, data_filename, tracer_filename,
         # Initialize data matrices if necessary
         if name == STRNAMES.ZERO_INFLATION:
             # Initialize the basic data matrices after initializing filtering
-            lhs = data.LHSVector(G=GRAPH, name='lhs_vector', data_logscale=params.DATA_LOGSCALE)
+            lhs = data.LHSVector(G=GRAPH, name='lhs_vector')
             lhs.build()
             growthDM = data.GrowthDesignMatrix(G=GRAPH, name='growth_design_matrix',
-                data_logscale=params.DATA_LOGSCALE, perturbations_additive=params.PERTURBATIONS_ADDITIVE)
+                perturbations_additive=params.PERTURBATIONS_ADDITIVE)
             growthDM.build_without_perturbations()
             selfinteractionsDM = data.SelfInteractionDesignMatrix(G=GRAPH,
-                name='self_interactions_design_matrix',
-                data_logscale=params.DATA_LOGSCALE)
+                name='self_interactions_design_matrix')
             selfinteractionsDM.build()
         if name == STRNAMES.CLUSTER_INTERACTION_INDICATOR:
             # Initialize the interactions data matrices after initializing the interactions
-            interactionsDM = data.InteractionsDesignMatrix(G=GRAPH, data_logscale=params.DATA_LOGSCALE)
+            interactionsDM = data.InteractionsDesignMatrix(G=GRAPH)
             interactionsDM.build()
         if name == STRNAMES.PERT_INDICATOR and subjset.perturbations is not None:
             # Initialize the perturbation data matrices after initializing the perturbations
-            perturbationsDM = data.PerturbationDesignMatrix(G=GRAPH, data_logscale=params.DATA_LOGSCALE,
-                perturbations_additive=params.PERTURBATIONS_ADDITIVE)
+            perturbationsDM = data.PerturbationDesignMatrix(G=GRAPH, perturbations_additive=params.PERTURBATIONS_ADDITIVE)
             perturbationsDM.base.build()
             perturbationsDM.M.build()
         if name == STRNAMES.PERT_VALUE and subjset.perturbations is not None and not params.PERTURBATIONS_ADDITIVE:
@@ -452,13 +442,9 @@ def run(params, graph_name, data_filename, tracer_filename,
     logging.info('\tvalue: {}'.format(GRAPH[STRNAMES.PRIOR_VAR_INTERACTIONS].value))
 
     logging.info('Process Variance')
-    if params.DATA_LOGSCALE:
-        logging.info('\tprior.dof: {}'.format(GRAPH[STRNAMES.PROCESSVAR].prior.dof.value))
-        logging.info('\tprior.scale: {}'.format(GRAPH[STRNAMES.PROCESSVAR].prior.scale.value))
-        logging.info('\tprior mean: {}'.format(GRAPH[STRNAMES.PROCESSVAR].prior.mean()))
-    else:
-        logging.info('\tv1: {}'.format(GRAPH[STRNAMES.PROCESSVAR].v1))
-        logging.info('\tv2: {}'.format(GRAPH[STRNAMES.PROCESSVAR].v2))
+    logging.info('\tprior.dof: {}'.format(GRAPH[STRNAMES.PROCESSVAR].prior.dof.value))
+    logging.info('\tprior.scale: {}'.format(GRAPH[STRNAMES.PROCESSVAR].prior.scale.value))
+    logging.info('\tprior mean: {}'.format(GRAPH[STRNAMES.PROCESSVAR].prior.mean()))
 
     logging.info('Concentration')
     logging.info('\tprior.shape: {}'.format(GRAPH[STRNAMES.CONCENTRATION].prior.shape.value))
@@ -1731,44 +1717,41 @@ def readify_chain(src_basepath, params, dst_basepath=None, plot_diagnostic_varia
         f.close()
 
     if chain.is_in_inference_order(STRNAMES.PROCESSVAR):
-        if params.DATA_LOGSCALE:
-            f = open(overviewpath, 'a')
-            pv = chain.graph[STRNAMES.PROCESSVAR]
-            summary = pl.variables.summary(pv, section=SECTION)
-            f.write('\n\n###################################\n')
-            f.write('Process Variance\n')
-            f.write('###################################\n')
-            for key,ele in summary.items():
-                f.write('{}: {}\n'.format(key,ele))
-            ax1, _ = pl.visualization.render_trace(var=pv, plt_type='both',
-                section=SECTION, include_burnin=True, log_scale=True, rasterized=True)
+        f = open(overviewpath, 'a')
+        pv = chain.graph[STRNAMES.PROCESSVAR]
+        summary = pl.variables.summary(pv, section=SECTION)
+        f.write('\n\n###################################\n')
+        f.write('Process Variance\n')
+        f.write('###################################\n')
+        for key,ele in summary.items():
+            f.write('{}: {}\n'.format(key,ele))
+        ax1, _ = pl.visualization.render_trace(var=pv, plt_type='both',
+            section=SECTION, include_burnin=True, log_scale=True, rasterized=True)
 
-            l,h = ax1.get_xlim()
-            try:
-                xs = np.arange(l,h,step=(h-l)/100) 
-                ys = []
-                for x in xs:
-                    # This might throw an overflow error
-                    # print('\nvalue: {}\ndof: {}\nscale: {}'.format( 
-                    #     x, pv.prior.dof.value,
-                    #     pv.prior.scale.value))
-                    ys.append(pl.random.sics.pdf(value=x, 
-                        dof=pv.prior.dof.value,
-                        scale=pv.prior.scale.value))
-                ax1.plot(xs, ys, label='prior', alpha=0.5, color='red')
-                ax1.legend()
-            except OverflowError:
-                logging.critical('OverflowError while plotting prior for ' \
-                    'process variance')
-            
+        l,h = ax1.get_xlim()
+        try:
+            xs = np.arange(l,h,step=(h-l)/100) 
+            ys = []
+            for x in xs:
+                # This might throw an overflow error
+                # print('\nvalue: {}\ndof: {}\nscale: {}'.format( 
+                #     x, pv.prior.dof.value,
+                #     pv.prior.scale.value))
+                ys.append(pl.random.sics.pdf(value=x, 
+                    dof=pv.prior.dof.value,
+                    scale=pv.prior.scale.value))
+            ax1.plot(xs, ys, label='prior', alpha=0.5, color='red')
+            ax1.legend()
+        except OverflowError:
+            logging.critical('OverflowError while plotting prior for ' \
+                'process variance')
+        
 
-            fig = plt.gcf()
-            fig.suptitle('Process Variance, {}'.format(LATEXNAMES.PROCESSVAR))
-            plt.savefig(basepath + 'processvar.pdf')
-            plt.close()
-            f.close()
-        else:
-            logging.info('NOT IMPLEMENTED FOR DATA NOT LOGSCALE')
+        fig = plt.gcf()
+        fig.suptitle('Process Variance, {}'.format(LATEXNAMES.PROCESSVAR))
+        plt.savefig(basepath + 'processvar.pdf')
+        plt.close()
+        f.close()
 
     # Perturbations
     if STRNAMES.PERT_VALUE in chain.graph:

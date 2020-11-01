@@ -215,7 +215,6 @@ class ModelConfigICML(_BaseModelConfig):
         self.C_M = 1e5
 
         # This is whether to use the log-scale dynamics or not
-        self.DATA_LOGSCALE = True
         self.PERTURBATIONS_ADDITIVE = False
 
         self.MP_FILTERING = 'full'
@@ -621,7 +620,6 @@ class ModelConfigReal(_BaseModelConfig):
         self.C_M = 1e5
         self.LEAVE_OUT = leave_out
         self.MAX_N_ASVS = max_n_asvs
-        self.DATA_LOGSCALE = True
         self.PERTURBATIONS_ADDITIVE = False
         self.ZERO_INFLATION_TRANSITION_POLICY = None #'ignore'
 
@@ -887,7 +885,7 @@ class ModelConfigReal(_BaseModelConfig):
             lo = None
         s = 'ds{}_is{}_b{}_ns{}_lo{}_mo{}_log{}_perts{}'.format(
             self.DATA_SEED, self.INIT_SEED, self.BURNIN, self.N_SAMPLES, lo,
-            self.MAX_N_ASVS, self.DATA_LOGSCALE, perts)
+            self.MAX_N_ASVS, True, perts)
         return s
 
     def cv_suffix(self):
@@ -896,7 +894,7 @@ class ModelConfigReal(_BaseModelConfig):
         perts = 'addit' if self.PERTURBATIONS_ADDITIVE else 'mult'
         s = 'ds{}_is{}_b{}_ns{}_mo{}_log{}_perts{}'.format(
             self.DATA_SEED, self.INIT_SEED, self.BURNIN, self.N_SAMPLES,
-            self.MAX_N_ASVS, self.DATA_LOGSCALE, perts)
+            self.MAX_N_ASVS, True, perts)
         return s
 
     def cv_single_suffix(self):

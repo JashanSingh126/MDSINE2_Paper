@@ -66,8 +66,7 @@ def make_comparison(syndata_filename, exact_subjset):
 
     # Set the variables in the graph
     GRAPH = pl.graph.Graph(name='synthetic')
-    d = data.Data(asvs=exact_subjset.asvs, subjects=exact_subjset, G=GRAPH, 
-        data_logscale=True)
+    d = data.Data(asvs=exact_subjset.asvs, subjects=exact_subjset, G=GRAPH)
     n_asvs = d.n_asvs
 
     growth = pl.variables.Variable(G=GRAPH, name=STRNAMES.GROWTH_VALUE, 

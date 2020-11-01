@@ -299,7 +299,6 @@ class ModelConfigMCMC(_BaseModelConfig):
         self.DATA_DTYPE = 'abs'
         self.DIAGNOSTIC_VARIABLES = ['n_clusters']
 
-        self.DATA_LOGSCALE = False
         self.GROWTH_TRUNCATION_SETTINGS = 'positive'
         self.SELF_INTERACTIONS_TRUNCATION_SETTINGS = 'positive'
 
@@ -307,7 +306,6 @@ class ModelConfigMCMC(_BaseModelConfig):
         self.C_M = 1e5
 
         # This is whether to use the log-scale dynamics or not
-        self.DATA_LOGSCALE = True
         self.PERTURBATIONS_ADDITIVE = False
         self.ZERO_INFLATION_TRANSITION_POLICY = None
 
