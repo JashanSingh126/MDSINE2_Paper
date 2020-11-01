@@ -174,7 +174,7 @@ if __name__ == '__main__':
         for fname in onlyfiles:
             print(fname)
 
-            if 'cluster' not in fname:
+            if 'cluster' in fname:
                 continue
 
             suffix = None
