@@ -658,36 +658,6 @@ class FilteringLogMP(pl.graph.Node):
 
         self.set_latent_as_data()
 
-        # print('sample_iter', self.sample_iter)
-        # print('growths\n', self.G[REPRNAMES.GROWTH_VALUE].value)
-        # print('self-interactions\n', self.G[REPRNAMES.SELF_INTERACTION_VALUE].value)
-        # print('perturbations\n', str(self.G[REPRNAMES.PERT_VALUE]))
-        # after_aux = self.x[0][oidxs,:]
-        # after_latent = self.q[0][oidxs,:]
-        # times = self.G.data.times
-
-
-        # for i in range(len(oidxs)):
-        #     fig = plt.figure()
-        #     ax = fig.add_subplot(111)
-        #     times = self.G.data.times
-        #     ax.plot(self.G.data.given_timepoints[0], self.G.data.abs_data[0][oidxs[i], :], label='Given', color='r', marker='o', alpha=0.5)
-        #     # ax.plot(self.G.data.given_timepoints[0],
-        #     #     syndata.data[0][oidxs[i], :] * self.G.data.subjects.qpcr_normalization_factor,
-        #     #     label='Truth', color='black', marker='o', alpha=0.5)
-        #     ax.plot(times[0], before_latent[i,:], label='before latent', color='b', linestyle=':')
-        #     ax.plot(times[0], after_latent[i,:], label='after latent', color='b', marker='o')
-        #     ax.plot(times[0], before_aux[i,:], label='before aux', color='g', linestyle=':')
-        #     ax.plot(times[0], after_aux[i,:], label='after aux', color='g', marker='o')
-        #     ax.set_title('oidx {}'.format(oidxs[i]))
-        #     ax.legend()
-        #     ax.set_yscale('log')
-        # plt.show()
-
-        # if self.sample_iter == 55:
-        #     sys.exit()
-
-
         t = time.time() - start_time
         try:
             self._strr = 'Time: {:.4f}, Acc: {}, data/sec: {:.2f}'.format(t,

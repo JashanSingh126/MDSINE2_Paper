@@ -50,8 +50,6 @@ class gLVDynamicsSingleClustering(pl.BaseDynamics):
 
     Parameters
     ----------
-    log_dynamics : bool
-        If True, we log integrate the dynamics
     perturbations_additive : bool, optional
         If True, then we set the perturbation effect as dditive instread of multiplicative to
         the growth.
@@ -68,7 +66,7 @@ class gLVDynamicsSingleClustering(pl.BaseDynamics):
     pylab.dynamics.BaseDynamics
     '''
 
-    def __init__(self, log_dynamics, perturbations_additive, sim_max=None, 
+    def __init__(self, perturbations_additive, sim_max=None, 
         start_day=0,**kwargs):
         pl.BaseDynamics.__init__(self, **kwargs)
 
@@ -77,7 +75,6 @@ class gLVDynamicsSingleClustering(pl.BaseDynamics):
         self.interactions = None
         self.clustering = None
         self.perturbations = None
-        self.log_dynamics = log_dynamics
         self.perturbations_additive = perturbations_additive
         self.sim_max = sim_max
         self.start_day = start_day
@@ -269,25 +266,19 @@ class gLVDynamicsSingleClustering(pl.BaseDynamics):
             perts = 0
 
         # Integrate
-        if self.log_dynamics:
-            if self.perturbations_additive:
-                ret = np.exp(np.log(x) + (growth + self._interactions @ x + perts) * dt).ravel()
-            else:
-                try:
-                    ret = np.exp(np.log(x) + (growth + self._interactions @ x) * dt).ravel()
-                except:
-                    print('here')
-                    print(x.shape)
-                    print(growth.shape)
-                    print(self._interactions)
-                    print(dt)
-                    print(len(self.asvs))
-                    raise
+        if self.perturbations_additive:
+            ret = np.exp(np.log(x) + (growth + self._interactions @ x + perts) * dt).ravel()
         else:
-            if self.perturbations_additive:
-                ret = (x + x * (growth + self._interactions @ x + perts) * dt).ravel()
-            else:
-                ret = (x + x * (growth + self._interactions @ x) * dt).ravel()
+            try:
+                ret = np.exp(np.log(x) + (growth + self._interactions @ x) * dt).ravel()
+            except:
+                print('here')
+                print(x.shape)
+                print(growth.shape)
+                print(self._interactions)
+                print(dt)
+                print(len(self.asvs))
+                raise
         
         if self.sim_max is not None:
             ret[ret >= self.sim_max] = self.sim_max

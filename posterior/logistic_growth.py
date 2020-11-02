@@ -901,7 +901,6 @@ class Growth(pl.variables.TruncatedNormal):
         if self.sample_iter < self.delay:
             return
 
-
         self.calculate_posterior()
         self.sample()
 
@@ -1400,67 +1399,68 @@ class RegressCoeff(pl.variables.MVN):
                 if self._there_are_perturbations:
                     self.G[REPRNAMES.PERT_VALUE].update()
                 self.G[REPRNAMES.CLUSTER_INTERACTION_VALUE].update()
-            return
-        # Update jointly
-        rhs = []
-        lhs = []
-        if self.interactions.obj.sample_iter >= \
-            self.interactions.delay:
-            rhs.append(REPRNAMES.CLUSTER_INTERACTION_VALUE)
         else:
-            lhs.append(REPRNAMES.CLUSTER_INTERACTION_VALUE)
-        if self._there_are_perturbations:
-            if self.pert_mag.sample_iter >= self.pert_mag.delay:
-                rhs.append(REPRNAMES.PERT_VALUE)
+            # Update jointly
+            rhs = []
+            lhs = []
+            if self.interactions.obj.sample_iter >= \
+                self.interactions.delay:
+                rhs.append(REPRNAMES.CLUSTER_INTERACTION_VALUE)
             else:
-                lhs.append(REPRNAMES.PERT_VALUE)
+                lhs.append(REPRNAMES.CLUSTER_INTERACTION_VALUE)
+            if self._there_are_perturbations:
+                if self.pert_mag.sample_iter >= self.pert_mag.delay:
+                    rhs.append(REPRNAMES.PERT_VALUE)
+                else:
+                    lhs.append(REPRNAMES.PERT_VALUE)
 
-        if len(rhs) == 0:
-            return
+            if len(rhs) == 0:
+                return
 
-        lhs += [REPRNAMES.GROWTH_VALUE, REPRNAMES.SELF_INTERACTION_VALUE]
-        X = self.G.data.construct_rhs(keys=rhs)
-        if X.shape[1] == 0:
-            logging.info('No columns, skipping')
-            return
-        y = self.G.data.construct_lhs(keys=lhs,
-            kwargs_dict={REPRNAMES.GROWTH_VALUE:{'with_perturbations': False}})
+            lhs += [REPRNAMES.GROWTH_VALUE, REPRNAMES.SELF_INTERACTION_VALUE]
+            X = self.G.data.construct_rhs(keys=rhs)
+            if X.shape[1] == 0:
+                logging.info('No columns, skipping')
+                return
+            y = self.G.data.construct_lhs(keys=lhs,
+                kwargs_dict={REPRNAMES.GROWTH_VALUE:{'with_perturbations': False}})
 
-        process_prec = self.G[REPRNAMES.PROCESSVAR].build_matrix(
-            cov=False, sparse=True)
-        prior_prec = build_prior_covariance(G=self.G, cov=False,
-            order=rhs, sparse=True)
-        prior_means = build_prior_mean(G=self.G,order=rhs).reshape(-1,1)
+            process_prec = self.G[REPRNAMES.PROCESSVAR].build_matrix(
+                cov=False, sparse=True)
+            prior_prec = build_prior_covariance(G=self.G, cov=False,
+                order=rhs, sparse=True)
+            prior_means = build_prior_mean(G=self.G,order=rhs).reshape(-1,1)
 
-        # Make the prior covariance matrix and process varaince
-        prec = X.T @ process_prec @ X + prior_prec
-        self.cov.value = pinv(prec, self)
-        self.mean.value = np.asarray(self.cov.value @ (X.T @ process_prec.dot(y) + \
-            prior_prec @ prior_means)).ravel()
+            # Make the prior covariance matrix and process varaince
+            prec = X.T @ process_prec @ X + prior_prec
+            self.cov.value = pinv(prec, self)
+            self.mean.value = np.asarray(self.cov.value @ (X.T @ process_prec.dot(y) + \
+                prior_prec @ prior_means)).ravel()
 
-        # sample posterior jointly and then assign the values to each coefficient
-        # type, respectfully
-        try:
-            value = self.sample()
-        except:
-            logging.critical('failed here, updating separately')
-            self.pert_mag.update()
-            self.interactions.update()
-            return
+            # sample posterior jointly and then assign the values to each coefficient
+            # type, respectfully
+            try:
+                value = self.sample()
+            except:
+                logging.critical('failed here, updating separately')
+                self.pert_mag.update()
+                self.interactions.update()
+                return
 
-        i = 0
-        if REPRNAMES.CLUSTER_INTERACTION_VALUE in rhs:
-            l = self.interactions.obj.num_pos_indicators()
-            self.interactions.value = value[:l]
-            self.interactions.set_values(arr=value[:l], use_indicators=True)
-            self.interactions.update_str()
-            i += l
-        if self._there_are_perturbations:
-            if REPRNAMES.PERT_VALUE in rhs:
-                self.pert_mag.value = value[i:]
-                self.pert_mag.set_values(arr=value[i:], use_indicators=True)
-                self.pert_mag.update_str()
-                # self.G.data.design_matrices[REPRNAMES.PERT_VALUE].build()
+            i = 0
+            if REPRNAMES.CLUSTER_INTERACTION_VALUE in rhs:
+                l = self.interactions.obj.num_pos_indicators()
+                self.interactions.value = value[:l]
+                self.interactions.set_values(arr=value[:l], use_indicators=True)
+                self.interactions.update_str()
+                i += l
+            if self._there_are_perturbations:
+                if REPRNAMES.PERT_VALUE in rhs:
+                    self.pert_mag.value = value[i:]
+                    self.pert_mag.set_values(arr=value[i:], use_indicators=True)
+                    self.pert_mag.update_str()
+                    self.G.data.design_matrices[REPRNAMES.GROWTH_VALUE].update_value()
+                    # self.G.data.design_matrices[REPRNAMES.PERT_VALUE].build()
 
     def _update_acceptances(self):
         if self.growth.sample_iter == 0:
@@ -1478,12 +1478,11 @@ class RegressCoeff(pl.variables.MVN):
         '''
         if not self.update_jointly_growth_si:
             # Update separately
-            for _ in range(20):
-                self.growth.update()
-                self.self_interactions.update()
-            return
-        # Update together - make the matrices
-        raise NotImplementedError('Not Implemented')
+            self.growth.update()
+            self.self_interactions.update()
+        else:
+            # Update together
+            raise NotImplementedError('Not Implemented')
 
     def add_trace(self):
         '''Trace values for growth, self-interactions, and cluster interaction values

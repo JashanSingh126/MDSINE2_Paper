@@ -634,7 +634,7 @@ plt.savefig('eiganvalue_heatmap_both.pdf')
 #     (50,56,0.2, '1', [0.2, 0.4, 0.4], [0.5, 1, 2], 0.1),
 # ]
 # subjset_real = pl.SubjectSet.load('pickles/real_subjectset.pkl')
-# syndata = synthetic.SyntheticData(log_dynamics=True, n_days=62)
+# syndata = synthetic.SyntheticData(n_days=62)
 # syndata.icml_topology(n_asvs=13, max_abundance=1e8)
 # for pert in perturbations:
 #     syndata.sample_single_perturbation(*pert)

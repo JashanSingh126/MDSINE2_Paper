@@ -325,6 +325,8 @@ if __name__ == '__main__':
                 subjset.normalize_qpcr(max_value=params.QPCR_NORMALIZATION_MAX_VALUE)
                 logging.info('Normalizing qPCR values. Normalization constant: {:.3E}'.format(
                     subjset.qpcr_normalization_factor))
+                aaa = np.asarray([subjset.qpcr_normalization_factor])
+                np.save(basepath + 'qpcr_norm_factor.npy', aaa)
                 old_c_m = params.C_M
                 old_v2 = params.INITIALIZATION_KWARGS[STRNAMES.FILTERING]['v2']
                 params.C_M = params.C_M * subjset.qpcr_normalization_factor
@@ -368,14 +370,15 @@ if __name__ == '__main__':
         df.to_csv(seed_restart_filename, sep='\t', index=False)
 
     params = config.ModelConfigMCMC.load(params_filename)
-    # base.readify_chain(
-    #     src_basepath=basepath, 
-    #     params=params,
-    #     center_color_for_strength=True,
-    #     run_on_copy=False,
-    #     plot_filtering_thresh=False,
-    #     exact_filename=exact_filename,
-    #     syndata=syndata_filename)
+    base.readify_chain(
+        src_basepath=basepath, 
+        params=params,
+        center_color_for_strength=True,
+        run_on_copy=False,
+        plot_filtering_thresh=False,
+        exact_filename=exact_filename,
+        syndata=syndata_filename)
+    sys.exit()
     
     chain_result = pl.inference.BaseMCMC.load(chain_result_filename)
     noise_subjset = pl.base.SubjectSet.load(config.make_val_subjset_name(

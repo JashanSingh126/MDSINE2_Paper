@@ -309,9 +309,9 @@ class ModelConfigMCMC(_BaseModelConfig):
         self.PERTURBATIONS_ADDITIVE = False
         self.ZERO_INFLATION_TRANSITION_POLICY = None
 
-        self.MP_FILTERING = 'debug'
+        self.MP_FILTERING = 'full'
         self.MP_INDICATORS = None
-        self.MP_CLUSTERING = 'debug'
+        self.MP_CLUSTERING = 'full-5'
         self.MP_ZERO_INFLATION = None
         self.RELATIVE_LOG_MARGINAL_INDICATORS = True
         self.RELATIVE_LOG_MARGINAL_PERT_INDICATORS = True
@@ -324,7 +324,7 @@ class ModelConfigMCMC(_BaseModelConfig):
 
         self.N_QPCR_BUCKETS = 3
 
-        self.INTERMEDIATE_VALIDATION_T = 10 * 60 #8 * 3600 # Every 8 hours
+        self.INTERMEDIATE_VALIDATION_T = 2 * 60 #8 * 3600 # Every 8 hours
         self.INTERMEDIATE_VALIDATION_KWARGS = None
 
         self.LEARN = {
@@ -699,15 +699,10 @@ class SimulationConfigBoxplots(_BaseModelConfig):
         self.PROCESS_STD_LEVELS = process_variance_levels
         self.MEASUREMENT_NOISE_LEVELS = measurement_noise_levels
         self.DATASET = dataset
-        self.LOG_DYNAMICS = True
 
         self.DSET = 'semi-synthetic'
         self.DATA_FILENAME = '../pickles/real_subjectset.pkl'
-        self.SEMI_SYNTH_CHAIN_FILENAME = 'base_data/healthy_mcmc.pkl'
-        self.SEMI_SYNTH_HDF5_FILENAME = 'base_data/healthy_traces.hdf5'
-        self.PREPROCESSED_SEMI_SYNTH_FILENAME = 'base_data/preprocessed_semisynthetic_healthy.pkl'
-        self.SEMI_SYNTH_MIN_BAYES_FACTOR = 10
-        self.SEMI_SYNTH_FIRST_TIMEPOINT = 1.5
+        self.PREPROCESSED_SEMI_SYNTH_FILENAME = 'base_data/preprocessed_semisynthetic_uc.pkl'
 
         # (prob_pos, prob_affect, prob_strength, mean_strength, std_strength)
         self.PERTURBATIONS = True

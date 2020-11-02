@@ -41,14 +41,12 @@ class SyntheticData(pl.Saveable):
 
     Parameters
     ----------
-    log_dynamics : bool
-        If True, do log-scale dynamics
     n_days : numeric
         Total length of days
     perturbations_additive : bool
         If True, model the dynamics as additive. Else model it as multiplicative
     '''
-    def __init__(self, log_dynamics, n_days, perturbations_additive):
+    def __init__(self, n_days, perturbations_additive):
         self.G = pl.graph.Graph(name='synthetic') # make local graph
         self.data = []
         self.times = []
@@ -60,8 +58,6 @@ class SyntheticData(pl.Saveable):
         self.dt = None
         self.n_time_steps = None
         self.n_days = n_days
-
-        self.log_dynamics = log_dynamics
 
     @property
     def perturbations(self):
@@ -154,7 +150,6 @@ class SyntheticData(pl.Saveable):
             self.asvs = asvs
 
         self.dynamics = model.gLVDynamicsSingleClustering(asvs=self.asvs, 
-            log_dynamics=self.log_dynamics, 
             perturbations_additive=self.perturbations_additive)
         
     def set_cluster_assignments(self, clusters=None, n_clusters=None, evenness=None):
@@ -1835,7 +1830,7 @@ def issynthetic(x):
     return x is not None and issubclass(x.__class__, SyntheticData)
 
 def make_semisynthetic(chain, min_bayes_factor, set_times=True, init_dist_timepoint=None, 
-    hdf5_filename=None):
+    hdf5_filename=None, init_dist_scale=None):
     '''Make a semi synthetic system. We take the system learned in the chain and
     we set the modeling parameters of `SyntheticData` to the learned system. We assume
     that the chain that we pass in was run with a fixed topology.
@@ -1867,9 +1862,6 @@ def make_semisynthetic(chain, min_bayes_factor, set_times=True, init_dist_timepo
     min_bayes_factor : numeric
         This is the minimum bayes factor needed for a perturbation/interaction
         to be used in the synthetic dataset
-    log_dynamics : bool
-        Type of integration we use for the dynamics. If True we use the log integration
-        else we do a first order approximation.
     set_times : bool
         If True, we set the times of the subject to be be a union of all of the subjects
         in chain
@@ -2031,10 +2023,7 @@ def make_semisynthetic(chain, min_bayes_factor, set_times=True, init_dist_timepo
     values = values[values > 0]
     logvalues = np.log(values)
 
-    mean = np.mean(logvalues)
-    std = np.std(mean)
-
-    synth.init_dist = pl.variables.Lognormal(mean=mean, std=std)
+    synth.init_dist = pl.variables.Uniform(low=1e4, high=1e9)
 
     return synth
     

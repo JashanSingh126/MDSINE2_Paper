@@ -589,22 +589,21 @@ def unnormalize_parameters(subjset, mcmc):
             dset[:] = dset[:] * (subjset.qpcr_normalization_factor**2)
 
         if mcmc.is_in_inference_order(STRNAMES.FILTERING):
-            for ridx in range(len(subjset)):
-                for dset_name in [STRNAMES.LATENT_TRAJECTORY, STRNAMES.AUX_TRAJECTORY]:
-                    name = dset_name + '_ridx{}'.format(ridx)
-                    if name not in f:
-                        continue
-                    dset = f[name]
-                    total_samples = dset.attrs['end_iter']
-                    i = 0
-                    while (i * ckpt) < total_samples:
-                        start_idx = int(i * ckpt)
-                        end_idx = int((i+1) * ckpt)
+            for ridx in range(mcmc.graph.data.subjects):
+                name = STRNAMES.LATENT_TRAJECTORY + '_ridx{}'.format(ridx)
+                if name not in f:
+                    continue
+                dset = f[name]
+                total_samples = dset.attrs['end_iter']
+                i = 0
+                while (i * ckpt) < total_samples:
+                    start_idx = int(i * ckpt)
+                    end_idx = int((i+1) * ckpt)
 
-                        if end_idx > total_samples:
-                            end_idx = total_samples
-                        dset[start_idx: end_idx] = dset[start_idx: end_idx]/subjset.qpcr_normalization_factor
-                        i += 1
+                    if end_idx > total_samples:
+                        end_idx = total_samples
+                    dset[start_idx: end_idx] = dset[start_idx: end_idx]/subjset.qpcr_normalization_factor
+                    i += 1
 
         f.close()
         # Denormalize
@@ -911,1019 +910,1019 @@ def readify_chain(src_basepath, params, dst_basepath=None, plot_diagnostic_varia
         f.write('\t{}\n'.format(str(ele)))
     f.close()
 
-    # Calculate the stability - save as a npy array
-    logging.info('Calculating the stability')
-    growth = chain.graph[STRNAMES.GROWTH_VALUE]
-    if chain.tracer.is_being_traced(STRNAMES.GROWTH_VALUE):
-        growth_values = growth.get_trace_from_disk(section=SECTION)
-    else:
-        growth_values = growth.value
-        growth_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS))) + growth_values.reshape(-1,1)
+    # # Calculate the stability - save as a npy array
+    # logging.info('Calculating the stability')
+    # growth = chain.graph[STRNAMES.GROWTH_VALUE]
+    # if chain.tracer.is_being_traced(STRNAMES.GROWTH_VALUE):
+    #     growth_values = growth.get_trace_from_disk(section=SECTION)
+    # else:
+    #     growth_values = growth.value
+    #     growth_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS))) + growth_values.reshape(-1,1)
 
-    si = chain.graph[STRNAMES.SELF_INTERACTION_VALUE]
-    if chain.tracer.is_being_traced(STRNAMES.SELF_INTERACTION_VALUE):
-        si_values = si.get_trace_from_disk(section=SECTION)
-    else:
-        si_values = si.value
-        si_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS))) + si_values.reshape(-1,1)
+    # si = chain.graph[STRNAMES.SELF_INTERACTION_VALUE]
+    # if chain.tracer.is_being_traced(STRNAMES.SELF_INTERACTION_VALUE):
+    #     si_values = si.get_trace_from_disk(section=SECTION)
+    # else:
+    #     si_values = si.value
+    #     si_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS))) + si_values.reshape(-1,1)
 
-    interactions = chain.graph[STRNAMES.INTERACTIONS_OBJ]
-    if chain.tracer.is_being_traced(STRNAMES.INTERACTIONS_OBJ):
-        interaction_values = interactions.get_trace_from_disk(section=SECTION)
-        interaction_values[np.isnan(interaction_values)] = 0
-    else:
-        interactions = interactions.get_datalevel_value_matrix(set_neg_indicators_to_nan=False)
-        interaction_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS), len(ASVS))) + interactions
+    # interactions = chain.graph[STRNAMES.INTERACTIONS_OBJ]
+    # if chain.tracer.is_being_traced(STRNAMES.INTERACTIONS_OBJ):
+    #     interaction_values = interactions.get_trace_from_disk(section=SECTION)
+    #     interaction_values[np.isnan(interaction_values)] = 0
+    # else:
+    #     interactions = interactions.get_datalevel_value_matrix(set_neg_indicators_to_nan=False)
+    #     interaction_values = np.zeros(shape=(LEN_POSTERIOR, len(ASVS), len(ASVS))) + interactions
 
-    stabil = np.zeros(shape=(LEN_POSTERIOR, len(ASVS), len(ASVS)))
-    stabil = calc_eigan_over_gibbs(ret=stabil, growth=growth_values, si=si_values, 
-        interactions=interaction_values)
-    np.save(basepath + 'stability.npy', stabil)
+    # stabil = np.zeros(shape=(LEN_POSTERIOR, len(ASVS), len(ASVS)))
+    # stabil = calc_eigan_over_gibbs(ret=stabil, growth=growth_values, si=si_values, 
+    #     interactions=interaction_values)
+    # np.save(basepath + 'stability.npy', stabil)
 
-    # Plot growth parameters
-    growthpath = basepath + 'growth/'
-    fgrowthpath = growthpath + 'output.txt'
-    os.makedirs(growthpath, exist_ok=True)
-    f = open(fgrowthpath, 'w')
-    f.close()
+    # # Plot growth parameters
+    # growthpath = basepath + 'growth/'
+    # fgrowthpath = growthpath + 'output.txt'
+    # os.makedirs(growthpath, exist_ok=True)
+    # f = open(fgrowthpath, 'w')
+    # f.close()
 
-    if chain.tracer.is_being_traced(STRNAMES.PRIOR_MEAN_GROWTH):
-        growth_mean = chain.graph[STRNAMES.PRIOR_MEAN_GROWTH]
-        f = open(fgrowthpath, 'a')
+    # if chain.tracer.is_being_traced(STRNAMES.PRIOR_MEAN_GROWTH):
+    #     growth_mean = chain.graph[STRNAMES.PRIOR_MEAN_GROWTH]
+    #     f = open(fgrowthpath, 'a')
 
-        summary = pl.variables.summary(growth_mean, section=SECTION)
-        f.write('###################################\n')
-        f.write('ASV Growth Mean\n')
-        f.write('###################################\n')
-        for key,ele in summary.items():
-            f.write('{}: {}\n'.format(key,ele))
+    #     summary = pl.variables.summary(growth_mean, section=SECTION)
+    #     f.write('###################################\n')
+    #     f.write('ASV Growth Mean\n')
+    #     f.write('###################################\n')
+    #     for key,ele in summary.items():
+    #         f.write('{}: {}\n'.format(key,ele))
 
-        # Show prior on axis 1, show acceptance rate on axis 2
-        ax1, ax2 = pl.visualization.render_trace(var=growth_mean, plt_type='both', 
-            section=SECTION, include_burnin=True, rasterized=True)
-        l,h = ax1.get_xlim()
-        xs = np.arange(l,h,step=(h-l)/1000) 
-        ys = []
-        for x in xs:
-            ys.append(growth_mean.prior.pdf(value=x))
-        ax1.plot(xs, ys, label='prior', alpha=0.5, color='red', rasterized=True)
-        ax1.legend()
+    #     # Show prior on axis 1, show acceptance rate on axis 2
+    #     ax1, ax2 = pl.visualization.render_trace(var=growth_mean, plt_type='both', 
+    #         section=SECTION, include_burnin=True, rasterized=True)
+    #     l,h = ax1.get_xlim()
+    #     xs = np.arange(l,h,step=(h-l)/1000) 
+    #     ys = []
+    #     for x in xs:
+    #         ys.append(growth_mean.prior.pdf(value=x))
+    #     ax1.plot(xs, ys, label='prior', alpha=0.5, color='red', rasterized=True)
+    #     ax1.legend()
 
-        ax3 = ax2.twinx()
-        ax3 = pl.visualization.render_acceptance_rate_trace(var=growth_mean, ax=ax3, 
-            label='Acceptance Rate', color='red', scatter=False, rasterized=True)
-        ax3.legend()
+    #     ax3 = ax2.twinx()
+    #     ax3 = pl.visualization.render_acceptance_rate_trace(var=growth_mean, ax=ax3, 
+    #         label='Acceptance Rate', color='red', scatter=False, rasterized=True)
+    #     ax3.legend()
 
-        fig = plt.gcf()
-        fig.tight_layout()
-        fig.suptitle('Growth Mean, {}'.format(LATEXNAMES.PRIOR_MEAN_GROWTH))
-        plt.savefig(growthpath + 'mean.pdf')
-        plt.close()
-        f.close()
-    else:
-        # Specify what the mean was
-        growth_mean = chain.graph[STRNAMES.PRIOR_MEAN_GROWTH]
-        f = open(fgrowthpath, 'a')
-        f.write('###################################\n')
-        f.write('ASV Growth Mean\n')
-        f.write('###################################\n')
-        f.write('Not learned. Value: {}\n'.format(growth_mean.value))
-        f.close()
+    #     fig = plt.gcf()
+    #     fig.tight_layout()
+    #     fig.suptitle('Growth Mean, {}'.format(LATEXNAMES.PRIOR_MEAN_GROWTH))
+    #     plt.savefig(growthpath + 'mean.pdf')
+    #     plt.close()
+    #     f.close()
+    # else:
+    #     # Specify what the mean was
+    #     growth_mean = chain.graph[STRNAMES.PRIOR_MEAN_GROWTH]
+    #     f = open(fgrowthpath, 'a')
+    #     f.write('###################################\n')
+    #     f.write('ASV Growth Mean\n')
+    #     f.write('###################################\n')
+    #     f.write('Not learned. Value: {}\n'.format(growth_mean.value))
+    #     f.close()
 
-    if chain.is_in_inference_order(STRNAMES.PRIOR_VAR_GROWTH):
-        f = open(fgrowthpath, 'a')
-        pv = chain.graph[STRNAMES.PRIOR_VAR_GROWTH]
-        summary = pl.variables.summary(pv, section=SECTION)
-        f.write('\n\n###################################\n')
-        f.write('Prior Variance Growth\n')
-        f.write('###################################\n')
-        for key,ele in summary.items():
-            f.write('{}: {}\n'.format(key,ele))
-        ax1, ax2 = pl.visualization.render_trace(var=pv, plt_type='both', 
-            section=SECTION, include_burnin=True, log_scale=True, rasterized=True)
+    # if chain.is_in_inference_order(STRNAMES.PRIOR_VAR_GROWTH):
+    #     f = open(fgrowthpath, 'a')
+    #     pv = chain.graph[STRNAMES.PRIOR_VAR_GROWTH]
+    #     summary = pl.variables.summary(pv, section=SECTION)
+    #     f.write('\n\n###################################\n')
+    #     f.write('Prior Variance Growth\n')
+    #     f.write('###################################\n')
+    #     for key,ele in summary.items():
+    #         f.write('{}: {}\n'.format(key,ele))
+    #     ax1, ax2 = pl.visualization.render_trace(var=pv, plt_type='both', 
+    #         section=SECTION, include_burnin=True, log_scale=True, rasterized=True)
 
-        l,h = ax1.get_xlim()
-        xs = np.arange(l,h,step=(h-l)/100) 
-        ys = []
-        for x in xs:
-            ys.append(pl.random.sics.pdf(value=x, 
-                dof=pv.prior.dof.value,
-                scale=pv.prior.scale.value))
-        ax1.plot(xs, ys, label='prior', alpha=0.5, color='red', rasterized=True)
-        ax1.legend()
+    #     l,h = ax1.get_xlim()
+    #     xs = np.arange(l,h,step=(h-l)/100) 
+    #     ys = []
+    #     for x in xs:
+    #         ys.append(pl.random.sics.pdf(value=x, 
+    #             dof=pv.prior.dof.value,
+    #             scale=pv.prior.scale.value))
+    #     ax1.plot(xs, ys, label='prior', alpha=0.5, color='red', rasterized=True)
+    #     ax1.legend()
 
-        ax3 = ax2.twinx()
-        ax3 = pl.visualization.render_acceptance_rate_trace(var=pv, ax=ax3, 
-            label='Acceptance Rate', color='red', scatter=False, rasterized=True)
-        ax3.legend()
+    #     ax3 = ax2.twinx()
+    #     ax3 = pl.visualization.render_acceptance_rate_trace(var=pv, ax=ax3, 
+    #         label='Acceptance Rate', color='red', scatter=False, rasterized=True)
+    #     ax3.legend()
 
-        fig = plt.gcf()
-        fig.tight_layout()
-        fig.suptitle('Prior Variance Growth, {}'.format(LATEXNAMES.PRIOR_VAR_GROWTH))
-        plt.savefig(growthpath + 'var.pdf')
-        plt.close()
-        f.close()
-    else:
-        # Specify what the mean was
-        pv = chain.graph[STRNAMES.PRIOR_VAR_GROWTH]
-        f = open(fgrowthpath, 'a')
-        f.write('\n\n###################################\n')
-        f.write('Prior Variance Growth\n')
-        f.write('###################################\n')
-        f.write('Not learned. Value: {}\n'.format(pv.value))
-        f.close()
+    #     fig = plt.gcf()
+    #     fig.tight_layout()
+    #     fig.suptitle('Prior Variance Growth, {}'.format(LATEXNAMES.PRIOR_VAR_GROWTH))
+    #     plt.savefig(growthpath + 'var.pdf')
+    #     plt.close()
+    #     f.close()
+    # else:
+    #     # Specify what the mean was
+    #     pv = chain.graph[STRNAMES.PRIOR_VAR_GROWTH]
+    #     f = open(fgrowthpath, 'a')
+    #     f.write('\n\n###################################\n')
+    #     f.write('Prior Variance Growth\n')
+    #     f.write('###################################\n')
+    #     f.write('Not learned. Value: {}\n'.format(pv.value))
+    #     f.close()
 
-    if chain.tracer.is_being_traced(STRNAMES.GROWTH_VALUE):
-        growth = chain.graph[STRNAMES.GROWTH_VALUE]
+    # if chain.tracer.is_being_traced(STRNAMES.GROWTH_VALUE):
+    #     growth = chain.graph[STRNAMES.GROWTH_VALUE]
 
-        # write summary statistics to main regress_coeff file
-        f = open(fgrowthpath, 'a')
-        f.write('\n\n###################################\n')
-        f.write('ASV Growth Values\n')
-        f.write('###################################\n')
-        summary = pl.variables.summary(growth, section=SECTION)
-        for key,arr in summary.items():
-            f.write('{}\n'.format(key))
-            for idx,ele in enumerate(arr):
-                prefix = ''
-                if asv_prefix_formatter is not None:
-                    prefix = pl.asvname_formatter(
-                        format=asv_prefix_formatter,
-                        asv=ASVS.names.order[idx],
-                        asvs=ASVS)
-                f.write('\t' + prefix + '{}\n'.format(ele))        
+    #     # write summary statistics to main regress_coeff file
+    #     f = open(fgrowthpath, 'a')
+    #     f.write('\n\n###################################\n')
+    #     f.write('ASV Growth Values\n')
+    #     f.write('###################################\n')
+    #     summary = pl.variables.summary(growth, section=SECTION)
+    #     for key,arr in summary.items():
+    #         f.write('{}\n'.format(key))
+    #         for idx,ele in enumerate(arr):
+    #             prefix = ''
+    #             if asv_prefix_formatter is not None:
+    #                 prefix = pl.asvname_formatter(
+    #                     format=asv_prefix_formatter,
+    #                     asv=ASVS.names.order[idx],
+    #                     asvs=ASVS)
+    #             f.write('\t' + prefix + '{}\n'.format(ele))        
 
-        # Plot the prior on top of the posterior
-        if chain.tracer.is_being_traced(STRNAMES.PRIOR_MEAN_GROWTH):
-            prior_mean_trace =chain.graph[STRNAMES.PRIOR_MEAN_GROWTH].get_trace_from_disk(
-                    section=SECTION)
-        else:
-            prior_mean_trace = growth.prior.mean.value * np.ones(
-                LEN_POSTERIOR, dtype=float)
-        if chain.tracer.is_being_traced(STRNAMES.PRIOR_VAR_GROWTH):
-            prior_std_trace = np.sqrt(
-                chain.graph[STRNAMES.PRIOR_VAR_GROWTH].get_trace_from_disk(
-                    section=SECTION))
-        else:
-            prior_std_trace = np.sqrt(growth.prior.var.value) * np.ones(
-                LEN_POSTERIOR, dtype=float)
+    #     # Plot the prior on top of the posterior
+    #     if chain.tracer.is_being_traced(STRNAMES.PRIOR_MEAN_GROWTH):
+    #         prior_mean_trace =chain.graph[STRNAMES.PRIOR_MEAN_GROWTH].get_trace_from_disk(
+    #                 section=SECTION)
+    #     else:
+    #         prior_mean_trace = growth.prior.mean.value * np.ones(
+    #             LEN_POSTERIOR, dtype=float)
+    #     if chain.tracer.is_being_traced(STRNAMES.PRIOR_VAR_GROWTH):
+    #         prior_std_trace = np.sqrt(
+    #             chain.graph[STRNAMES.PRIOR_VAR_GROWTH].get_trace_from_disk(
+    #                 section=SECTION))
+    #     else:
+    #         prior_std_trace = np.sqrt(growth.prior.var.value) * np.ones(
+    #             LEN_POSTERIOR, dtype=float)
 
-        for idx in range(ASVS.n_asvs):
-            fig = plt.figure()
-            ax_posterior = fig.add_subplot(1,2,1)
-            try:
-                pl.visualization.render_trace(var=growth, idx=idx, plt_type='hist',
-                    label=SECTION, color='blue', ax=ax_posterior, section=SECTION,
-                    include_burnin=True, rasterized=True)
-            except:
-                arr = growth.get_trace_from_disk(section='entire')
-                print(arr.shape)
-                print(arr[:,140])
+    #     for idx in range(ASVS.n_asvs):
+    #         fig = plt.figure()
+    #         ax_posterior = fig.add_subplot(1,2,1)
+    #         try:
+    #             pl.visualization.render_trace(var=growth, idx=idx, plt_type='hist',
+    #                 label=SECTION, color='blue', ax=ax_posterior, section=SECTION,
+    #                 include_burnin=True, rasterized=True)
+    #         except:
+    #             arr = growth.get_trace_from_disk(section='entire')
+    #             print(arr.shape)
+    #             print(arr[:,140])
 
-                raise
+    #             raise
 
-            # Get the limits and only look at the posterior within 20% range +- of
-            # this number
-            low_x, high_x = ax_posterior.get_xlim()
+    #         # Get the limits and only look at the posterior within 20% range +- of
+    #         # this number
+    #         low_x, high_x = ax_posterior.get_xlim()
 
-            arr = np.zeros(len(prior_std_trace), dtype=float)
-            for i in range(len(prior_std_trace)):
-                arr[i] = pl.random.truncnormal.sample(mean=prior_mean_trace[i], std=prior_std_trace[i], 
-                    low=growth.low, high=growth.high)
-            pl.visualization.render_trace(var=arr, plt_type='hist', 
-                label='prior', color='red', ax=ax_posterior, rasterized=True)
+    #         arr = np.zeros(len(prior_std_trace), dtype=float)
+    #         for i in range(len(prior_std_trace)):
+    #             arr[i] = pl.random.truncnormal.sample(mean=prior_mean_trace[i], std=prior_std_trace[i], 
+    #                 low=growth.low, high=growth.high)
+    #         pl.visualization.render_trace(var=arr, plt_type='hist', 
+    #             label='prior', color='red', ax=ax_posterior, rasterized=True)
 
-            if syndata is not None:
-                ax_posterior.axvline(x=syndata.dynamics.growth[idx], color='red', alpha=0.65, 
-                    label='True Value')
+    #         if syndata is not None:
+    #             ax_posterior.axvline(x=syndata.dynamics.growth[idx], color='red', alpha=0.65, 
+    #                 label='True Value')
 
-            ax_posterior.legend()
-            ax_posterior.set_xlim(left=low_x*.8, right=high_x*1.2)
+    #         ax_posterior.legend()
+    #         ax_posterior.set_xlim(left=low_x*.8, right=high_x*1.2)
 
-            # plot the trace
-            ax_trace = fig.add_subplot(1,2,2)
-            pl.visualization.render_trace(var=growth, idx=idx, plt_type='trace', 
-                ax=ax_trace, section=SECTION, include_burnin=True, rasterized=True)
+    #         # plot the trace
+    #         ax_trace = fig.add_subplot(1,2,2)
+    #         pl.visualization.render_trace(var=growth, idx=idx, plt_type='trace', 
+    #             ax=ax_trace, section=SECTION, include_burnin=True, rasterized=True)
 
-            if syndata is not None:
-                ax_trace.axhline(y=syndata.dynamics.growth[idx], color='red', alpha=0.65, 
-                    label='True Value')
-                ax_trace.legend()
+    #         if syndata is not None:
+    #             ax_trace.axhline(y=syndata.dynamics.growth[idx], color='red', alpha=0.65, 
+    #                 label='True Value')
+    #             ax_trace.legend()
 
-            if asv_prefix_formatter is not None:
-                asvname = pl.asvname_formatter(
-                    format=asv_prefix_formatter,
-                    asv=ASVS.names.order[idx],
-                    asvs=ASVS)
-            else:
-                asvname = ASVS.names.order[idx]
-            latexname = pl.asvname_formatter(format=LATEXNAMES.GROWTH_VALUE,
-                asv=idx, asvs=ASVS)
-            asvname = asvname.replace('/', '_').replace(' ', '_')
+    #         if asv_prefix_formatter is not None:
+    #             asvname = pl.asvname_formatter(
+    #                 format=asv_prefix_formatter,
+    #                 asv=ASVS.names.order[idx],
+    #                 asvs=ASVS)
+    #         else:
+    #             asvname = ASVS.names.order[idx]
+    #         latexname = pl.asvname_formatter(format=LATEXNAMES.GROWTH_VALUE,
+    #             asv=idx, asvs=ASVS)
+    #         asvname = asvname.replace('/', '_').replace(' ', '_')
 
-            if REGRESS_COEFF.update_jointly_growth_si:
-                ax3 = ax_trace.twinx()
-                ax3 = pl.visualization.render_acceptance_rate_trace(var=growth, ax=ax3, 
-                    label='Acceptance Rate', color='red', scatter=False, idx=idx, rasterized=True)
-                ax3.legend()
+    #         if REGRESS_COEFF.update_jointly_growth_si:
+    #             ax3 = ax_trace.twinx()
+    #             ax3 = pl.visualization.render_acceptance_rate_trace(var=growth, ax=ax3, 
+    #                 label='Acceptance Rate', color='red', scatter=False, idx=idx, rasterized=True)
+    #             ax3.legend()
 
-            fig.suptitle('Growth {}, {}'.format(asvname, latexname))
-            fig.tight_layout()
-            fig.subplots_adjust(top=0.85)
-            plt.savefig(growthpath + '{}.pdf'.format(ASVS.names.order[idx]))
-            plt.close()
+    #         fig.suptitle('Growth {}, {}'.format(asvname, latexname))
+    #         fig.tight_layout()
+    #         fig.subplots_adjust(top=0.85)
+    #         plt.savefig(growthpath + '{}.pdf'.format(ASVS.names.order[idx]))
+    #         plt.close()
 
-        f.close()
+    #     f.close()
 
-    # Plot self-interaction parameters
-    sipath = basepath + 'self_interactions/'
-    fsipath = sipath + 'output.txt'
-    os.makedirs(sipath, exist_ok=True)
-    f = open(fsipath, 'w')
-    f.close()
+    # # Plot self-interaction parameters
+    # sipath = basepath + 'self_interactions/'
+    # fsipath = sipath + 'output.txt'
+    # os.makedirs(sipath, exist_ok=True)
+    # f = open(fsipath, 'w')
+    # f.close()
 
-    if chain.tracer.is_being_traced(STRNAMES.PRIOR_MEAN_SELF_INTERACTIONS):
-        si_mean = chain.graph[STRNAMES.PRIOR_MEAN_SELF_INTERACTIONS]
-        f = open(fsipath, 'a')
+    # if chain.tracer.is_being_traced(STRNAMES.PRIOR_MEAN_SELF_INTERACTIONS):
+    #     si_mean = chain.graph[STRNAMES.PRIOR_MEAN_SELF_INTERACTIONS]
+    #     f = open(fsipath, 'a')
 
-        summary = pl.variables.summary(si_mean, section=SECTION)
-        f.write('###################################\n')
-        f.write('ASV Self-interaction Mean\n')
-        f.write('###################################\n')
-        for key,ele in summary.items():
-            f.write('{}: {}\n'.format(key,ele))
+    #     summary = pl.variables.summary(si_mean, section=SECTION)
+    #     f.write('###################################\n')
+    #     f.write('ASV Self-interaction Mean\n')
+    #     f.write('###################################\n')
+    #     for key,ele in summary.items():
+    #         f.write('{}: {}\n'.format(key,ele))
 
-        ax1, ax2 = pl.visualization.render_trace(var=si_mean, plt_type='both', log_scale=yscale_log, 
-            section=SECTION, include_burnin=True, rasterized=True)
-        l,h = ax1.get_xlim()
-        xs = np.arange(l,h,step=(h-l)/1000) 
-        ys = []
-        for x in xs:
-            ys.append(si_mean.prior.pdf(value=x))
-        ax1.plot(xs, ys, label='prior', alpha=0.5, color='red')
-        ax1.legend()
+    #     ax1, ax2 = pl.visualization.render_trace(var=si_mean, plt_type='both', log_scale=yscale_log, 
+    #         section=SECTION, include_burnin=True, rasterized=True)
+    #     l,h = ax1.get_xlim()
+    #     xs = np.arange(l,h,step=(h-l)/1000) 
+    #     ys = []
+    #     for x in xs:
+    #         ys.append(si_mean.prior.pdf(value=x))
+    #     ax1.plot(xs, ys, label='prior', alpha=0.5, color='red')
+    #     ax1.legend()
 
-        ax3 = ax2.twinx()
-        ax3 = pl.visualization.render_acceptance_rate_trace(var=growth_mean, ax=ax3, 
-            label='Acceptance Rate', color='red', scatter=False, rasterized=True)
-        ax3.legend()
+    #     ax3 = ax2.twinx()
+    #     ax3 = pl.visualization.render_acceptance_rate_trace(var=growth_mean, ax=ax3, 
+    #         label='Acceptance Rate', color='red', scatter=False, rasterized=True)
+    #     ax3.legend()
 
-        fig = plt.gcf()
-        fig.tight_layout()
-        fig.suptitle('Self-interaction Mean, {}'.format(LATEXNAMES.PRIOR_MEAN_SELF_INTERACTIONS))
-        plt.savefig(sipath + 'mean.pdf')
-        plt.close()
-        f.close()
-    else:
-        # Specify what the mean was
-        si_mean = chain.graph[STRNAMES.PRIOR_MEAN_GROWTH]
-        f = open(fsipath, 'a')
-        f.write('###################################\n')
-        f.write('ASV Self-interaction Mean\n')
-        f.write('###################################\n')
-        f.write('Not learned. Value: {}\n'.format(si_mean.value))
-        f.close()
+    #     fig = plt.gcf()
+    #     fig.tight_layout()
+    #     fig.suptitle('Self-interaction Mean, {}'.format(LATEXNAMES.PRIOR_MEAN_SELF_INTERACTIONS))
+    #     plt.savefig(sipath + 'mean.pdf')
+    #     plt.close()
+    #     f.close()
+    # else:
+    #     # Specify what the mean was
+    #     si_mean = chain.graph[STRNAMES.PRIOR_MEAN_GROWTH]
+    #     f = open(fsipath, 'a')
+    #     f.write('###################################\n')
+    #     f.write('ASV Self-interaction Mean\n')
+    #     f.write('###################################\n')
+    #     f.write('Not learned. Value: {}\n'.format(si_mean.value))
+    #     f.close()
 
-    if chain.is_in_inference_order(STRNAMES.PRIOR_VAR_SELF_INTERACTIONS):
-        f = open(fsipath, 'a')
-        pv = chain.graph[STRNAMES.PRIOR_VAR_SELF_INTERACTIONS]
-        summary = pl.variables.summary(pv, section=SECTION)
-        f.write('\n\n###################################\n')
-        f.write('Prior Variance Self-Interactions\n')
-        f.write('###################################\n')
-        for key,ele in summary.items():
-            f.write('{}: {}\n'.format(key,ele))
-        ax1, ax2 = pl.visualization.render_trace(var=pv, plt_type='both', log_scale=yscale_log, 
-            section=SECTION, include_burnin=True, rasterized=True)
+    # if chain.is_in_inference_order(STRNAMES.PRIOR_VAR_SELF_INTERACTIONS):
+    #     f = open(fsipath, 'a')
+    #     pv = chain.graph[STRNAMES.PRIOR_VAR_SELF_INTERACTIONS]
+    #     summary = pl.variables.summary(pv, section=SECTION)
+    #     f.write('\n\n###################################\n')
+    #     f.write('Prior Variance Self-Interactions\n')
+    #     f.write('###################################\n')
+    #     for key,ele in summary.items():
+    #         f.write('{}: {}\n'.format(key,ele))
+    #     ax1, ax2 = pl.visualization.render_trace(var=pv, plt_type='both', log_scale=yscale_log, 
+    #         section=SECTION, include_burnin=True, rasterized=True)
 
-        l,h = ax1.get_xlim()
-        xs = np.arange(l,h,step=(h-l)/100) 
-        ys = []
-        for x in xs:
-            ys.append(pl.random.sics.pdf(value=x, 
-                dof=pv.prior.dof.value,
-                scale=pv.prior.scale.value))
-        ax1.plot(xs, ys, label='prior', alpha=0.5, color='red')
-        ax1.legend()
+    #     l,h = ax1.get_xlim()
+    #     xs = np.arange(l,h,step=(h-l)/100) 
+    #     ys = []
+    #     for x in xs:
+    #         ys.append(pl.random.sics.pdf(value=x, 
+    #             dof=pv.prior.dof.value,
+    #             scale=pv.prior.scale.value))
+    #     ax1.plot(xs, ys, label='prior', alpha=0.5, color='red')
+    #     ax1.legend()
 
-        ax3 = ax2.twinx()
-        ax3 = pl.visualization.render_acceptance_rate_trace(var=growth_mean, ax=ax3, 
-            label='Acceptance Rate', color='red', scatter=False, rasterized=True)
-        ax3.legend()
+    #     ax3 = ax2.twinx()
+    #     ax3 = pl.visualization.render_acceptance_rate_trace(var=growth_mean, ax=ax3, 
+    #         label='Acceptance Rate', color='red', scatter=False, rasterized=True)
+    #     ax3.legend()
 
-        fig = plt.gcf()
-        fig.tight_layout()
-        fig.suptitle('Prior Variance Self-Interactions, {}'.format(LATEXNAMES.PRIOR_VAR_SELF_INTERACTIONS))
-        plt.savefig(sipath + 'var.pdf')
-        plt.close()
-        f.close()
-    else:
-        # Specify what the mean was
-        pv = chain.graph[STRNAMES.PRIOR_VAR_SELF_INTERACTIONS]
-        f = open(fsipath, 'a')
-        f.write('\n\n###################################\n')
-        f.write('Prior Variance Self-Interactions\n')
-        f.write('###################################\n')
-        f.write('Not learned. Value: {}\n'.format(pv.value))
-        f.close()
+    #     fig = plt.gcf()
+    #     fig.tight_layout()
+    #     fig.suptitle('Prior Variance Self-Interactions, {}'.format(LATEXNAMES.PRIOR_VAR_SELF_INTERACTIONS))
+    #     plt.savefig(sipath + 'var.pdf')
+    #     plt.close()
+    #     f.close()
+    # else:
+    #     # Specify what the mean was
+    #     pv = chain.graph[STRNAMES.PRIOR_VAR_SELF_INTERACTIONS]
+    #     f = open(fsipath, 'a')
+    #     f.write('\n\n###################################\n')
+    #     f.write('Prior Variance Self-Interactions\n')
+    #     f.write('###################################\n')
+    #     f.write('Not learned. Value: {}\n'.format(pv.value))
+    #     f.close()
 
-    if chain.tracer.is_being_traced(STRNAMES.SELF_INTERACTION_VALUE):
-        f = open(fsipath, 'a')
-        self_interactions = chain.graph[STRNAMES.SELF_INTERACTION_VALUE]
+    # if chain.tracer.is_being_traced(STRNAMES.SELF_INTERACTION_VALUE):
+    #     f = open(fsipath, 'a')
+    #     self_interactions = chain.graph[STRNAMES.SELF_INTERACTION_VALUE]
         
-        f.write('\n\n###################################\n')
-        f.write('ASV Self Interaction Values\n')
-        f.write('###################################\n')
+    #     f.write('\n\n###################################\n')
+    #     f.write('ASV Self Interaction Values\n')
+    #     f.write('###################################\n')
 
-        summary = pl.variables.summary(self_interactions, section=SECTION)
-        for key,arr in summary.items():
-            f.write('{}\n'.format(key))
-            for idx,ele in enumerate(arr):
-                prefix = ''
-                if asv_prefix_formatter is not None:
-                    prefix = pl.asvname_formatter(
-                        format=asv_prefix_formatter,
-                        asv=ASVS.names.order[idx],
-                        asvs=ASVS)
-                f.write('\t' + prefix + '{}\n'.format(ele))
+    #     summary = pl.variables.summary(self_interactions, section=SECTION)
+    #     for key,arr in summary.items():
+    #         f.write('{}\n'.format(key))
+    #         for idx,ele in enumerate(arr):
+    #             prefix = ''
+    #             if asv_prefix_formatter is not None:
+    #                 prefix = pl.asvname_formatter(
+    #                     format=asv_prefix_formatter,
+    #                     asv=ASVS.names.order[idx],
+    #                     asvs=ASVS)
+    #             f.write('\t' + prefix + '{}\n'.format(ele))
 
-        # Plot the prior on top of the posterior
-        if chain.tracer.is_being_traced(STRNAMES.PRIOR_MEAN_SELF_INTERACTIONS):
-            prior_mean_trace =chain.graph[STRNAMES.PRIOR_MEAN_SELF_INTERACTIONS].get_trace_from_disk(
-                    section=SECTION)
-        else:
-            prior_mean_trace = self_interactions.prior.mean.value * np.ones(
-                LEN_POSTERIOR, dtype=float)
-        if chain.tracer.is_being_traced(STRNAMES.PRIOR_VAR_SELF_INTERACTIONS):
-            prior_std_trace = np.sqrt(
-                chain.graph[STRNAMES.PRIOR_VAR_SELF_INTERACTIONS].get_trace_from_disk(
-                    section=SECTION))
-        else:
-            prior_std_trace = np.sqrt(self_interactions.prior.var.value) * np.ones(
-                LEN_POSTERIOR, dtype=float)
+    #     # Plot the prior on top of the posterior
+    #     if chain.tracer.is_being_traced(STRNAMES.PRIOR_MEAN_SELF_INTERACTIONS):
+    #         prior_mean_trace =chain.graph[STRNAMES.PRIOR_MEAN_SELF_INTERACTIONS].get_trace_from_disk(
+    #                 section=SECTION)
+    #     else:
+    #         prior_mean_trace = self_interactions.prior.mean.value * np.ones(
+    #             LEN_POSTERIOR, dtype=float)
+    #     if chain.tracer.is_being_traced(STRNAMES.PRIOR_VAR_SELF_INTERACTIONS):
+    #         prior_std_trace = np.sqrt(
+    #             chain.graph[STRNAMES.PRIOR_VAR_SELF_INTERACTIONS].get_trace_from_disk(
+    #                 section=SECTION))
+    #     else:
+    #         prior_std_trace = np.sqrt(self_interactions.prior.var.value) * np.ones(
+    #             LEN_POSTERIOR, dtype=float)
 
-        for idx in range(ASVS.n_asvs):
-            fig = plt.figure()
-            ax_posterior = fig.add_subplot(1,2,1)
-            pl.visualization.render_trace(var=self_interactions, idx=idx, plt_type='hist',
-                label='posterior', color='blue', ax=ax_posterior, log_scale=yscale_log,
-                section=SECTION, include_burnin=True, rasterized=True)
+    #     for idx in range(ASVS.n_asvs):
+    #         fig = plt.figure()
+    #         ax_posterior = fig.add_subplot(1,2,1)
+    #         pl.visualization.render_trace(var=self_interactions, idx=idx, plt_type='hist',
+    #             label='posterior', color='blue', ax=ax_posterior, log_scale=yscale_log,
+    #             section=SECTION, include_burnin=True, rasterized=True)
             
-            # Get the limits and only look at the posterior within 20% range +- of
-            # this number
-            low_x, high_x = ax_posterior.get_xlim()
+    #         # Get the limits and only look at the posterior within 20% range +- of
+    #         # this number
+    #         low_x, high_x = ax_posterior.get_xlim()
 
-            arr = np.zeros(len(prior_std_trace), dtype=float)
-            for i in range(len(prior_std_trace)):
-                arr[i] = pl.random.truncnormal.sample(mean=prior_mean_trace[i], std=prior_std_trace[i], 
-                    low=self_interactions.low, high=self_interactions.high)
-            pl.visualization.render_trace(var=arr, plt_type='hist', 
-                label='prior', color='red', ax=ax_posterior, log_scale=yscale_log, rasterized=True)
+    #         arr = np.zeros(len(prior_std_trace), dtype=float)
+    #         for i in range(len(prior_std_trace)):
+    #             arr[i] = pl.random.truncnormal.sample(mean=prior_mean_trace[i], std=prior_std_trace[i], 
+    #                 low=self_interactions.low, high=self_interactions.high)
+    #         pl.visualization.render_trace(var=arr, plt_type='hist', 
+    #             label='prior', color='red', ax=ax_posterior, log_scale=yscale_log, rasterized=True)
 
-            if syndata is not None:
-                ax_posterior.axvline(x=syndata.dynamics.self_interactions[idx], color='red', 
-                    alpha=0.65, label='True Value')
+    #         if syndata is not None:
+    #             ax_posterior.axvline(x=syndata.dynamics.self_interactions[idx], color='red', 
+    #                 alpha=0.65, label='True Value')
 
-            ax_posterior.legend()
-            ax_posterior.set_xlim(left=low_x*.8, right=high_x*1.2)
+    #         ax_posterior.legend()
+    #         ax_posterior.set_xlim(left=low_x*.8, right=high_x*1.2)
 
-            # plot the trace
-            ax_trace = fig.add_subplot(1,2,2)
-            pl.visualization.render_trace(var=self_interactions, idx=idx, plt_type='trace', ax=ax_trace,
-                log_scale=yscale_log, section=SECTION, include_burnin=True, rasterized=True)
+    #         # plot the trace
+    #         ax_trace = fig.add_subplot(1,2,2)
+    #         pl.visualization.render_trace(var=self_interactions, idx=idx, plt_type='trace', ax=ax_trace,
+    #             log_scale=yscale_log, section=SECTION, include_burnin=True, rasterized=True)
 
-            if syndata is not None:
-                ax_trace.axhline(y=syndata.dynamics.self_interactions[idx], color='red', 
-                    alpha=0.65, label='True Value')
-                ax_trace.legend()
+    #         if syndata is not None:
+    #             ax_trace.axhline(y=syndata.dynamics.self_interactions[idx], color='red', 
+    #                 alpha=0.65, label='True Value')
+    #             ax_trace.legend()
 
-            if REGRESS_COEFF.update_jointly_growth_si:
-                ax3 = ax_trace.twinx()
-                ax3 = pl.visualization.render_acceptance_rate_trace(var=self_interactions, ax=ax3, 
-                    label='Acceptance Rate', color='red', scatter=False, idx=idx, rasterized=True)
-                ax3.legend()
+    #         if REGRESS_COEFF.update_jointly_growth_si:
+    #             ax3 = ax_trace.twinx()
+    #             ax3 = pl.visualization.render_acceptance_rate_trace(var=self_interactions, ax=ax3, 
+    #                 label='Acceptance Rate', color='red', scatter=False, idx=idx, rasterized=True)
+    #             ax3.legend()
             
-            if asv_prefix_formatter is not None:
-                asvname = pl.asvname_formatter(
-                    format=asv_prefix_formatter,
-                    asv=ASVS.names.order[idx],
-                    asvs=ASVS)
-            else:
-                asvname = ASVS.names.order[idx]
-            latexname = pl.asvname_formatter(
-                format=LATEXNAMES.SELF_INTERACTION_VALUE,
-                asv = ASVS[idx],
-                asvs = ASVS)
-            asvname = asvname.replace('/', '_').replace(' ', '_')
-            fig.suptitle('Self-interactions {}, {}'.format(asvname, latexname))
-            fig.tight_layout()
-            fig.subplots_adjust(top=0.85)
-            plt.savefig(sipath + '{}.pdf'.format(ASVS.names.order[idx]))
-            plt.close()
-        f.close()
+    #         if asv_prefix_formatter is not None:
+    #             asvname = pl.asvname_formatter(
+    #                 format=asv_prefix_formatter,
+    #                 asv=ASVS.names.order[idx],
+    #                 asvs=ASVS)
+    #         else:
+    #             asvname = ASVS.names.order[idx]
+    #         latexname = pl.asvname_formatter(
+    #             format=LATEXNAMES.SELF_INTERACTION_VALUE,
+    #             asv = ASVS[idx],
+    #             asvs = ASVS)
+    #         asvname = asvname.replace('/', '_').replace(' ', '_')
+    #         fig.suptitle('Self-interactions {}, {}'.format(asvname, latexname))
+    #         fig.tight_layout()
+    #         fig.subplots_adjust(top=0.85)
+    #         plt.savefig(sipath + '{}.pdf'.format(ASVS.names.order[idx]))
+    #         plt.close()
+    #     f.close()
 
-    # Plot clustering parameters
-    clusteringpath = basepath + 'clustering/'
-    clustertrajpath = clusteringpath + 'trajectories/'
-    fclusteringpath = clusteringpath + 'output.txt'
-    os.makedirs(clusteringpath, exist_ok=True)
-    os.makedirs(clustertrajpath, exist_ok=True)
-    f = open(fclusteringpath, 'w')
-    f.close()
+    # # Plot clustering parameters
+    # clusteringpath = basepath + 'clustering/'
+    # clustertrajpath = clusteringpath + 'trajectories/'
+    # fclusteringpath = clusteringpath + 'output.txt'
+    # os.makedirs(clusteringpath, exist_ok=True)
+    # os.makedirs(clustertrajpath, exist_ok=True)
+    # f = open(fclusteringpath, 'w')
+    # f.close()
 
-    if chain.is_in_inference_order(STRNAMES.CONCENTRATION):
-        f = open(fclusteringpath, 'a')
-        concentration = chain.graph[STRNAMES.CONCENTRATION]
-        summary = pl.variables.summary(concentration, section=SECTION)
+    # if chain.is_in_inference_order(STRNAMES.CONCENTRATION):
+    #     f = open(fclusteringpath, 'a')
+    #     concentration = chain.graph[STRNAMES.CONCENTRATION]
+    #     summary = pl.variables.summary(concentration, section=SECTION)
 
-        f.write('###################################\n')
-        f.write('Concentration\n')
-        f.write('###################################\n')
-        for key,ele in summary.items():
-            f.write('{}: {}\n'.format(key,ele))
-        ax1, _ = pl.visualization.render_trace(var=concentration, plt_type='both', 
-            section=SECTION, include_burnin=True, log_scale=True, rasterized=True)
+    #     f.write('###################################\n')
+    #     f.write('Concentration\n')
+    #     f.write('###################################\n')
+    #     for key,ele in summary.items():
+    #         f.write('{}: {}\n'.format(key,ele))
+    #     ax1, _ = pl.visualization.render_trace(var=concentration, plt_type='both', 
+    #         section=SECTION, include_burnin=True, log_scale=True, rasterized=True)
 
-        l,h = ax1.get_xlim()
-        xs = np.arange(l,h,step=(h-l)/1000) 
-        ys = []
-        for x in xs:
-            ys.append(concentration.prior.pdf(value=x))
-        ax1.plot(xs, ys, label='prior', alpha=0.5, color='red')
-        ax1.legend()
+    #     l,h = ax1.get_xlim()
+    #     xs = np.arange(l,h,step=(h-l)/1000) 
+    #     ys = []
+    #     for x in xs:
+    #         ys.append(concentration.prior.pdf(value=x))
+    #     ax1.plot(xs, ys, label='prior', alpha=0.5, color='red')
+    #     ax1.legend()
 
-        fig = plt.gcf()
-        fig.suptitle('Concentration, {}'.format(LATEXNAMES.CONCENTRATION))
-        plt.savefig(clusteringpath + 'concentration.pdf')
-        plt.close()
-        f.close()
-    else:
-        f = open(fclusteringpath, 'a')
-        f.write('\n\nNo cluster concentration learned')
-        f.close()
+    #     fig = plt.gcf()
+    #     fig.suptitle('Concentration, {}'.format(LATEXNAMES.CONCENTRATION))
+    #     plt.savefig(clusteringpath + 'concentration.pdf')
+    #     plt.close()
+    #     f.close()
+    # else:
+    #     f = open(fclusteringpath, 'a')
+    #     f.write('\n\nNo cluster concentration learned')
+    #     f.close()
 
-    if chain.is_in_inference_order(STRNAMES.CLUSTERING):
-        f = open(fclusteringpath, 'a')
+    # if chain.is_in_inference_order(STRNAMES.CLUSTERING):
+    #     f = open(fclusteringpath, 'a')
 
-        cocluster_trace = CLUSTERING.coclusters.get_trace_from_disk(section=SECTION)
-        coclusters = pl.variables.summary(cocluster_trace, section=SECTION)['mean']
-        for i in range(coclusters.shape[0]):
-            coclusters[i,i] = np.nan
+    #     cocluster_trace = CLUSTERING.coclusters.get_trace_from_disk(section=SECTION)
+    #     coclusters = pl.variables.summary(cocluster_trace, section=SECTION)['mean']
+    #     for i in range(coclusters.shape[0]):
+    #         coclusters[i,i] = np.nan
 
-        pl.visualization.render_cocluster_proportions(
-            coclusters=coclusters, asvs=ASVS, clustering=CLUSTERING,
-            yticklabels=yticklabels, include_tick_marks=False, xticklabels=xticklabels,
-            title='Cluster Assignments, {}'.format(LATEXNAMES.CLUSTERING), order=ASV_ORDER)
-        fig = plt.gcf()
-        fig.tight_layout()
-        plt.savefig(clusteringpath + 'coclusters.pdf')
-        plt.close()
+    #     pl.visualization.render_cocluster_proportions(
+    #         coclusters=coclusters, asvs=ASVS, clustering=CLUSTERING,
+    #         yticklabels=yticklabels, include_tick_marks=False, xticklabels=xticklabels,
+    #         title='Cluster Assignments, {}'.format(LATEXNAMES.CLUSTERING), order=ASV_ORDER)
+    #     fig = plt.gcf()
+    #     fig.tight_layout()
+    #     plt.savefig(clusteringpath + 'coclusters.pdf')
+    #     plt.close()
 
-        pl.visualization.render_trace(var=CLUSTERING.n_clusters, plt_type='both', 
-            section=SECTION, include_burnin=True, rasterized=True)
-        fig = plt.gcf()
-        fig.suptitle('Number of Clusters')
-        plt.savefig(clusteringpath + 'n_clusters.pdf')
-        plt.close()
+    #     pl.visualization.render_trace(var=CLUSTERING.n_clusters, plt_type='both', 
+    #         section=SECTION, include_burnin=True, rasterized=True)
+    #     fig = plt.gcf()
+    #     fig.suptitle('Number of Clusters')
+    #     plt.savefig(clusteringpath + 'n_clusters.pdf')
+    #     plt.close()
 
-        # print out which ASV belongs in which cluster
-        f.write('\n\n###################################\n')
-        f.write('Clustering Assignments\n')
-        f.write('###################################\n')
-        ca = CLUSTERING.generate_cluster_assignments_posthoc(n_clusters='mode', section=SECTION)
-        cluster_assignments = {}
-        for idx, assignment in enumerate(ca):
-            if assignment in cluster_assignments:
-                cluster_assignments[assignment].append(idx)
-            else:
-                cluster_assignments[assignment] = [idx]
-        f.write('Mean number of clusters: {}\n'.format(len(cluster_assignments)))
-        for idx,lst in enumerate(cluster_assignments.values()):
-            f.write('Cluster {} - Size {}\n'.format(idx, len(lst)))
-            for oidx in lst:
-                # Get rid of index because that does not really make sense here
-                label = pl.asvname_formatter(
-                    format=asv_prefix_formatter.replace('%(index)s',''),
-                    asv=ASVS.index[oidx],
-                    asvs=ASVS)
-                f.write('\t- {}\n'.format(label))
-        f.close()
-    else:
-        f = open(fclusteringpath, 'a')
-        f.write('\n\nNo clustering learned - This was the set clustering:')
+    #     # print out which ASV belongs in which cluster
+    #     f.write('\n\n###################################\n')
+    #     f.write('Clustering Assignments\n')
+    #     f.write('###################################\n')
+    #     ca = CLUSTERING.generate_cluster_assignments_posthoc(n_clusters='mode', section=SECTION)
+    #     cluster_assignments = {}
+    #     for idx, assignment in enumerate(ca):
+    #         if assignment in cluster_assignments:
+    #             cluster_assignments[assignment].append(idx)
+    #         else:
+    #             cluster_assignments[assignment] = [idx]
+    #     f.write('Mean number of clusters: {}\n'.format(len(cluster_assignments)))
+    #     for idx,lst in enumerate(cluster_assignments.values()):
+    #         f.write('Cluster {} - Size {}\n'.format(idx, len(lst)))
+    #         for oidx in lst:
+    #             # Get rid of index because that does not really make sense here
+    #             label = pl.asvname_formatter(
+    #                 format=asv_prefix_formatter.replace('%(index)s',''),
+    #                 asv=ASVS.index[oidx],
+    #                 asvs=ASVS)
+    #             f.write('\t- {}\n'.format(label))
+    #     f.close()
+    # else:
+    #     f = open(fclusteringpath, 'a')
+    #     f.write('\n\nNo clustering learned - This was the set clustering:')
 
-        for cidx, cluster in enumerate(CLUSTERING):
-            f.write('Cluster {}\n'.format(cidx))
-            for aidx in cluster:
-                asv = ASVS.index[aidx]
-                f.write('\t- {}\n'.format(pl.asvname_formatter(format=
-                    asv_prefix_formatter.replace('%(index)s', ''),
-                    asv=asv, asvs=ASVS)))
+    #     for cidx, cluster in enumerate(CLUSTERING):
+    #         f.write('Cluster {}\n'.format(cidx))
+    #         for aidx in cluster:
+    #             asv = ASVS.index[aidx]
+    #             f.write('\t- {}\n'.format(pl.asvname_formatter(format=
+    #                 asv_prefix_formatter.replace('%(index)s', ''),
+    #                 asv=asv, asvs=ASVS)))
 
-        f.close()
+    #     f.close()
     
-    # Plot the trajectories for each cluster
-    logging.info('Plotting cluster trajectories')
-    subjset = chain.graph.data.subjects
-    df_total = subjset.df(dtype='abs', agg='mean', times='union')
-    M_total = df_total.to_numpy()
-    times = np.array(list(df_total.columns))
-    for cidx, cluster in enumerate(CLUSTERING):
-        aidxs_master = np.asarray(list(cluster.members))
-        names_master = np.asarray([
-            pl.asvname_formatter(format='%(name)s %(genus)s %(species)s',
-                asv=asv, asvs=subjset.asvs) for asv in aidxs_master])
+    # # Plot the trajectories for each cluster
+    # logging.info('Plotting cluster trajectories')
+    # subjset = chain.graph.data.subjects
+    # df_total = subjset.df(dtype='abs', agg='mean', times='union')
+    # M_total = df_total.to_numpy()
+    # times = np.array(list(df_total.columns))
+    # for cidx, cluster in enumerate(CLUSTERING):
+    #     aidxs_master = np.asarray(list(cluster.members))
+    #     names_master = np.asarray([
+    #         pl.asvname_formatter(format='%(name)s %(genus)s %(species)s',
+    #             asv=asv, asvs=subjset.asvs) for asv in aidxs_master])
 
-        n_subplots = 1 + (len(aidxs_master)//10)
-        fig = plt.figure(figsize=(15, 5*n_subplots))
+    #     n_subplots = 1 + (len(aidxs_master)//10)
+    #     fig = plt.figure(figsize=(15, 5*n_subplots))
         
-        # Plot the asvs in sets of 10 so that there are no color overlaps
-        iii = 0
-        subplot_idx = 1
-        while iii < len(aidxs_master):
-            ax = fig.add_subplot(n_subplots, 1, subplot_idx)
+    #     # Plot the asvs in sets of 10 so that there are no color overlaps
+    #     iii = 0
+    #     subplot_idx = 1
+    #     while iii < len(aidxs_master):
+    #         ax = fig.add_subplot(n_subplots, 1, subplot_idx)
 
-            # Get the indexes youre working on
-            iii_end = np.min([iii+10, len(aidxs_master)])
+    #         # Get the indexes youre working on
+    #         iii_end = np.min([iii+10, len(aidxs_master)])
 
-            aidxs = aidxs_master[iii:iii_end]
-            trajs = M_total[aidxs, :]
-            names = names_master[iii:iii_end]
+    #         aidxs = aidxs_master[iii:iii_end]
+    #         trajs = M_total[aidxs, :]
+    #         names = names_master[iii:iii_end]
 
-            for i in range(len(names)):
-                ax.plot(times, trajs[i], label=names[i], marker='o')
+    #         for i in range(len(names)):
+    #             ax.plot(times, trajs[i], label=names[i], marker='o')
 
-            # Add in perturbations
-            ax = pl.visualization.shade_in_perturbations(ax, 
-                perturbations=subjset.perturbations)
+    #         # Add in perturbations
+    #         ax = pl.visualization.shade_in_perturbations(ax, 
+    #             perturbations=subjset.perturbations)
 
-            ax.set_yscale('log')
-            ax.legend(bbox_to_anchor=(1.05,1))
-            ax.set_ylabel('CFUs/g')
-            ax.set_xlabel('Time (days)')
+    #         ax.set_yscale('log')
+    #         ax.legend(bbox_to_anchor=(1.05,1))
+    #         ax.set_ylabel('CFUs/g')
+    #         ax.set_xlabel('Time (days)')
 
-            subplot_idx += 1
-            iii = iii_end
+    #         subplot_idx += 1
+    #         iii = iii_end
 
-        fig.suptitle('Cluster {} Trajectories, Mean Abundances Over Subjects'.format(cidx))
-        plt.subplots_adjust(right=0.75)
-        plt.savefig(clustertrajpath + 'cluster{}.pdf'.format(cidx))
-        plt.close()
+    #     fig.suptitle('Cluster {} Trajectories, Mean Abundances Over Subjects'.format(cidx))
+    #     plt.subplots_adjust(right=0.75)
+    #     plt.savefig(clustertrajpath + 'cluster{}.pdf'.format(cidx))
+    #     plt.close()
 
-    # # Calculate keystoneness
-    # if calculate_keystoneness:
-    #     # Get the growth rates
-    #     growth_values = pl.variables.summary(
-    #         chain.graph[STRNAMES.GROWTH_VALUE],
-    #         only='mean', section=SECTION)['mean']
-    #     si_values = pl.variables.summary(
-    #         chain.graph[STRNAMES.GROWTH_VALUE],
-    #         only='mean', section=SECTION)['mean']
-    #     A_values = pl.variables.summary(
-    #         chain.graph[STRNAMES.INTERACTIONS_OBJ], set_nan_to_0=True,
-    #         section=SECTION, only='mean')['mean']
-        
-
-
-
-
-
-    #Plot interaction parameters
-    interactionspath = basepath + 'interactions/'
-    finteractionspath = interactionspath + 'output.txt'
-    os.makedirs(interactionspath, exist_ok=True)
-    f = open(finteractionspath, 'w')
-    f.close()
-
-    if chain.is_in_inference_order(STRNAMES.PRIOR_VAR_INTERACTIONS):
-        f = open(finteractionspath, 'a')
-        pv = chain.graph[STRNAMES.PRIOR_VAR_INTERACTIONS]
-        summary = pl.variables.summary(pv, section=SECTION)
-        f.write('\n\n###################################\n')
-        f.write('Prior Variance Interactions\n')
-        f.write('###################################\n')
-        for key,ele in summary.items():
-            f.write('{}: {}\n'.format(key,ele))
-        ax1, _ = pl.visualization.render_trace(var=pv, plt_type='both', log_scale=True, 
-            section=SECTION, include_burnin=True, rasterized=True)
-
-        l,h = ax1.get_xlim()
-        xs = np.arange(l,h,step=(h-l)/100) 
-        ys = []
-        for x in xs:
-            ys.append(pl.random.sics.pdf(value=x, 
-                dof=pv.prior.dof.value,
-                scale=pv.prior.scale.value))
-        ax1.plot(xs, ys, label='prior', alpha=0.5, color='red')
-        ax1.legend()
-
-        fig = plt.gcf()
-        fig.suptitle('Prior Variance Interactions, {}'.format(
-            LATEXNAMES.PRIOR_VAR_INTERACTIONS))
-        plt.savefig(interactionspath + 'var.pdf')
-        plt.close()
-        f.close()
-
-    if chain.is_in_inference_order(STRNAMES.PRIOR_MEAN_INTERACTIONS):
-        f = open(finteractionspath, 'a')
-        mean = chain.graph[STRNAMES.PRIOR_MEAN_INTERACTIONS]
-        summary = pl.variables.summary(mean, section=SECTION)
-        f.write('\n\n###################################\n')
-        f.write('Prior Mean Interactions\n')
-        f.write('###################################\n')
-        for key,ele in summary.items():
-            f.write('{}: {}\n'.format(key,ele))
-        ax1, _ = pl.visualization.render_trace(var=mean, plt_type='both', 
-            log_scale=True, section=SECTION, include_burnin=True, rasterized=True)
-
-        l,h = ax1.get_xlim()
-        xs = np.arange(l,h,step=(h-l)/100) 
-        ys = []
-        for x in xs:
-            ys.append(pl.random.normal.pdf(value=x, 
-                mean=mean.prior.mean.value,
-                std=np.sqrt(mean.prior.var.value)))
-        ax1.plot(xs, ys, label='prior', alpha=0.5, color='red')
-        ax1.legend()
-
-        fig = plt.gcf()
-        fig.suptitle('Prior Mean Interactions, {}'.format(
-            LATEXNAMES.PRIOR_MEAN_INTERACTIONS))
-        plt.savefig(interactionspath + 'mean.pdf')
-        plt.close()
-        f.close()
-
-    if chain.tracer.is_being_traced(STRNAMES.INTERACTIONS_OBJ):
-        interactions = chain.graph[STRNAMES.INTERACTIONS_OBJ]
-        f = open(finteractionspath, 'a')
-
-        # Plot the interactions
-        summary = pl.variables.summary(interactions, set_nan_to_0=True, section=SECTION)
-        for key, arr in summary.items():
-            try:
-                pl.visualization.render_interaction_strength(
-                    interaction_matrix=arr, log_scale=yscale_log, asvs=ASVS,
-                    clustering=CLUSTERING, yticklabels=yticklabels, include_tick_marks=False,
-                    xticklabels=xticklabels, include_colorbar=True, center_colors=center_color_for_strength,
-                    title='{} {}'.format(key.capitalize(), LATEXNAMES.CLUSTER_INTERACTION_VALUE),
-                    order=ASV_ORDER)
-                fig = plt.gcf()
-                fig.tight_layout()
-                plt.savefig(interactionspath + '{}_matrix.pdf'.format(key.replace(' ','_')))
-                plt.close()
-            except:
-                logging.warning('Failed plotting {}'.format(key))
-
-        bayes_factors = interactions.generate_bayes_factors_posthoc(
-            prior=chain.graph[STRNAMES.CLUSTER_INTERACTION_INDICATOR].prior, section=SECTION)
-        try:
-            pl.visualization.render_bayes_factors(
-                bayes_factors=bayes_factors, asvs=ASVS, clustering=CLUSTERING, 
-                xticklabels=xticklabels, max_value=25, yticklabels=yticklabels, 
-                include_tick_marks=False, order=ASV_ORDER)
-        except:
-            logging.critical('Failed plotting Bayes factor')
-        fig = plt.gcf()
-        fig.tight_layout()
-        plt.savefig(interactionspath+'bayes_factors.pdf')
-        plt.close()
-        
-        # Calculate the in/out degree for each ASV
-        inout_dict = interactions.generate_in_out_degree_posthoc(section=SECTION)
-        f.write('\nIn degree for each ASV\n')
-        f.write(  '----------------------\n')
-        summary = pl.variables.summary(inout_dict['in'])
-        for key,arr in summary.items():
-            f.write('{}\n'.format(key))
-            for idx,ele in enumerate(arr):
-                prefix = ''
-                if asv_prefix_formatter is not None:
-                    prefix = pl.asvname_formatter(
-                        format=asv_prefix_formatter,
-                        asv=ASVS.names.order[idx],
-                        asvs=ASVS)
-                f.write('\t' + prefix + '{}\n'.format(ele))
-
-        f.write('\nOut degree for each ASV\n')
-        f.write(  '-----------------------\n')
-        summary = pl.variables.summary(inout_dict['out'])
-        for key,arr in summary.items():
-            f.write('{}\n'.format(key))
-            for idx,ele in enumerate(arr):
-                prefix = ''
-                if asv_prefix_formatter is not None:
-                    prefix = pl.asvname_formatter(
-                        format=asv_prefix_formatter,
-                        asv=ASVS.names.order[idx],
-                        asvs=ASVS)
-                f.write('\t' + prefix + '{}\n'.format(ele))
-        f.close()
-
-        # Plot the in degree
-        inout_dict = interactions.generate_in_out_degree_posthoc(section='entire')
-        inpath = interactionspath + 'in_degree/'
-        os.makedirs(inpath, exist_ok=True)
-        in_arr = inout_dict['in']
-        for oidx in range(len(ASVS)):
-            fig = plt.figure()
-            ax = fig.add_subplot(111)
-            if SECTION == 'burnin':
-                n_burnin = len(in_arr)
-            else:
-                n_burnin = chain.burnin
-            ax = pl.visualization.render_trace(var=in_arr, idx=oidx, ax=ax, 
-                plt_type='trace', include_burnin=True, scatter=True, n_burnin=n_burnin, 
-                alpha=0.5, title='In-degree\n{}'.format(pl.asvname_formatter(
-                    format=asv_prefix_formatter,
-                    asv=ASVS.names.order[oidx],
-                    asvs=ASVS)), rasterized=True)
-            plt.savefig(inpath + '{}.pdf'.format(ASVS[oidx].name))
-            plt.close()
-
-        mean_in = np.mean(a=in_arr, axis=1)
-        # mean_low = np.quantile(a=in_arr, axis=1, q=.25)
-        # mean_high = np.quantile(a=in_arr, axis=1, q=.75)
-        # xs = np.arange(len(mean_high)) - chain.burnin
-
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        if SECTION == 'burnin':
-            n_burnin = len(mean_in)
-        else:
-            n_burnin = chain.burnin
-        ax = pl.visualization.render_trace(var=mean_in, ax=ax, 
-                plt_type='trace', include_burnin=True, scatter=True, n_burnin=n_burnin, 
-                alpha=0.90, title='Mean In-Degree', rasterized=True)
-        # ax.fill_between(xs, y1=mean_low, y2=mean_high, alpha=0.15, color='blue')
-        plt.savefig(inpath + 'mean.pdf')
-        plt.close()
-
-        # Plot out degree
-        inout_dict = interactions.generate_in_out_degree_posthoc(section='entire')
-        outpath = interactionspath + 'out_degree/'
-        os.makedirs(outpath, exist_ok=True)
-        out_arr = inout_dict['out']
-        for oidx in range(len(ASVS)):
-            fig = plt.figure()
-            ax = fig.add_subplot(111)
-            if SECTION == 'burnin':
-                n_burnin = len(out_arr)
-            else:
-                n_burnin = chain.burnin
-            ax = pl.visualization.render_trace(var=out_arr, idx=oidx, ax=ax, 
-                plt_type='trace', include_burnin=True, scatter=True, n_burnin=n_burnin, 
-                alpha=0.5, title='Out-degree\n{}'.format(pl.asvname_formatter(
-                    format=asv_prefix_formatter,
-                    asv=ASVS.names.order[oidx],
-                    asvs=ASVS)), rasterized=True)
-            plt.savefig(outpath + '{}.pdf'.format(ASVS[oidx].name))
-            plt.close()
-
-        mean_out = np.mean(a=out_arr, axis=1)
-        # mean_low = np.quantile(a=out_arr, axis=1, q=.25)
-        # mean_high = np.quantile(a=out_arr, axis=1, q=.75)
-        # xs = np.arange(len(mean_high)) - chain.burnin
-
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        if SECTION == 'burnin':
-            n_burnin = len(mean_out)
-        else:
-            n_burnin = chain.burnin
-        ax = pl.visualization.render_trace(var=mean_out, ax=ax, 
-                plt_type='trace', include_burnin=True, scatter=True, n_burnin=n_burnin, 
-                alpha=0.90, title='Mean Out-Degree', rasterized=True)
-        # ax.fill_between(xs, y1=mean_low, y2=mean_high, alpha=0.15, color='blue')
-        plt.savefig(outpath + 'mean.pdf')
-        plt.close()
-
-    if chain.is_in_inference_order(STRNAMES.INDICATOR_PROB):
-        pi_z = chain.graph[STRNAMES.INDICATOR_PROB]
-        f = open(finteractionspath, 'a')
-
-        f.write('\n\n###################################\n')
-        f.write('Indicator Probability\n')
-        f.write('###################################\n')
-        summary = pl.variables.summary(pi_z, section=SECTION)
-        for key,val in summary.items():
-            f.write('{}: {}\n'.format(key,val))
-        pl.visualization.render_trace(var=pi_z, plt_type='both',
-            section=SECTION, include_burnin=True, rasterized=True)
-        fig = plt.gcf()
-        fig.suptitle('Probability of an Interaction, {}'.format(
-            LATEXNAMES.INDICATOR_PROB))
-        plt.savefig(interactionspath + 'indicator_prob_trace.pdf')
-        plt.close()
-        f.close()
-
-    if chain.is_in_inference_order(STRNAMES.PROCESSVAR):
-        f = open(overviewpath, 'a')
-        pv = chain.graph[STRNAMES.PROCESSVAR]
-        summary = pl.variables.summary(pv, section=SECTION)
-        f.write('\n\n###################################\n')
-        f.write('Process Variance\n')
-        f.write('###################################\n')
-        for key,ele in summary.items():
-            f.write('{}: {}\n'.format(key,ele))
-        ax1, _ = pl.visualization.render_trace(var=pv, plt_type='both',
-            section=SECTION, include_burnin=True, log_scale=True, rasterized=True)
-
-        l,h = ax1.get_xlim()
-        try:
-            xs = np.arange(l,h,step=(h-l)/100) 
-            ys = []
-            for x in xs:
-                # This might throw an overflow error
-                # print('\nvalue: {}\ndof: {}\nscale: {}'.format( 
-                #     x, pv.prior.dof.value,
-                #     pv.prior.scale.value))
-                ys.append(pl.random.sics.pdf(value=x, 
-                    dof=pv.prior.dof.value,
-                    scale=pv.prior.scale.value))
-            ax1.plot(xs, ys, label='prior', alpha=0.5, color='red')
-            ax1.legend()
-        except OverflowError:
-            logging.critical('OverflowError while plotting prior for ' \
-                'process variance')
+    # # # Calculate keystoneness
+    # # if calculate_keystoneness:
+    # #     # Get the growth rates
+    # #     growth_values = pl.variables.summary(
+    # #         chain.graph[STRNAMES.GROWTH_VALUE],
+    # #         only='mean', section=SECTION)['mean']
+    # #     si_values = pl.variables.summary(
+    # #         chain.graph[STRNAMES.GROWTH_VALUE],
+    # #         only='mean', section=SECTION)['mean']
+    # #     A_values = pl.variables.summary(
+    # #         chain.graph[STRNAMES.INTERACTIONS_OBJ], set_nan_to_0=True,
+    # #         section=SECTION, only='mean')['mean']
         
 
-        fig = plt.gcf()
-        fig.suptitle('Process Variance, {}'.format(LATEXNAMES.PROCESSVAR))
-        plt.savefig(basepath + 'processvar.pdf')
-        plt.close()
-        f.close()
 
-    # Perturbations
-    if STRNAMES.PERT_VALUE in chain.graph:
-        for pidx in range(len(subjset.perturbations)):
-            pert = subjset.perturbations[pidx]
-            if pert.name is None:
-                pname = 'pert{}'.format(pidx)
-            else:
-                pname = pert.name
 
-            perturbation_path = basepath + '{} perturbation/'.format(pname)
-            os.makedirs(perturbation_path, exist_ok=True)
-            f = open(perturbation_path + 'output.txt', 'w')
 
-            perturbation = chain.graph.perturbations[pidx]
 
-            f.write('################################\n')
-            f.write('Perturbation {}\n'.format(pidx))
-            f.write('\tStart: {}\n'.format(perturbation.start))
-            f.write('\tEnd: {}\n'.format(perturbation.end))
-            f.write('\tLearn magnitude? {}\n'.format(
-                chain.is_in_inference_order(STRNAMES.PERT_VALUE)))
-            f.write('\tLearn indicator? {}\n'.format(
-                chain.is_in_inference_order(STRNAMES.PERT_INDICATOR)))
-            f.write('\tLearn probability? {}\n'.format(
-                chain.is_in_inference_order(STRNAMES.PERT_INDICATOR_PROB)))
-            f.write('\tLearn magnitude prior variance? {}\n'.format( 
-                chain.is_in_inference_order(STRNAMES.PRIOR_VAR_PERT)))
-            f.write('\tLearn magnitude prior mean? {}\n'.format( 
-                chain.is_in_inference_order(STRNAMES.PRIOR_MEAN_PERT)))
-            f.write('################################\n')
+    # #Plot interaction parameters
+    # interactionspath = basepath + 'interactions/'
+    # finteractionspath = interactionspath + 'output.txt'
+    # os.makedirs(interactionspath, exist_ok=True)
+    # f = open(finteractionspath, 'w')
+    # f.close()
 
-            if chain.is_in_inference_order(STRNAMES.PERT_INDICATOR_PROB):
+    # if chain.is_in_inference_order(STRNAMES.PRIOR_VAR_INTERACTIONS):
+    #     f = open(finteractionspath, 'a')
+    #     pv = chain.graph[STRNAMES.PRIOR_VAR_INTERACTIONS]
+    #     summary = pl.variables.summary(pv, section=SECTION)
+    #     f.write('\n\n###################################\n')
+    #     f.write('Prior Variance Interactions\n')
+    #     f.write('###################################\n')
+    #     for key,ele in summary.items():
+    #         f.write('{}: {}\n'.format(key,ele))
+    #     ax1, _ = pl.visualization.render_trace(var=pv, plt_type='both', log_scale=True, 
+    #         section=SECTION, include_burnin=True, rasterized=True)
+
+    #     l,h = ax1.get_xlim()
+    #     xs = np.arange(l,h,step=(h-l)/100) 
+    #     ys = []
+    #     for x in xs:
+    #         ys.append(pl.random.sics.pdf(value=x, 
+    #             dof=pv.prior.dof.value,
+    #             scale=pv.prior.scale.value))
+    #     ax1.plot(xs, ys, label='prior', alpha=0.5, color='red')
+    #     ax1.legend()
+
+    #     fig = plt.gcf()
+    #     fig.suptitle('Prior Variance Interactions, {}'.format(
+    #         LATEXNAMES.PRIOR_VAR_INTERACTIONS))
+    #     plt.savefig(interactionspath + 'var.pdf')
+    #     plt.close()
+    #     f.close()
+
+    # if chain.is_in_inference_order(STRNAMES.PRIOR_MEAN_INTERACTIONS):
+    #     f = open(finteractionspath, 'a')
+    #     mean = chain.graph[STRNAMES.PRIOR_MEAN_INTERACTIONS]
+    #     summary = pl.variables.summary(mean, section=SECTION)
+    #     f.write('\n\n###################################\n')
+    #     f.write('Prior Mean Interactions\n')
+    #     f.write('###################################\n')
+    #     for key,ele in summary.items():
+    #         f.write('{}: {}\n'.format(key,ele))
+    #     ax1, _ = pl.visualization.render_trace(var=mean, plt_type='both', 
+    #         log_scale=True, section=SECTION, include_burnin=True, rasterized=True)
+
+    #     l,h = ax1.get_xlim()
+    #     xs = np.arange(l,h,step=(h-l)/100) 
+    #     ys = []
+    #     for x in xs:
+    #         ys.append(pl.random.normal.pdf(value=x, 
+    #             mean=mean.prior.mean.value,
+    #             std=np.sqrt(mean.prior.var.value)))
+    #     ax1.plot(xs, ys, label='prior', alpha=0.5, color='red')
+    #     ax1.legend()
+
+    #     fig = plt.gcf()
+    #     fig.suptitle('Prior Mean Interactions, {}'.format(
+    #         LATEXNAMES.PRIOR_MEAN_INTERACTIONS))
+    #     plt.savefig(interactionspath + 'mean.pdf')
+    #     plt.close()
+    #     f.close()
+
+    # if chain.tracer.is_being_traced(STRNAMES.INTERACTIONS_OBJ):
+    #     interactions = chain.graph[STRNAMES.INTERACTIONS_OBJ]
+    #     f = open(finteractionspath, 'a')
+
+    #     # Plot the interactions
+    #     summary = pl.variables.summary(interactions, set_nan_to_0=True, section=SECTION)
+    #     for key, arr in summary.items():
+    #         try:
+    #             pl.visualization.render_interaction_strength(
+    #                 interaction_matrix=arr, log_scale=yscale_log, asvs=ASVS,
+    #                 clustering=CLUSTERING, yticklabels=yticklabels, include_tick_marks=False,
+    #                 xticklabels=xticklabels, include_colorbar=True, center_colors=center_color_for_strength,
+    #                 title='{} {}'.format(key.capitalize(), LATEXNAMES.CLUSTER_INTERACTION_VALUE),
+    #                 order=ASV_ORDER)
+    #             fig = plt.gcf()
+    #             fig.tight_layout()
+    #             plt.savefig(interactionspath + '{}_matrix.pdf'.format(key.replace(' ','_')))
+    #             plt.close()
+    #         except:
+    #             logging.warning('Failed plotting {}'.format(key))
+
+    #     bayes_factors = interactions.generate_bayes_factors_posthoc(
+    #         prior=chain.graph[STRNAMES.CLUSTER_INTERACTION_INDICATOR].prior, section=SECTION)
+    #     try:
+    #         pl.visualization.render_bayes_factors(
+    #             bayes_factors=bayes_factors, asvs=ASVS, clustering=CLUSTERING, 
+    #             xticklabels=xticklabels, max_value=25, yticklabels=yticklabels, 
+    #             include_tick_marks=False, order=ASV_ORDER)
+    #     except:
+    #         logging.critical('Failed plotting Bayes factor')
+    #     fig = plt.gcf()
+    #     fig.tight_layout()
+    #     plt.savefig(interactionspath+'bayes_factors.pdf')
+    #     plt.close()
+        
+    #     # Calculate the in/out degree for each ASV
+    #     inout_dict = interactions.generate_in_out_degree_posthoc(section=SECTION)
+    #     f.write('\nIn degree for each ASV\n')
+    #     f.write(  '----------------------\n')
+    #     summary = pl.variables.summary(inout_dict['in'])
+    #     for key,arr in summary.items():
+    #         f.write('{}\n'.format(key))
+    #         for idx,ele in enumerate(arr):
+    #             prefix = ''
+    #             if asv_prefix_formatter is not None:
+    #                 prefix = pl.asvname_formatter(
+    #                     format=asv_prefix_formatter,
+    #                     asv=ASVS.names.order[idx],
+    #                     asvs=ASVS)
+    #             f.write('\t' + prefix + '{}\n'.format(ele))
+
+    #     f.write('\nOut degree for each ASV\n')
+    #     f.write(  '-----------------------\n')
+    #     summary = pl.variables.summary(inout_dict['out'])
+    #     for key,arr in summary.items():
+    #         f.write('{}\n'.format(key))
+    #         for idx,ele in enumerate(arr):
+    #             prefix = ''
+    #             if asv_prefix_formatter is not None:
+    #                 prefix = pl.asvname_formatter(
+    #                     format=asv_prefix_formatter,
+    #                     asv=ASVS.names.order[idx],
+    #                     asvs=ASVS)
+    #             f.write('\t' + prefix + '{}\n'.format(ele))
+    #     f.close()
+
+    #     # Plot the in degree
+    #     inout_dict = interactions.generate_in_out_degree_posthoc(section='entire')
+    #     inpath = interactionspath + 'in_degree/'
+    #     os.makedirs(inpath, exist_ok=True)
+    #     in_arr = inout_dict['in']
+    #     for oidx in range(len(ASVS)):
+    #         fig = plt.figure()
+    #         ax = fig.add_subplot(111)
+    #         if SECTION == 'burnin':
+    #             n_burnin = len(in_arr)
+    #         else:
+    #             n_burnin = chain.burnin
+    #         ax = pl.visualization.render_trace(var=in_arr, idx=oidx, ax=ax, 
+    #             plt_type='trace', include_burnin=True, scatter=True, n_burnin=n_burnin, 
+    #             alpha=0.5, title='In-degree\n{}'.format(pl.asvname_formatter(
+    #                 format=asv_prefix_formatter,
+    #                 asv=ASVS.names.order[oidx],
+    #                 asvs=ASVS)), rasterized=True)
+    #         plt.savefig(inpath + '{}.pdf'.format(ASVS[oidx].name))
+    #         plt.close()
+
+    #     mean_in = np.mean(a=in_arr, axis=1)
+    #     # mean_low = np.quantile(a=in_arr, axis=1, q=.25)
+    #     # mean_high = np.quantile(a=in_arr, axis=1, q=.75)
+    #     # xs = np.arange(len(mean_high)) - chain.burnin
+
+    #     fig = plt.figure()
+    #     ax = fig.add_subplot(111)
+    #     if SECTION == 'burnin':
+    #         n_burnin = len(mean_in)
+    #     else:
+    #         n_burnin = chain.burnin
+    #     ax = pl.visualization.render_trace(var=mean_in, ax=ax, 
+    #             plt_type='trace', include_burnin=True, scatter=True, n_burnin=n_burnin, 
+    #             alpha=0.90, title='Mean In-Degree', rasterized=True)
+    #     # ax.fill_between(xs, y1=mean_low, y2=mean_high, alpha=0.15, color='blue')
+    #     plt.savefig(inpath + 'mean.pdf')
+    #     plt.close()
+
+    #     # Plot out degree
+    #     inout_dict = interactions.generate_in_out_degree_posthoc(section='entire')
+    #     outpath = interactionspath + 'out_degree/'
+    #     os.makedirs(outpath, exist_ok=True)
+    #     out_arr = inout_dict['out']
+    #     for oidx in range(len(ASVS)):
+    #         fig = plt.figure()
+    #         ax = fig.add_subplot(111)
+    #         if SECTION == 'burnin':
+    #             n_burnin = len(out_arr)
+    #         else:
+    #             n_burnin = chain.burnin
+    #         ax = pl.visualization.render_trace(var=out_arr, idx=oidx, ax=ax, 
+    #             plt_type='trace', include_burnin=True, scatter=True, n_burnin=n_burnin, 
+    #             alpha=0.5, title='Out-degree\n{}'.format(pl.asvname_formatter(
+    #                 format=asv_prefix_formatter,
+    #                 asv=ASVS.names.order[oidx],
+    #                 asvs=ASVS)), rasterized=True)
+    #         plt.savefig(outpath + '{}.pdf'.format(ASVS[oidx].name))
+    #         plt.close()
+
+    #     mean_out = np.mean(a=out_arr, axis=1)
+    #     # mean_low = np.quantile(a=out_arr, axis=1, q=.25)
+    #     # mean_high = np.quantile(a=out_arr, axis=1, q=.75)
+    #     # xs = np.arange(len(mean_high)) - chain.burnin
+
+    #     fig = plt.figure()
+    #     ax = fig.add_subplot(111)
+    #     if SECTION == 'burnin':
+    #         n_burnin = len(mean_out)
+    #     else:
+    #         n_burnin = chain.burnin
+    #     ax = pl.visualization.render_trace(var=mean_out, ax=ax, 
+    #             plt_type='trace', include_burnin=True, scatter=True, n_burnin=n_burnin, 
+    #             alpha=0.90, title='Mean Out-Degree', rasterized=True)
+    #     # ax.fill_between(xs, y1=mean_low, y2=mean_high, alpha=0.15, color='blue')
+    #     plt.savefig(outpath + 'mean.pdf')
+    #     plt.close()
+
+    # if chain.is_in_inference_order(STRNAMES.INDICATOR_PROB):
+    #     pi_z = chain.graph[STRNAMES.INDICATOR_PROB]
+    #     f = open(finteractionspath, 'a')
+
+    #     f.write('\n\n###################################\n')
+    #     f.write('Indicator Probability\n')
+    #     f.write('###################################\n')
+    #     summary = pl.variables.summary(pi_z, section=SECTION)
+    #     for key,val in summary.items():
+    #         f.write('{}: {}\n'.format(key,val))
+    #     pl.visualization.render_trace(var=pi_z, plt_type='both',
+    #         section=SECTION, include_burnin=True, rasterized=True)
+    #     fig = plt.gcf()
+    #     fig.suptitle('Probability of an Interaction, {}'.format(
+    #         LATEXNAMES.INDICATOR_PROB))
+    #     plt.savefig(interactionspath + 'indicator_prob_trace.pdf')
+    #     plt.close()
+    #     f.close()
+
+    # if chain.is_in_inference_order(STRNAMES.PROCESSVAR):
+    #     f = open(overviewpath, 'a')
+    #     pv = chain.graph[STRNAMES.PROCESSVAR]
+    #     summary = pl.variables.summary(pv, section=SECTION)
+    #     f.write('\n\n###################################\n')
+    #     f.write('Process Variance\n')
+    #     f.write('###################################\n')
+    #     for key,ele in summary.items():
+    #         f.write('{}: {}\n'.format(key,ele))
+    #     ax1, _ = pl.visualization.render_trace(var=pv, plt_type='both',
+    #         section=SECTION, include_burnin=True, log_scale=True, rasterized=True)
+
+    #     l,h = ax1.get_xlim()
+    #     try:
+    #         xs = np.arange(l,h,step=(h-l)/100) 
+    #         ys = []
+    #         for x in xs:
+    #             # This might throw an overflow error
+    #             # print('\nvalue: {}\ndof: {}\nscale: {}'.format( 
+    #             #     x, pv.prior.dof.value,
+    #             #     pv.prior.scale.value))
+    #             ys.append(pl.random.sics.pdf(value=x, 
+    #                 dof=pv.prior.dof.value,
+    #                 scale=pv.prior.scale.value))
+    #         ax1.plot(xs, ys, label='prior', alpha=0.5, color='red')
+    #         ax1.legend()
+    #     except OverflowError:
+    #         logging.critical('OverflowError while plotting prior for ' \
+    #             'process variance')
+        
+
+    #     fig = plt.gcf()
+    #     fig.suptitle('Process Variance, {}'.format(LATEXNAMES.PROCESSVAR))
+    #     plt.savefig(basepath + 'processvar.pdf')
+    #     plt.close()
+    #     f.close()
+
+    # # Perturbations
+    # if STRNAMES.PERT_VALUE in chain.graph:
+    #     for pidx in range(len(subjset.perturbations)):
+    #         pert = subjset.perturbations[pidx]
+    #         if pert.name is None:
+    #             pname = 'pert{}'.format(pidx)
+    #         else:
+    #             pname = pert.name
+
+    #         perturbation_path = basepath + '{} perturbation/'.format(pname)
+    #         os.makedirs(perturbation_path, exist_ok=True)
+    #         f = open(perturbation_path + 'output.txt', 'w')
+
+    #         perturbation = chain.graph.perturbations[pidx]
+
+    #         f.write('################################\n')
+    #         f.write('Perturbation {}\n'.format(pidx))
+    #         f.write('\tStart: {}\n'.format(perturbation.start))
+    #         f.write('\tEnd: {}\n'.format(perturbation.end))
+    #         f.write('\tLearn magnitude? {}\n'.format(
+    #             chain.is_in_inference_order(STRNAMES.PERT_VALUE)))
+    #         f.write('\tLearn indicator? {}\n'.format(
+    #             chain.is_in_inference_order(STRNAMES.PERT_INDICATOR)))
+    #         f.write('\tLearn probability? {}\n'.format(
+    #             chain.is_in_inference_order(STRNAMES.PERT_INDICATOR_PROB)))
+    #         f.write('\tLearn magnitude prior variance? {}\n'.format( 
+    #             chain.is_in_inference_order(STRNAMES.PRIOR_VAR_PERT)))
+    #         f.write('\tLearn magnitude prior mean? {}\n'.format( 
+    #             chain.is_in_inference_order(STRNAMES.PRIOR_MEAN_PERT)))
+    #         f.write('################################\n')
+
+    #         if chain.is_in_inference_order(STRNAMES.PERT_INDICATOR_PROB):
                 
-                f.write('\n\nProbability\n')
-                prob_sum = pl.variables.summary(
-                    perturbation.probability.get_trace_from_disk())
-                for key,val in prob_sum.items():
-                    f.write('\t{}: {}\n'.format(key,val))
+    #             f.write('\n\nProbability\n')
+    #             prob_sum = pl.variables.summary(
+    #                 perturbation.probability.get_trace_from_disk())
+    #             for key,val in prob_sum.items():
+    #                 f.write('\t{}: {}\n'.format(key,val))
 
-                ax1, _ = pl.visualization.render_trace(
-                    var=perturbation.probability, plt_type='both', rasterized=True)
-                fig = plt.gcf()
-                fig.suptitle('{} perturbation probability'.format(pname))
-                plt.savefig(perturbation_path+'probability.pdf')
-                plt.close()
+    #             ax1, _ = pl.visualization.render_trace(
+    #                 var=perturbation.probability, plt_type='both', rasterized=True)
+    #             fig = plt.gcf()
+    #             fig.suptitle('{} perturbation probability'.format(pname))
+    #             plt.savefig(perturbation_path+'probability.pdf')
+    #             plt.close()
 
-            if chain.is_in_inference_order(STRNAMES.PRIOR_VAR_PERT):
-                f.write('\n\nMagnitude Prior Variance\n')
-                var_sum = pl.variables.summary( 
-                    perturbation.magnitude.prior.var, section=SECTION)
-                for key,val in var_sum.items():
-                    f.write('\t{}: {}\n'.format(key,val))
+    #         if chain.is_in_inference_order(STRNAMES.PRIOR_VAR_PERT):
+    #             f.write('\n\nMagnitude Prior Variance\n')
+    #             var_sum = pl.variables.summary( 
+    #                 perturbation.magnitude.prior.var, section=SECTION)
+    #             for key,val in var_sum.items():
+    #                 f.write('\t{}: {}\n'.format(key,val))
                 
-                ax1, _ = pl.visualization.render_trace( 
-                    var=perturbation.magnitude.prior.var, plt_type='both',
-                        section=SECTION, include_burnin=True, log_scale=True, rasterized=True)
-                fig = plt.gcf()
-                fig.suptitle('{} perturbation magnitude prior variance'.format(pname))
-                plt.savefig(perturbation_path+'prior_var.pdf')
-                plt.close()
+    #             ax1, _ = pl.visualization.render_trace( 
+    #                 var=perturbation.magnitude.prior.var, plt_type='both',
+    #                     section=SECTION, include_burnin=True, log_scale=True, rasterized=True)
+    #             fig = plt.gcf()
+    #             fig.suptitle('{} perturbation magnitude prior variance'.format(pname))
+    #             plt.savefig(perturbation_path+'prior_var.pdf')
+    #             plt.close()
 
-                prior_std_trace = np.sqrt(perturbation.magnitude.prior.var.get_trace_from_disk( 
-                    section=SECTION))
-            else:
-                prior_std_trace = None
+    #             prior_std_trace = np.sqrt(perturbation.magnitude.prior.var.get_trace_from_disk( 
+    #                 section=SECTION))
+    #         else:
+    #             prior_std_trace = None
 
-            if chain.is_in_inference_order(STRNAMES.PRIOR_MEAN_PERT):
-                f.write('\n\nMagnitude Prior Mean\n')
-                var_sum = pl.variables.summary( 
-                    perturbation.magnitude.prior.mean, section=SECTION)
-                for key,val in var_sum.items():
-                    f.write('\t{}: {}\n'.format(key,val))
+    #         if chain.is_in_inference_order(STRNAMES.PRIOR_MEAN_PERT):
+    #             f.write('\n\nMagnitude Prior Mean\n')
+    #             var_sum = pl.variables.summary( 
+    #                 perturbation.magnitude.prior.mean, section=SECTION)
+    #             for key,val in var_sum.items():
+    #                 f.write('\t{}: {}\n'.format(key,val))
                 
-                ax1, _ = pl.visualization.render_trace( 
-                    var=perturbation.magnitude.prior.mean, plt_type='both',
-                    section=SECTION, include_burnin=True, rasterized=True)
-                fig = plt.gcf()
-                fig.suptitle('{} perturbation magnitude prior mean'.format(pname))
-                plt.savefig(perturbation_path+'prior_mean.pdf')
-                plt.close()
+    #             ax1, _ = pl.visualization.render_trace( 
+    #                 var=perturbation.magnitude.prior.mean, plt_type='both',
+    #                 section=SECTION, include_burnin=True, rasterized=True)
+    #             fig = plt.gcf()
+    #             fig.suptitle('{} perturbation magnitude prior mean'.format(pname))
+    #             plt.savefig(perturbation_path+'prior_mean.pdf')
+    #             plt.close()
 
-                prior_mean_trace = np.sqrt(perturbation.magnitude.prior.mean.get_trace_from_disk( 
-                    section=SECTION))
-            else:
-                prior_mean_trace = None
+    #             prior_mean_trace = np.sqrt(perturbation.magnitude.prior.mean.get_trace_from_disk( 
+    #                 section=SECTION))
+    #         else:
+    #             prior_mean_trace = None
 
-            # Create the histogram for the prior if any of the priors were learned
-            if prior_std_trace is not None or prior_mean_trace is not None:
-                if prior_std_trace is None:
-                    prior_std_trace = np.sqrt(perturbation.magnitude.prior.var.value) * \
-                        np.ones(LEN_POSTERIOR, dtype=float)
-                if prior_mean_trace is None:
-                    prior_mean_trace = perturbation.magnitude.prior.mean.value * \
-                        np.ones(LEN_POSTERIOR, dtype=float)
+    #         # Create the histogram for the prior if any of the priors were learned
+    #         if prior_std_trace is not None or prior_mean_trace is not None:
+    #             if prior_std_trace is None:
+    #                 prior_std_trace = np.sqrt(perturbation.magnitude.prior.var.value) * \
+    #                     np.ones(LEN_POSTERIOR, dtype=float)
+    #             if prior_mean_trace is None:
+    #                 prior_mean_trace = perturbation.magnitude.prior.mean.value * \
+    #                     np.ones(LEN_POSTERIOR, dtype=float)
 
-                prior_hist = np.zeros(len(prior_std_trace), dtype=float)
-                for i in range(len(prior_hist)):
-                    prior_hist[i] = pl.random.normal.sample(mean=prior_mean_trace[i], std=prior_std_trace[i])
-            else:
-                prior_hist = None
+    #             prior_hist = np.zeros(len(prior_std_trace), dtype=float)
+    #             for i in range(len(prior_hist)):
+    #                 prior_hist[i] = pl.random.normal.sample(mean=prior_mean_trace[i], std=prior_std_trace[i])
+    #         else:
+    #             prior_hist = None
             
 
-            perturbation_trace = perturbation.get_trace_from_disk(section=SECTION)
-            for oidx in range(len(ASVS)):
-                f.write('\n\nASV - {}:\n'.format(oidx))
-                f.write('---------------\n')
+    #         perturbation_trace = perturbation.get_trace_from_disk(section=SECTION)
+    #         for oidx in range(len(ASVS)):
+    #             f.write('\n\nASV - {}:\n'.format(oidx))
+    #             f.write('---------------\n')
 
-                try:
-                    # This will fail if it was never turned on (always np.nan)
-                    ax_posterior, ax_trace = pl.visualization.render_trace(
-                        var=perturbation, idx=oidx, plt_type='both', section=SECTION,
-                        include_burnin=True, rasterized=True)
-                    left,right = ax_posterior.get_xlim()
+    #             try:
+    #                 # This will fail if it was never turned on (always np.nan)
+    #                 ax_posterior, ax_trace = pl.visualization.render_trace(
+    #                     var=perturbation, idx=oidx, plt_type='both', section=SECTION,
+    #                     include_burnin=True, rasterized=True)
+    #                 left,right = ax_posterior.get_xlim()
 
-                    if ax_posterior is not None:
-                        # Plot the prior
-                        if prior_hist is not None:
-                            pl.visualization.render_trace(var=prior_hist, plt_type='hist',
-                                label='prior', color='red', alpha=0.5, ax=ax_posterior, rasterized=True)
-                        else:
-                            l,h = ax_posterior.get_xlim()
-                            xs = np.arange(l,h,step=(h-l)/100)
-                            prior = perturbation.magnitude.prior
-                            ys = []
-                            for x in xs:
-                                ys.append(prior.pdf(value=x))
-                            ax_posterior.plot(xs, ys, label='prior', alpha=0.5, color='red')
+    #                 if ax_posterior is not None:
+    #                     # Plot the prior
+    #                     if prior_hist is not None:
+    #                         pl.visualization.render_trace(var=prior_hist, plt_type='hist',
+    #                             label='prior', color='red', alpha=0.5, ax=ax_posterior, rasterized=True)
+    #                     else:
+    #                         l,h = ax_posterior.get_xlim()
+    #                         xs = np.arange(l,h,step=(h-l)/100)
+    #                         prior = perturbation.magnitude.prior
+    #                         ys = []
+    #                         for x in xs:
+    #                             ys.append(prior.pdf(value=x))
+    #                         ax_posterior.plot(xs, ys, label='prior', alpha=0.5, color='red')
 
-                        if syndata is not None:
-                            true_pert = syndata.dynamics.perturbations[pidx].item_array(only_pos_ind=False)[oidx]
-                            ax_posterior.axvline(x=true_pert, color='red', alpha=0.65, label='True Value')
-                        ax_posterior.legend()
+    #                     if syndata is not None:
+    #                         true_pert = syndata.dynamics.perturbations[pidx].item_array(only_pos_ind=False)[oidx]
+    #                         ax_posterior.axvline(x=true_pert, color='red', alpha=0.65, label='True Value')
+    #                     ax_posterior.legend()
 
-                        if syndata is not None:
-                            true_pert = syndata.dynamics.perturbations[pidx].item_array(only_pos_ind=False)[oidx]
-                            ax_trace.axhline(y=true_pert, color='red', alpha=0.65, label='True Value')
-                            ax_trace.legend()
+    #                     if syndata is not None:
+    #                         true_pert = syndata.dynamics.perturbations[pidx].item_array(only_pos_ind=False)[oidx]
+    #                         ax_trace.axhline(y=true_pert, color='red', alpha=0.65, label='True Value')
+    #                         ax_trace.legend()
                     
-                    ax_posterior.set_xlim(left=left*0.8, right=right*1.2)
-                except:
-                    logging.critical('Perturbation `{}` for {} was empty (all np.nan or 0s). ' \
-                        'Skipping'.format(pname, ASVS[oidx].name))
+    #                 ax_posterior.set_xlim(left=left*0.8, right=right*1.2)
+    #             except:
+    #                 logging.critical('Perturbation `{}` for {} was empty (all np.nan or 0s). ' \
+    #                     'Skipping'.format(pname, ASVS[oidx].name))
 
-                fig = plt.gcf()
-                if asv_prefix_formatter is not None:
-                    asvname = pl.asvname_formatter(
-                        format=asv_prefix_formatter,
-                        asv=ASVS.names.order[oidx],
-                        asvs=ASVS)
-                else:
-                    asvname = ASVS.names.order[oidx]
-                fig.suptitle('{} perturbation magnitude\n{}'.format(
-                    pname, asvname))
-                plt.savefig(perturbation_path+'{}.pdf'.format(ASVS[oidx].name))
-                plt.close()
-                pert_sum = pl.variables.summary(perturbation_trace[:,oidx], 
-                    set_nan_to_0=True)
+    #             fig = plt.gcf()
+    #             if asv_prefix_formatter is not None:
+    #                 asvname = pl.asvname_formatter(
+    #                     format=asv_prefix_formatter,
+    #                     asv=ASVS.names.order[oidx],
+    #                     asvs=ASVS)
+    #             else:
+    #                 asvname = ASVS.names.order[oidx]
+    #             fig.suptitle('{} perturbation magnitude\n{}'.format(
+    #                 pname, asvname))
+    #             plt.savefig(perturbation_path+'{}.pdf'.format(ASVS[oidx].name))
+    #             plt.close()
+    #             pert_sum = pl.variables.summary(perturbation_trace[:,oidx], 
+    #                 set_nan_to_0=True)
 
-                for key,val in pert_sum.items():
-                    f.write('\t{}: {}\n'.format(key,val))
+    #             for key,val in pert_sum.items():
+    #                 f.write('\t{}: {}\n'.format(key,val))
 
-                if chain.is_in_inference_order(STRNAMES.PERT_INDICATOR):
-                    # Calculate bayes factor
-                    try:
-                        ind_sum = perturbation_bayes_factor(perturbation, oidx)
-                        f.write('\tbayes factor: {}\n'.format(ind_sum))
-                    except:
-                        logging.critical('Cannot calculate a bayes factor for perturbation without ' \
-                            'a prior on the probability ')
-                        f.write('\tbayes factor: NA\n')
-            f.close()
+    #             if chain.is_in_inference_order(STRNAMES.PERT_INDICATOR):
+    #                 # Calculate bayes factor
+    #                 try:
+    #                     ind_sum = perturbation_bayes_factor(perturbation, oidx)
+    #                     f.write('\tbayes factor: {}\n'.format(ind_sum))
+    #                 except:
+    #                     logging.critical('Cannot calculate a bayes factor for perturbation without ' \
+    #                         'a prior on the probability ')
+    #                     f.write('\tbayes factor: NA\n')
+    #         f.close()
 
     if chain.is_in_inference_order(STRNAMES.FILTERING):
         # plot the latent and auxiliary trajectory with the data
@@ -2058,7 +2057,8 @@ def readify_chain(src_basepath, params, dst_basepath=None, plot_diagnostic_varia
                 kwargs = {'given_times':given_times, 'times':times, 'data':data, 'latent':latent_trace, 
                     'aux':aux_trace, 'yscale_log':yscale_log, 'percentile':percentile, 
                     'ax':ax, 'perturbations':chain.graph.perturbations, 'subjset': subjset, 'c_m': c_m,
-                    'title':'Replicate {}, ASV index: {}'.format(ridx, oidx), 'min_traj': min_traj}
+                    'title':'Replicate {}, ASV index: {}'.format(ridx, oidx), 'min_traj': min_traj,
+                    'basepath':basepath}
                     # 'init_aux_traj': init_aux_traj, 'init_latent_traj': init_latent_traj}
                 if exact_filename is not None:
                     kwargs['truth'] = M_truth[oidx,:]
@@ -2372,7 +2372,7 @@ def perturbation_bayes_factor(perturbation, oidx):
 def plot_single_trajectory(given_times, times, data, latent, aux, truth, min_traj, 
     percentile=5., ax=None, xlabel='days', ylabel='CFUs/g', #init_aux_traj, init_latent_traj, 
     title=None, perturbations=None, vmin=None, vmax=None, yscale_log=True, tight_layout=True, 
-    subjset=None, c_m=None):
+    subjset=None, c_m=None, basepath=None):
     '''Plots the trajectory with the real data and the auxiliary and latent
     trajectories learned from the error model. `percentile` is the
     interval to plot the errors at.
@@ -2410,6 +2410,8 @@ def plot_single_trajectory(given_times, times, data, latent, aux, truth, min_tra
         fig = plt.figure()
         ax = fig.add_subplot(111)
 
+    if basepath is not None:
+        qpcr_norm = np.load(basepath + '../qpcr_norm_factor.npy')[0]
 
     # plot the aux, green
     if aux is not None:
@@ -2426,9 +2428,16 @@ def plot_single_trajectory(given_times, times, data, latent, aux, truth, min_tra
         x_low = np.nanpercentile(a=latent, q=percentile, axis=0)
         x_median = np.nanpercentile(a=latent, q=50, axis=0)
         x_high = np.nanpercentile(a=latent, q=100-percentile, axis=0)
+
+        if basepath is not None:
+            x_median = x_median/qpcr_norm
+            x_low = x_low/qpcr_norm
+            x_high = x_high/qpcr_norm
+
         ax.plot(times, x_median, color=LATENT_COLOR, label='$x_i$', marker='.')
         # ax.plot(times, init_latent_traj, color=LATENT_COLOR, label='$x_i^{(0)}$', linestyle=':',
         #     marker='.', alpha=0.55)
+        
         ax.fill_between(times, y1=x_low, y2=x_high, color=LATENT_COLOR, alpha=0.15)
 
     # Plot the minimum abundance
@@ -2443,7 +2452,8 @@ def plot_single_trajectory(given_times, times, data, latent, aux, truth, min_tra
     ax.plot(given_times, data, color='black', marker='x', linestyle=':', 
         label='data')
     if truth is not None:
-        ax.plot(given_times, truth, color='blue', marker='x', linestyle=':', label='truth')
+        ax.plot(given_times, truth, color='blue', marker='o', linestyle=':', label='truth',
+            markersize=2)
 
     if vmin is not None or vmax is not None:
         ax.set_ylim(vmin, vmax)
@@ -3385,7 +3395,7 @@ def validate(src_basepath, model, forward_sims,
     # Forward simulate for each subject in val_subjset
     logging.info('Starting forward sims')
     results = metrics.Metrics(model=model, limit_of_detection=1e5, simulation_dt=sim_dt, 
-        output_dt=output_dt, log_integration=True, traj_fillvalue=traj_fillvalue,
+        output_dt=output_dt, traj_fillvalue=traj_fillvalue,
         perturbations_additive=perturbations_additive, mp=mp)
     if comparison is not None:
         results.add_truth_metrics(comparison_results)

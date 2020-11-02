@@ -40,8 +40,6 @@ class Metrics(pl.Saveable):
         This is the noise threshold we use
     traj_fillvalue : float
         If not None, replace 0s in the trajectories with this number as to not have any errors
-    log_integration : bool
-        If True, we use log integration. If false we use first order Euler integration.
     perturbations_additive : bool
         If True, we set the perturbation effects to be additive. If False, they are multiplicative
         to the growth rates.
@@ -52,7 +50,7 @@ class Metrics(pl.Saveable):
     '''
 
     def __init__(self, model, perturbations_additive, limit_of_detection=1e5, traj_fillvalue=None,
-        simulation_dt=0.001, output_dt=1/8, log_integration=True, mp=None, sim_max=1e20):
+        simulation_dt=0.001, output_dt=1/8, mp=None, sim_max=1e20):
         # Check the parameters
         if not pl.ismodel(model):
             raise TypeError('`model` ({}) must be a subtype of pylab.inference.BaseModel'.format( 
@@ -75,9 +73,6 @@ class Metrics(pl.Saveable):
         if limit_of_detection <= 0:
             raise ValueError('`limit_of_detection` ({}) must be > 0'.format(
                 limit_of_detection))
-        if not pl.isbool(log_integration):
-            raise TypeError('`log_integration` ({}) must be a bool'.format(
-                type(log_integration)))
         if not pl.isbool(perturbations_additive):
             raise TypeError('`perturbations_additive` ({}) must be a bool'.format(
                 type(perturbations_additive)))
@@ -93,7 +88,6 @@ class Metrics(pl.Saveable):
         self.simulation_dt = simulation_dt
         self.output_dt = output_dt
         self.limit_of_detection = limit_of_detection
-        self.log_integration = log_integration
         self.perturbations_additive = perturbations_additive
         self.mp = mp
         self.sim_max = sim_max
@@ -433,7 +427,7 @@ class Metrics(pl.Saveable):
 
         if pl.isML(self.model):
             # Using a maximum likelihood model, generate a point estimate
-            pred_dyn = model_module.gLVDynamicsSingleClustering(asvs=subject.asvs, log_dynamics=self.log_integration,
+            pred_dyn = model_module.gLVDynamicsSingleClustering(asvs=subject.asvs,
                 perturbations_additive=True, sim_max=self.sim_max, start_day=_start)
             pred_dyn.growth = growth
             pred_dyn.self_interactions = self_interactions
@@ -499,7 +493,6 @@ class Metrics(pl.Saveable):
                     pool.add_worker(_ForwardSimWorker(asvs=subject.asvs,
                         initial_conditions=initial_conditions, start_day=_start,
                         sim_dt=self.simulation_dt, n_days=sim_times[-1]+self.simulation_dt, name=i,
-                        log_integration=self.log_integration, 
                         perturbations_additive=self.perturbations_additive,
                         sim_times=sim_times))
                 pool.staged_map_start(func='integrate')
@@ -508,7 +501,6 @@ class Metrics(pl.Saveable):
                 if self.mp is None:
                     logging.info('integrated {}/{} simulations'.format(i, growth.shape[0]))
                     pred_dyn = model_module.gLVDynamicsSingleClustering(asvs=subject.asvs, 
-                        log_dynamics=self.log_integration, 
                         perturbations_additive=self.perturbations_additive, 
                         sim_max=self.sim_max, start_day=_start)
                     pred_dyn.growth = growth[i]
@@ -866,13 +858,12 @@ class _ForwardSimWorker(pl.multiprocessing.PersistentWorker):
     '''Multiprocessed forward simulation.
     '''
     def __init__(self, asvs, initial_conditions, sim_dt, n_days, name, 
-        log_integration, perturbations_additive, sim_times, start_day):
+        perturbations_additive, sim_times, start_day):
         self.asvs = asvs
         self.initial_conditions = initial_conditions
         self.sim_dt = sim_dt
         self.n_days = n_days
         self.name = name
-        self.log_integration = log_integration
         self.perturbations_additive = perturbations_additive
         self.sim_times = sim_times
         self.start_day = start_day
@@ -882,8 +873,7 @@ class _ForwardSimWorker(pl.multiprocessing.PersistentWorker):
         '''
 
         pred_dyn = model_module.gLVDynamicsSingleClustering(asvs=self.asvs, 
-            log_dynamics=self.log_integration, start_day=self.start_day,
-            perturbations_additive=self.perturbations_additive)
+            start_day=self.start_day, perturbations_additive=self.perturbations_additive)
         pred_dyn.growth = growth
         pred_dyn.self_interactions = self_interactions
         pred_dyn.interactions = interactions

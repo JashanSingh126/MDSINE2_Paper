@@ -127,7 +127,7 @@ def make_full_objects_single_data_seed(data_seed, val_seed, params, basepath):
 
     # Generate dynamics
     if params.DATASET == 'icml':
-        syndata_base = synthetic.SyntheticData(log_dynamics=params.LOG_DYNAMICS, 
+        syndata_base = synthetic.SyntheticData(
             n_days=N_DAYS, perturbations_additive=True)
         if args.real_growth:
             syndata_base.icml_topology_real(n_asvs=params.N_ASVS, max_abundance=params.MAX_ABUNDANCE)
@@ -147,15 +147,7 @@ def make_full_objects_single_data_seed(data_seed, val_seed, params, basepath):
             syndata_base.icml_perturbations(starts=starts, ends=ends)
         init_dist = pl.variables.Uniform(low=params.INIT_LOW, high=params.INIT_HIGH)
     elif params.DATASET == 'semi-synthetic':
-        if params.PREPROCESSED_SEMI_SYNTH_FILENAME is not None:
-            syndata_base = synthetic.SyntheticData.load(params.PREPROCESSED_SEMI_SYNTH_FILENAME)
-        else:
-            syndata_base = synthetic.make_semisynthetic(
-                chain=params.SEMI_SYNTH_CHAIN_FILENAME,
-                min_bayes_factor=params.SEMI_SYNTH_MIN_BAYES_FACTOR,
-                init_dist_timepoint=params.SEMI_SYNTH_FIRST_TIMEPOINT,
-                hdf5_filename=params.SEMI_SYNTH_HDF5_FILENAME,
-                set_times=False)
+        syndata_base = synthetic.SyntheticData.load(params.PREPROCESSED_SEMI_SYNTH_FILENAME)
         
         init_dist = syndata_base.init_dist
     else:
