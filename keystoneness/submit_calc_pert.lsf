@@ -18,10 +18,10 @@
 
 # Please make a copy of this script for your own modifications
 
-#BSUB -q short
+#BSUB -q medium
 #BSUB -n 1
-#BSUB -M 4000
-#BSUB -R rusage[mem=4000]
+#BSUB -M 6000
+#BSUB -R rusage[mem=6000]
 
 # Some important variables to check (Can be removed later)
 echo '---PROCESS RESOURCE LIMITS---'
