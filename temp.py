@@ -70,19 +70,20 @@ UC_SUBJECTS = ['6','7','8','9','10']
 
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
-paths = {
-    'uc': 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-    'healthy': 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
+# paths = {
+#     'uc': 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+#     'healthy': 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
 
-for dset in paths:
-    syn = synthetic.make_semisynthetic(
-        chain=paths[dset],
-        min_bayes_factor=10, set_times=False, init_dist_timepoint=0.5,
-        init_dist_scale=100)
+# for dset in paths:
+#     syn = synthetic.make_semisynthetic(
+#         chain=paths[dset],
+#         min_bayes_factor=10, set_times=False, init_dist_timepoint=0.5,
+#         init_dist_scale=100)
 
-    syn.save('semi_synthetic/base_data/preprocessed_semisynthetic_{}.pkl'.format(dset))
+#     syn.save('semi_synthetic/base_data/preprocessed_semisynthetic_{}.pkl'.format(dset))
+# sys.exit()
 
-sys.exit()
+
 # xml_output = 'tmp/xml_output_speciesName.xml'
 # newick_output = 'tmp/phylogenetic_tree_with_reference.nhx'
 
@@ -106,20 +107,23 @@ sys.exit()
 #     try:
 #         record = seqs[seq]
 #     except:
-#         # print(record)
+#         print(seq)
 #         continue
 #     l = len(record.annotations['taxonomy'])
 #     if l != 7:
+#         # print(record.annotations['taxonomy'])
 #         continue
 #     if l not in lens:
 #         lens[l] = 0
 #     lens[l] += 1
-#     print(record)
-#     print(record.annotations['taxonomy'])
+#     # print(record)
+#     # print(record.annotations['taxonomy'])
 #     family = record.annotations['taxonomy'][-2]
 #     if family not in families:
 #         families[family] = []
 #     families[family].append(df['species_name'][seq])
+
+# sys.exit()
 
 # for k,v in families.items():
 #     print('\n{}:{}'.format(k,v))
@@ -157,35 +161,51 @@ sys.exit()
 # ####################################################
 # # Plot asvs
 # ####################################################
-# paths = {
-#     'uc': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-#     'healthy': 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
+# # paths = {
+# #     'uc': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+# #     'healthy': 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
 
-# for dset in paths:
-#     basepath = 'tmp/trajectories_{}/'.format(dset)
+# fname = 'tmp/raw_data_top_400_order.csv'
+# df = pd.read_csv(fname, header=None, index_col=0, sep=',')
+# print(df)
+# asvnames = df.index.to_list()
+# print(asvnames)
+
+# for dset in ['uc', 'healthy']:
+#     basepath = 'tmp/trajectories_{}_top400/'.format(dset)
 #     os.makedirs(basepath, exist_ok=True)
-#     mcmc = pl.inference.BaseMCMC.load(paths[dset])
-#     subjset = mcmc.graph.data.subjects
+#     subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
+
+#     # for subj in subjset_real:
+#     #     # M = subj.matrix()['raw']
+#     #     # print(M)
+#     #     for t in subj.times:
+#     #         print(subj.qpcr[t])
+#     #         print(subj.reads[t])
+#     #     sys.exit()
+
+#     if dset == 'uc':
+#         subjset_real.pop_subject(HEALTHY_SUBJECTS)
+#     else:
+#         subjset_real.pop_subject(UC_SUBJECTS)
+#     subjset = subjset_real
+
+
+#     # for subj in subjset:
+#     #     for t in subj.times:
+#     #         print(subj.qpcr[t])
+#     #         print(subj.reads[t])
+#     #         sys.exit()
 
 #     Ms = [subj.matrix()['abs'] for subj in subjset]
 
-#     for asv in subjset.asvs:
+#     for asvname in asvnames:
+#         asv = subjset.asvs[asvname]
+#         aidx = asv.idx
 #         print(asv.name)
 #         fig = plt.figure(figsize=(20,10))
 
 #         fig.suptitle(MDSINE2_util.asvname_for_paper(asv=asv, asvs=subjset.asvs),fontsize=30)
-
-#         for sidx, subj in enumerate(subjset):
-#             if len(subjset) == 4:
-#                 pos = (2,2,sidx+1)
-#             else:
-#                 pos = (2,3,sidx+1)
-#             ax = fig.add_subplot(*pos)
-
-#             ax.plot(subj.times, Ms[sidx][asv.idx, :], marker='x', markersize=8)
-#             ax.set_yscale('log')
-#             pl.visualization.shade_in_perturbations(ax=ax, perturbations=subjset.perturbations)
-#             ax.set_title('Subject {}'.format(subj.name), fontsize=20)
 
 #         ax = fig.add_subplot(111, facecolor='none')
 #         ax.spines['top'].set_visible(False)
@@ -199,10 +219,22 @@ sys.exit()
         
 #         ax.text(x=0.5, y=-0.1, s='Time (days)', fontsize=20)
 #         ax.text(x=-0.1, y=0.5, s='CFUs/g', fontsize=20, rotation=90)
-
 #         ax.text(x=-0.15, y=-0.13, s='Taxonomic Key: * : Genus, ' \
 #             '** : Family, *** : Order, **** : Class, ***** : Phylum, ' \
 #             '****** : Kingdom', fontsize=16)
+
+#         for sidx, subj in enumerate(subjset):
+#             if len(subjset) == 4:
+#                 pos = (2,2,sidx+1)
+#             else:
+#                 pos = (2,3,sidx+1)
+#             ax = fig.add_subplot(*pos)
+#             ax.plot(subj.times, Ms[sidx][aidx, :], marker='x', markersize=8)
+#             ax.set_yscale('log')
+#             pl.visualization.shade_in_perturbations(ax, perturbations=subjset.perturbations)
+
+        
+
         
 
 #         fig.subplots_adjust(top=0.85, hspace=.285)
@@ -1154,197 +1186,7 @@ sys.exit()
 
 # sys.exit()
 
-####################################################
-# Make family level plots of the ASVs in the phylogenetic trees
-####################################################
-# import treeswift
-# Make the distance matrix
-# tree = treeswift.read_tree_newick('tmp/tree_temp.nhx')
-# print('here')
-# M = tree.distance_matrix(leaf_labels=True)
-# print('done')
-# df = pd.DataFrame(M)
-# df.to_csv('tmp/dist_matrix_tree_temp.tsv', sep='\t', index=True, header=True)
-# print(df)
-# sys.exit()
 
-# Get the families of the reference trees
-fname = 'tmp/RDP-11-5_TS_Processed_seq_info.csv'
-df = pd.read_csv(fname, index_col=0)
-
-fname = 'tmp/rdp_download_12588seqs.gen'
-seqs = SeqIO.to_dict(SeqIO.parse(fname, 'genbank'), key_function=lambda rec:rec.name)
-ref_families = {}
-for seq in df.index:
-    try:
-        record = seqs[seq]
-    except:
-        # print(record)
-        continue
-    l = len(record.annotations['taxonomy'])
-    if l != 7:
-        continue
-    family = record.annotations['taxonomy'][-2]
-    if family not in ref_families:
-        ref_families[family] = []
-    ref_families[family].append(df['species_name'][seq])
-
-
-chain_locs = [
-    'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
-    'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl']
-
-# tree_loc = 'raw_data/phylogenetic_tree_w_reference_seq.nhx'
-os.makedirs('tmp', exist_ok=True)
-os.makedirs('tmp/subtrees_125percentmedian', exist_ok=True)
-asvnames = set([])
-for chainloc in chain_locs:
-    chain = pl.inference.BaseMCMC.load(chainloc)
-    asvs = chain.graph.data.asvs
-
-    print(asvs.names.keys())
-
-    for asv in asvs:
-        asvnames.add(str(asv.name))
-
-# print(subjset_real.asvs.names.keys())
-
-asvnames = list(asvnames)
-set_asvnames = set(asvnames)
-
-# totalnames = copy.deepcopy(asvnames)
-# tree = ete3.Tree(tree_loc)
-# for name in tree.get_leaf_names():
-#     if 'ASV_' not in name:
-#         totalnames.append(name)
-
-# # print(totalnames)
-
-# tree.prune(totalnames, preserve_branch_length=True)
-# print('here')
-# tree.write(outfile='tmp/tree_temp.nhx')
-# print('here2')
-# sys.exit()
-tree_name = 'tmp/tree_temp.nhx'
-tree = ete3.Tree(tree_name)
-
-# print(tree.get_leaf_names())
-# for family in ref_families:
-#     print(ref_families[family])
-#     sys.exit()
-
-# print(tree.get_leaf_names())
-# sys.exit()
-
-d = {}
-for i, aname in enumerate(asvnames):
-    print('{}/{}'.format(i,len(asvnames)))
-    asv = subjset_real.asvs[aname]
-    if asv.tax_is_defined('family'):
-        family = asv.taxonomy['family']
-        if family in d:
-            continue
-        else:
-            d[family] = []
-
-            if family not in ref_families:
-                print('{} NOT IN REFERENCE TREE'.format(family))
-                continue
-            refs = ref_families[family]
-
-            for ref in refs:
-                ref = ref.replace(' ', '_')
-                try:
-                    d[family].append(tree.get_distance(aname, ref))
-                    
-                except:
-                    print('no worked')
-                    continue
-
-f = open('tmp/subtrees_125percentmedian/family_dists_asv.txt', 'w')
-family_dists = {}
-for family in d:
-    f.write(family + '\n')
-    arr = np.asarray(d[family])
-    summ = pl.variables.summary(arr)
-    family_dists[family] = summ['median']
-    for k,v in summ.items():
-        f.write('\t{}: {}\n'.format(k,v))
-f.write('total\n')
-arr = []
-for ele in d.values():
-    arr += ele
-arr = np.asarray(arr)
-summ = pl.variables.summary(arr)
-for k,v in summ.items():
-    f.write('\t{}:{}\n'.format(k,v))
-
-
-# Set the radius to 125% the median
-default_radius = summ['75th percentile']
-# f.write('Radius set to 125% of median ({}): {}'.format(summ['median'], default_radius))
-f.close()
-
-# Make the distance matrix
-print('reading')
-df = pd.read_csv('tmp/dist_matrix_tree_temp.tsv', sep='\t', index_col=0)
-print('read')
-names = df.index.to_numpy()
-
-from ete3 import TreeStyle
-def my_layout_fn(node):
-    if node.is_leaf() and 'ASV' in node.name:
-        node.img_style["bgcolor"] = "#9db0cf"
-
-i = 0
-f = open('tmp/subtrees_125percentmedian/table.tsv', 'w')
-for asvname in asvnames:
-    asv = subjset_real.asvs[asvname]
-    print('\n\nLooking at {}, {}'.format(i,asv))
-    print('-------------------------')
-    
-    f.write('{}\n'.format(asv.name))
-
-    tree = ete3.Tree(tree_name)
-    # Get the all elements within `radius`
-    names_to_keep = []
-    row = df[asv.name].to_numpy()
-    idxs = np.argsort(row)
-
-    title = asv.name
-    if asv.tax_is_defined('family'):
-        radius = family_dists[asv.taxonomy['family']]
-        if radius < 0.05:
-            radius = default_radius
-            title += ', family defined.\n Distance < 0.05\nSet to 75th percentile family distance: {:.4f}'.format(radius)
-        else:
-            title += ', family defined.\nMedian {} distance: {:.4f}'.format(asv.taxonomy['family'], radius)
-    else:
-        radius = default_radius
-        title += ', family not defined.\n75th percentile family distance: {:.4f}'.format(radius)
-
-    print(radius)
-
-    for idx in idxs:
-        if row[idx] > radius:
-            break
-        if names[idx] in set_asvnames:
-            continue
-        names_to_keep.append(names[idx])
-
-    names_to_keep
-    # print(names_to_keep)
-
-    # Make subtree of just these names
-    names_to_keep.append(asv.name)
-    tree.prune(names_to_keep, preserve_branch_length=False)
-
-    ts = TreeStyle()
-    ts.layout_fn = my_layout_fn
-    ts.title.add_face(ete3.TextFace(title, fsize=15), column=1)
-    tree.render('tmp/subtrees_125percentmedian/{}.pdf'.format(asv.name.replace('OTU','ASV')), tree_style=ts)
-f.close()
-sys.exit()
 
 # ####################################################
 # # 16S v4 gapless sequences and taxonomy

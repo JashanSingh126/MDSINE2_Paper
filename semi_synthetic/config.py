@@ -702,7 +702,7 @@ class SimulationConfigBoxplots(_BaseModelConfig):
 
         self.DSET = 'semi-synthetic'
         self.DATA_FILENAME = '../pickles/real_subjectset.pkl'
-        self.PREPROCESSED_SEMI_SYNTH_FILENAME = 'base_data/preprocessed_semisynthetic_uc.pkl'
+        self.PREPROCESSED_SEMI_SYNTH_FILENAME = 'base_data/preprocessed_semisynthetic_healthy_uniform_dist.pkl'
 
         # (prob_pos, prob_affect, prob_strength, mean_strength, std_strength)
         self.PERTURBATIONS = True

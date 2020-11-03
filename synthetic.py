@@ -1829,8 +1829,8 @@ def issynthetic(x):
     '''
     return x is not None and issubclass(x.__class__, SyntheticData)
 
-def make_semisynthetic(chain, min_bayes_factor, set_times=True, init_dist_timepoint=None, 
-    hdf5_filename=None, init_dist_scale=None):
+def make_semisynthetic(chain, min_bayes_factor, init_dist_start, init_dist_end,
+    set_times=True, hdf5_filename=None):
     '''Make a semi synthetic system. We take the system learned in the chain and
     we set the modeling parameters of `SyntheticData` to the learned system. We assume
     that the chain that we pass in was run with a fixed topology.
@@ -1892,11 +1892,11 @@ def make_semisynthetic(chain, min_bayes_factor, set_times=True, init_dist_timepo
         raise ValueError('`min_bayes_factor` ({}) must be >= 0'.format(min_bayes_factor))
     if not pl.isbool(set_times):
         raise TypeError('`set_times` ({}) must be a bool'.format(type(set_times)))
-    if init_dist_timepoint is None:
-        init_dist_timepoint = 0
-    if not pl.isnumeric(init_dist_timepoint):
-        raise TypeError('`init_dist_timepoint` ({}) must be a numeric'.format(
-            type(init_dist_timepoint)))
+    # if init_dist_timepoint is None:
+    #     init_dist_timepoint = 0
+    # if not pl.isnumeric(init_dist_timepoint):
+    #     raise TypeError('`init_dist_timepoint` ({}) must be a numeric'.format(
+    #         type(init_dist_timepoint)))
 
     GRAPH = chain.graph
     DATA = GRAPH.data
@@ -2008,22 +2008,21 @@ def make_semisynthetic(chain, min_bayes_factor, set_times=True, init_dist_timepo
 
     # Set the initial distribution
     # ----------------------------
-    values = []
-    for subj in SUBJSET:
-        if init_dist_timepoint in subj.times:
+    # values = []
+    # for subj in SUBJSET:
+    #     if init_dist_timepoint in subj.times:
 
-            idx = np.searchsorted(subj.times, init_dist_timepoint)
+    #         idx = np.searchsorted(subj.times, init_dist_timepoint)
 
-            matrix = subj.matrix()['abs']
-            values = np.append(values, matrix[:,idx].ravel())
-        else:
-            logging.warning('Timepoint `{}` not in subject `{}` ({})'.format(
-                init_dist_timepoint, subj.name, subj.times))
-    values = np.asarray(values)
-    values = values[values > 0]
-    logvalues = np.log(values)
-
-    synth.init_dist = pl.variables.Uniform(low=1e4, high=1e9)
+    #         matrix = subj.matrix()['abs']
+    #         values = np.append(values, matrix[:,idx].ravel())
+    #     else:
+    #         logging.warning('Timepoint `{}` not in subject `{}` ({})'.format(
+    #             init_dist_timepoint, subj.name, subj.times))
+    # values = np.asarray(values)
+    # values = values[values > 0]
+    # logvalues = np.log(values)
+    synth.init_dist = pl.variables.Uniform(low=init_dist_start, high=init_dist_end)
 
     return synth
     
