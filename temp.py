@@ -70,6 +70,14 @@ UC_SUBJECTS = ['6','7','8','9','10']
 
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
+fname = 'output_real/runs/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+mcmc = pl.inference.BaseMCMC.load(fname)
+
+growth = mcmc.graph[names.STRNAMES.GROWTH_VALUE]
+growth = growth.get_trace_from_disk(section='posterior')
+
+sys.exit()
+
 # paths = {
 #     'uc': 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
 #     'healthy': 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}

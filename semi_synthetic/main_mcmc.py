@@ -344,8 +344,6 @@ if __name__ == '__main__':
         else:
             params = config.ModelConfigMCMC.load(params_filename)
             synparams = config.SimulationConfig.load(synparams_filename)   
-
-        sys.exit()     
             
         # Run the model
         chain_result = base.run(

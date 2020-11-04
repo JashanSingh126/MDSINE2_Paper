@@ -594,8 +594,8 @@ class ModelConfigReal(_BaseModelConfig):
         self.CROSS_VALIDATE = cross_validate
         self.USE_BSUB = use_bsub
 
-        self.N_CPUS = 12
-        self.N_GBS = 10000
+        self.N_CPUS = 3
+        self.MEMORY_MBS = 7000
 
         if dataset == 'gibson':
             self.DATA_FILENAME = 'pickles/real_subjectset.pkl'
@@ -626,9 +626,9 @@ class ModelConfigReal(_BaseModelConfig):
         self.GROWTH_TRUNCATION_SETTINGS = 'positive'
         self.SELF_INTERACTIONS_TRUNCATION_SETTINGS = 'positive'
 
-        self.MP_FILTERING = 'debug'
+        self.MP_FILTERING = 'full'
         self.MP_INDICATORS = None
-        self.MP_CLUSTERING = 'debug' #'full-8'
+        self.MP_CLUSTERING = 'full-3' #'full-8'
         self.MP_ZERO_INFLATION = None
         self.RELATIVE_LOG_MARGINAL_INDICATORS = True
         self.RELATIVE_LOG_MARGINAL_PERT_INDICATORS = True
@@ -656,8 +656,8 @@ class ModelConfigReal(_BaseModelConfig):
             STRNAMES.PRIOR_MEAN_PERT: True,
             STRNAMES.FILTERING: True,
             STRNAMES.ZERO_INFLATION: False,
-            STRNAMES.CLUSTERING: False,
-            STRNAMES.CONCENTRATION: False, 
+            STRNAMES.CLUSTERING: True,
+            STRNAMES.CONCENTRATION: True, 
             STRNAMES.CLUSTER_INTERACTION_INDICATOR: True,
             STRNAMES.INDICATOR_PROB: True,
             STRNAMES.PERT_INDICATOR: True,

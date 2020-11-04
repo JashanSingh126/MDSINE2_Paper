@@ -79,7 +79,7 @@ def make_lsf_script(jobname, logging_loc, n_cpus, queue, n_mbs, mn, pv, d, i, b,
 
     # Please make a copy of this script for your own modifications
 
-    #BSUB -q {queue}
+    #BSUB -q vlong
     #BSUB -n {n_cpus}
     #BSUB -M {n_mbs}
     #BSUB -R rusage[mem={n_mbs}]

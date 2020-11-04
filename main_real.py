@@ -88,11 +88,9 @@ def parse_args():
         help='Dataset to do inference on',
         dest='dataset', default='gibson')
     parser.add_argument('--data-seed', '-d', type=int,
-        help='Seed to initialize the data',
-        dest='data_seed')
+        help='Seed to initialize the data', dest='data_seed')
     parser.add_argument('--init_seed', '-i', type=int,
-        help='Seed to initialize the inference',
-        dest='init_seed')
+        help='Seed to initialize the inference', dest='init_seed')
     parser.add_argument('--basepath', '-b', type=str,
         help='Folder to save the output', default='output_real/',
         dest='basepath')
@@ -136,7 +134,7 @@ def parse_args():
 
 def main_leave_out_single(params, fparams, continue_inference):
     # Constants
-    ONLY_PLOT = True
+    ONLY_PLOT = False
 
     ddd = _make_basepath(params=params, fparams=fparams)
     params.OUTPUT_BASEPATH = ddd['output_basepath']
@@ -390,12 +388,9 @@ def _make_basepath(params, fparams):
     return {'graph_name':graph_name, 'output_basepath':basepath, 
         'basepath': graph_path}
 
-def dispatch_bsub(params, fparams, seeddispatch=None, continue_inference=None):
+def dispatch_bsub(params, fparams, cv=False, continue_inference=None):
     '''Use the parameters in `params` and `fparams` to parallelize
     leaving out each one of the subjects 
-
-    If `seeddispatch` is None, then do cross validation.
-    If `seeddispatch` is not None, then dispatch on the number of number of seeds.
 
     Parameters
     ----------
@@ -408,9 +403,9 @@ def dispatch_bsub(params, fparams, seeddispatch=None, continue_inference=None):
 
     my_str = '''
         #!/bin/bash
-        #BSUB -J {0}
-        #BSUB -o {1}_output.out
-        #BSUB -e {1}_error.err
+        #BSUB -J {jobname}
+        #BSUB -o {lsfdir}{jobname}_output.out
+        #BSUB -e {lsfdir}{jobname}_error.err
 
         # This is a sample script with specific resource requirements for the
         # **bigmemory** queue with 64GB memory requirement and memory
@@ -427,10 +422,10 @@ def dispatch_bsub(params, fparams, seeddispatch=None, continue_inference=None):
 
         # Please make a copy of this script for your own modifications
 
-        #BSUB -q big-multi
-        #BSUB -n {2}
-        #BSUB -M {3}
-        #BSUB -R rusage[mem={3}]
+        #BSUB -q {queue}
+        #BSUB -n {ncpus}
+        #BSUB -M {mem}
+        #BSUB -R rusage[mem={mem}]
 
         # Some important variables to check (Can be removed later)
         echo '---PROCESS RESOURCE LIMITS---'
@@ -463,37 +458,38 @@ def dispatch_bsub(params, fparams, seeddispatch=None, continue_inference=None):
         # Add your job command here
         # Load module
         module load anaconda
-        source activate dispatcher
+        source activate dispatcher_pylab301
 
-        cd /data/cctm/darpa_perturbation_mouse_study/perturbation_study/
-        python main_real.py -d {4} -i {5} -b {6} -ns {7} -nb {8} -hy {9} -l {10} -mo {11} 
+        cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2_data/MDSINE2/
+        python main_real.py -d {dataseed} -i {initseed} -b {basepath} -ns {nsamples} -nb {burnin} -hy {hy} -l {leaveout} -mo {mo}
         '''
-    if seeddispatch is not None:
-        params.LEAVE_OUT = -1
-        for seed in range(seeddispatch):
-            params.INIT_SEED = seed
-            ddd = _make_basepath(params=params, fparams=fparams)
-            basepath = ddd['basepath']
+    if not cv:
+        ddd = _make_basepath(params=params, fparams=fparams)
+        basepath = ddd['basepath']
 
-            os.makedirs(basepath, exist_ok=True)
+        os.makedirs(basepath, exist_ok=True)
 
-            jobname = 'real{}_hy{}'.format(seed, fparams.HEALTHY)
-            lsfname = basepath + 'run.lsf'
-            
-            f = open(lsfname, 'w')
-            f.write(my_str.format(
-                jobname, 
-                basepath + jobname,
-                params.N_CPUS, params.N_GBS, params.DATA_SEED,
-                params.INIT_SEED, params.OUTPUT_BASEPATH,
-                params.N_SAMPLES, params.BURNIN,
-                fparams.HEALTHY, -1, params.MAX_N_ASVS))
+        jobname = 'real{}_hy{}'.format(params.DATA_SEED, fparams.HEALTHY)
+        lsfname = basepath + 'run.lsf'
+        
+        f = open(lsfname, 'w')
+        f.write(my_str.format(
+            jobname=jobname, 
+            lsfdir=basepath,
+            queue='vlong',
+            ncpus=params.N_CPUS, 
+            mem=params.MEMORY_MBS, 
+            dataseed=params.DATA_SEED,
+            initseed=params.INIT_SEED, 
+            basepath=params.OUTPUT_BASEPATH,
+            nsamples=params.N_SAMPLES, burnin=params.BURNIN,
+            hy=fparams.HEALTHY, leaveout=-1, mo=params.MAX_N_ASVS))
 
-            if continue_inference is not None:
-                f.write(' --continue {}'.format(continue_inference))
+        if continue_inference is not None:
+            f.write(' --continue {}'.format(continue_inference))
 
-            f.close()
-            os.system('bsub < {}'.format(lsfname))
+        f.close()
+        os.system('bsub < {}'.format(lsfname))
 
 
     else:
@@ -531,10 +527,6 @@ if __name__ == '__main__':
     7. Run
     '''
     args = parse_args()
-    if args.data_seed is None:
-        args.data_seed = 9880035
-    if args.init_seed is None:
-        args.init_seed = 12114738
 
     if args.n_samples <= args.burnin:
         raise ValueError('`n_samples` ({}) must be larger than burnin ({})'.format(
@@ -546,6 +538,7 @@ if __name__ == '__main__':
         n_samples=args.n_samples, burnin=args.burnin, pcc=args.percent_change_clustering,
         leave_out=args.leave_out, max_n_asvs=args.max_n_asvs, cross_validate=args.cross_validate,
         use_bsub=args.use_bsub, dataset=args.dataset, checkpoint=args.checkpoint)
+    
     fparams = config.FilteringConfig(healthy=args.healthy, dataset=args.dataset)
 
     if args.use_docker:
@@ -556,7 +549,7 @@ if __name__ == '__main__':
     if params.CROSS_VALIDATE == 1:
         # Do cross validation.
         if params.USE_BSUB == 1:
-            dispatch_bsub(params=params, fparams=fparams, continue_inference=args.continue_inference)
+            dispatch_bsub(params=params, fparams=fparams, continue_inference=args.continue_inference, cv=True)
         else:
             for lo in range(5):
                 params.LEAVE_OUT = lo
@@ -565,9 +558,9 @@ if __name__ == '__main__':
     else:
         # print(params.USE_BSUB)
 
-        if params.USE_BSUB > 0:
+        if params.USE_BSUB == 1:
             # How many init seeds to make
-            dispatch_bsub(params=params, fparams=fparams, seeddispatch=params.USE_BSUB, continue_inference=args.continue_inference)
+            dispatch_bsub(params=params, fparams=fparams, continue_inference=args.continue_inference)
         else:
             main_leave_out_single(params=params, fparams=fparams, continue_inference=args.continue_inference)
 
