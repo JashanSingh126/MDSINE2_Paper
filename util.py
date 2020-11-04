@@ -246,19 +246,18 @@ def is_gram_negative(asv):
     '''
     if not asv.tax_is_defined('phylum'):
         return None
-    if asv.taxonomy['phylum'].lower() == 'bacteroidetes':
+    elif asv.taxonomy['phylum'].lower() == 'bacteroidetes':
         return True
-    if asv.taxonomy['phylum'].lower() == 'firmicutes':
+    elif asv.taxonomy['phylum'].lower() == 'firmicutes':
         return False
-    if asv.taxonomy['phylum'].lower() == 'verrucomicrobia':
+    elif asv.taxonomy['phylum'].lower() == 'verrucomicrobia':
         return True
-    if asv.taxonomy['phylum'].lower() != 'proteobacteria':
-        print(asv)
-        print('Not included')
-        return None
+    elif asv.taxonomy['phylum'].lower() == 'proteobacteria':
+        return True
+    else:
+        raise ValueError('{} phylum not specified. If not bacteroidetes, firmicutes, verrucomicrobia, or ' \
+            'proteobacteria, you must add another phylum'.format(str(asv)))
 
-    # Deltaproteobacteria are all gram -
-    return True
 
 def is_gram_negative_taxa(taxa, taxalevel, asvs):
     '''Checks if the taxa `taxa` at the taxonomic level `taxalevel`

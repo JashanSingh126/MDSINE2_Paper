@@ -70,11 +70,26 @@ UC_SUBJECTS = ['6','7','8','9','10']
 
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
-fname = 'output_real/runs/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+fname = 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
 mcmc = pl.inference.BaseMCMC.load(fname)
+clustering = mcmc.graph[names.STRNAMES.CLUSTERING_OBJ]
 
-growth = mcmc.graph[names.STRNAMES.GROWTH_VALUE]
-growth = growth.get_trace_from_disk(section='posterior')
+clustering.generate_cluster_assignments_posthoc(n_clusters=32, set_as_value=True)
+aidxs = []
+for cluster in clustering:
+        print(cluster)
+        for aidx in cluster.members:
+                aidxs.append(aidx)
+
+coclusters = pl.variables.summary(clustering.coclusters, only='mean')['mean']
+
+sns.clustermap(coclusters)
+
+# ax = pl.visualization.render_cocluster_proportions(coclusters, asvs=mcmc.graph.data.subjects.asvs,
+#         order=aidxs)
+plt.show()
+
+
 
 sys.exit()
 

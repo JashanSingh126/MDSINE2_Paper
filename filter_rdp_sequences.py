@@ -83,9 +83,7 @@ def filter_seqs(seqs_aligned, seqs_raw, gaplen, n_occur, fname=None, M=None):
 
                 if end_pos - start_pos >= gaplen:
 
-                    # # Get all of the sequences that should be deleting for this insertion
-                    # for idx in range(M.shape[0]):
-                    #     if 
+                    # Get all of the sequences that should be deleting for this insertion
                     idxs = np.unique(np.where(~M[:, start_pos:end_pos])[0])
                     # print(idxs)
 
@@ -100,6 +98,23 @@ def filter_seqs(seqs_aligned, seqs_raw, gaplen, n_occur, fname=None, M=None):
             end_pos = None
 
             # Else this just means that there are many in a row that fit the filtering
+    if start_pos is not None:
+        end_pos = M.shape[1]
+        if end_pos - start_pos >= gaplen:
+            # Get all of the sequences that should be deleting for this insertion
+            idxs = np.unique(np.where(~M[:, start_pos:end_pos])[0])
+            print('here mf')
+            print(idxs)
+            for idx in idxs:
+                if idx in already_deleted:
+                    continue
+                # print('Deleting {} because it contains basepairs ' \
+                #     'in the location {} to {}'.format(seqnames[idx], start_pos, end_pos))
+                print('here')
+                print(seqnames[idx])
+                to_delete.append((idx,start_pos,end_pos))
+                already_deleted.add(idx)
+
     
     if fname is not None:
         for seq,start,end in to_delete:
@@ -158,12 +173,13 @@ def filter_seqs(seqs_aligned, seqs_raw, gaplen, n_occur, fname=None, M=None):
 # -----------------
 rdp_fname = 'tmp/sequences/RDP_typed_cultured_trunc1600_aligned.fa'
 seqs = SeqIO.to_dict(SeqIO.parse(rdp_fname, 'fasta'))
+rdp_fname_raw = 'tmp/sequences/RDP_typed_cultured_trunc1600.fa'
+seqs_raw = SeqIO.to_dict(SeqIO.parse(rdp_fname_raw, 'fasta'))
 
 gaplen = 1
 n_occur = 3
 
-rdp_fname_raw = 'tmp/sequences/RDP_typed_cultured_trunc1600.fa'
-seqs_raw = SeqIO.to_dict(SeqIO.parse(rdp_fname_raw, 'fasta'))
+
 
 # print(len(seqs_raw))
 # print(len(seqs))

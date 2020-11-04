@@ -597,16 +597,7 @@ class ModelConfigReal(_BaseModelConfig):
         self.N_CPUS = 3
         self.MEMORY_MBS = 7000
 
-        if dataset == 'gibson':
-            self.DATA_FILENAME = 'pickles/real_subjectset.pkl'
-            zero_inflation_value_option = None
-            n_clusters = 30
-            n_clusters_type = 'spearman'
-        elif dataset == 'mdsine-cdiff':
-            self.DATA_FILENAME = 'pickles/subjset_cdiff.pkl'
-            zero_inflation_value_option = dataset
-            n_clusters = None
-            n_clusters_type = 'no-clusters'
+        self.DATA_FILENAME = 'pickles/real_subjectset.pkl'
         self.BURNIN = burnin
         self.N_SAMPLES = n_samples
         self.CHECKPOINT = checkpoint
@@ -628,7 +619,7 @@ class ModelConfigReal(_BaseModelConfig):
 
         self.MP_FILTERING = 'full'
         self.MP_INDICATORS = None
-        self.MP_CLUSTERING = 'full-3' #'full-8'
+        self.MP_CLUSTERING = 'full-5' #'full-8'
         self.MP_ZERO_INFLATION = None
         self.RELATIVE_LOG_MARGINAL_INDICATORS = True
         self.RELATIVE_LOG_MARGINAL_PERT_INDICATORS = True
@@ -816,17 +807,16 @@ class ModelConfigReal(_BaseModelConfig):
                 'plot_initial': False,
                 'target_acceptance_rate': 0.44},
             STRNAMES.ZERO_INFLATION: {
-                'value_option': zero_inflation_value_option,
+                'value_option': None,
                 'delay': 0},
             STRNAMES.CONCENTRATION: {
                 'value_option': 'prior-mean',
                 'hyperparam_option': 'diffuse',
                 'delay': 0, 'n_iter': 20},
             STRNAMES.CLUSTERING: {
-                'value_option': n_clusters_type,
+                'value_option': 'spearman',
                 'delay': 2,
-                'n_clusters': n_clusters,
-                # 'value': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+                'n_clusters': 30,
                 'percent_mix': self.PERCENT_CHANGE_CLUSTERING,
                 'run_every_n_iterations': 4},
             STRNAMES.REGRESSCOEFF: {

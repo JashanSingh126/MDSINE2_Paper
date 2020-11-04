@@ -42,6 +42,7 @@ import diversity
 import synthetic
 import base
 import names
+import names as MDSINE2_names
 
 DATAPATH = './pickles/real_subjectset.pkl'
 DATAPATH_INOCULUM = './pickles/inoculum_subjectset.pkl'
@@ -468,10 +469,10 @@ def _make_cluster_membership_heatmap(chainname, ax, order, binary, fig, make_col
     ax.tick_params(axis='both', which='minor', left=False, bottom=False)
 
     if make_colorbar:
-        cbaxes = fig.add_axes([0.92, 0.5, 0.02, 0.1]) # left, bottom, width, height
+        cbaxes = fig.add_axes([0.92, 0.1, 0.02, 0.1]) # left, bottom, width, height
         cbar = plt.colorbar(im, cax=cbaxes, orientation='vertical')
-        cbar.ax.set_title('Relative\nAbundance', fontsize=18, fontweight='bold')
-        cbar.ax.tick_params(labelsize=15)
+        cbar.ax.set_title('Relative\nAbundance', fontsize=30, fontweight='bold')
+        cbar.ax.tick_params(labelsize=40)
 
     return ax, newcolnames
 
@@ -524,10 +525,10 @@ def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig, m
     ax.tick_params(axis='both', which='minor', left=False, bottom=False)
     
     if make_colorbar:
-        cbaxes = fig.add_axes([0.92, 0.5, 0.02, 0.1]) # left, bottom, width, height
+        cbaxes = fig.add_axes([0.92, 0.3, 0.02, 0.1]) # left, bottom, width, height
         cbar = plt.colorbar(im, cax=cbaxes, orientation='vertical', ticks=[-5,-2.5,0,2.5,5])
-        cbar.ax.set_yticklabels(['<-5', '-2.5', '0', '2.5', '>5'], fontsize=22)
-        cbar.ax.set_title('Perturbation\nEffect', fontsize=22, fontweight='bold')
+        cbar.ax.set_yticklabels(['<-5', '-2.5', '0', '2.5', '>5'], fontsize=30)
+        cbar.ax.set_title('Perturbation\nEffect', fontsize=35, fontweight='bold')
 
     if render_labels:
         ax.set_yticks(np.arange(len(subjset.perturbations)), minor=False)
@@ -538,14 +539,18 @@ def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig, m
     else:
         ax.set_yticks([])
 
+    if figlabel is not None:
+        ax.text(x=0.0, y=1.05, s=figlabel, fontsize=50, fontweight='bold',
+            transform=ax.transAxes)
+
     return ax
 
-def _make_phylogenetic_tree(treename, names, asvs, ax, fig, healthy, side_by_side=False, figlabel=None):
+def _make_phylogenetic_tree(treename, names, asvs, ax, fig, figlabel=None, figlabelax=None):
 
     tree = ete3.Tree(treename)
     tree.prune(names, True)
     tree.write(outfile='tmp/temp.nhx')
-    fontsize=16.5
+    fontsize=22
 
     taxonomies = ['family', 'order', 'class', 'phylum', 'kingdom']
     suffix_taxa = {'genus': '*',
@@ -586,7 +591,7 @@ def _make_phylogenetic_tree(treename, names, asvs, ax, fig, healthy, side_by_sid
                     extra_taxa_added.add(taxa)
 
             if not found:
-                asvname = '#'*80
+                asvname = '#'*40
 
         asvname += ' ' + asv.name
         asvname = ' ' + suffix + asvname
@@ -595,72 +600,21 @@ def _make_phylogenetic_tree(treename, names, asvs, ax, fig, healthy, side_by_sid
         text.set_fontsize(fontsize)
 
     if figlabel is not None:
-        ax.text(x=0.15, y=1.03, s=figlabel, fontsize=45, fontweight='bold',
+        figlabelax.text(x=0.15, y=1.0, s=figlabel, fontsize=50, fontweight='bold',
             transform=ax.transAxes)
 
-    # Make the taxnonmic key on the right hand side
-    text = '$\\bf{Taxonomy} \\bf{Key}$\n'
-    for taxa in suffix_taxa:
-        text += '{} - {}\n'.format(suffix_taxa[taxa], taxa)
-    if side_by_side is not None:
-        if not side_by_side:
-            fig.text(0.1, 0.875, text, fontsize=18)
-        else:
-            fig.text(0.9, 0.3, text, fontsize=18)
+    # # Make the taxnonmic key on the right hand side
+    # text = '$\\bf{Taxonomy} \\bf{Key}$\n'
+    # for taxa in suffix_taxa:
+    #     text += '{} - {}\n'.format(suffix_taxa[taxa], taxa)
+    # if side_by_side is not None:
+    #     if not side_by_side:
+    #         fig.text(0.1, 0.875, text, fontsize=18)
+    #     else:
+    #         fig.text(0.9, 0.3, text, fontsize=18)
     
 
     return ax, asv_order
-
-def phylogenetic_heatmap(healthy):
-
-    if healthy:
-        chainname = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/' \
-            'ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
-        # treename = 'raw_data/phylogenetic_tree_branch_len_preserved.nhx'
-    else:
-        chainname = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/' \
-            'ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
-        # treename = 'raw_data/phylogenetic_tree_branch_len_preserved.nhx'
-    treename = 'raw_data/phylogenetic_tree_branch_len_preserved.nhx'
-
-    fig = plt.figure(figsize=(12,15))
-    gs = fig.add_gridspec(12,10)
-    ax_phyl = fig.add_subplot(gs[1:,:3])
-    ax_clus = fig.add_subplot(gs[1:,6:])
-    ax_pert = fig.add_subplot(gs[0,6:])
-
-    ax_phyl, order = _make_phylogenetic_tree(treename=treename, chainname=chainname, ax=ax_phyl, 
-        fig=fig, healthy=healthy)
-    ax_clus, colorder = _make_cluster_membership_heatmap(chainname=chainname, ax=ax_clus, 
-        order=order, binary=False, fig=fig)
-    ax_pert = _make_perturbation_heatmap(chainname=chainname, min_bayes_factor=10, 
-        ax=ax_pert, colorder=colorder, fig=fig)
-
-    ax_phyl.spines['top'].set_visible(False)
-    ax_phyl.spines['bottom'].set_visible(False)
-    ax_phyl.spines['left'].set_visible(False)
-    ax_phyl.spines['right'].set_visible(False)
-    ax_phyl.xaxis.set_major_locator(plt.NullLocator())
-    ax_phyl.xaxis.set_minor_locator(plt.NullLocator())
-    ax_phyl.yaxis.set_major_locator(plt.NullLocator())
-    ax_phyl.yaxis.set_minor_locator(plt.NullLocator())
-    ax_phyl.set_xlabel('')
-    ax_phyl.set_ylabel('')
-
-    fig.subplots_adjust(wspace=0.40, left=0.03, right=0.87, hspace=0.01,
-        top=0.95, bottom=0.03)
-
-    if healthy:
-        title = 'Healthy'
-        s = 'healthy'
-    else:
-        title = 'Ulcerative Colitis'
-        s = 'uc'
-    fig.suptitle(title, fontsize=30)
-
-    plt.savefig(BASEPATH + 'phylo_clustering_heatmap_{}_RDP_alignment.pdf'.format(s))
-    plt.close()
-    # plt.show()
 
 def phylogenetic_heatmap_side_by_side():
 
@@ -773,6 +727,234 @@ def phylogenetic_heatmap_side_by_side():
     plt.savefig(BASEPATH + 'phylo_clustering_heatmap_side_by_side_RDP_alignment.pdf')
     plt.close()
 
+def _remove_border(ax):
+    ax.spines['top'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.xaxis.set_major_locator(plt.NullLocator())
+    ax.xaxis.set_minor_locator(plt.NullLocator())
+    ax.yaxis.set_major_locator(plt.NullLocator())
+    ax.yaxis.set_minor_locator(plt.NullLocator())
+    ax.set_xlabel('')
+    ax.set_ylabel('')
+    return ax
+
+def phylogenetic_heatmap_gram_split():
+    '''Split the phylogenetic tree into gram negative and gram positive side by side.
+
+    Gram positive is on left, gram negative is on right.
+    There are approximately 3 times as many gram positive than negative. Make the subplot for 
+    gram engative proportionally small on the right so it is the same scale as on the left and 
+    put the networks underneath.
+
+    '''
+    # Load data and get asv names
+    # ---------------------------
+    import util as MDISNE2_util
+    chainnamehealthy = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/' \
+        'ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+    chainnameuc = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/' \
+            'ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+    treename = 'raw_data/phylogenetic_tree_branch_len_preserved.nhx'
+
+    names = set([])
+    for chainname in [chainnamehealthy, chainnameuc]:
+        chain = pl.inference.BaseMCMC.load(chainname)
+        asvs = chain.graph.data.asvs
+        for asvname in asvs.names.order:
+            names.add(str(asvname))
+
+    names = list(names)
+    subjset_real = loaddata(None)
+    asvs = subjset_real.asvs
+
+    # Split up into gram negative and gram positive
+    # ---------------------------------------------
+    gramneg_asvnames = []
+    grampos_asvnames = []
+    for name in names:
+        asv = asvs[name]
+        if MDISNE2_util.is_gram_negative(asv=asv):
+            gramneg_asvnames.append(name)
+        else:
+            grampos_asvnames.append(name)
+
+    # Divide up the figure into a 100x100 grid
+    fig = plt.figure(figsize=(40,55))
+    gs = fig.add_gridspec(100,100)
+
+    # Make the number of rows of the heatmap proportional
+    # ---------------------------------------------------
+    pert_nrows = 7
+    grampos_nrows = 100 - pert_nrows
+    gramneg_nrows = int(grampos_nrows * len(gramneg_asvnames)/len(grampos_asvnames))
+    ntwk_buffer = 0
+    ntwk_row_start = 10 + gramneg_nrows + ntwk_buffer
+    ntwk_nrows = int((100 - ntwk_row_start)/2)
+
+    # Make the number of columns of the heatmap proportional to healthy and uc
+    tree_ncols = 24
+    tree_branch_ncols = 5
+    heatmap_width = 50 - tree_ncols
+
+    mcmc = pl.inference.BaseMCMC.load(chainnamehealthy)
+    healthy_nclusters = len(mcmc.graph[MDSINE2_names.STRNAMES.CLUSTERING_OBJ])
+    mcmc = pl.inference.BaseMCMC.load(chainnameuc)
+    uc_nclusters = len(mcmc.graph[MDSINE2_names.STRNAMES.CLUSTERING_OBJ])
+    
+    uc_ncols = int(heatmap_width*uc_nclusters/(uc_nclusters + healthy_nclusters))
+    healthy_ncols = heatmap_width - uc_ncols
+
+    print('Number of columns for UC heatmaps', uc_ncols)
+    print('Number of columns for healthy heatmaps', healthy_ncols)
+    print('Number of columns for phylogenetic trees', tree_ncols)
+    print('Number of rows for Gram positive', grampos_nrows)
+    print('Number of rows for Gram negative', gramneg_nrows)
+    print('Number of rows for perturbations', pert_nrows)
+
+    # Make the subplots
+    # -----------------
+    # gram positive
+    ax_grampos_tree = fig.add_subplot(gs[
+        pert_nrows:pert_nrows+grampos_nrows,
+        0         :tree_branch_ncols])
+    ax_grampos_tree_full = fig.add_subplot(gs[
+        pert_nrows:pert_nrows+grampos_nrows,
+        0         :tree_branch_ncols], facecolor='none')
+    ax_grampos_healthy_pert = fig.add_subplot(gs[
+        0         :pert_nrows,
+        tree_ncols:tree_ncols+healthy_ncols])
+    ax_grampos_uc_pert = fig.add_subplot(gs[
+        0                       :pert_nrows,
+        tree_ncols+healthy_ncols:tree_ncols+healthy_ncols+uc_ncols])
+    ax_grampos_pert = fig.add_subplot(gs[
+        0          :pert_nrows,
+        tree_ncols:tree_ncols+healthy_ncols+uc_ncols], facecolor='none')
+    ax_grampos_healthy_abund = fig.add_subplot(gs[
+        pert_nrows:pert_nrows+grampos_nrows,
+        tree_ncols:tree_ncols+healthy_ncols])
+    ax_grampos_uc_abund = fig.add_subplot(gs[
+        pert_nrows              :pert_nrows+grampos_nrows,
+        tree_ncols+healthy_ncols:tree_ncols+healthy_ncols+uc_ncols])
+    ax_healthy_network = fig.add_subplot(gs[
+        ntwk_row_start:ntwk_row_start+ntwk_nrows,
+        50            :90], zorder=-50)
+
+    # gram negative
+    ax_gramneg_tree = fig.add_subplot(gs[
+        pert_nrows:pert_nrows+gramneg_nrows,
+        50        :50+tree_branch_ncols])
+    ax_gramneg_tree_full = fig.add_subplot(gs[
+        pert_nrows :pert_nrows+grampos_nrows,
+        50         :50+tree_branch_ncols], facecolor='none')
+    ax_gramneg_healthy_pert = fig.add_subplot(gs[
+        0            :pert_nrows,
+        50+tree_ncols:50+tree_ncols+healthy_ncols])
+    ax_gramneg_uc_pert = fig.add_subplot(gs[
+        0                          :pert_nrows,
+        50+tree_ncols+healthy_ncols:50+tree_ncols+healthy_ncols+uc_ncols])
+    ax_gramneg_pert = fig.add_subplot(gs[
+        0            :pert_nrows,
+        50+tree_ncols:50+tree_ncols+healthy_ncols+uc_ncols], facecolor='none')
+    ax_gramneg_healthy_abund = fig.add_subplot(gs[
+        pert_nrows   :pert_nrows+gramneg_nrows,
+        50+tree_ncols:50+tree_ncols+healthy_ncols])
+    ax_gramneg_uc_abund = fig.add_subplot(gs[
+        pert_nrows                  :pert_nrows+gramneg_nrows,
+        50+tree_ncols+healthy_ncols:50+tree_ncols+healthy_ncols+uc_ncols])
+    ax_uc_network = fig.add_subplot(gs[
+        ntwk_row_start+ntwk_nrows:100,
+        50                       :90], zorder=-50)
+
+    # Plot gram positive subplots
+    # ---------------------------
+    ax_grampos_tree, grampos_asvname_order = _make_phylogenetic_tree(
+        treename=treename, names=grampos_asvnames, asvs=asvs, fig=fig,
+        ax=ax_grampos_tree, figlabel='E', figlabelax=ax_grampos_tree_full)
+    
+    ax_grampos_healthy_abund, grampos_healthy_colorder = _make_cluster_membership_heatmap(
+        chainname=chainnamehealthy, ax=ax_grampos_healthy_abund, order=grampos_asvname_order,
+        binary=False, fig=fig, make_colorbar=False)
+
+    ax_grampos_uc_abund, grampos_uc_colorder = _make_cluster_membership_heatmap(
+        chainname=chainnameuc, ax=ax_grampos_uc_abund, order=grampos_asvname_order,
+        binary=False, fig=fig, make_colorbar=False)
+
+    ax_grampos_healthy_pert = _make_perturbation_heatmap(chainname=chainnamehealthy,
+        min_bayes_factor=10, ax=ax_grampos_healthy_pert, colorder=grampos_healthy_colorder,
+        fig=fig, make_colorbar=False, figlabel='A', render_labels=True)
+    ax_grampos_uc_pert = _make_perturbation_heatmap(chainname=chainnameuc,
+        min_bayes_factor=10, ax=ax_grampos_uc_pert, colorder=grampos_uc_colorder,
+        fig=fig, make_colorbar=False, figlabel='B', render_labels=False)
+
+    ax_grampos_tree = _remove_border(ax_grampos_tree)
+    ax_grampos_pert = _remove_border(ax_grampos_pert)
+    ax_grampos_pert.set_title('Gram + Bacteria', fontsize=50, pad=80)
+
+    # Plot gram negative subplots
+    # ---------------------------
+    ax_gramneg_tree, gramneg_asvname_order = _make_phylogenetic_tree(
+        treename=treename, names=gramneg_asvnames, asvs=asvs, fig=fig,
+        ax=ax_gramneg_tree, figlabel='F', figlabelax=ax_gramneg_tree_full)
+    
+    ax_gramneg_healthy_abund, gramneg_healthy_colorder = _make_cluster_membership_heatmap(
+        chainname=chainnamehealthy, ax=ax_gramneg_healthy_abund, order=gramneg_asvname_order,
+        binary=False, fig=fig, make_colorbar=False)
+
+    ax_gramneg_uc_abund, gramneg_uc_colorder = _make_cluster_membership_heatmap(
+        chainname=chainnameuc, ax=ax_gramneg_uc_abund, order=gramneg_asvname_order,
+        binary=False, fig=fig, make_colorbar=True)
+
+    ax_gramneg_healthy_pert = _make_perturbation_heatmap(chainname=chainnamehealthy,
+        min_bayes_factor=10, ax=ax_gramneg_healthy_pert, colorder=gramneg_healthy_colorder,
+        fig=fig, make_colorbar=False, figlabel='C', render_labels=True)
+    ax_gramneg_uc_pert = _make_perturbation_heatmap(chainname=chainnameuc,
+        min_bayes_factor=10, ax=ax_gramneg_uc_pert, colorder=gramneg_uc_colorder,
+        fig=fig, make_colorbar=True, figlabel='D', render_labels=False)
+
+    ax_gramneg_tree = _remove_border(ax_gramneg_tree)
+    ax_gramneg_pert = _remove_border(ax_gramneg_pert)
+    ax_gramneg_tree_full = _remove_border(ax_gramneg_tree_full)
+    ax_grampos_tree_full = _remove_border(ax_grampos_tree_full)
+    
+    ax_gramneg_pert.set_title('Gram - Bacteria', fontsize=50, pad=80)
+
+    # Render the networks below the gram negative
+    # -------------------------------------------
+    # healthy
+    ax_healthy_network = _remove_border(ax_healthy_network)
+    arr_man = mpimg.imread('figures/hairball_network_healthy.jpg')
+    imagebox = OffsetImage(arr_man, zoom=0.325)
+    ab = AnnotationBbox(imagebox, (0.5, 0.475), pad=0, box_alignment=(0.5,0.5))
+    ax_healthy_network.add_artist(ab)
+    ax_healthy_network.text(x=0.3, y=0.9, s='G', fontsize=50, fontweight='bold',
+        transform=ax_healthy_network.transAxes, zorder=50)
+
+    # uc
+    ax_uc_network = _remove_border(ax_uc_network)
+    arr_man = mpimg.imread('figures/hairball_network_uc.jpg')
+    imagebox = OffsetImage(arr_man, zoom=0.325)
+    ab = AnnotationBbox(imagebox, (0.5, 0.475), pad=0, box_alignment=(0.5,0.5))
+    ax_uc_network.add_artist(ab)
+    ax_uc_network.text(x=0.3, y=0.9, s='H', fontsize=50, fontweight='bold',
+        transform=ax_uc_network.transAxes, zorder=50)
+    
+    # Add in the taxonomic key
+    suffix_taxa = {'genus': '*',
+        'family': '**', 'order': '***', 'class': '****', 'phylum': '*****', 'kingdom': '******'}
+    text = '$\\bf{Taxonomy} \\bf{Key}$\n'
+    for taxa in suffix_taxa:
+        text += '{} - {}\n'.format(suffix_taxa[taxa], taxa)
+    fig.text(x=0.875, y=0.45, s=text, fontsize=35)
+
+
+    fig.subplots_adjust(wspace=0.2, left=0.015, right=0.985, hspace=0.05,
+        top=.96, bottom=0.02)
+
+    plt.savefig('output_figures/phylo_clustering_heatmap_gramsplit.pdf')
+    plt.close()
+    sys.exit()
 
 # Alpha Diversity
 # ---------------
@@ -2298,6 +2480,12 @@ def species_heatmap_single(subjset, df, ax, display_ylabels=True, cbar=False):
 # --------------------
 def preprocess_filtering(healthy):
 
+    # Thresholding
+    thresh_rel_abund = 0.0001
+    thresh_min_num_subj = 2
+    thresh_min_num_consecutive = 5
+
+
     thresholds = np.arange(1, 25) / 50000
     min_num_consecutives = np.arange(1,8)
     dtype = 'rel'
@@ -2365,6 +2553,7 @@ def preprocess_filtering(healthy):
     ax.yaxis.set_major_locator(plt.NullLocator())
     ax.yaxis.set_minor_locator(plt.NullLocator())
 
+    axes = {}
     for mns in master_n_there:
         n_theres = master_n_there[mns]
 
@@ -2386,9 +2575,46 @@ def preprocess_filtering(healthy):
             tick.label.set_fontsize(16)
         for tick in ax.xaxis.get_major_ticks():
             tick.label.set_fontsize(16)
+        axes[mns] = ax
 
     # fig.tight_layout()
     fig.subplots_adjust(left=0.095, right=0.865)
+
+    for mns in master_n_there:
+        # Identify our filtering criteria when necessary
+        print('mns', mns)
+        n_theres = master_n_there[mns]
+        if mns == thresh_min_num_subj:
+            ax = axes[mns]
+            print('in here')
+            xmin, xmax = ax.get_xlim()
+            ymin, ymax = ax.get_ylim()
+
+            
+
+            idx = np.searchsorted(thresholds, v=thresh_rel_abund)
+
+            n_left = n_theres[thresh_min_num_consecutive][idx]
+
+            print(thresholds)
+            print(idx)
+            print(thresholds[idx])
+            print(n_theres[thresh_min_num_consecutive])
+            print(n_left)
+
+            ax.vlines(x=thresh_rel_abund, ymax=ymax*1.5, ymin=n_left, 
+                linestyle='--', color='red', linewidth=3.5)
+
+            ax.hlines(y=n_left, xmax=thresh_rel_abund, xmin=-100, 
+                linestyle='--', color='red', linewidth=3.5)
+
+            ax.scatter([thresh_rel_abund], [n_left], c='red', s=60, marker='o')
+
+
+            ax.set_ylim(ymin,ymax)
+            ax.set_xlim(xmin,xmax)
+
+
 
     # fig.suptitle(title, fontsize=30, fontweight='bold')
     # plt.show()
@@ -3091,8 +3317,8 @@ os.makedirs('output_figures/', exist_ok=True)
 # preprocess_filtering(False)
 
 # Phylogenetic heatmap
-# phylogenetic_heatmap(False)
 # phylogenetic_heatmap_side_by_side()
+phylogenetic_heatmap_gram_split()
 
 # Semi-synthetic benchmarking
 # semi_synthetic_benchmark_figure()
