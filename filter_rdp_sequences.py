@@ -12,20 +12,38 @@ import config
 
 config.LoggingConfig()
 
-rdp_fname = 'raw_data/seqs_temp/RDP_typed_cultured_trunc1600_aligned.fa'
-seqs = SeqIO.to_dict(SeqIO.parse(rdp_fname, 'fasta'))
+def truncate_sequences(seqs, truncation_length):
+    '''Get rid of all sequences longer than `truncation_length`
 
-gaplen = 1
-n_occur = 3
+    Parameters
+    ----------
+    seqs : dict (str->Bio.record)
+    truncation_length : int
 
-def filter_seqs(seqs, gaplen, n_occur, fname=None, M=None):
+    Returns
+    -------
+    list
+    '''
+    ret = []
+    for seq, record in seqs.items():
+        # print(len(record.seq))
+        if len(record.seq) <= truncation_length:
+            ret.append(record)
+    return ret
+
+# seqs = SeqIO.to_dict(SeqIO.parse('tmp/sequences/RDP_typed_cultured.fa', 'fasta'))
+# ret = truncate_sequences(seqs, 1600)
+# SeqIO.write(ret, 'tmp/sequences/RDP_typed_cultured_trunc1600.fa', 'fasta')
+# sys.exit()
+
+def filter_seqs(seqs_aligned, seqs_raw, gaplen, n_occur, fname=None, M=None):
     '''Find areas in the total alignment that have less than or equal to
     `n_occur` bases along an alignment position for at least `gaplen` consecutive
     positions.
 
     Parameters
     ----------
-    seqs : dict(str -> Bio.record)
+    seqs_aligned : dict(str -> Bio.record)
         Sequences
     gaplen : int
     n_occur : int
@@ -34,19 +52,19 @@ def filter_seqs(seqs, gaplen, n_occur, fname=None, M=None):
     -------
     list(str)
     '''
-    seqnames = list(seqs.keys())
+    seqnames = list(seqs_aligned.keys())
     if M is None:
-        for i, seqname in enumerate(seqs):
+        for i, seqname in enumerate(seqs_aligned):
             if i % 1000 == 0:
-                print('{}/{}'.format(i,len(seqs)))
-            seq = str(seqs[seqname].seq)
+                print('{}/{}'.format(i,len(seqs_aligned)))
+            seq = str(seqs_aligned[seqname].seq)
             arr = np.asarray([a in ['.', '-'] for a in seq], dtype=bool)
 
             if M is None:
-                M = np.zeros(shape=(len(seqs), len(arr)), dtype=bool)
+                M = np.zeros(shape=(len(seqs_aligned), len(arr)), dtype=bool)
             M[i] = arr
 
-    countbases = len(seqs) - M.sum(axis=0)
+    countbases = len(seqs_aligned) - M.sum(axis=0)
 
     if fname is not None:
         f = open(fname, 'w')
@@ -85,14 +103,24 @@ def filter_seqs(seqs, gaplen, n_occur, fname=None, M=None):
     
     if fname is not None:
         for seq,start,end in to_delete:
-            aaa = seqs[seqnames[seq]]
+            aaa = seqs_aligned[seqnames[seq]]
             f.write('-------------\n')
             f.write('start: {}, end: {}\n'.format(start,end))
             f.write(str(aaa))
             f.write('\n')
         f.close()
 
-    return [seq for seq,_,_ in to_delete]
+    names_to_delete = [seqnames[seq] for seq,_,_ in to_delete]
+    print('N to delete', len(names_to_delete))
+    ret = []
+    for seq in seqs_aligned:
+        if seq == '#=GC_RF':
+            continue
+        if seq in names_to_delete:
+            continue
+        ret.append(seqs_raw[seq])
+
+    return ret
 
 # # ---------
 # # Make plot
@@ -128,16 +156,26 @@ def filter_seqs(seqs, gaplen, n_occur, fname=None, M=None):
 # -----------------
 # Perform filtering
 # -----------------
-to_delete = filter_seqs(seqs, gaplen=gaplen, n_occur=n_occur)
+rdp_fname = 'tmp/sequences/RDP_typed_cultured_trunc1600_aligned.fa'
+seqs = SeqIO.to_dict(SeqIO.parse(rdp_fname, 'fasta'))
 
-rdp_fname_raw = 'raw_data/seqs_temp/unaligned RDP seqs/seqs_trunc1600.fa'
+gaplen = 1
+n_occur = 3
+
+rdp_fname_raw = 'tmp/sequences/RDP_typed_cultured_trunc1600.fa'
 seqs_raw = SeqIO.to_dict(SeqIO.parse(rdp_fname_raw, 'fasta'))
 
+# print(len(seqs_raw))
+# print(len(seqs))
+# sys.exit()
 
-ret = []
-for seq in seqs_raw:
-    if seq in to_delete:
-        continue
-    ret.append(seqs_raw[seq])
+ret = filter_seqs(seqs, seqs_raw=seqs_raw, gaplen=gaplen, n_occur=n_occur)
 
-SeqIO.write(ret, 'tmp/RDP_typed_cultured_trunc1600_gaplen{}_ninsert{}.fa'.format(gaplen, n_occur), 'fasta')
+print('orig len')
+print(len(seqs))
+print('new len')
+print(len(ret))
+print('todelte')
+print(len(seqs_raw))
+
+SeqIO.write(ret, 'tmp/sequences/RDP_typed_cultured_trunc1600_gaplen{}_ninsert{}.fa'.format(gaplen, n_occur), 'fasta')
