@@ -27,6 +27,7 @@ import matplotlib.colors as mcolors
 # from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 from mpl_toolkits.axes_grid1.inset_locator import TransformedBbox, BboxPatch, BboxConnector 
 from matplotlib.patches import Rectangle
+from matplotlib.collections import PatchCollection
 import matplotlib.legend as mlegend
 from matplotlib.colors import LogNorm
 import matplotlib.image as mpimg
@@ -658,7 +659,7 @@ def phylogenetic_heatmap_side_by_side():
     ax_network_uc.text(x=0, y=0.9, s='B', fontsize=45, fontweight='bold',
         transform=ax_network_uc.transAxes)
 
-    treename = 'raw_data/phylogenetic_tree_branch_len_preserved.nhx'
+    treename = 'raw_data/newick_tree_full.nhx'
 
     # Healthy
     subjset = loaddata(None)
@@ -1524,13 +1525,18 @@ def beta_diversity_figure(axleft=None, axright=None, axcenter=None, figlabel=Non
     axright.set_ylabel('PC2: {:.3f}'.format(bc_pcoa.proportion_explained[1]),
         fontsize=20, fontweight='bold')
 
-    mark_inset(parent_axes=axright, inset_axes=axleft, loc1a=2, loc1b=1, 
-        loc2a=3, loc2b=4, fc='none', ec='crimson')
-    axleft.spines['top'].set_color('crimson')
-    axleft.spines['bottom'].set_color('crimson')
-    axleft.spines['left'].set_color('crimson')
-    axleft.spines['right'].set_color('crimson')
-    axleft.tick_params(axis='both', color='crimson')
+    # mark_inset(parent_axes=axright, inset_axes=axleft, loc1a=2, loc1b=1, 
+    #     loc2a=3, loc2b=4, fc='none', ec='crimson')
+    axleft.spines['top'].set_color('gray')
+    axleft.spines['bottom'].set_color('gray')
+    axleft.spines['left'].set_color('gray')
+    axleft.spines['right'].set_color('gray')
+    axleft.tick_params(axis='both', color='gray')
+
+    rect =[patches.Rectangle(xy=(-0.38, -0.18), width=0.38, height=.35)]
+
+    pc = PatchCollection(rect, facecolor='none', alpha=0.8, edgecolor='gray')
+    axright.add_collection(pc)
 
     axleft.set_xticks([-0.35, -0.25, -0.15, -0.05])
     axleft.set_yticks([-0.15, -0.05, 0.05, 0.15])
@@ -1551,9 +1557,12 @@ def beta_diversity_figure(axleft=None, axright=None, axcenter=None, figlabel=Non
 
     fig.subplots_adjust(left=0.09, right=0.775, top=0.86)
 
-    # Label the left and right side
-    axcenter.text(x=0., y=1.01, s='A', fontsize=25, fontweight='bold')
-    axcenter.text(x=0.545, y=1.01, s='B', fontsize=25, fontweight='bold')
+    axright.set_title('A', fontsize=25, fontweight='bold')
+    axleft.set_title('B', fontsize=25, fontweight='bold')
+
+    # # Label the left and right side
+    # axcenter.text(x=0., y=1.01, s='A', fontsize=25, fontweight='bold')
+    # axcenter.text(x=0.545, y=1.01, s='B', fontsize=25, fontweight='bold')
 
     # bc_pcoa.plot()
     plt.savefig(BASEPATH + 'pcoa_braycurtis_w_zoom.pdf')
@@ -3304,7 +3313,7 @@ os.makedirs('output_figures/', exist_ok=True)
 # alpha_diversity_mean_std()
 
 # Beta diversity
-# beta_diversity_figure()
+beta_diversity_figure()
 
 # Data figure
 # data_figure_rel_and_qpcr(horizontal=True)
@@ -3318,7 +3327,7 @@ os.makedirs('output_figures/', exist_ok=True)
 
 # Phylogenetic heatmap
 # phylogenetic_heatmap_side_by_side()
-phylogenetic_heatmap_gram_split()
+# phylogenetic_heatmap_gram_split()
 
 # Semi-synthetic benchmarking
 # semi_synthetic_benchmark_figure()
