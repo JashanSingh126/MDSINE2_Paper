@@ -706,7 +706,7 @@ class ModelConfigReal(_BaseModelConfig):
                 'delay':0},
             STRNAMES.PERT_INDICATOR_PROB: {
                 'value_option': 'prior-mean',
-                'hyperparam_option': 'weak-agnostic',
+                'hyperparam_option': 'strong-sparse',
                 'delay':0},
             STRNAMES.PERT_INDICATOR: {
                 'value_option': 'all-off',
@@ -786,7 +786,7 @@ class ModelConfigReal(_BaseModelConfig):
                 'run_every_n_iterations': 1},
             STRNAMES.INDICATOR_PROB: {
                 'value_option': 'auto',
-                'hyperparam_option': 'weak-agnostic',
+                'hyperparam_option': 'strong-sparse',
                 'N': 25,
                 'delay': 0},
             STRNAMES.FILTERING: {

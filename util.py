@@ -258,7 +258,6 @@ def is_gram_negative(asv):
         raise ValueError('{} phylum not specified. If not bacteroidetes, firmicutes, verrucomicrobia, or ' \
             'proteobacteria, you must add another phylum'.format(str(asv)))
 
-
 def is_gram_negative_taxa(taxa, taxalevel, asvs):
     '''Checks if the taxa `taxa` at the taxonomic level `taxalevel`
     is a gram negative or gram positive

@@ -134,7 +134,7 @@ def parse_args():
 
 def main_leave_out_single(params, fparams, continue_inference):
     # Constants
-    ONLY_PLOT = False
+    ONLY_PLOT = True
 
     ddd = _make_basepath(params=params, fparams=fparams)
     params.OUTPUT_BASEPATH = ddd['output_basepath']

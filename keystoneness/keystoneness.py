@@ -145,6 +145,10 @@ def keystoneness_perturbation_single(growth, self_interactions, interactions, pe
     leave_out : int
         Which index to leave out
     '''
+    perturbation_start = 50
+    perturbation_end = 100
+    n_days = 150
+
     mask = np.ones(growth.shape[1], dtype=bool)
     if leave_out == -1:
         leave_out = None
@@ -177,17 +181,16 @@ def keystoneness_perturbation_single(growth, self_interactions, interactions, pe
     for i in range(self_interactions.shape[1]):
         interactions[:, i, i] = self_interactions[:, i]
 
-    perts_start = [20]
-    perts_end = [40]
+    perts_start = [perturbation_start]
+    perts_end = [perturbation_end]
     perturbation = perturbations[perturbation_index]
     perturbation = perturbation[:, mask]
 
     total_n_samples = growth.shape[0]
     n_asvs = growth.shape[1]
     n_asvs_originally = len(mask)
-    n_days = 60
     temp_n_samples = 50
-    pred_matrix = np.zeros(shape=(temp_n_samples, n_asvs_originally, 601), dtype=float)*np.nan
+    pred_matrix = np.zeros(shape=(temp_n_samples, n_asvs_originally, n_days*10), dtype=float)*np.nan
 
     start_time = time.time()
     temp_n = 0
@@ -207,8 +210,7 @@ def keystoneness_perturbation_single(growth, self_interactions, interactions, pe
         if temp_n == temp_n_samples:
             # Save the matrix
             savepathnow = fbasepath + 'arr{}.npy'.format(master_temp_n)
-            ret = np.nanmean(pred_matrix, axis=0)
-            np.save(savepathnow, ret)
+            np.save(savepathnow, pred_matrix)
 
             if total_n_samples - gibb_step < temp_n_samples:
                 leng = total_n_samples - gibb_step
@@ -216,7 +218,7 @@ def keystoneness_perturbation_single(growth, self_interactions, interactions, pe
                 leng = temp_n_samples
             
 
-            pred_matrix = np.zeros(shape=(leng, n_asvs_originally, 601), dtype=float)*np.nan
+            pred_matrix = np.zeros(shape=(leng, n_asvs_originally, n_days*10), dtype=float)*np.nan
             temp_n = 0
             master_temp_n += 1
 
@@ -230,8 +232,9 @@ def keystoneness_perturbation_single(growth, self_interactions, interactions, pe
             perturbation_ends=perts_end,
             interactions=interactions[gibb_step], sim_max=1e20)
         
-        output = pl.dynamics.integrate(dynamics=dyn, initial_conditions=initial_conditions.reshape(-1,1),
-            dt=0.1, n_days=n_days, subsample=False)
+        output = pl.dynamics.integrate(dynamics=dyn, 
+            initial_conditions=initial_conditions.reshape(-1,1),
+            dt=0.01, n_days=n_days, subsample=True, times=np.arange(n_days, step=0.1))
         pred_matrix[temp_n, mask, :] = output['X']
         temp_n += 1
     
@@ -342,9 +345,9 @@ if __name__ == '__main__':
     logging.info('growth {}'.format(growth.shape))
     logging.info('self_interactions {}'.format(self_interactions.shape))
     logging.info('interactions {}'.format(interactions.shape))
-    logging.info('perturbation0 {}'.format(perturbation0.shape))
-    logging.info('perturbation1 {}'.format(perturbation1.shape))
-    logging.info('perturbation2 {}'.format(perturbation2.shape))
+    logging.info('perturbation0 {}'.format(perturbations[0].shape))
+    logging.info('perturbation1 {}'.format(perturbations[1].shape))
+    logging.info('perturbation2 {}'.format(perturbations[2].shape))
 
     pert_starts = [pert.start for pert in subjset.perturbations]
     pert_ends = [pert.end for pert in subjset.perturbations]
@@ -356,9 +359,15 @@ if __name__ == '__main__':
         M = subj.matrix()['abs']
         tidx = np.searchsorted(subj.times, 1)
         initial_conditions[sidx] = M[:,tidx]
+        initial_conditions[sidx, initial_conditions[sidx] == 0] = np.nan
 
-    initial_conditions = np.mean(initial_conditions, axis=0)
-    initial_conditions[initial_conditions == 0] = limit_of_detection
+    initial_conditions = np.nanmean(initial_conditions, axis=0)
+    print('init shape', initial_conditions.shape)
+    mean = np.nanmean(np.log(initial_conditions))
+    std = np.nanstd(np.log(initial_conditions))
+    for idx in range(len(initial_conditions)):
+        if np.isnan(initial_conditions[idx]):
+            initial_conditions[idx] = np.exp(pl.random.normal.sample(mean,std))
 
     # Parse the leave out table
     # -------------------------

@@ -1,6 +1,14 @@
 '''This file is a temporary file that is used for experimentation. It has no
 utility within perturbation_study.
 '''
+# import mdsine2.mdsine2_base as md2
+# import sys
+
+# g = md2.Graph(name='Chocolate')
+# print(g.name)
+
+
+# sys.exit()
 
 import numpy as np
 import logging
@@ -70,28 +78,50 @@ UC_SUBJECTS = ['6','7','8','9','10']
 
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
-fname = 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
-mcmc = pl.inference.BaseMCMC.load(fname)
-clustering = mcmc.graph[names.STRNAMES.CLUSTERING_OBJ]
 
-clustering.generate_cluster_assignments_posthoc(n_clusters=32, set_as_value=True)
-aidxs = []
-for cluster in clustering:
-        print(cluster)
-        for aidx in cluster.members:
-                aidxs.append(aidx)
+mcmc = pl.inference.BaseMCMC.load('output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl')
 
-coclusters = pl.variables.summary(clustering.coclusters, only='mean')['mean']
 
-sns.clustermap(coclusters)
+growth mcmc.graph[names.STRNAMES.GROWTH_VALUE].get_trace_from_disk()
 
-# ax = pl.visualization.render_cocluster_proportions(coclusters, asvs=mcmc.graph.data.subjects.asvs,
-#         order=aidxs)
-plt.show()
+
 
 
 
 sys.exit()
+
+
+
+
+
+paths = {
+    'uc': 'output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
+    'healthy': 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'}
+for dset in paths:
+        print(dset)
+        fname = paths[dset]
+        mcmc = pl.inference.BaseMCMC.load(fname)
+        interactions = mcmc.graph[names.STRNAMES.INTERACTIONS_OBJ]
+
+        bf = interactions.generate_bayes_factors_posthoc(
+                prior=mcmc.graph[names.STRNAMES.CLUSTER_INTERACTION_INDICATOR].prior,
+                section='posterior')
+        # print('bf')
+        # M = pl.variables.summary(interactions.get_trace_from_disk(section='posterior'), only='mean', set_nan_to_0=True)['mean']
+        # print('M')
+        # M[bf < 10] = 0
+
+        asvnames = [asv.name for asv in mcmc.graph.data.subjects.asvs]
+
+        df = pd.DataFrame(bf, columns=asvnames, index=asvnames)
+        df.to_csv('tmp/{}_bayes_factors.tsv'.format(dset), sep='\t', header=True, index=True)
+
+# ax = pl.visualization.render_cocluster_proportions(coclusters, asvs=mcmc.graph.data.subjects.asvs,
+#         order=aidxs)
+
+
+
+# sys.exit()
 
 # paths = {
 #     'uc': 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy0_5_0.0001_rel_2_5/ds0_is3_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
@@ -490,79 +520,79 @@ sys.exit()
 
 # sys.exit()
 
-# ####################################################
-# # PERMANOVA
-# ####################################################
-# import skbio.stats.distance
-# import skbio.diversity
+####################################################
+# PERMANOVA
+####################################################
+import skbio.stats.distance
+import skbio.diversity
 
-# colonization = 5
+colonization = 5
+subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
+# a = skbio.stats.distance.permanova()
 
-# # a = skbio.stats.distance.permanova()
+labels = []
+reads = []
+grouping = []
+i = 0
+for subjidx, subj in enumerate(subjset_real):
+    print(subj.name)
+    for t in subj.times:
+        if t < colonization:
+            continue
+        # if t >= subjset_real.perturbations[0].start:
+        #     continue
+        if subj.name in HEALTHY_SUBJECTS:
+            cohort = 'Healthy'
+            continue
+        else:
+            cohort = 'UC'
+        reads.append(subj.reads[t])
+        if t < subjset_real.perturbations[0].start:
+            area = 'post colonization'
+        elif t >= subjset_real.perturbations[0].start and t <=subjset_real.perturbations[0].end:
+            area = subjset_real.perturbations[0].name
+        elif t > subjset_real.perturbations[0].end and t < subjset_real.perturbations[1].start:
+            area = 'post {}'.format(subjset_real.perturbations[0].name)
+        elif t >= subjset_real.perturbations[1].start and t <= subjset_real.perturbations[1].end:
+            area = subjset_real.perturbations[1].name
+        elif t > subjset_real.perturbations[1].end and t < subjset_real.perturbations[2].start:
+            area = 'post {}'.format(subjset_real.perturbations[1].name)
+        elif t >= subjset_real.perturbations[2].start and t <= subjset_real.perturbations[2].end:
+            area = subjset_real.perturbations[2].name
+        else:
+            area = 'post {}'.format(subjset_real.perturbations[2].name)
 
-# labels = []
-# reads = []
-# grouping = []
-# i = 0
-# for subjidx, subj in enumerate(subjset_real):
-#     print(subj.name)
-#     for t in subj.times:
-#         if t < colonization:
-#             continue
-#         # if t >= subjset_real.perturbations[0].start:
-#         #     continue
-#         if subj.name in HEALTHY_SUBJECTS:
-#             cohort = 'Healthy'
-#             continue
-#         else:
-#             cohort = 'UC'
-#         reads.append(subj.reads[t])
-#         if t < subjset_real.perturbations[0].start:
-#             area = 'post colonization'
-#         elif t >= subjset_real.perturbations[0].start and t <=subjset_real.perturbations[0].end:
-#             area = subjset_real.perturbations[0].name
-#         elif t > subjset_real.perturbations[0].end and t < subjset_real.perturbations[1].start:
-#             area = 'post {}'.format(subjset_real.perturbations[0].name)
-#         elif t >= subjset_real.perturbations[1].start and t <= subjset_real.perturbations[1].end:
-#             area = subjset_real.perturbations[1].name
-#         elif t > subjset_real.perturbations[1].end and t < subjset_real.perturbations[2].start:
-#             area = 'post {}'.format(subjset_real.perturbations[1].name)
-#         elif t >= subjset_real.perturbations[2].start and t <= subjset_real.perturbations[2].end:
-#             area = subjset_real.perturbations[2].name
-#         else:
-#             area = 'post {}'.format(subjset_real.perturbations[2].name)
-
-#         label = '{}-{}-{}'.format(cohort,area,i)
-#         i += 1
-#         group = '-'.join(label.split('-')[:-1])
-#         # if np.random.uniform() > 0.5:
-#         #     group = 'group1'
-#         # else:
-#         #     group = 'group2'
+        label = '{}-{}-{}'.format(cohort,area,i)
+        i += 1
+        group = '-'.join(label.split('-')[:-1])
+        # if np.random.uniform() > 0.5:
+        #     group = 'group1'
+        # else:
+        #     group = 'group2'
         
-#         # print(group)
-#         # if area == 'post ' + subjset_real.perturbations[0].name: #'post colonization':
-#         #     group = 'group1'
-#         # else:
-#         #     group = 'group2'
-#         grouping.append(group)
-#         labels.append(label)
-
-# # sys.exit()
-# # print(labels)
-# # print(grouping)
-
-# bc_dm = skbio.diversity.beta_diversity(counts=np.asarray(reads), ids=labels, metric="braycurtis")
-# # print(bc_dm)
-
-# result = skbio.stats.distance.anosim(
-#     distance_matrix=bc_dm, grouping=grouping)
-# print(result)
-# result = skbio.stats.distance.permanova(
-#     distance_matrix=bc_dm, grouping=grouping)
-# print(result)
+        # print(group)
+        # if area == 'post ' + subjset_real.perturbations[0].name: #'post colonization':
+        #     group = 'group1'
+        # else:
+        #     group = 'group2'
+        grouping.append(group)
+        labels.append(label)
 
 # sys.exit()
+# print(labels)
+# print(grouping)
+
+bc_dm = skbio.diversity.beta_diversity(counts=np.asarray(reads), ids=labels, metric="braycurtis")
+# print(bc_dm)
+
+result = skbio.stats.distance.anosim(
+    distance_matrix=bc_dm, grouping=grouping)
+print(result)
+result = skbio.stats.distance.permanova(
+    distance_matrix=bc_dm, grouping=grouping)
+print(result)
+
+sys.exit()
 
 # ####################################################
 # # Wilcoxon signed-rank tests
