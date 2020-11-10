@@ -195,6 +195,11 @@ if __name__ == '__main__':
         data.append([args.dataset.replace('_', ' '), args.model, day, tla, error, args.metric])
 
     df = pd.DataFrame(data, columns=columns)
+
+    # If the file exists, append to it
+    if os.path.isfile(args.output):
+        df1 = pd.read_csv(args.output, sep='\t')
+        df = df1.append(df)
     df.to_csv(args.output, index=False, header=True, sep='\t')
 
     
