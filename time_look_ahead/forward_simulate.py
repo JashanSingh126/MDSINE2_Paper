@@ -166,6 +166,8 @@ def forward_simulate(growth, self_interactions, interactions, perturbations, dt,
     if start not in subject.times:
         raise ValueError('`start` ({}) not found'.format(start))
     
+    # Get the time lookaheads that have timepoints in the real data
+    # -------------------------------------------------------------
     startidx = None
     endidx = None
     for tidx, t in enumerate(subject.times):
@@ -174,16 +176,19 @@ def forward_simulate(growth, self_interactions, interactions, perturbations, dt,
         if t > start + n_days:
             break
         endidx = tidx + 1 # Add 1 so that it is included
-
+    # Dont add 1 if we are at the end
+    if endidx == len(subject.times):
+        endidx -= 1
     time_look_aheads = subject.times[startidx:endidx] - start
+    M = subject.matrix()['abs'][:, startidx:endidx]
 
     # Make reverse index matrix for subject
     t2tidx = {}
-    for i, t in enumerate(subject.times):
+    for i, t in enumerate(time_look_aheads):
         t2tidx[t] = i
-    M = subject.matrix()['abs']
 
     # Prepare the variables for forward integration
+    # ---------------------------------------------
     self_interactions = -np.absolute(self_interactions)
     for i in range(len(asvs)):
         interactions[:, i, i] = self_interactions[:, i]
@@ -196,13 +201,13 @@ def forward_simulate(growth, self_interactions, interactions, perturbations, dt,
     pred_matrix = np.zeros(shape=(n_samples, n_asvs, n_times), dtype=float)
 
     n_days = np.max(time_look_aheads)
-    initial_conditions = M[:, [t2tidx[start]]]
+    initial_conditions = M[:, [0]]
     initial_conditions[initial_conditions == 0] = limit_of_detection
     initial_conditions = initial_conditions.reshape(-1,1)
 
-    # Perform inference
+    # Perform the forward prediction
     start_time = time.time()
-    for gibb_step in range(n_samples):
+    for iii, gibb_step in enumerate(np.arange(n_samples)):
         if gibb_step % 100 == 0:
             logging.info('{}/{}: {}'.format(gibb_step,n_samples, time.time()-start_time))
             start_time = time.time()
@@ -222,23 +227,18 @@ def forward_simulate(growth, self_interactions, interactions, perturbations, dt,
     os.makedirs(output_basepath, exist_ok=True)
     if output_basepath[-1] != '/':
         output_basepath += '/'
-    
-    for col, t in enumerate(time_look_aheads):
-        if t == 0:
-            continue
 
-        # check if the time exists in subject
-        if t + start not in subject.times:
+    for col, t in enumerate(time_look_aheads):
+        if col == 0:
             continue
         
         # Save the prediction
-        arr = pred_matrix[:,:,col]
+        arr = pred_matrix[:,:,0:col+1]
         path = output_basepath + pred_format.format(subjname=subject.name, n_days=t, start=start)
         np.save(path, arr)
 
         # Save the truth
-        tidx = t2tidx[t+start]
-        arr = M[:, tidx]
+        arr = M[:, 0:col+1]
         path = output_basepath + truth_format.format(subjname=subject.name, n_days=t, start=start)
         np.save(path, arr)
         

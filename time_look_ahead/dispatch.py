@@ -121,13 +121,14 @@ if __name__ == '__main__':
 
         mcmc = pl.inference.BaseMCMC.load(chain_basepath + 'mcmc.pkl')
         subjset = pl.SubjectSet.load(chain_basepath + 'validate_subjset.pkl')
+        mcmc.tracer.filename = chain_basepath + 'traces.hdf5'
 
-        input_basepath = jobname + '/data/'
-        output_basepath = jobname + '/output/'
-        lsf_basepath = input_basepath + 'lsfs/'
-        os.makedirs(jobname, exist_ok=True)
-        os.makedirs(input_basepath, exist_ok=True)
+        
+        output_basepath = 'output/' + jobname + '/'
+        input_basepath = output_basepath + 'data/'
+        lsf_basepath = 'output/lsfs/'
         os.makedirs(output_basepath, exist_ok=True)
+        os.makedirs(input_basepath, exist_ok=True)
         os.makedirs(lsf_basepath, exist_ok=True)
 
         # Save the traces and subject
@@ -159,7 +160,7 @@ if __name__ == '__main__':
                 f = open(lsfname, 'w')
                 f.write(lsf_format.format(jobname=jobname, input_basepath=input_basepath, queue=args.queue,
                     n_cpus=args.n_cpus, n_mbs=args.n_mbs, n_days=args.n_days, time_to_start_on=t, 
-                    subject_path=subjectpath, output_basepath=output_basepath))
+                    subject_path=subjectpath, output_basepath=output_basepath+'output/'))
                 f.close()
 
                 command = 'bsub < {}'.format(lsfname)

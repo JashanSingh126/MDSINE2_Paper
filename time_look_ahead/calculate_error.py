@@ -109,6 +109,9 @@ def _mean_spearman(pred, truth):
     -------
     float
     '''
+    # print(pred.shape)
+    # print(truth.shape)
+
     err = []
     for aidx in range(pred.shape[0]):
         err.append(scipy.stats.spearmanr(pred[aidx], truth[aidx])[0])
@@ -133,6 +136,8 @@ def calculate_error(pred, truth, metric, stat='mean'):
     '''
     ret = np.zeros(pred.shape[0])
     for i in range(len(ret)):
+        if i % 100 == 0:
+            print('{}/{}'.format(i, len(ret)))
         ret[i] = metric(pred=pred[i], truth=truth)
     if stat == 'mean':
         ret = np.mean(ret)
@@ -184,6 +189,10 @@ if __name__ == '__main__':
         pred = np.load(basepath + prefix + '-pred.npy')
         truth = np.load(basepath + prefix + '-truth.npy')
 
+        print(pred.shape)
+        print(truth.shape)
+        # sys.exit()
+
         error = calculate_error(pred=pred, truth=truth, metric=metric, stat=args.stat)
 
         tla, start = find_tla_start.findall(fname)[0]
@@ -195,6 +204,7 @@ if __name__ == '__main__':
         data.append([args.dataset.replace('_', ' '), args.model, day, tla, error, args.metric])
 
     df = pd.DataFrame(data, columns=columns)
+    print(df)
 
     # If the file exists, append to it
     if os.path.isfile(args.output):
