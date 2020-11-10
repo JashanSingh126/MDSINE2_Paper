@@ -296,7 +296,7 @@ class ClusterAssignments(pl.graph.Node):
 
         if not pl.isstr(value_option):
             raise TypeError('`value_option` ({}) must be a str'.format(type(value_option)))
-        if value_option not in ['manual', 'no-clusters']:
+        if value_option not in ['manual', 'no-clusters', 'fixed-topology']:
             if pl.isstr(n_clusters):
                 if n_clusters in ['expected', 'auto']:
                     n_clusters = int(round(np.log(len(asvs))/np.log(2)))

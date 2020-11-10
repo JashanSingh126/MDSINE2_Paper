@@ -11,6 +11,7 @@ import collections
 import h5py
 
 import names
+from names import STRNAMES, LATEXNAMES, REPRNAMES
 import pylab as pl
 import model
 

@@ -79,16 +79,190 @@ UC_SUBJECTS = ['6','7','8','9','10']
 subjset_real = pl.base.SubjectSet.load('pickles/real_subjectset.pkl')
 
 
-mcmc = pl.inference.BaseMCMC.load('output_real/pylab24/real_runs/strong_priors/healthy0_5_0.0001_rel_2_5/ds0_is1_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl')
+fname = 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/' \
+        'ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+
+mcmc = pl.inference.BaseMCMC.load(fname)
+asvs = mcmc.graph.data.subjects.asvs
 
 
-growth mcmc.graph[names.STRNAMES.GROWTH_VALUE].get_trace_from_disk()
+interactions = mcmc.graph[names.STRNAMES.INTERACTIONS_OBJ]
+clustering = mcmc.graph[names.STRNAMES.CLUSTERING_OBJ]
+
+
+coclusters = clustering.coclusters.get_trace_from_disk()
+print(coclusters.shape)
+
+np.save('tmp/healthy_cocluster_trace.npy', coclusters)
+
+i = interactions.get_trace_from_disk()
+np.save('tmp/healthy_interactions_trace.npy', i)
+
+sys.exit()
 
 
 
+
+
+# fname = 'tmp/coclusters_trace.npy'
+# arr = np.load(fname)
+# arr = 1-np.nanmean(arr, axis=0)
+
+
+clustering = mcmc.graph[names.STRNAMES.CLUSTERING_OBJ]
+arr = pl.variables.summary(clustering.coclusters, only='mean', section='posterior')['mean']
+
+
+
+arr = 1-arr
+
+n_clusters=32
+
+print(arr.shape)
+
+c = sklearn.cluster.AgglomerativeClustering(
+    n_clusters=32,
+    affinity='precomputed',
+    linkage='average')
+
+ret = c.fit_predict(arr)
+print(ret)
+
+clusters = {}
+for aidx, cidx in enumerate(ret):
+    if cidx not in clusters:
+        clusters[cidx] = []
+    clusters[cidx].append(aidx)
+
+
+f = open('tmp/clusters_from_coclusters.txt', 'w')
+for cidx in clusters:
+    cluster = clusters[cidx]
+
+    f.write('\nCluster {}\n------------------\n'.format(cidx))
+    for aidx in cluster:
+        f.write(subjset_real.asvs[aidx].name)
+        f.write('\n')
+f.close()
+
+
+fname = 'output_real/pylab24/real_runs/strong_priors/fixed_top/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl'
+mcmc = pl.inference.BaseMCMC.load(fname)
+
+clustering = mcmc.graph[names.STRNAMES.CLUSTERING_OBJ]
+for cidx, cluster in enumerate(clustering):
+    print('\nCluster {}\n-----------------'.format(cidx))
+    for aidx in cluster.members:
+        print(subjset_real.asvs[aidx].name)
+        
 
 
 sys.exit()
+
+
+
+
+
+sample_id_cols = ['sampleID', 'subject', 'time', 'High Fat Diet', 'Vancomycin', 'Gentamicin']
+qpcr_cols = ['sampleID', 'mass1', 'mass2', 'mass3']
+reads_cols = ['sequence', 'asvName']
+
+# Make a table
+data_sampleid = []
+data_qpcr = []
+data_reads = [[asv.sequence for asv in subjset_real.asvs], [asv.name for asv in subjset_real.asvs]]
+for subj in subjset_real:
+    for t in subj.times:
+
+        s = str(float(t)).replace('.5', 'PM').replace('.0', 'AM')
+        sample_name = subj.name + '-' + s
+        a = [sample_name, subj.name, t]
+        for pert in subjset_real.perturbations:
+            if t > pert.start and t <= pert.end:
+                a.append(1)
+            else:
+                a.append(0)
+        data_sampleid.append(a)
+        data_qpcr.append([sample_name] + [d for d in subj.qpcr[t].data])
+        
+        reads_cols.append(sample_name)
+        data_reads.append(list(subj.reads[t].ravel()))
+
+
+
+df_sampleid = pd.DataFrame(data_sampleid, columns=sample_id_cols)
+df_qpcr = pd.DataFrame(data_qpcr, columns=qpcr_cols)
+df_reads = pd.DataFrame(data_reads, index=reads_cols)
+df_reads = df_reads.T
+
+df_sampleid.to_csv('raw_data/sampleid.tsv', sep='\t', header=True, index=False)
+df_qpcr.to_csv('raw_data/qpcr.tsv', sep='\t', header=True, index=False)
+df_reads.to_csv('raw_data/reads.tsv', sep='\t', header=True, index=False)
+
+
+print(df_reads)
+
+sys.exit()
+
+
+
+
+basepath = 'keystoneness/output/base_0/'
+
+files = os.listdir(basepath)
+
+arrs = []
+for i, fname in enumerate(files):
+    if i ==5:
+        break
+    print()
+    print(i)
+    path = basepath + fname
+    a = np.load(path)
+    if a.ndim == 2:
+        continue
+    # print(arrs[-1].shape)
+    arrs.append(a)
+
+arr = np.vstack(tuple(arrs))
+
+
+# med = np.median(arr, axis=0)
+med = arr[0]
+np.save('tmp/asv1_single.npy', med[0, ...])
+sys.exit()
+
+perc25 = np.percentile(arr, 25, axis=0)
+perc75 = np.percentile(arr, 75, axis=0)
+
+print(med.shape)
+
+times = np.arange(150, step=0.1)
+
+for aidx in range(med.shape[0]):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
+    ax.plot(times, med[aidx, :], color='black')
+    # ax.fill_between(times, y1=perc25[aidx,:], y2=perc75[aidx,:], color='grey', alpha=0.3)
+
+    title = MDSINE2_util.asvname_for_paper(asv=subjset_real.asvs[aidx], asvs=subjset_real.asvs)
+
+    pl.visualization.shade_in_perturbations(ax, [pl.BasePerturbation(start=50, end=100, name='High Fat Diet')])
+
+
+    ax.set_title(title)
+    ax.set_yscale('log')
+
+    plt.show()
+    plt.close()
+    sys.exit()
+
+
+print(arr.shape)
+
+sys.exit()
+
 
 
 

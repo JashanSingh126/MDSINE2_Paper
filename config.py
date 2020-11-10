@@ -647,8 +647,8 @@ class ModelConfigReal(_BaseModelConfig):
             STRNAMES.PRIOR_MEAN_PERT: True,
             STRNAMES.FILTERING: True,
             STRNAMES.ZERO_INFLATION: False,
-            STRNAMES.CLUSTERING: True,
-            STRNAMES.CONCENTRATION: True, 
+            STRNAMES.CLUSTERING: False,
+            STRNAMES.CONCENTRATION: False, 
             STRNAMES.CLUSTER_INTERACTION_INDICATOR: True,
             STRNAMES.INDICATOR_PROB: True,
             STRNAMES.PERT_INDICATOR: True,
@@ -814,9 +814,10 @@ class ModelConfigReal(_BaseModelConfig):
                 'hyperparam_option': 'diffuse',
                 'delay': 0, 'n_iter': 20},
             STRNAMES.CLUSTERING: {
-                'value_option': 'spearman',
+                'value_option': 'fixed-topology',
+                'value': 'output_real/pylab24/real_runs/strong_priors/healthy1_5_0.0001_rel_2_5/ds0_is0_b5000_ns15000_mo-1_logTrue_pertsmult/graph_leave_out-1/mcmc.pkl',
                 'delay': 2,
-                'n_clusters': 30,
+                # 'n_clusters': 30,
                 'percent_mix': self.PERCENT_CHANGE_CLUSTERING,
                 'run_every_n_iterations': 4},
             STRNAMES.REGRESSCOEFF: {

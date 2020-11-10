@@ -18,7 +18,7 @@
 
 # Please make a copy of this script for your own modifications
 
-#BSUB -q short
+#BSUB -q medium
 #BSUB -n 1
 #BSUB -M 3000
 #BSUB -R rusage[mem=3000]
@@ -66,3 +66,14 @@ python calculate_error.py --basepath output/UC_subject7/output/ --output output/
 python calculate_error.py --basepath output/UC_subject8/output/ --output output/UC_subject8/error.tsv --metric relRMSE --dataset Ulcerative_Colitis --model MDSINE2 --stat mean
 python calculate_error.py --basepath output/UC_subject9/output/ --output output/UC_subject9/error.tsv --metric relRMSE --dataset Ulcerative_Colitis --model MDSINE2 --stat mean
 python calculate_error.py --basepath output/UC_subject10/output/ --output output/UC_subject10/error.tsv --metric relRMSE --dataset Ulcerative_Colitis --model MDSINE2 --stat mean
+
+python calculate_error.py --basepath output/Healthy_subject2/output/ --output output/Healthy_subject2/error.tsv --metric mean-spearman --dataset Healthy --model MDSINE2 --stat mean
+python calculate_error.py --basepath output/Healthy_subject3/output/ --output output/Healthy_subject3/error.tsv --metric mean-spearman --dataset Healthy --model MDSINE2 --stat mean
+python calculate_error.py --basepath output/Healthy_subject4/output/ --output output/Healthy_subject4/error.tsv --metric mean-spearman --dataset Healthy --model MDSINE2 --stat mean
+python calculate_error.py --basepath output/Healthy_subject5/output/ --output output/Healthy_subject5/error.tsv --metric mean-spearman --dataset Healthy --model MDSINE2 --stat mean
+
+python calculate_error.py --basepath output/UC_subject6/output/ --output output/UC_subject6/error.tsv --metric mean-spearman --dataset Ulcerative_Colitis --model MDSINE2 --stat mean
+python calculate_error.py --basepath output/UC_subject7/output/ --output output/UC_subject7/error.tsv --metric mean-spearman --dataset Ulcerative_Colitis --model MDSINE2 --stat mean
+python calculate_error.py --basepath output/UC_subject8/output/ --output output/UC_subject8/error.tsv --metric mean-spearman --dataset Ulcerative_Colitis --model MDSINE2 --stat mean
+python calculate_error.py --basepath output/UC_subject9/output/ --output output/UC_subject9/error.tsv --metric mean-spearman --dataset Ulcerative_Colitis --model MDSINE2 --stat mean
+python calculate_error.py --basepath output/UC_subject10/output/ --output output/UC_subject10/error.tsv --metric mean-spearman --dataset Ulcerative_Colitis --model MDSINE2 --stat mean

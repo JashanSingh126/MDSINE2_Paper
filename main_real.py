@@ -339,9 +339,9 @@ def main_leave_out_single(params, fparams, continue_inference):
         sort_interactions_by_cocluster=True, plot_filtering_thresh=False, 
         plot_gif_filtering=False)
 
-    # # base.readify_chain_fixed_topology(src_basepath=basepath,
-    # #     abund_times_start=7, abund_times_end=21,
-    # #     piechart_axis_layout='auto', healthy=bool(args.healthy))
+    # base.readify_chain_fixed_topology(src_basepath=basepath,
+    #     abund_times_start=7, abund_times_end=21,
+    #     piechart_axis_layout='auto', healthy=bool(args.healthy))
     
     # If the validation subjset exists, run the validation function
     if os.path.isfile(validate_subjset_filename):

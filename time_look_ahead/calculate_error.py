@@ -95,6 +95,25 @@ def _relRMSE(pred, truth):
     '''
     return np.sqrt(np.mean(np.square(pred/pred.sum() - truth/truth.sum())))
 
+def _mean_spearman(pred, truth):
+    '''Mean Root mean square error
+
+    Parameters
+    ----------
+    pred : np.ndarray (n_asvs)
+        Predicted tracjectory for each gibb sample
+    truth : np.ndarray (n_saves)
+        Truth trajectory
+
+    Returns
+    -------
+    float
+    '''
+    err = []
+    for aidx in range(pred.shape[0]):
+        err.append(scipy.stats.spearmanr(pred[aidx], truth[aidx])[0])
+    return np.nanmean(err)
+
 def calculate_error(pred, truth, metric, stat='mean'):
     '''Return the `stat` `metric` error between `pred` and `truth` over each
     Gibb step
@@ -138,6 +157,8 @@ if __name__ == '__main__':
         metric = _logRMSE
     elif args.metric == 'relRMSE':
         metric = _relRMSE
+    elif args.metric == 'mean-spearman':
+        metric = _mean_spearman
     # elif args.metric == 'mean-spearman':
     #     metric = _mean_spearman
     else:

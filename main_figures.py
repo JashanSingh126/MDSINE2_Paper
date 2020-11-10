@@ -3313,7 +3313,7 @@ os.makedirs('output_figures/', exist_ok=True)
 # alpha_diversity_mean_std()
 
 # Beta diversity
-beta_diversity_figure()
+# beta_diversity_figure()
 
 # Data figure
 # data_figure_rel_and_qpcr(horizontal=True)
@@ -3327,7 +3327,7 @@ beta_diversity_figure()
 
 # Phylogenetic heatmap
 # phylogenetic_heatmap_side_by_side()
-# phylogenetic_heatmap_gram_split()
+phylogenetic_heatmap_gram_split()
 
 # Semi-synthetic benchmarking
 # semi_synthetic_benchmark_figure()
