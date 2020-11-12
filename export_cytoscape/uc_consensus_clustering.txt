@@ -1,0 +1,229 @@
+Cluster 1
+----------
+ASV_1
+ASV_2
+ASV_3
+ASV_6
+ASV_7
+ASV_8
+ASV_10
+ASV_11
+ASV_171
+ASV_21
+ASV_22
+ASV_27
+ASV_133
+ASV_81
+ASV_32
+ASV_34
+ASV_37
+
+
+Cluster 2
+----------
+ASV_4
+ASV_12
+ASV_14
+ASV_15
+ASV_16
+ASV_18
+
+
+Cluster 3
+----------
+ASV_67
+ASV_5
+ASV_273
+ASV_79
+
+
+Cluster 4
+----------
+ASV_238
+ASV_246
+ASV_248
+ASV_249
+ASV_254
+ASV_9
+ASV_19
+ASV_49
+ASV_50
+ASV_52
+ASV_54
+ASV_57
+ASV_71
+ASV_83
+ASV_88
+ASV_90
+ASV_104
+ASV_108
+ASV_129
+ASV_156
+ASV_159
+ASV_173
+ASV_186
+ASV_211
+ASV_218
+ASV_222
+
+
+Cluster 5
+----------
+ASV_195
+ASV_199
+ASV_13
+ASV_236
+
+
+Cluster 6
+----------
+ASV_152
+ASV_42
+ASV_43
+ASV_157
+ASV_47
+ASV_165
+ASV_117
+ASV_20
+ASV_119
+ASV_205
+ASV_77
+
+
+Cluster 7
+----------
+ASV_23
+
+
+Cluster 8
+----------
+ASV_44
+ASV_56
+ASV_59
+ASV_201
+ASV_73
+ASV_25
+ASV_28
+ASV_219
+
+
+Cluster 9
+----------
+ASV_30
+
+
+Cluster 10
+----------
+ASV_118
+ASV_31
+ASV_75
+ASV_113
+
+
+Cluster 11
+----------
+ASV_89
+ASV_177
+ASV_72
+ASV_78
+ASV_36
+
+
+Cluster 12
+----------
+ASV_38
+
+
+Cluster 13
+----------
+ASV_39
+ASV_106
+ASV_144
+
+
+Cluster 14
+----------
+ASV_46
+ASV_98
+ASV_96
+ASV_103
+ASV_168
+ASV_62
+ASV_123
+ASV_146
+
+
+Cluster 15
+----------
+ASV_48
+
+
+Cluster 16
+----------
+ASV_252
+ASV_99
+ASV_53
+ASV_181
+ASV_58
+ASV_76
+ASV_131
+ASV_85
+
+
+Cluster 17
+----------
+ASV_107
+ASV_110
+ASV_197
+ASV_132
+ASV_82
+ASV_136
+ASV_230
+ASV_87
+
+
+Cluster 18
+----------
+ASV_226
+ASV_91
+ASV_95
+
+
+Cluster 19
+----------
+ASV_164
+ASV_100
+ASV_286
+ASV_290
+ASV_167
+ASV_305
+ASV_178
+ASV_112
+ASV_191
+ASV_202
+ASV_135
+ASV_142
+
+
+Cluster 20
+----------
+ASV_120
+
+
+Cluster 21
+----------
+ASV_134
+ASV_124
+
+
+Cluster 22
+----------
+ASV_192
+ASV_153
+
+
+Cluster 23
+----------
+ASV_229
+ASV_231
+ASV_278
