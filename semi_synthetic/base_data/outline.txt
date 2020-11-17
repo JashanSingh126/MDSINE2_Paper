@@ -1,5 +1,0 @@
-These files come from the run: 
-    output_real/pylab24/real_runs/perts_mult/
-        fixed_top/healthy1_5_0.0001_rel_2_5/
-        ds0_is0_b5000_ns20000_mo-1_logTrue_pertsmult/
-        graph_leave_out-1/
