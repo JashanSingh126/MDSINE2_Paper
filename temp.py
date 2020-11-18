@@ -5,19 +5,32 @@ import pandas as pd
 
 import mdsine2 as md2
 from mdsine2.names import STRNAMES
+from Bio import SeqIO, Seq, SeqRecord
 
 
 
 # healthy = md2.dataset.gibson(dset='healthy')
 # uc = md2.dataset.gibson(dset='uc')
 
-healthy = md2.Study.load('gibson_output/datasets/gibson_uc_agg.pkl')
+seqs = SeqIO.parse('gibson_files/preprocessing/prefiltered_out_asvs_aligned.fa', format='fasta')
+dset = md2.dataset.gibson()
+
+ret = []
+fmt = '%(kingdom)s, %(phylum)s, %(class)s, %(order)s, %(family)s, %(genus)s, %(species)s'
+for record in seqs:
 
 
-healthy = md2.consistency_filtering(healthy, dtype='rel', threshold=0.0001, 
-    min_num_consecutive=5, min_num_subjects=2, colonization_time=5)
 
-print(len(healthy.asvs))
+    seq = SeqRecord.SeqRecord(
+        name=record.name,
+        id=record.name,
+        description=md2.asvname_formatter(format=fmt, asv=record.name, asvs=dset.asvs),
+        seq=Seq.Seq(dset.asvs[record.name].sequence))    
+    ret.append(seq)
+
+SeqIO.write(ret, 'gibson_files/preprocessing/prefiltered_out_asvs.fa', format='fasta')
+
+
 sys.exit()
 
 
