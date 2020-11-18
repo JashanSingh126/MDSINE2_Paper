@@ -42,15 +42,16 @@ python gibson_preprocessing.py \
     --hamming-distance 2 \
     --rename-prefix OTU \
     --sequences gibson_files/preprocessing/gibson_16S_rRNA_v4_seqs_aligned_filtered.fa \
-    --outfile gibson_output/healthy_subjs_agg.pkl paper_output/uc_subjs_agg.pkl gibson_output/replicate_subjs_agg.pkl 
+    --outfile gibson_output/datasets/gibson_healthy_agg.pkl gibson_output/datasets/gibson_uc_agg.pkl \
+              gibson_output/datasets/gibson_replicate_agg.pkl 
 PC:
 python gibson_1_preprocessing.py `
     --dataset healthy uc replicates `
     --hamming-distance 2 `
     --rename-prefix OTU `
     --sequences gibson_files/preprocessing/gibson_16S_rRNA_v4_seqs_aligned_filtered.fa `
-    --outfile gibson_output/healthy_subjs_agg.pkl paper_output/uc_subjs_agg.pkl gibson_output/replicate_subjs_agg.pkl 
-
+    --outfile gibson_output/datasets/gibson_healthy_agg.pkl gibson_output/datasets/gibson_uc_agg.pkl `
+              gibson_output/datasets/gibson_replicate_agg.pkl 
 
 The file `paper_files/preprocessing/gibson_16S_rRNA_v4_seqs_aligned_filtered.fa` 
 was prepared by first aligning the ASV sequences to the reference sequeunces in the 
