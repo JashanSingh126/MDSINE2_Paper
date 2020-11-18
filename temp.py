@@ -6,6 +6,25 @@ import pandas as pd
 import mdsine2 as md2
 from mdsine2.names import STRNAMES
 
+
+
+healthy = md2.dataset.gibson(dset='healthy')
+uc = md2.dataset.gibson(dset='uc')
+inoc = md2.dataset.gibson(dset='inoculum')
+
+
+
+# Before
+subjset = pl.base.SubjectSet(...)
+subjset = pl.base.SubjectSet.load(fname)
+
+# Now
+subjset = md2.Study(...)
+subjset = md2.Study.load(fname)
+
+
+
+
 # Get the Gibson dataset and filter
 # ---------------------------------
 md2.config.LoggingConfig()
