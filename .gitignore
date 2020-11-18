@@ -1,14 +1,11 @@
 ._*
 __pycache__
 *.pyc
-*output*
+output*
 *.csv
 .DS_Store
 *.cpython*
 .vscode*
 *.lprof
-raw_data/seqs_temp/
-PyLab
 dockers/
-tmp*
 *.err
