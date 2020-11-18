@@ -8,21 +8,17 @@ from mdsine2.names import STRNAMES
 
 
 
-healthy = md2.dataset.gibson(dset='healthy')
-uc = md2.dataset.gibson(dset='uc')
-inoc = md2.dataset.gibson(dset='inoculum')
+# healthy = md2.dataset.gibson(dset='healthy')
+# uc = md2.dataset.gibson(dset='uc')
+
+healthy = md2.Study.load('gibson_output/datasets/gibson_uc_agg.pkl')
 
 
+healthy = md2.consistency_filtering(healthy, dtype='rel', threshold=0.0001, 
+    min_num_consecutive=5, min_num_subjects=2, colonization_time=5)
 
-# Before
-subjset = pl.base.SubjectSet(...)
-subjset = pl.base.SubjectSet.load(fname)
-
-# Now
-subjset = md2.Study(...)
-subjset = md2.Study.load(fname)
-
-
+print(len(healthy.asvs))
+sys.exit()
 
 
 # Get the Gibson dataset and filter
