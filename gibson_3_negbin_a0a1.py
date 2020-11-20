@@ -51,6 +51,8 @@ Parameters
     n_samples = 600, burnin = 300)
 --basepath, -b : str
     Folder location to save to
+--only-plot : int
+    If 1, it only plots the output and looks for the runs. Otherwise it runs the model
 --plot-output : int
     If 1, plot the output. Otherwise do not plot the output
 
@@ -89,7 +91,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--input', '-i', type=str, dest='input',
-        help='This is the dataset to do inference with.')
+        help='This is the dataset to do inference with. If `--only-plot` = 1,' \
+            ' then this is the basepath of the run that contains the subjset')
     parser.add_argument('--other-datasets', '-d', type=str, dest='other_datasets',
         help='These are the other datasets that we filter the union of. If nothing is ' \
              'provided then we do not do any filtering.', nargs='+', default=None)
@@ -107,38 +110,47 @@ if __name__ == '__main__':
         help='This is folder to save the output of inference')
     parser.add_argument('--plot-output', '-p', type=str, dest='plot_output',
         help='If 1, plot the output. Otherwise do not plot the output', default=0)
+    parser.add_argument('--plot-output', '-p', type=str, dest='only_plot',
+        help='If 1, it only plots the output and looks for the runs. Otherwise it ' \
+            'runs the model', default=0)
     args = parser.parse_args()
     md2.config.LoggingConfig(level=logging.INFO)
 
-    # 1) Load the dataset
-    logging.info('Loading dataset {}'.format(args.input))
-    study = md2.Study.load(args.input)
+    if args.only_plot == 1:
+        mcmc = md2.BaseMCMC.load(os.path.join(args.input, md2.config.MCMC_FILENAME))
+        params = md2.config.MDSINE2ModelConfig.load(os.path.join(args.input, md2.config.PARAMS_FILENAME))
+        study = md2.Study.load(os.path.join(args.input, md2.config.SUBJSET_FILENAME))
+    else:
+        # 1) Load the dataset
+        logging.info('Loading dataset {}'.format(args.input))
+        study = md2.Study.load(args.input)
+        params = md2.config.NegBinConfig(seed=args.seed, burnin=args.burnin, n_samples=args.n_samples,
+            ckpt=args.checkpoint, basepath=args.basepath)
 
-    # 2) Filter if necessary
-    if args.other_datasets is not None:
-        logging.info('Filtering with datasets {}'.format(args.other_datasets))
-        asvs = set([])
+        # 2) Filter if necessary
+        if args.other_datasets is not None:
+            logging.info('Filtering with datasets {}'.format(args.other_datasets))
+            asvs = set([])
 
-        for fname in args.other_datasets:
-            temp = md2.Study.load(fname)
-            for asv in temp.asvs:
-                asvs.add(asv.name)
-        
-        logging.info('A total of {} unique items were found to do inference with'.format(len(asvs)))
-        to_delete = []
-        for asv in study.asvs:
-            if asv.name not in asvs:
-                to_delete.append(asv.name)
-        study.pop_asvs(to_delete)
+            for fname in args.other_datasets:
+                temp = md2.Study.load(fname)
+                for asv in temp.asvs:
+                    asvs.add(asv.name)
+            
+            logging.info('A total of {} unique items were found to do inference with'.format(len(asvs)))
+            to_delete = []
+            for asv in study.asvs:
+                if asv.name not in asvs:
+                    to_delete.append(asv.name)
+            study.pop_asvs(to_delete)
 
-    # 3) Perform inference
-    params = md2.config.NegBinConfig(seed=args.seed, burnin=args.burnin, n_samples=args.n_samples,
-        ckpt=args.checkpoint, basepath=args.basepath)
-    mcmc = md2.negbin.build_graph(params=params, graph_name=study.name, subjset=study)
-    mcmc = md2.negbin.run_graph(mcmc, crash_if_error=True)
-    mcmc.save()
+        # 3) Perform inference
+        mcmc = md2.negbin.build_graph(params=params, graph_name=study.name, subjset=study)
+        mcmc = md2.negbin.run_graph(mcmc, crash_if_error=True)
+        mcmc.save()
+        study.save(os.path.join(params.MODEL_PATH, md2.config.SUBJSET_FILENAME))
 
-    if args.plot_output:
+    if args.plot_output == 1 or args.only_plot == 1:
         print('Plotting learned model')
         fig = md2.negbin.visualize_learned_negative_binomial_model(mcmc)
         fig.tight_layout()
