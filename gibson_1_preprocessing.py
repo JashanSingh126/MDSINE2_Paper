@@ -3,7 +3,7 @@ Ulcerative Colitis cohort, inoculum, and replicate read datasets.
 
 Author: David Kaplan
 Date: 11/17/20
-MDSINE2 version: 4.0.1
+MDSINE2 version: 4.0.2
 
 Methodology
 -----------
@@ -137,6 +137,21 @@ if __name__ == '__main__':
         if args.hamming_distance is not None:
             print('Aggregating ASVs with a hamming distance of {}'.format(args.hamming_distance))
             study = md2.aggregate_items(subjset=study, hamming_dist=args.hamming_distance)
+
+            # Get the maximum distance of all the OTUs
+            m = -1
+            for asv in study.asvs:
+                if md2.isaggregatedasv(asv):
+                    for aname in asv.aggregated_asvs:
+                        for bname in asv.aggregated_asvs:
+                            if aname == bname:
+                                continue
+                            aseq = asv.aggregated_seqs[aname]
+                            bseq = asv.aggregated_seqs[bname]
+                            d = md2.diversity.beta.hamming(aseq, bseq)
+                            if d > m:
+                                m = d
+            print('Maximum distance within an OTU: {}'.format(m))
         
         # 4) Rename asvs
         if args.rename_prefix is not None:

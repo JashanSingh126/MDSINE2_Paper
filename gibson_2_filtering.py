@@ -3,7 +3,7 @@
 
 Author: David Kaplan
 Date: 11/18/20
-MDSINE2 version: 4.0.1
+MDSINE2 version: 4.0.2
 
 Methodology
 -----------
