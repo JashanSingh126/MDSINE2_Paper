@@ -67,7 +67,7 @@ cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2
 python gibson_4_mdsine2_inference.py \
     --input {input_dataset} \
     --negbin-run gibson_output/output/negbin/replicates/mcmc.pkl \
-    --seed 0 \
+    --seed {seed} \
     --burnin  5000 \
     --n-samples 15000 \
     --checkpoint 100 \
@@ -80,10 +80,12 @@ if __name__ == '__main__':
             help='This is the Gibson dataset we want to do cross validation on')
     parser.add_argument('--output-basepath', '-o', type=str, dest='output_basepath',
         help='This is the basepath to save the output',
-        default='gibson_output/output/mdsine2/cv/')
+        default='gibson_output/output/mdsine2/runs/')
     parser.add_argument('--input-basepath', '-i', type=str, dest='input_basepath',
         help='This is the basepath to load and save the cv datasets',
-        default='gibson_output/datasets/cv/')
+        default='gibson_output/datasets/runs/')
+    parser.add_argument('--seeds', '-s', type=int, dest='seeds',
+        help='This is the seed to run', nargs='+')
     parser.add_argument('--lsf-basepath', '-l', type=str, dest='lsf_basepath',
         help='This is the basepath to save the lsf files',
         default='lsf_files/')
@@ -91,38 +93,30 @@ if __name__ == '__main__':
 
     md2.config.LoggingConfig(level=logging.INFO)
 
-    input_basepath = args.input_basepath
     output_basepath = args.output_basepath
     lsf_basepath = args.lsf_basepath
-    os.makedirs(input_basepath, exist_ok=True)
+    input_basepath = args.input_basepath
     os.makedirs(lsf_basepath, exist_ok=True)
+    os.makedirs(input_basepath, exist_ok=True)
     os.makedirs(output_basepath, exist_ok=True)
 
     logging.info('Loading dataset {}'.format(args.dataset))
     study_master = md2.Study.load(args.dataset)
 
-    for subj in study_master:
-        logging.info('Leave out {}'.format(subj.name))
+    for seed in args.seeds:
         study = md2.Study.load(args.dataset)
-        val_study = study.pop_subject(subj.name)
-        study.name = study.name + '-cv{}'.format(subj.name)
-
+        study.name = study.name + '-seed{}'.format(seed)
         print('Study |||', study.name, '||| ', study.names())
-
-        logging.info('Save the validation Study')
-        val_study.name = study.name + '-validate'
-
-        print('val_study |||', val_study.name, '||| ', val_study.names())
 
         input_dataset = input_basepath + study.name + '.pkl'
         study.save(input_dataset)
-        val_study.save(input_basepath + val_study.name + '.pkl')
 
         logging.info('Make the lsf file')
         lsfname = lsf_basepath + study.name + '.lsf'
         f = open(lsfname, 'w')
         f.write(lsfstr.format(
             dset=study.name,
+            seed=seed,
             lsf_files=lsf_basepath,
             input_dataset=input_dataset,
             output_basepath=output_basepath))
