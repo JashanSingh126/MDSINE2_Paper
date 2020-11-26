@@ -16,7 +16,7 @@ Methodology
     dset.save('file/location.pkl')
     ```
 2) Perform filtering
-   Filter out the ASVs/OTUs that do not have enough dynamical information for 
+   Filter out the Taxas/OTUs that do not have enough dynamical information for 
    effective inference.
 3) Save the filtered dataset
 
@@ -38,7 +38,7 @@ Parameters
     This is what data we are thresholding. Options are 'raw' (counts), 'rel' (relative
     abundance), or 'abs' (absolute abundance).
 --threshold, -t : float, int
-    This is the threshold the asv must pass at each timepoint
+    This is the threshold the taxa must pass at each timepoint
 --min-num-consecutive, -m : int
     Number of consecutive timepoints to look for in a row
 --min-num-consecutive-lower, -ml : int
@@ -96,7 +96,7 @@ if __name__ == '__main__':
         help='This is what data we are thresholding. Options are "raw" (counts), "rel" (relative ' \
              'abundance), or "abs" (absolute abundance).')
     parser.add_argument('--threshold', '-t', type=float, dest='threshold',
-        help='This is the threshold the asv must pass at each timepoint')
+        help='This is the threshold the taxa must pass at each timepoint')
     parser.add_argument('--min-num-consecutive', '-m', type=int, dest='min_num_consecutive',
         help='Number of consecutive timepoints to look for in a row')
     parser.add_argument('--min-num-consecutive-lower', '-ml', type=int, dest='min_num_consecutive_lower',
@@ -128,7 +128,7 @@ if __name__ == '__main__':
         study = md2.Study.load(dset)
 
         # 2) Filtering
-        initial_num = len(study.asvs)
+        initial_num = len(study.taxas)
         if args.filtering == 'consistency_filtering':
             print('Consistency filtering')
             study = md2.consistency_filtering(subjset=study,
@@ -152,7 +152,7 @@ if __name__ == '__main__':
         else:
             raise ValueError('`filtering` ({}) not recognized'.format(args.filtering))
 
-        print('{} ASVs remaining from {}'.format(len(study.asvs), initial_num))
+        print('{} Taxas remaining from {}'.format(len(study.taxas), initial_num))
 
         # 3) Save file
         study.save(args.outfiles[iii])

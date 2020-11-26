@@ -8,7 +8,7 @@ python gibson_4_mdsine2_inference.py \
     --input gibson_output/datasets/gibson_healthy_agg_filtered.pkl \
     --negbin-run gibson_output/output/negbin/replicatesseed0_nb2000_ns6000/mcmc.pkl \
     --seed 0 \
-    --burnin 5000 \
+    --burnin  5000 \
     --n-samples 15000 \
     --checkpoint 100 \
     --basepath gibson_output/output/mdsine2
@@ -22,7 +22,6 @@ python gibson_4_mdsine2_inference.py `
     --n-samples 200 `
     --checkpoint 100 `
     --basepath gibson_output/output/mdsine2
-
 '''
 
 import argparse
@@ -53,6 +52,9 @@ if __name__ == '__main__':
         help='This is folder to save the output of inference')
     parser.add_argument('--plot-output', '-p', type=str, dest='plot_output',
         help='If 1, plot the output. Otherwise do not plot the output', default=0)
+    parser.add_argument('--only-output', '-op', type=str, dest='only_plot',
+        help='If 1, it only plots the output and looks for the runs. Otherwise it ' \
+            'runs the model', default=0)
 
     args = parser.parse_args()
     md2.config.LoggingConfig(level=logging.INFO)
@@ -72,9 +74,12 @@ if __name__ == '__main__':
         basepath=args.basepath,
         data_seed=args.seed, init_seed=args.seed, burnin=args.burnin, n_samples=args.n_samples, 
         negbin_a1=a1, negbin_a0=a0, checkpoint=args.checkpoint)
+    params.MP_FILTERING = 'full'
+    params.MP_CLUSTERING = 'full-4'
 
     mcmc = md2.initialize_graph(params=params, graph_name=study.name, 
         subjset=study)
+    params.make_metadata_file(fname=os.path.join(params.MODEL_PATH, 'metadata.txt'))
     mcmc = md2.run_graph(mcmc, crash_if_error=True)
     
 

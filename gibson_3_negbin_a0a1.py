@@ -12,10 +12,10 @@ Methodology
 1) Load in dataset
    This is a pickle of an `mdsine2.Study` object. This can be created with the 
    `MDSINE2.gibson_2_filtering.py` script.
-2) Filter the ASVs
-   We only run the inference on the ASVs/OTUs that pass filtering (either
+2) Filter the Taxas
+   We only run the inference on the Taxas/OTUs that pass filtering (either
    `mdsine2.consistency_filtering` or `mdsine2.conditional_consistency_filtering`).
-   We set the ASVs that we learn with to be the union of the ASVs/OTUs that pass
+   We set the Taxas that we learn with to be the union of the Taxas/OTUs that pass
    filtering for the 'healthy' and 'uc' datasets.
 3) Perform inference
    Learn the negative binomial dispersion parameters. Fine tuning of the parameters
@@ -110,7 +110,7 @@ if __name__ == '__main__':
         help='This is folder to save the output of inference')
     parser.add_argument('--plot-output', '-p', type=str, dest='plot_output',
         help='If 1, plot the output. Otherwise do not plot the output', default=0)
-    parser.add_argument('--plot-output', '-p', type=str, dest='only_plot',
+    parser.add_argument('--only-output', '-op', type=str, dest='only_plot',
         help='If 1, it only plots the output and looks for the runs. Otherwise it ' \
             'runs the model', default=0)
     args = parser.parse_args()
@@ -130,19 +130,19 @@ if __name__ == '__main__':
         # 2) Filter if necessary
         if args.other_datasets is not None:
             logging.info('Filtering with datasets {}'.format(args.other_datasets))
-            asvs = set([])
+            taxas = set([])
 
             for fname in args.other_datasets:
                 temp = md2.Study.load(fname)
-                for asv in temp.asvs:
-                    asvs.add(asv.name)
+                for taxa in temp.taxas:
+                    taxas.add(taxa.name)
             
-            logging.info('A total of {} unique items were found to do inference with'.format(len(asvs)))
+            logging.info('A total of {} unique items were found to do inference with'.format(len(taxas)))
             to_delete = []
-            for asv in study.asvs:
-                if asv.name not in asvs:
-                    to_delete.append(asv.name)
-            study.pop_asvs(to_delete)
+            for taxa in study.taxas:
+                if taxa.name not in taxas:
+                    to_delete.append(taxa.name)
+            study.pop_taxas(to_delete)
 
         # 3) Perform inference
         mcmc = md2.negbin.build_graph(params=params, graph_name=study.name, subjset=study)

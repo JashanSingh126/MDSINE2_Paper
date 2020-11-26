@@ -86,7 +86,7 @@ def _add_unequal_col_dataframes(df, dfother, times, times_cnts, t2idx):
 
     return dfother.reindex(df.index) + df, times_cnts
 
-def _get_top(df, cutoff_frac_abundance, taxlevel, asvname_map=None):
+def _get_top(df, cutoff_frac_abundance, taxlevel, taxaname_map=None):
     matrix = df.values
     abunds = np.sum(matrix, axis=1)
     namemap = {}
@@ -106,10 +106,10 @@ def _get_top(df, cutoff_frac_abundance, taxlevel, asvname_map=None):
     idxs = np.argsort(abunds)[-cutoff_num:][::-1]
     dfnew = df.iloc[idxs, :]
 
-    if asvname_map is not None:
+    if taxaname_map is not None:
         indexes = df.index
         for idx in idxs:
-            namemap[indexes[idx]] = asvname_map[indexes[idx]]
+            namemap[indexes[idx]] = taxaname_map[indexes[idx]]
 
     # Add everything else as 'Other'
     vals = None
@@ -124,7 +124,7 @@ def _get_top(df, cutoff_frac_abundance, taxlevel, asvname_map=None):
         TAXLEVEL_PLURALS[taxlevel], cutoff_frac_abundance*100)])
     df = dfnew.append(dfother)
 
-    if asvname_map is not None:
+    if taxaname_map is not None:
         print('\n\n')
         print('Name map')
         print('--------')
@@ -153,7 +153,7 @@ def _make_full_df(dset):
     times_cnts = np.zeros(len(times))
 
     for subj in subjset:
-        dfnew, asvname_map = subj.cluster_by_taxlevel(dtype='abs', lca=False, taxlevel=TAXLEVEL, 
+        dfnew, taxaname_map = subj.cluster_by_taxlevel(dtype='abs', lca=False, taxlevel=TAXLEVEL, 
             index_formatter='%({})s %({})s'.format(upper_tax, lower_tax), smart_unspec=False)
         df, times_cnts = _add_unequal_col_dataframes(df=df, dfother=dfnew, times=times, 
             times_cnts=times_cnts, t2idx=t2idx)
@@ -164,10 +164,10 @@ def _make_full_df(dset):
     if CUTOFF_FRAC_ABUNDANCE is not None:
         df = _get_top(df, cutoff_frac_abundance=CUTOFF_FRAC_ABUNDANCE, taxlevel=TAXLEVEL)
 
-    return df, asvname_map
+    return df, taxaname_map
 
 def _data_figure_rel_and_qpcr(dset, df, axqpcr, 
-    axrel, axpert, axinoculum, asvname_map, figlabelinoculum=None, figlabelqpcr=None,
+    axrel, axpert, axinoculum, taxaname_map, figlabelinoculum=None, figlabelqpcr=None,
     figlabelrel=None, make_legend=False, make_ylabels=True):
     '''Data summarization figure for the paper
     '''
@@ -265,10 +265,10 @@ def _data_figure_rel_and_qpcr(dset, df, axqpcr,
 
     # print(inoculum.df()['raw'].head())
     print('Inoculum')
-    df, asvname_map_inoc = inoculum.cluster_by_taxlevel(dtype='raw', lca=False, taxlevel=TAXLEVEL,
+    df, taxaname_map_inoc = inoculum.cluster_by_taxlevel(dtype='raw', lca=False, taxlevel=TAXLEVEL,
         index_formatter='%({})s %({})s'.format(upper_tax, lower_tax), smart_unspec=False)
     df = _get_top(df, cutoff_frac_abundance=CUTOFF_FRAC_ABUNDANCE, 
-        taxlevel=TAXLEVEL, asvname_map=asvname_map_inoc)
+        taxlevel=TAXLEVEL, taxaname_map=taxaname_map_inoc)
 
     matrix = df.to_numpy()
     matrix = np.flipud(matrix)
@@ -338,15 +338,15 @@ if __name__ == '__main__':
     global DATA_FIGURE_COLORS
     global XKCD_COLORS
 
-    df_healthy, asvname_map_healthy = _make_full_df('healthy')
-    df_unhealthy, asvname_map_unhealthy = _make_full_df('uc')
+    df_healthy, taxaname_map_healthy = _make_full_df('healthy')
+    df_unhealthy, taxaname_map_unhealthy = _make_full_df('uc')
 
      # Set the colors from most to least abundant - only consider healthy
     M = df_healthy.to_numpy()
     a = np.sum(M, axis=1)
     idxs = np.argsort(a)[::-1] # reverse the indexes so it goes from largest to smallest
 
-    asvname_map_keys = list(asvname_map_healthy.keys())
+    taxaname_map_keys = list(taxaname_map_healthy.keys())
     print('Label, beginning')
     for idx in idxs:
         label = df_healthy.index[idx]
@@ -368,5 +368,5 @@ if __name__ == '__main__':
         axqpcr=axqpcr1, axrel=axrel1, axpert=axpert1,
         axinoculum=axinoculum1, make_ylabels=True,
         figlabelinoculum='D', figlabelqpcr='B', figlabelrel='E',
-        make_legend=False, asvname_map=asvname_map_healthy)
+        make_legend=False, taxaname_map=taxaname_map_healthy)
     
