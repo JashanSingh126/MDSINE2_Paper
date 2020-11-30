@@ -16,7 +16,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     md2.config.LoggingConfig()
 
-
+    os.makedirs(args.basepath, exist_ok=True)
     study = md2.Study.load(args.dataset)
 
     # metadata.txt
@@ -26,9 +26,9 @@ if __name__ == '__main__':
     for subj in study:
         for t in subj.times:
             ppp = 0
-            for pidx, perturbation in study.perturbations:
+            for pidx, perturbation in enumerate(study.perturbations):
                 if perturbation.isactive(time=t, subj=subj.name):
-                    ppp = pidx
+                    ppp = pidx+1
                     break
 
             temp = [sampleid, 1, int(subj.name), t, ppp]
@@ -40,7 +40,7 @@ if __name__ == '__main__':
         sep='\t', index=False, header=True)
 
     # counts.txt
-    columns = ['#OTU ID'] + [a+1 for a in range(sampleid)]
+    columns = ['#OTU ID'] + [a+1 for a in range(sampleid-1)]
     data = []
     for taxa in study.taxas:
         temp = [taxa.name]
@@ -49,6 +49,7 @@ if __name__ == '__main__':
             for t in subj.times:
                 temp.append(subj.reads[t][taxa.idx])
         data.append(temp)
+
     
     df = pd.DataFrame(data, columns=columns)
     df.to_csv(os.path.join(args.basepath, 'counts.txt'), 
