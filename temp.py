@@ -3,6 +3,7 @@ import logging
 import os
 import pandas as pd
 import os.path
+import numpy as np
 
 import mdsine2 as md2
 from mdsine2.names import STRNAMES
@@ -13,9 +14,8 @@ md2.config.LoggingConfig()
 import matplotlib.pyplot as plt
 
 
-
-path = 'gibson_output/output/negbin/replicatesseed0_nb2000_ns6000/mcmc.pkl'
-negbin = md2.BaseMCMC.load(path)
+original_seqs = md2.dataset.gibson()
+otu_seqs = md2.Study.load('gibson')
 
 
 
@@ -27,9 +27,9 @@ sys.exit()
 # subjset = md2.consistency_filtering(subjset, dtype='rel', threshold=0.0001,
 #     min_num_consecutive=consec, colonization_time=5, min_num_subjects=2)
 # f = open('{}_{}.txt'.format(dset, consec), 'w')
-# for i, asv in enumerate(subjset.asvs):
-#     f.write(asv.name)
-#     if i != len(subjset.asvs) - 1:
+# for i, taxa in enumerate(subjset.taxas):
+#     f.write(taxa.name)
+#     if i != len(subjset.taxas) - 1:
 #         f.write('\n')
 # f.close()
 # sys.exit()
@@ -51,18 +51,18 @@ sys.exit()
 # basedir = 'figs/'
 # os.makedirs(basedir, exist_ok=True)
 
-# for asv in subjset.asvs:
-#     if md2.isaggregatedasv(asv):
+# for taxa in subjset.taxas:
+#     if md2.isaggregatedtaxa(taxa):
 
 #         fig = plt.figure(figsize=(15,8))
 #         for i, subj in enumerate(subjset):
 #             legend = i == 1
-#             md2.visualization.aggregate_asv_abundances(subj, agg=asv, 
+#             md2.visualization.aggregate_taxa_abundances(subj, agg=taxa, 
 #                 ax=fig.add_subplot(2,2,i+1), vmin=1e-5, vmax=0.99, legend=legend)
         
-#         fig.suptitle(md2.asvname_for_paper(asv, asvs=subjset.asvs))
+#         fig.suptitle(md2.taxaname_for_paper(taxa, taxas=subjset.taxas))
 #         fig.tight_layout()
-#         plt.savefig(basedir + asv.name + '.pdf')
+#         plt.savefig(basedir + taxa.name + '.pdf')
 #         plt.close()
 #         # sys.exit()
             
@@ -75,7 +75,7 @@ sys.exit()
 # healthy = md2.dataset.gibson(dset='healthy')
 # uc = md2.dataset.gibson(dset='uc')
 
-# seqs = SeqIO.parse('gibson_files/preprocessing/prefiltered_out_asvs_aligned.fa', format='fasta')
+# seqs = SeqIO.parse('gibson_files/preprocessing/prefiltered_out_taxas_aligned.fa', format='fasta')
 # dset = md2.dataset.gibson()
 
 # ret = []
@@ -87,24 +87,24 @@ sys.exit()
 #     seq = SeqRecord.SeqRecord(
 #         name=record.name,
 #         id=record.name,
-#         description=md2.asvname_formatter(format=fmt, asv=record.name, asvs=dset.asvs),
+#         description=md2.taxaname_formatter(format=fmt, taxa=record.name, taxas=dset.taxas),
 #         seq=record.seq)    
 #     ret.append(seq)
 
-# SeqIO.write(ret, 'gibson_files/preprocessing/prefiltered_out_asvs_aligned.fa', format='fasta')
+# SeqIO.write(ret, 'gibson_files/preprocessing/prefiltered_out_taxas_aligned.fa', format='fasta')
 
 
 # dset = md2.dataset.gibson()
 # to_delete = []
-# for asv in dset.asvs:
-#     if asv.idx >= 10:
-#         to_delete.append(asv.name)
-# dset.pop_asvs(to_delete)
-# for i, asv in enumerate(dset.asvs):
-#     print('{}:{}'.format(i+1, asv.name))
+# for taxa in dset.taxas:
+#     if taxa.idx >= 10:
+#         to_delete.append(taxa.name)
+# dset.pop_taxas(to_delete)
+# for i, taxa in enumerate(dset.taxas):
+#     print('{}:{}'.format(i+1, taxa.name))
 
 # clusters = [0,2,0,1,2,1,3,2,0,4]
-# clustering = md2.Clustering(clusters=clusters, items=dset.asvs)
+# clustering = md2.Clustering(clusters=clusters, items=dset.taxas)
 # print(clustering)
 # print()
 # clustering.move_item(9, 0)
@@ -209,7 +209,7 @@ from mdsine2.names import STRNAMES
 # healthy = md2.consistency_filtering(healthy, dtype='rel', threshold=0.0001,
 #     min_num_consecutive=7, colonization_time=5, min_num_subjects=2)
 subjset = md2.Study.load('gibson_output/datasets/gibson_replicate_agg.pkl')
-# subjset.pop_asvs_like(healthy)
+# subjset.pop_taxas_like(healthy)
 
 # visualize_learned_negative_binomial_model(a0=0.1, a1=.036, subjset=subjset)
 
@@ -271,9 +271,9 @@ poor_seqs = [
 Ms = [subj.matrix()['raw'] for subj in study]
 
 for seq in poor_seqs:
-    print('\n{}'.format(study.asvs[seq]))
-    print(study.asvs[seq].sequence)
-    aidx = study.asvs[seq].idx
+    print('\n{}'.format(study.taxas[seq]))
+    print(study.taxas[seq].sequence)
+    aidx = study.taxas[seq].idx
     for M in Ms:
         print(M[aidx,:])
         

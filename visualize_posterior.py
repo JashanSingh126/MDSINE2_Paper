@@ -25,12 +25,6 @@ if __name__ == '__main__':
     section = args.section
     os.makedirs(basepath, exist_ok=True)
 
-
-    for n in mcmc.graph:
-        print(n.name)
-    sys.exit()
-
-
     # Plot Process variance
     # ---------------------
     logging.info('Process variance')
@@ -91,10 +85,10 @@ if __name__ == '__main__':
         path=os.path.join(interactionpath, 'mean.pdf'), f=f, section=section)
     mcmc.graph[STRNAMES.PRIOR_VAR_INTERACTIONS].visualize(
         path=os.path.join(interactionpath, 'variance.pdf'), f=f, section=section)
-    mcmc.graph[STRNAMES.INDICATOR_PROB].visualize(
+    mcmc.graph[STRNAMES.CLUSTER_INTERACTION_INDICATOR_PROB].visualize(
         path=os.path.join(interactionpath, 'probability.pdf'), f=f, section=section)
     mcmc.graph[STRNAMES.CLUSTER_INTERACTION_INDICATOR].visualize(basepath=interactionpath,
-        section=section, vmax=100)
+        section=section, vmax=10)
     mcmc.graph[STRNAMES.CLUSTER_INTERACTION_VALUE].visualize(basepath=interactionpath,
         section=section)
 

@@ -77,7 +77,7 @@ python gibson_4_mdsine2_inference.py \
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', '-d', type=str, dest='dataset',
-            help='This is the Gibson dataset we want to do cross validation on')
+        help='This is the Gibson dataset we want to do cross validation on')
     parser.add_argument('--output-basepath', '-o', type=str, dest='output_basepath',
         help='This is the basepath to save the output',
         default='gibson_output/output/mdsine2/cv/')

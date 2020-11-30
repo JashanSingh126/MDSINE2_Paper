@@ -6,7 +6,7 @@ Reproducability
 Linux/MacOS:
 python gibson_4_mdsine2_inference.py \
     --input gibson_output/datasets/gibson_healthy_agg_filtered.pkl \
-    --negbin-run gibson_output/output/negbin/replicatesseed0_nb2000_ns6000/mcmc.pkl \
+    --negbin-run gibson_output/output/negbin/replicates/mcmc.pkl \
     --seed 0 \
     --burnin  5000 \
     --n-samples 15000 \
@@ -16,7 +16,7 @@ python gibson_4_mdsine2_inference.py \
 PC:
 python gibson_4_mdsine2_inference.py `
     --input gibson_output/datasets/gibson_healthy_agg_filtered.pkl `
-    --negbin-run gibson_output/output/negbin/replicatesseed0_nb2000_ns6000/mcmc.pkl `
+    --negbin-run gibson_output/output/negbin/replicates/mcmc.pkl `
     --seed 0 `
     --burnin 100 `
     --n-samples 200 `
