@@ -123,3 +123,73 @@ if __name__ == '__main__':
         f.close()
 
         os.system('bsub < {}'.format(lsfname))
+
+
+lsfstr = '''#!/bin/bash
+#BSUB -J {dset}
+#BSUB -o {lsf_files}{dset}.out
+#BSUB -e {lsf_files}{dset}.err
+
+# This is a sample script with specific resource requirements for the
+# **bigmemory** queue with 64GB memory requirement and memory
+# limit settings, which are both needed for reservations of
+# more than 40GB.
+# Copy this script and then submit job as follows:
+# ---
+# cd ~/lsf
+# cp templates/bsub/example_8CPU_bigmulti_64GB.lsf .
+# bsub < example_bigmulti_8CPU_64GB.lsf
+# ---
+# Then look in the ~/lsf/output folder for the script log
+# that matches the job ID number
+
+# Please make a copy of this script for your own modifications
+
+#BSUB -q big-multi
+#BSUB -n 4
+#BSUB -M 12000
+#BSUB -R rusage[mem=12000]
+
+# Some important variables to check (Can be removed later)
+echo '---PROCESS RESOURCE LIMITS---'
+ulimit -a
+echo '---SHARED LIBRARY PATH---'
+echo $LD_LIBRARY_PATH
+echo '---APPLICATION SEARCH PATH:---'
+echo $PATH
+echo '---LSF Parameters:---'
+printenv | grep '^LSF'
+echo '---LSB Parameters:---'
+printenv | grep '^LSB'
+echo '---LOADED MODULES:---'
+module list
+echo '---SHELL:---'
+echo $SHELL
+echo '---HOSTNAME:---'
+hostname
+echo '---GROUP MEMBERSHIP (files are created in the first group listed):---'
+groups
+echo '---DEFAULT FILE PERMISSIONS (UMASK):---'
+umask
+echo '---CURRENT WORKING DIRECTORY:---'
+pwd
+echo '---DISK SPACE QUOTA---'
+df .
+echo '---TEMPORARY SCRATCH FOLDER ($TMPDIR):---'
+echo $TMPDIR
+
+
+# Add your job command here
+# Load module
+module load anaconda/default
+
+source activate mdsine2_403
+cd /data/cctm/darpa_perturbation_mouse_study/MDSINE2
+python gibson_4_mdsine2_inference.py \
+    --input {input_dataset} \
+    --negbin-run gibson_output/output/negbin/replicates/mcmc.pkl \
+    --seed 0 \
+    --burnin  5000 \
+    --n-samples 15000 \
+    --checkpoint 100 \
+    --basepath {output_basepath}''' 

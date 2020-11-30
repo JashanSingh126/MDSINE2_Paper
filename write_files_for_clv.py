@@ -22,9 +22,10 @@ if __name__ == '__main__':
     # metadata.txt
     columns = ['sampleID', 'isIncluded', 'subjectID', 'measurementid', 'perturbid']
     data = []
-    sampleid = 1
+    sampleid = 0
     for subj in study:
         for t in subj.times:
+            sampleid += 1
             ppp = 0
             for pidx, perturbation in enumerate(study.perturbations):
                 if perturbation.isactive(time=t, subj=subj.name):
@@ -33,14 +34,13 @@ if __name__ == '__main__':
 
             temp = [sampleid, 1, int(subj.name), t, ppp]
             data.append(temp)
-            sampleid += 1
 
     df = pd.DataFrame(data, columns=columns)
     df.to_csv(os.path.join(args.basepath, 'metadata.txt'), 
         sep='\t', index=False, header=True)
 
     # counts.txt
-    columns = ['#OTU ID'] + [a+1 for a in range(sampleid-1)]
+    columns = ['#OTU ID'] + [a+1 for a in range(sampleid)]
     data = []
     for taxa in study.taxas:
         temp = [taxa.name]

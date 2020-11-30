@@ -1,7 +1,7 @@
 ._*
 __pycache__
 *.pyc
-output*
+*output*
 *.csv
 .DS_Store
 *.cpython*

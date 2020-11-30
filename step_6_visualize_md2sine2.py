@@ -1,3 +1,15 @@
+'''Visualize the posterior of the MDSINE2 model.
+
+Parameters
+----------
+--chain : str
+    This is the path of the chain for inference. This is likely the `mcmc.pkl` file
+    in the output folder from running the inference.
+--output-basepath : str
+    This is where you are saving the posterior renderings
+--section : str
+    Section to plot the variables of. Options: (`posterior`, `burnin`, `entire`)
+'''
 import mdsine2 as md2
 from mdsine2.names import STRNAMES
 import logging
@@ -7,12 +19,11 @@ import argparse
 import sys
 
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--chain', '-c', type=str, dest='chain',
         help='This is the path of the chain for inference.')
-    parser.add_argument('--outfile', '-o', type=str, dest='basepath',
+    parser.add_argument('--output-basepath', '-o', type=str, dest='basepath',
         help='This is where you are saving the posterior renderings')
     parser.add_argument('--section', '-s', type=str, dest='section',
         help='Section to plot the variables of. Options: (`posterior`, ' \
