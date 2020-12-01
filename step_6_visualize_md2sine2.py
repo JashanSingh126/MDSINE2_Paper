@@ -28,8 +28,11 @@ if __name__ == '__main__':
     parser.add_argument('--section', '-s', type=str, dest='section',
         help='Section to plot the variables of. Options: (`posterior`, ' \
             '`burnin`, `entire`)', default='posterior')
+    parser.add_argument('--fixed-clustering', type=int, dest='fixed_clustering',
+        help='If 1, plot the posterior with fixed clustering options.')
     args = parser.parse_args()
     md2.config.LoggingConfig()
+    fixed_clustering = args.fixed_clustering == 1
 
     mcmc = md2.BaseMCMC.load(args.chain)
     basepath = args.basepath
@@ -76,15 +79,27 @@ if __name__ == '__main__':
     # Plot clustering
     # ---------------
     logging.info('Plot clustering')
-    clusterpath = os.path.join(basepath, 'clustering')
-    os.makedirs(clusterpath, exist_ok=True)
-    f = open(os.path.join(clusterpath, 'overview.txt'), 'w')
+    if fixed_clustering:
+        f = open(os.path.join(basepath, 'clustering.txt'), 'w')
+        f.write('Cluster assignments\n')
+        f.write('-------------------\n')
+        clustering = mcmc.graph[STRNAMES.CLUSTERING_OBJ]
+        taxas = mcmc.graph.data.taxas
+        for cidx, cluster in enumerate(clustering):
+            f.write('Cluster {}\n'.format(cidx+1))
+            for oidx in cluster.members:
+                f.write('\t{}\n'.format(
+                    md2.taxaname_for_paper(taxa=taxas[oidx], taxas=taxas)))
+    else:
+        clusterpath = os.path.join(basepath, 'clustering')
+        os.makedirs(clusterpath, exist_ok=True)
+        f = open(os.path.join(clusterpath, 'overview.txt'), 'w')
 
-    mcmc.graph[STRNAMES.CONCENTRATION].visualize(
-        path=os.path.join(clusterpath, 'concentration.pdf'), f=f,
-        section=section)
-    mcmc.graph[STRNAMES.CLUSTERING].visualize(basepath=clusterpath, f=f,
-        section=section)
+        mcmc.graph[STRNAMES.CONCENTRATION].visualize(
+            path=os.path.join(clusterpath, 'concentration.pdf'), f=f,
+            section=section)
+        mcmc.graph[STRNAMES.CLUSTERING].visualize(basepath=clusterpath, f=f,
+            section=section)
 
     # Plot interactions
     # -----------------
@@ -99,9 +114,9 @@ if __name__ == '__main__':
     mcmc.graph[STRNAMES.CLUSTER_INTERACTION_INDICATOR_PROB].visualize(
         path=os.path.join(interactionpath, 'probability.pdf'), f=f, section=section)
     mcmc.graph[STRNAMES.CLUSTER_INTERACTION_INDICATOR].visualize(basepath=interactionpath,
-        section=section, vmax=10)
+        section=section, vmax=10, fixed_clustering=fixed_clustering)
     mcmc.graph[STRNAMES.CLUSTER_INTERACTION_VALUE].visualize(basepath=interactionpath,
-        section=section)
+        section=section, fixed_clustering=fixed_clustering)
 
     # Plot Perturbations
     # ------------------
@@ -125,10 +140,10 @@ if __name__ == '__main__':
             f.close()
             mcmc.graph[STRNAMES.PERT_INDICATOR].visualize(
                 path=os.path.join(perturbationpath, 'bayes_factors.tsv'),
-                section=section, pidx=pidx)
+                section=section, pidx=pidx, fixed_clustering=fixed_clustering)
             mcmc.graph[STRNAMES.PERT_VALUE].visualize(
                 basepath=perturbationpath, section=section, pidx=pidx,
-                taxa_formatter='%(paperformat)s')
+                taxa_formatter='%(paperformat)s', fixed_clustering=fixed_clustering)
 
     # Plot Filtering
     # --------------

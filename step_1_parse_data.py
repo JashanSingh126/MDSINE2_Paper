@@ -59,6 +59,23 @@ Taxonomy
         Genus taxonomic classification
     species : str
         Species taxonomic classification
+
+Parameters
+----------
+--name : str
+    Name of the dataset
+--taxonomy : str
+    This is the taxonomy table
+--metadata : str
+    This is the metadata table
+--reads : str
+    This is the reads table
+--qpcr : str
+    This is the qPCR table
+--perturbations : str
+    This is the perturbations table
+--sep : str
+    This is the separator for the tables
 '''
 import argparse
 import mdsine2 as md2
@@ -67,6 +84,8 @@ import logging
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('--name', '-n', type=str, dest='name',
+        help='Name of the dataset')
     parser.add_argument('--taxonomy', '-t', type=str, dest='taxonomy',
         help='This is the table showing the sequences and the taxonomy for each' \
             ' ASV or OTU')
@@ -76,8 +95,6 @@ if __name__ == '__main__':
         help='This is the reads table', default=None)
     parser.add_argument('--qpcr', '-q', type=str, dest='qpcr',
         help='This is the qPCR table', default=None)
-    parser.add_argument('--reads', '-r', type=str, dest='reads',
-        help='This is the reads table', default=None)
     parser.add_argument('--perturbations', '-p', type=str, dest='perturbations',
         help='This is the perturbation table', default=None)
     parser.add_argument('--sep', '-s', type=str, dest='sep',
@@ -86,29 +103,10 @@ if __name__ == '__main__':
     parser.add_argument('--outfile', '-o', type=str, dest='outfile',
         help='This is where you want to save the parsed dataset')
     args = parser.parse_args()
-    sep = args.sep
 
     md2.config.LoggingConfig(level=logging.INFO)
-    taxonomy = pd.read_csv(args.taxonomy, sep=sep)
-    taxas = md2.TaxaSet(taxonomy_table=taxonomy)
-
-    metadata = pd.read_csv(args.metadata, sep=sep)
-    if args.reads is None:
-        reads = None
-    else:
-        reads = pd.read_csv(args.reads, sep=sep)
-    if args.qpcr is None:
-        qpcr = None
-    else:
-        qpcr = pd.read_csv(args.qpcr, sep=sep)
-    if args.perturbations is None:
-        perturbations = None
-    else:
-        perturbations = pd.read_csv(args.perturbations, sep=sep)
-    
-
-    study = md2.Study(taxas=taxas)
-    study.parse(metadata=metadata, reads=reads, qpcr=qpcr, perturbations=perturbations)
+    study = md2.dataset.parse(name=args.name, metadata=args.metadata, taxonomy=args.taxonomy,
+        reads=args.reads, qpcr=args.qpcr, perturbations=args.perturbations, sep=args.sep)
     study.save(args.outfile)
 
 

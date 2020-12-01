@@ -4,10 +4,20 @@ Author: David Kaplan
 Date: 11/30/20
 MDSINE2 version: 4.0.4
 
+Fixed Clustering
+----------------
+To run inference with fixed clustering, use the parameter `--fixed-clustering` where
+this is the location of the MCMC object ob the inference. This will automatically set the
+parameters for the clustering intialization and set learning turned off for the 
+cluster assignments.
+
 Parameters
 ----------
 --input, -i : str
     This is the dataset to do inference with
+--fixed-clustering : str
+    If provided, this is the chain used to set the fixed clustering
+    during inference.
 --negbin-run : str
     This is the MCMC object that was run to learn a0 and a1
 --seed, -s : int
@@ -37,6 +47,9 @@ if __name__ == '__main__':
 
     parser.add_argument('--input', '-i', type=str, dest='input',
         help='This is the dataset to do inference with.')
+    parser.add_argument('--fixed-clustering', type=str, dest='fixed_clustering',
+        help='If you are running fixed clustering, this is the location of the chain ' \
+             'that you are setting from.', default=None)
     parser.add_argument('--negbin-run', type=str, dest='negbin',
         help='This is the MCMC object that was run to learn a0 and a1')
     parser.add_argument('--seed', '-s', type=int, dest='seed',
@@ -78,9 +91,16 @@ if __name__ == '__main__':
         params.MP_FILTERING = 'full'
         params.MP_CLUSTERING = 'full-4'
 
+    # Change parameters if there is fixed clustering
+    if args.fixed_clustering:
+        params.LEARN[STRNAMES.CLUSTERING] = False
+        params.LEARN[STRNAMES.CONCENTRATION] = False
+
+        params.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value_option'] = 'fixed-clustering'
+        params.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value'] = args.fixed_clustering
+
+    mcmc = md2.initialize_graph(params=params, graph_name=study.name, subjset=study)
     mdata_fname = os.path.join(params.MODEL_PATH, 'metadata.txt')
-    mcmc = md2.initialize_graph(params=params, graph_name=study.name, 
-        subjset=study)
     params.make_metadata_file(fname=mdata_fname)
 
     start_time = time.time()
