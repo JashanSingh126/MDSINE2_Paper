@@ -11,6 +11,7 @@ from matplotlib.collections import PatchCollection
 import seaborn as sns
 
 import numpy as np
+import pickle 
 
 from scipy.stats import mannwhitneyu
 from statsmodels.stats.multitest import multipletests, fdrcorrection
@@ -50,14 +51,32 @@ def _set_type_of_point_bc(t, subj):
         return 6
 
 def unbias_var_estimate(vals):
-    '''Unbiased variance estimate of the values in `vals`
     '''
+       @parameters 
+       -----------------------------------------------------------------------
+       vals : (list[float]) 
+
+       @returns 
+       (float) Unbiased variance estimate of the values in vals 
+    '''
+
     vals = np.asarray(vals)
     mean = np.mean(vals)
     a = np.sum((vals - mean)**2)
     return a / (len(vals)-1)
 
 def compute_alpha_diversity_time(subjset):
+    """
+       computes the alpha diversity over time for each subject
+
+       @parameters 
+       -----------------------------------------------------------------------
+       subjset : ([pylab.subject])  
+
+       @returns 
+       -----------------------------------------------------------------------
+       (dict (float) -> [float]) 
+    """
 
     div_values = {}
     for subj in subjset:
@@ -71,6 +90,18 @@ def compute_alpha_diversity_time(subjset):
 
 def compute_mean_std(alpha_values_d, time_li):
 
+    """
+       @parameters 
+       -----------------------------------------------------------------------
+       alpha_values_d : (dict (float) -> [float]) alpha diversity values for 
+                        each subject at each time 
+       time_li : ([time]) times at which samples are collected 
+
+       @returns 
+       -----------------------------------------------------------------------
+       (lists of floats) : Mean and Standard deviation in alpha_values_d
+    """
+
     mean_li = []
     std_li = []
     for i, t in enumerate(time_li):
@@ -80,6 +111,20 @@ def compute_mean_std(alpha_values_d, time_li):
     return np.asarray(mean_li), np.asarray(std_li)
 
 def compute_p_alpha_diversity(alpha_healthy_d, alpha_uc_d, time_li):
+    """
+       computes the p-values using Mann Whitney test
+
+       @parameters
+       -----------------------------------------------------------------------
+       alpha_healthy_d : (dict (float) -> [float]) 
+       alpha_uc_d : (dict (float) -> [float]) 
+       time_li : ([float])
+
+       @returns 
+       -----------------------------------------------------------------------
+       results of the Mann-Whitney test (tuple consisting of hypothesis test
+       results and the adjusted p-values)
+    """
 
     p_vals = []
     for t in time_li:
@@ -95,7 +140,18 @@ def compute_p_alpha_diversity(alpha_healthy_d, alpha_uc_d, time_li):
 def classify_p_values(time_array, p_details):
     """
        classify the p-values as significant / not significant and return the
-        the two types of values separately"""
+       the two types of values separately
+
+       @parameters
+       -----------------------------------------------------------------------
+       time_array : ([float]) list of times 
+       p_details : (tuple) results of the Mann-Whitney test
+
+       @returns 
+       -----------------------------------------------------------------------
+       list of significant times, list of significant p-values, lists of 
+       non-significant times, list of non-significant p-values
+    """
 
     time_1 = []
     time_2 = []
@@ -114,11 +170,28 @@ def classify_p_values(time_array, p_details):
 def alpha_diversity_mean_std(subjset_healthy, subjset_uc, subjset_innoc, name,
     ax = None, axlegend = None, figlabel = None, save = True):
 
-    print("Alpha Diversity")
+    """
+       Plots the mean alpha diversity values and the standard deviation
+
+       @parameters
+       -----------------------------------------------------------------------
+       subjset_heallthy, subjset_uc : ([pylab.subject]) data pertaining to 
+                                       healthy / uc subjsets 
+       subjset_innoc : ([pylab.subject]) data at the time of inoculum 
+       name : (str) figure name 
+       ax, axlegend : (matplotlib.Axes)
+       save : (bool) save figure or not 
+       figlabel : (str) figure label 
+
+       @returns 
+       -----------------------------------------------------------------------
+       None 
+    """
+
+    print("Plotting Alpha Diversity")
     subjset_healthy = md2.Study.load('../gibson_output/datasets/gibson_healthy_agg.pkl')
     subjset_uc = md2.Study.load('../gibson_output/datasets/gibson_uc_agg.pkl')
     subjset_innoc = md2.Study.load('../gibson_output/datasets/gibson_inoculum_agg.pkl')
-    print(subjset_innoc)
 
     if ax is None:
         fig = plt.figure(figsize = (12, 8))
@@ -140,7 +213,7 @@ def alpha_diversity_mean_std(subjset_healthy, subjset_uc, subjset_innoc, name,
      test_results)
 
     times_idxs = np.arange(len(times))
-    print('times:', times)
+    #print('times:', times)
 
     times_idxs_healthy = times_idxs-(0.25/2)
     times_idxs_uc = times_idxs+(0.25/2)
@@ -257,6 +330,19 @@ def alpha_diversity_mean_std(subjset_healthy, subjset_uc, subjset_innoc, name,
     plt.close()
 
 def reformat_data(subjset):
+    """
+        format the data to make it compatible for computing Bray-Curtis 
+        dissimilarity
+
+        @parameters 
+        ----------------------------------------------------------------------
+        subjset : (pl.base.Subject)
+
+        @returns 
+        ----------------------------------------------------------------------
+        reformated data (numpy), sample labels ([str]), 
+        sample labels id ((dict (float) -> (str, float)))
+    """
 
     data = None
     labels = []
@@ -278,6 +364,10 @@ def reformat_data(subjset):
 
 def combine_dicts(dict1, dict2):
 
+    """
+       combines two dictionaries into one single dictionary 
+    """
+
     dict_ = {}
     for keys1 in dict1:
         dict_[keys1] = dict1[keys1]
@@ -291,6 +381,24 @@ def beta_diversity_figure(subjset_healthy, subjset_uc, subjset_innoc, name = Non
     axleft = None, axright = None, axcenter = None, figlabel = None,
     save = False):
 
+    """
+       Plots the first two dimensions of the beta diversity 
+
+       @parameters
+       -----------------------------------------------------------------------
+       subjset_heallthy, subjset_uc : ([pylab.subject]) data pertaining to 
+                                       healthy / uc subjsets 
+       subjset_innoc : ([pylab.subject]) data at the time of inoculum 
+       name : (str) figure name 
+       ax, axleft, axright, axcenter : (matplotlib.Axes)
+       save : (bool) save figure or not 
+       figlabel : (str) figure label 
+
+       @returns 
+       -----------------------------------------------------------------------
+       None 
+    """
+
     print("Running Beta Diversity")
     heal_data, heal_labels, heal_labels_float = reformat_data(subjset_healthy)
     uc_data, uc_labels, uc_labels_float = reformat_data(subjset_uc)
@@ -302,10 +410,10 @@ def beta_diversity_figure(subjset_healthy, subjset_uc, subjset_innoc, name = Non
 
     for subj in subjset_innoc:
         labels.append('inoculum {}'.format(subj.name))
-        print(subj.name)
+        #print(subj.name)
         labels_float[labels[-1]] = 1000
         m = subj.matrix()['raw'].T
-        print(m.shape)
+        #print(m.shape)
         data = np.vstack((data, m))
 
     print(data.shape, len(labels), len(labels_float))
@@ -484,7 +592,7 @@ def beta_diversity_figure(subjset_healthy, subjset_uc, subjset_innoc, name = Non
     for tick in axleft.yaxis.get_major_ticks():
         tick.label.set_fontsize(18)
         # tick.label.set_fontweight('bold')
-    for tick in axleft.xaxis.ge bt_major_ticks():
+    for tick in axleft.xaxis.get_major_ticks():
         tick.label.set_fontsize(18)
         # tick.label.set_fontweight('bold')
 
@@ -513,6 +621,19 @@ def beta_diversity_figure(subjset_healthy, subjset_uc, subjset_innoc, name = Non
 
 
 def get_reads(subjset, type_):
+
+    """
+       gets read counts, groups and label names associated with each samples 
+
+       @Parameters 
+       -----------------------------------------------------------------------
+       subjset : (pl.base.Subject)
+       type_ : (str) healthy or UC cohort 
+
+       @returns 
+       -----------------------------------------------------------------------
+       read at each samples (numpy), label names (list), cohort names (list)
+    """
 
     colonization = -1
 
@@ -552,6 +673,19 @@ def get_reads(subjset, type_):
 
 def permanova(subjset_healthy, subjset_uc):
 
+    """
+       runs the permanova test and prints the result 
+
+       @Parameters 
+       -----------------------------------------------------------------------
+       subjset_healthy, subjset_uc : (pl.base.Subject)
+
+       @returns 
+       -----------------------------------------------------------------------
+       None 
+
+    """
+
     colonization = 5
     i = 0
 
@@ -572,6 +706,15 @@ def permanova(subjset_healthy, subjset_uc):
     print(test_result)
 
 def diversity_plot(subjset_healthy, subjset_uc, subjset_innoc, name = None):
+
+    """
+       plots the alpha and beta diversity together
+       @parameters
+       -----------------------------------------------------------------------
+       subjset_heallthy, subjset_uc : ([pylab.subject]) data pertaining to 
+                                       healthy / uc subjsets 
+       subjset_innoc : ([pylab.subject]) data at the time of inoculum 
+    """
 
     fig = plt.figure(figsize = (18, 18))
     spec = GridSpec(nrows = 2, ncols = 2, hspace = 0.3)
@@ -617,9 +760,11 @@ def loaddata(healthy):
 
 def main():
 
-    subjset_healthy = md2.Study.load('../gibson_output/datasets/gibson_healthy_agg.pkl')
-    subjset_uc = md2.Study.load('../gibson_output/datasets/gibson_uc_agg.pkl')
-    subjset_innoc = md2.Study.load('../gibson_output/datasets/gibson_inoculum_agg.pkl')
+    subjset_innoc = md2.Study.load('../datasets/gibson_inoculum_agg.pkl')
+    subjset_healthy = md2.Study.load('../datasets/gibson_healthy_agg.pkl')
+    subjset_uc = md2.Study.load('../datasets/gibson_uc_agg.pkl')
+    print("healthy:", subjset_healthy)
+    
 
     #subjset_healthy = loaddata(True)
     #subjset_uc = loaddata(False)
