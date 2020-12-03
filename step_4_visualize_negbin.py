@@ -16,7 +16,7 @@ Parameters
 import argparse
 import mdsine2 as md2
 import logging
-import os.path
+import os
 import matplotlib.pyplot as plt
 from mdsine2.names import STRNAMES
 
@@ -30,22 +30,25 @@ if __name__ == '__main__':
     args = parser.parse_args()
     md2.config.LoggingConfig(level=logging.INFO)
 
+    basepath = args.basepath
+    os.makedirs(basepath, exist_ok=True)
+
     mcmc = md2.BaseMCMC.load(args.chain)
     fig = md2.negbin.visualize_learned_negative_binomial_model(mcmc)
     fig.tight_layout()
-    path = os.path.join(params.MODEL_PATH, 'learned_model.pdf')
+    path = os.path.join(basepath, 'learned_model.pdf')
     plt.savefig(path)
     plt.close()
 
-    f = open(os.path.join(params.MODEL_PATH, 'a0a1.txt'), 'w')
+    f = open(os.path.join(basepath, 'a0a1.txt'), 'w')
     mcmc.graph[STRNAMES.NEGBIN_A0].visualize(
-        path=os.path.join(params.MODEL_PATH, 'a0.pdf'), 
+        path=os.path.join(basepath, 'a0.pdf'), 
         f=f, section='posterior')
     mcmc.graph[STRNAMES.NEGBIN_A1].visualize(
-        path=os.path.join(params.MODEL_PATH, 'a1.pdf'), 
+        path=os.path.join(basepath, 'a1.pdf'), 
         f=f, section='posterior')
     f.close()
     print('Plotting filtering')
     mcmc.graph[STRNAMES.FILTERING].visualize(
-        basepath=params.MODEL_PATH, section='posterior')
+        basepath=basepath, section='posterior')
     

@@ -108,10 +108,3 @@ if __name__ == '__main__':
     study = md2.dataset.parse(name=args.name, metadata=args.metadata, taxonomy=args.taxonomy,
         reads=args.reads, qpcr=args.qpcr, perturbations=args.perturbations, sep=args.sep)
     study.save(args.outfile)
-
-
-
-
-    
-    
-    

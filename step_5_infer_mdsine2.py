@@ -38,7 +38,7 @@ Parameters
 import argparse
 import mdsine2 as md2
 import logging
-import os.path
+import os
 import time
 from mdsine2.names import STRNAMES
 
@@ -67,25 +67,29 @@ if __name__ == '__main__':
     parser.add_argument('--multiprocessing', '-mp', type=int, dest='mp',
         help='If 1, run the inference with multiprocessing. Else run on a single process',
         default=0)
-
     args = parser.parse_args()
-    md2.config.LoggingConfig(level=logging.INFO)
 
     # 1) load dataset
     logging.info('Loading dataset {}'.format(args.input))
     study = md2.Study.load(args.input)
 
-    # 2) Load the negative binomial parameters
+    # 2) Load the model parameters
+    os.makedirs(args.basepath, exist_ok=True)
+    basepath = os.path.join(args.basepath, study.name)
+    os.makedirs(basepath, exist_ok=True)
+    md2.config.LoggingConfig(level=logging.INFO, basepath=basepath)
+
+    # Load the negative binomial parameters
     negbin = md2.BaseMCMC.load(args.negbin)
     a0 = md2.summary(negbin.graph[STRNAMES.NEGBIN_A0])['mean']
     a1 = md2.summary(negbin.graph[STRNAMES.NEGBIN_A1])['mean']
-    print('Setting a0 = {:.4E}, a1 = {:.4E}'.format(a0,a1))
+    logging.info('Setting a0 = {:.4E}, a1 = {:.4E}'.format(a0,a1))
 
     # 3) Begin inference
     params = md2.config.MDSINE2ModelConfig(
-        basepath=args.basepath,
-        data_seed=args.seed, init_seed=args.seed, burnin=args.burnin, n_samples=args.n_samples, 
-        negbin_a1=a1, negbin_a0=a0, checkpoint=args.checkpoint)
+        basepath=basepath, data_seed=args.seed, init_seed=args.seed, 
+        burnin=args.burnin, n_samples=args.n_samples, negbin_a1=a1, 
+        negbin_a0=a0, checkpoint=args.checkpoint)
     # Run with multiprocessing if necessary
     if args.mp == 1:
         params.MP_FILTERING = 'full'

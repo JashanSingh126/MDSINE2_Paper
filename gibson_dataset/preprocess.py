@@ -15,7 +15,6 @@ Methodology
 3) Calculate the consensus sequences
 4) Rename the Taxas to OTUs
 
-
 Parameters
 ----------
 --hamming-distance, -hd : int
@@ -28,9 +27,8 @@ Parameters
     This is the fasta file location of the aligned sequences for each Taxa that was 
     used for placement in the phylogenetic tree. If nothing is provided, then do 
     not replace them.
---output-basepath, -o : str (multiple)
-    This is where you want to save the parsed dataset. Each dataset in `--dataset` must
-    have an output.
+--output-basepath, -o : str
+    This is where you want to save the parsed dataset.
 
 The file `paper_files/preprocessing/gibson_16S_rRNA_v4_seqs_aligned_filtered.fa` 
 was prepared by first aligning the Taxa sequences to the reference sequeunces in the 
@@ -48,11 +46,9 @@ import mdsine2 as md2
 import os
 
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--output-basepath', '-o', type=str, dest='basepath',
-        help='This is where you want to save the parsed dataset. Each dataset in ' \
-            '`--dataset` must have an output.')
+        help='This is where you want to save the parsed dataset.')
     parser.add_argument('--hamming-distance', '-hd', type=int, dest='hamming_distance',
         help='This is the hamming radius to aggregate Taxa sequences. If nothing ' \
             'is provided, then there will be no aggregation.', default=None)
@@ -67,7 +63,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     md2.config.LoggingConfig(level=logging.DEBUG)
 
-    for dset in ['healthy', 'uc', 'replicates']:
+    for dset in ['healthy', 'uc', 'replicates', 'inoculum']:
         # 1) Load the dataset
         study = md2.dataset.gibson(dset=dset, as_df=False, species_assignment='both')
 
@@ -145,4 +141,4 @@ if __name__ == '__main__':
         for taxa in study.taxas:
             ret.append(SeqRecord.SeqRecord(seq=Seq.Seq(taxa.sequence), id=taxa.name,
                 description=''))
-        SeqIO.write(ret, os.path.join(args.basepath, 'gibson_' + dset + '_agg.fa'), 'fasta')
+        SeqIO.write(ret, os.path.join(args.basepath, 'gibson_' + dset + '_agg.fa'), 'fasta-2line')

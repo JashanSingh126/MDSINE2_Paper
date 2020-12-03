@@ -4,8 +4,8 @@ Author: David Kaplan
 Date: 11/30/20
 MDSINE2 version: 4.0.4
 
-This script runs inference for each cross validation sequentially only, but you
-can still run multiprocessing for each fold of inference.
+This script runs inference for each cross validation for a single fold. Specify the
+fold by saying which subject (by name) to leave out
 
 Parameters
 ----------
@@ -16,6 +16,8 @@ Parameters
     as a whole. Each fold has its own folder within this folder
 --dset-basepath, -db : str
     This is the path to save the datasets that are created for each CV
+--leave-out-subject, -lo : str
+    Subject to leave out
 --negbin-run : str
     This is the MCMC object that was run to learn a0 and a1
 --seed, -s : int
@@ -35,17 +37,17 @@ import mdsine2 as md2
 import argparse
 import logging
 import os
+import pathlib
 import sys
 
-command_fmt = 'python step_5_infer_mdsine2.py --input {dset} ' \
+command_fmt = 'python {script} --input {dset} ' \
     '--negbin-run {negbin} ' \
     '--seed {seed} ' \
     '--burnin {burnin} ' \
     '--n-samples {n_samples} ' \
     '--checkpoint {ckpt} ' \
-    '--basepath {basepah} ' \
+    '--basepath {basepath} ' \
     '--multiprocessing {mp}'
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -55,6 +57,8 @@ if __name__ == '__main__':
         help='This is the basepath to save the output')
     parser.add_argument('--dset-basepath', '-db', type=str, dest='input_basepath',
         help='This is the basepath to load and save the cv datasets')
+    parser.add_argument('--leave-out-subject', '-lo', type=str, dest='leave_out_subj',
+        help='This is the subject to leave out')
     parser.add_argument('--negbin-run', type=str, dest='negbin',
         help='This is the MCMC object that was run to learn a0 and a1')
     parser.add_argument('--seed', '-s', type=int, dest='seed',
@@ -74,7 +78,6 @@ if __name__ == '__main__':
         default=0)
     
     args = parser.parse_args()
-
     md2.config.LoggingConfig(level=logging.INFO)
 
     input_basepath = args.input_basepath
@@ -83,24 +86,27 @@ if __name__ == '__main__':
 
     logging.info('Loading dataset {}'.format(args.dataset))
     study_master = md2.Study.load(args.dataset)
+    subj = study_master[args.leave_out_subj]
 
-    for subj in study_master:
-        logging.info('Leave out {}'.format(subj.name))
-        study = md2.Study.load(args.dataset)
-        val_study = study.pop_subject(subj.name)
-        study.name = study.name + '-cv{}'.format(subj.name)
+    logging.info('Leave out {}'.format(subj.name))
+    study = md2.Study.load(args.dataset)
+    val_study = study.pop_subject(subj.name)
+    study.name = study.name + '-cv{}'.format(subj.name)
+    val_study.name = study.name + '-validate'
 
-        # Save the datasets
-        val_study.name = study.name + '-validate'
-        study_fname = os.path.join(input_basepath, study.name + '.pkl')
-        study.save(study_fname)
-        val_study.save(os.path.join(input_basepath, val_study.name + '.pkl'))
+    # Save the datasets
+    study_fname = os.path.join(input_basepath, study.name + '.pkl')
+    study.save(study_fname)
+    val_study.save(os.path.join(input_basepath, val_study.name + '.pkl'))
 
-        logging.info('Run inference')
-        command = command_fmt.format(
-            dset=study_fname, negbin=args.negbin, seed=args.seed, 
-            burnin=args.burnin, n_samples=args.n_samples, ckpt=args.checkpoint,
-            basepath=args.output_basepath, mp=args.mp)
-        logging.info(command)
-        os.system(command)
-        
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'step_5_infer_mdsine2.py')
+    path = '"' + path + '"'
+
+    logging.info('Run inference')
+    command = command_fmt.format(
+        script=path,
+        dset=study_fname, negbin=args.negbin, seed=args.seed, 
+        burnin=args.burnin, n_samples=args.n_samples, ckpt=args.checkpoint,
+        basepath=args.output_basepath, mp=args.mp)
+    logging.info(command)
+    os.system(command)

@@ -1,0 +1,1226 @@
+Feature ID	Taxon	Confidence
+#q2:types	categorical	categorical
+OTU_1	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides; s__Bacteroides_vulgatus	0.8636528096647046
+OTU_2	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999995145485
+OTU_3	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999999995276846
+OTU_4	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999816548659
+OTU_5	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__uncultured_organism	0.7575555199806434
+OTU_6	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999993764782
+OTU_7	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999751324271
+OTU_8	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides; s__Bacteroides_salyersiae	0.9449115570253822
+OTU_9	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999993851899
+OTU_10	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999946289984
+OTU_11	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia-Shigella	0.9836452065142054
+OTU_12	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides; s__Parabacteroides_distasonis	0.8477582727729913
+OTU_13	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae	0.9999999681322661
+OTU_14	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9999985511020729
+OTU_15	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.999999990304275
+OTU_16	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.9968479341161094
+OTU_17	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999999280609636
+OTU_18	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides; s__Parabacteroides_merdae	0.8162741506830573
+OTU_19	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Sutterella	0.9999999826802279
+OTU_20	d__Bacteria; p__Desulfobacterota; c__Desulfovibrionia; o__Desulfovibrionales; f__Desulfovibrionaceae; g__Bilophila	0.9999995726086812
+OTU_21	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Hungatella	0.9972219706449666
+OTU_22	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella; s__uncultured_bacterium	0.7899567099610858
+OTU_23	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.999990458853165
+OTU_24	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides; s__Bacteroides_massiliensis	0.84938052977546
+OTU_25	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia	0.9831643057899796
+OTU_26	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium_sensu_stricto_1	0.9997462906154927
+OTU_27	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__[Clostridium]_innocuum_group	0.9999057530411486
+OTU_28	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__uncultured_organism	0.8651396414058102
+OTU_29	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides; s__Bacteroides_stercoris	0.946324877511321
+OTU_30	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemania; s__uncultured_bacterium	0.9354242641426946
+OTU_31	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9999999992603946
+OTU_32	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Faecalibacterium	0.9995257964287629
+OTU_33	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.999999632721449
+OTU_34	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Ruminococcus]_torques_group	0.9985607058030745
+OTU_35	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Eisenbergiella; s__uncultured_organism	0.7329154577732373
+OTU_36	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999993843339
+OTU_37	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__UBA1819; s__uncultured_organism	0.8474397126495169
+OTU_38	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999999151552259
+OTU_39	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia	0.961950834863605
+OTU_40	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia	0.9778224640258003
+OTU_41	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Barnesiella	0.999999999385402
+OTU_42	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9996944787913711
+OTU_43	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia	0.9873801344762811
+OTU_44	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.8327028261077709
+OTU_45	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter	0.9999996189437201
+OTU_46	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Roseburia	0.8290471135899445
+OTU_47	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Flavonifractor; s__uncultured_bacterium	0.7143345244652718
+OTU_48	d__Bacteria; p__Cyanobacteria; c__Vampirivibrionia; o__Gastranaerophilales; f__Gastranaerophilales; g__Gastranaerophilales; s__Acinetobacter_sp.	0.7537209659295887
+OTU_49	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Peptostreptococcaceae; g__Romboutsia	0.9911185194256841
+OTU_50	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__GCA-900066755; s__uncultured_bacterium	0.9985220790594812
+OTU_51	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Coprobacter	0.9999999998828756
+OTU_52	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes	0.9999999999999561
+OTU_53	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Sellimonas; s__uncultured_bacterium	0.7289964326683482
+OTU_54	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.999999643064929
+OTU_55	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Coprobacillus	0.9286888769544166
+OTU_56	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__[Eubacterium]_siraeum_group; s__[Eubacterium]_siraeum	0.7045410311356394
+OTU_57	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia; s__metagenome	0.7565703004907299
+OTU_58	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Candidatus_Stoquefichus	0.9987716529745739
+OTU_59	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes	0.9999999999983029
+OTU_60	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Turicibacter	0.999980349191729
+OTU_61	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemania; s__uncultured_bacterium	0.8938174764099684
+OTU_62	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Erysipelatoclostridium	0.9999973735936971
+OTU_63	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium; s__uncultured_Clostridium	0.8733195912262687
+OTU_64	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Negativibacillus	0.9999964517080456
+OTU_65	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Colidextribacter	0.9998239954362983
+OTU_66	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium; s__[Clostridium]_aldenense	0.7948129639366088
+OTU_67	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.999996997297888
+OTU_68	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999992811208406
+OTU_69	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Fusicatenibacter; s__uncultured_organism	0.7949539502569425
+OTU_70	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Subdoligranulum	0.9936942851106333
+OTU_71	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptococcales; f__Peptococcaceae; g__uncultured; s__unidentified	0.8570873273717969
+OTU_72	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Marinifilaceae; g__Butyricimonas	0.9979938556311182
+OTU_73	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Marvinbryantia; s__uncultured_organism	0.9267582124581877
+OTU_74	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides; s__Bacteroides_intestinalis	0.9592351304168407
+OTU_75	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Fournierella	0.8540129432493754
+OTU_76	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Eubacterium]_fissicatena_group	0.9956516892065763
+OTU_77	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Peptostreptococcaceae; g__Romboutsia	0.9540599579985872
+OTU_78	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__uncultured; s__Clostridium_sp.	0.9254353781731671
+OTU_79	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium; s__[Clostridium]_scindens	0.9793877320432025
+OTU_80	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Ruminococcus	0.9999051726075303
+OTU_81	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Peptostreptococcaceae; g__Terrisporobacter	0.9992572703740362
+OTU_82	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia	0.9197008276515231
+OTU_83	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__UCG-005	0.9997694590707885
+OTU_84	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Anaerostipes	0.9999791972276603
+OTU_85	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae	0.9999995856234601
+OTU_86	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9968113926601101
+OTU_87	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Ruminococcus; s__uncultured_Ruminococcus	0.9889464354884514
+OTU_88	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenellaceae_R-7_group	0.9971123726368539
+OTU_89	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__GCA-900066575; s__uncultured_bacterium	0.9772969974814607
+OTU_90	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999095358340148
+OTU_91	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenellaceae; s__Christensenella_sp.	0.9223956167321657
+OTU_92	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Butyricicoccaceae; g__Butyricicoccus	0.9999923376451085
+OTU_93	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999999007642887
+OTU_94	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999998150592998
+OTU_95	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia; s__Ruminococcus_sp.	0.7763158926002154
+OTU_96	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999981968794539
+OTU_97	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Paludicola; s__uncultured_bacterium	0.9570808904326251
+OTU_98	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.7549067379977393
+OTU_99	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Catenibacillus; s__uncultured_bacterium	0.9809778493984028
+OTU_100	d__Bacteria; p__Firmicutes; c__Clostridia; o__Monoglobales; f__Monoglobaceae; g__Monoglobus	0.9999999406976695
+OTU_101	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__CAG-352; s__uncultured_bacterium	0.8384280812843078
+OTU_102	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium_sensu_stricto_1	0.9998480139960423
+OTU_103	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Marvinbryantia	0.8379340767970288
+OTU_104	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia; s__Blautia_sp.	0.9780873841726114
+OTU_105	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Colidextribacter	0.8970898845647752
+OTU_106	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Veillonellales-Selenomonadales; f__Veillonellaceae; g__Dialister	0.999711479679243
+OTU_107	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-010; s__uncultured_organism	0.9973114517439309
+OTU_108	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Phocea; s__uncultured_bacterium	0.8204129216192326
+OTU_109	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Ruminococcus]_torques_group; s__Ruminococcus_sp.	0.9662222531345672
+OTU_110	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Incertae_Sedis; s__uncultured_bacterium	0.9921616039425187
+OTU_111	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__GCA-900066575; s__uncultured_organism	0.9002740736352056
+OTU_112	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_FCS020_group; s__uncultured_Clostridium	0.9379363242228355
+OTU_113	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__uncultured; s__human_gut	0.838990188647172
+OTU_114	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Subdoligranulum	0.9994351421022628
+OTU_115	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999989285663653
+OTU_116	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999891548415557
+OTU_117	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__uncultured; s__uncultured_organism	0.7278873822640287
+OTU_118	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999996382950521
+OTU_119	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999666380430343
+OTU_120	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9962480896853135
+OTU_121	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Incertae_Sedis; s__uncultured_organism	0.9964354122844022
+OTU_122	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemanella; s__uncultured_bacterium	0.8270432417263558
+OTU_123	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Ruminococcus]_gnavus_group	0.9946475771574285
+OTU_124	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella; s__uncultured_bacterium	0.9266339052279704
+OTU_125	d__Bacteria; p__Firmicutes; c__Clostridia; o__Monoglobales; f__Monoglobaceae; g__Monoglobus	0.9993352843635279
+OTU_126	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Marinifilaceae; g__Odoribacter	0.9999999997781117
+OTU_127	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9999999989629039
+OTU_128	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Faecalitalea; s__uncultured_organism	0.7399134850993171
+OTU_129	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia; s__Blautia_hydrogenotrophica	0.989290401872572
+OTU_130	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Marinifilaceae; g__Butyricimonas	0.906281937919223
+OTU_131	d__Bacteria; p__Firmicutes; c__Bacilli; o__Lactobacillales; f__Streptococcaceae; g__Lactococcus; s__Lactococcus_lactis	0.7370599590865048
+OTU_132	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium_sensu_stricto_1	0.9892365531326294
+OTU_133	d__Bacteria; p__Firmicutes; c__Bacilli; o__Lactobacillales; f__Enterococcaceae; g__Enterococcus	0.9964297750110734
+OTU_134	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae; s__Cuneatibacter_caecimuris	0.9949820455372642
+OTU_135	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Roseburia	0.9836043588077222
+OTU_136	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__[Eubacterium]_nodatum_group	0.7867501267028323
+OTU_137	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Marvinbryantia	0.8953598640382995
+OTU_138	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae	0.9131724842579301
+OTU_139	d__Bacteria; p__Desulfobacterota; c__Desulfovibrionia; o__Desulfovibrionales; f__Desulfovibrionaceae; g__uncultured	0.999297243746725
+OTU_140	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae	0.9996887915220598
+OTU_141	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_NK4A136_group	0.9392006892181456
+OTU_142	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Ruminococcus]_gauvreauii_group	0.9937604009633723
+OTU_143	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter; s__human_gut	0.7919783342116226
+OTU_144	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_NK4B4_group; s__uncultured_bacterium	0.9994291414219647
+OTU_145	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Coprococcus	0.9640068870463068
+OTU_146	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Eubacterium]_ventriosum_group; s__uncultured_Lachnospiraceae	0.7678251166697402
+OTU_147	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__Alistipes_indistinctus	0.9912556837244751
+OTU_148	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Faecalibacterium	0.9993812137378031
+OTU_149	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Colidextribacter	0.712733577091412
+OTU_150	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-001	0.9739757005962819
+OTU_151	d__Bacteria; p__Firmicutes; c__Clostridia	0.9676980963976435
+OTU_152	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenellaceae_R-7_group; s__uncultured_marine	0.9999239687416469
+OTU_153	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia	0.9550028326128299
+OTU_154	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Eubacterium]_eligens_group	0.9999652665051777
+OTU_155	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae	0.9985288900908699
+OTU_156	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Peptostreptococcaceae; g__Romboutsia	0.9751550278462263
+OTU_157	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospira	0.9911462963400874
+OTU_158	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__uncultured; s__unidentified	0.8903437216247061
+OTU_159	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Epulopiscium; s__Lachnospiraceae_bacterium	0.9111700814167116
+OTU_160	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_NK4A136_group	0.9909242250546838
+OTU_161	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__uncultured; s__uncultured_organism	0.8429589254118605
+OTU_162	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Anaerofilum; s__uncultured_bacterium	0.8478160220442851
+OTU_163	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__GCA-900066575; s__uncultured_bacterium	0.9884587687503281
+OTU_164	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptococcales; f__Peptococcaceae; g__uncultured; s__unidentified	0.9990756192664952
+OTU_165	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Butyricicoccaceae; g__Butyricicoccus	0.700837255449928
+OTU_166	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9918016711464752
+OTU_167	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Defluviitaleaceae; g__Defluviitaleaceae_UCG-011; s__uncultured_bacterium	0.9999412757595868
+OTU_168	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Intestinimonas	0.9392462301391252
+OTU_169	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999863929057636
+OTU_170	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium_sensu_stricto_1; s__Clostridium_butyricum	0.9333716873547562
+OTU_171	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__UCG-002	0.9999636533749706
+OTU_172	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__Alistipes_shahii	0.8012205039225295
+OTU_173	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Incertae_Sedis	0.999704519619299
+OTU_174	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Peptostreptococcaceae; g__Paeniclostridium	0.854230697823462
+OTU_175	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999749943345754
+OTU_176	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.932893092231513
+OTU_177	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999991582742185
+OTU_178	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__Noviherbaspirillum	0.911973825886879
+OTU_179	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Butyricicoccaceae; g__Butyricicoccus	0.9918533741322022
+OTU_180	d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Bifidobacteriales; f__Bifidobacteriaceae; g__Bifidobacterium	0.9999997715776763
+OTU_181	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Intestinimonas	0.896009649584173
+OTU_182	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter	0.9327131543573264
+OTU_183	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9999855104248837
+OTU_184	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes	0.9999999999997328
+OTU_185	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae	0.9999944074338797
+OTU_186	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae	0.9999648521101349
+OTU_187	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lactonifactor; s__uncultured_bacterium	0.8204591329839988
+OTU_188	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__uncultured	0.9537904383989899
+OTU_189	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Peptostreptococcaceae; g__Clostridioides; s__Clostridioides_difficile	0.8243925655733214
+OTU_190	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Subdoligranulum	0.9996805005470113
+OTU_191	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999972686444615
+OTU_192	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__[Eubacterium]_nodatum_group	0.7346642130202746
+OTU_193	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pseudomonadales; f__Moraxellaceae; g__Acinetobacter	0.9966166084745972
+OTU_194	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Coprococcus; s__metagenome	0.888459828855375
+OTU_195	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenella; s__Christensenella_massiliensis	0.9990203269309755
+OTU_196	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999940743480848
+OTU_197	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Tuzzerella; s__uncultured_bacterium	0.8520238561199249
+OTU_198	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes	0.9999999999863118
+OTU_199	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Anaerostignum; s__uncultured_Firmicutes	0.8156869677776057
+OTU_200	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Paludicola; s__uncultured_Ruminococcus	0.8724352018414904
+OTU_201	d__Bacteria; p__Firmicutes; c__Clostridia	0.9438601288562356
+OTU_202	d__Bacteria; p__Actinobacteriota; c__Coriobacteriia; o__Coriobacteriales; f__Coriobacteriaceae; g__Collinsella	0.9999999990556355
+OTU_203	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella; s__Paraprevotella_clara	0.959953286780368
+OTU_204	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Dorea; s__uncultured_bacterium	0.7211202156347413
+OTU_205	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__[Eubacterium]_coprostanoligenes_group; g__[Eubacterium]_coprostanoligenes_group; s__gut_metagenome	0.9214388067100596
+OTU_206	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Intestinimonas; s__Intestinimonas_butyriciproducens	0.9287628507169623
+OTU_207	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__Family_XIII_UCG-001; s__uncultured_bacterium	0.9998046709183372
+OTU_208	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Ruminococcus]_torques_group	0.9965560802017079
+OTU_209	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__UCG-005	0.8959098683342633
+OTU_210	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pseudomonadales; f__Moraxellaceae; g__Acinetobacter	0.9999400083920332
+OTU_211	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.9825265959233798
+OTU_212	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Agathobacter; s__Eubacterium_ramulus	0.9773804133798133
+OTU_213	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridia_vadinBB60_group; f__Clostridia_vadinBB60_group; g__Clostridia_vadinBB60_group; s__gut_metagenome	0.8408910074937864
+OTU_214	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Flavonifractor; s__uncultured_bacterium	0.9445355312459837
+OTU_215	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9943414919083137
+OTU_216	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Incertae_Sedis	0.9999761008142471
+OTU_217	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__Family_XIII_AD3011_group	0.9736081770365068
+OTU_218	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_ND3007_group; s__metagenome	0.9435403933484794
+OTU_219	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Erysipelotrichaceae_UCG-003	0.9999944329126712
+OTU_220	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium_sensu_stricto_1; s__Clostridium_perfringens	0.9437568048207154
+OTU_221	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__CAG-56; s__uncultured_bacterium	0.8802481384581329
+OTU_222	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiaceae; g__Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	0.9801354230573706
+OTU_223	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9998966749931931
+OTU_224	d__Bacteria; p__Firmicutes; c__Bacilli; o__Lactobacillales; f__Streptococcaceae; g__Streptococcus; s__Streptococcus_salivarius	0.7506463098819793
+OTU_225	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Candidatus_Soleaferrea; s__Ruminococcaceae_bacterium	0.9999988889731019
+OTU_226	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Eubacterium]_xylanophilum_group	0.992058666590506
+OTU_227	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__uncultured	0.9450888857857906
+OTU_228	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.713891566181735
+OTU_229	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Peptostreptococcaceae; g__Romboutsia	0.768280755322078
+OTU_230	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenellaceae_R-7_group; s__uncultured_prokaryote	0.9169596550799717
+OTU_231	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999999999892629
+OTU_232	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Muribaculaceae; g__Muribaculaceae; s__uncultured_bacterium	0.8495987072271484
+OTU_233	d__Bacteria; p__Firmicutes; c__Bacilli; o__Lactobacillales; f__Lactobacillaceae; g__Lactobacillus	0.9999998066013113
+OTU_234	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999693179767576
+OTU_235	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridia_vadinBB60_group; f__Clostridia_vadinBB60_group; g__Clostridia_vadinBB60_group; s__gut_metagenome	0.9944993333527633
+OTU_236	d__Bacteria; p__Actinobacteriota; c__Coriobacteriia; o__Coriobacteriales; f__Eggerthellaceae; g__Adlercreutzia	0.7465082528700767
+OTU_237	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pseudomonadales; f__Moraxellaceae; g__Acinetobacter	0.9999999644867014
+OTU_238	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Aquabacterium	0.9781732896399076
+OTU_239	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae	0.9999351149254787
+OTU_240	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9999891033670616
+OTU_241	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__Alistipes_sp.	0.9442955199640629
+OTU_242	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Ruminococcus]_torques_group; s__Ruminococcus_lactaris	0.9269156072240482
+OTU_243	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999699713550453
+OTU_244	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Angelakisella; s__Ruminococcus_sp.	0.967272653054005
+OTU_245	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-010; s__uncultured_bacterium	0.9993346978678568
+OTU_246	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenella; s__Christensenella_minuta	0.9934494903125731
+OTU_247	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Erysipelatoclostridium; s__[Clostridium]_spiroforme	0.9585316514782678
+OTU_248	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Turicibacter	0.9999912962086409
+OTU_249	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Anaerostipes	0.9999991400655907
+OTU_250	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae	0.9999984312939456
+OTU_251	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium; s__human_gut	0.9643491403374935
+OTU_252	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium_sensu_stricto_1	0.9997252881793216
+OTU_253	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Anaerotruncus; s__uncultured_organism	0.9171306824341345
+OTU_254	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__Massilia	0.9999020992357551
+OTU_255	d__Bacteria; p__Actinobacteriota; c__Coriobacteriia; o__Coriobacteriales; f__Eggerthellaceae; g__Eggerthella; s__uncultured_bacterium	0.838221641052119
+OTU_256	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999970563956977
+OTU_257	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Dubosiella; s__Dubosiella_newyorkensis	0.9999999983133563
+OTU_258	d__Bacteria; p__Firmicutes; c__Bacilli; o__Lactobacillales; f__Lactobacillaceae; g__Lactobacillus	0.9999999931478804
+OTU_259	d__Bacteria; p__Firmicutes; c__Clostridia; o__Eubacteriales; f__Anaerofustaceae; g__Anaerofustis; s__Anaerofustis_stercorihominis	0.8101701803923138
+OTU_260	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__[Eubacterium]_nodatum_group; s__uncultured_organism	0.7235732003237686
+OTU_261	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.9302218899984012
+OTU_262	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__[Eubacterium]_brachy_group; s__uncultured_bacterium	0.9991464638104103
+OTU_263	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__UCG-005	0.9201954207549132
+OTU_264	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Epulopiscium; s__uncultured_organism	0.8110195246152047
+OTU_265	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenellaceae_R-7_group; s__human_gut	0.9987644080700901
+OTU_266	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__Massilia	0.998120820952163
+OTU_267	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium_sensu_stricto_1	0.9991532004239729
+OTU_268	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Muribaculaceae; g__Muribaculaceae; s__uncultured_bacterium	0.8113446227746441
+OTU_269	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pseudomonadales; f__Moraxellaceae; g__Acinetobacter	0.9999998979642704
+OTU_270	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Muribaculaceae; g__Muribaculaceae; s__uncultured_bacterium	0.9971212708557559
+OTU_271	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9785982398688541
+OTU_272	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Ruminococcus]_torques_group	0.9688153309386109
+OTU_273	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9990888796621727
+OTU_274	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Aquabacterium	0.7317797583697798
+OTU_275	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__UCG-002; s__uncultured_organism	0.9053893107713078
+OTU_276	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-008; s__uncultured_organism	0.950428854287412
+OTU_277	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae	0.9998076452051673
+OTU_278	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__UCG-005; s__uncultured_organism	0.9894930878609675
+OTU_279	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Dorea; s__uncultured_Dorea	0.8599587331092319
+OTU_280	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__[Eubacterium]_coprostanoligenes_group; g__[Eubacterium]_coprostanoligenes_group	0.9999726507585545
+OTU_281	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Alteromonadales; f__Alteromonadaceae; g__Rheinheimera	0.9999972668260357
+OTU_282	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Muribaculaceae; g__Muribaculaceae; s__uncultured_bacterium	0.8839921378361411
+OTU_283	d__Bacteria; p__Actinobacteriota; c__Coriobacteriia; o__Coriobacteriales; f__uncultured; g__uncultured; s__uncultured_bacterium	0.9999912815300496
+OTU_284	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999794299460658
+OTU_285	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.8811619255878882
+OTU_286	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__[Eubacterium]_brachy_group; s__uncultured_bacterium	0.9999927198437434
+OTU_287	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Aquabacterium	0.9065490650028776
+OTU_288	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__Noviherbaspirillum	0.7010238714512188
+OTU_289	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides; s__uncultured_bacterium	0.8728186652276538
+OTU_290	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pasteurellales; f__Pasteurellaceae; g__Haemophilus	0.9095171645207962
+OTU_291	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__uncultured; s__uncultured_bacterium	0.9354232858678923
+OTU_292	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__uncultured; s__metagenome	0.9805276703613393
+OTU_293	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Incertae_Sedis; s__[Clostridium]_leptum	0.9757528571632906
+OTU_294	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999752476477437
+OTU_295	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pseudomonadales; f__Moraxellaceae; g__Enhydrobacter	0.9854537443892918
+OTU_296	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia	0.924509170574835
+OTU_297	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__UCG-005; s__gut_metagenome	0.880000631184761
+OTU_298	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.9686960168596843
+OTU_299	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospira	0.9956281516490146
+OTU_300	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__uncultured; g__uncultured; s__metagenome	0.9987464584645438
+OTU_301	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__Alistipes_obesi	0.9979638239563784
+OTU_302	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiaceae; g__Aureimonas	0.7873214683015387
+OTU_303	d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Propionibacteriales; f__Nocardioidaceae; g__Nocardioides	0.9999988138625
+OTU_304	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Morganellaceae; g__Proteus	0.97645527467047
+OTU_305	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Prevotella; s__Prevotella_melaninogenica	0.9988268647812056
+OTU_306	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemania; s__uncultured_bacterium	0.8798427040120865
+OTU_307	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.999984547276225
+OTU_308	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Eubacterium]_hallii_group	0.9999999105019817
+OTU_309	d__Bacteria; p__Actinobacteriota; c__Coriobacteriia; o__Coriobacteriales; f__Eggerthellaceae; g__Parvibacter; s__uncultured_bacterium	0.959061336382284
+OTU_310	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospira	0.9996972945494694
+OTU_311	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pseudomonadales; f__Pseudomonadaceae; g__Pseudomonas	0.9981837642033644
+OTU_312	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae; g__PMMR1; s__uncultured_bacterium	0.9067073012949316
+OTU_313	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__[Eubacterium]_nodatum_group	0.846039754777211
+OTU_314	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_FCS020_group; s__uncultured_organism	0.9966042624391636
+OTU_315	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_NK4A136_group; s__metagenome	0.9617300813277274
+OTU_316	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pseudomonadales; f__Pseudomonadaceae; g__Pseudomonas	0.9999940178377857
+OTU_317	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Azospirillales; f__Azospirillaceae; g__Azospirillum	0.9999973028425206
+OTU_318	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Papillibacter; s__uncultured_bacterium	0.9993338258207771
+OTU_319	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__uncultured; s__uncultured_Eubacterium	0.9979705490584452
+OTU_320	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__Alistipes_sp.	0.9968350269087756
+OTU_321	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__uncultured; s__uncultured_bacterium	0.9964396484015929
+OTU_322	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae; g__Brevundimonas	0.9999808698991978
+OTU_323	d__Bacteria; p__Actinobacteriota; c__Coriobacteriia; o__Coriobacteriales; f__Coriobacteriaceae; g__Collinsella	0.9999999974347342
+OTU_324	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Incertae_Sedis	0.9507613645045971
+OTU_325	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Harryflintia	0.9677163604960979
+OTU_326	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__DTU089	0.7772920786913959
+OTU_327	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Pleomorphomonadaceae; g__Chthonobacter	0.997591689414521
+OTU_328	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae	0.9999999711518136
+OTU_329	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridia_vadinBB60_group; f__Clostridia_vadinBB60_group; g__Clostridia_vadinBB60_group; s__uncultured_bacterium	0.9913137202863621
+OTU_330	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Eubacterium]_ventriosum_group	0.9998029775234407
+OTU_331	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Paludicola; s__uncultured_bacterium	0.8259723417781942
+OTU_332	d__Bacteria; p__Firmicutes; c__Bacilli; o__RF39; f__RF39; g__RF39; s__gut_metagenome	0.9966683424866797
+OTU_333	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__UCG-003	0.9993814137324252
+OTU_334	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-001; s__Lachnospiraceae_bacterium	0.9527759802103775
+OTU_335	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__Sediminibacterium	0.9972032718475561
+OTU_336	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Papillibacter; s__uncultured_bacterium	0.9859053827126196
+OTU_337	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.8878586052689551
+OTU_338	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium_sensu_stricto_13; s__Clostridium_sp.	0.8951359233858193
+OTU_339	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae	0.9999992036914069
+OTU_340	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhodospirillales; f__Rhodospirillaceae; g__Novispirillum; s__Novispirillum_itersonii	0.7447103904379889
+OTU_341	d__Bacteria; p__Fusobacteriota; c__Fusobacteriia; o__Fusobacteriales; f__Fusobacteriaceae; g__Fusobacterium	0.999995970353492
+OTU_342	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Azospirillales; f__Azospirillaceae; g__Azospirillaceae; s__Rhodocista_sp.	0.9979636263774208
+OTU_343	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes	0.9984901925128655
+OTU_344	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Muribaculaceae; g__Muribaculaceae; s__uncultured_bacterium	0.9804252824671309
+OTU_345	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__UCG-005	0.9999331609903858
+OTU_346	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pseudomonadales; f__Moraxellaceae; g__Acinetobacter	0.9999973835430215
+OTU_347	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Peptostreptococcaceae; g__Romboutsia	0.9962570501042117
+OTU_348	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae; g__Brevundimonas	0.9998536895473192
+OTU_349	d__Bacteria; p__Firmicutes; c__Bacilli; o__Izemoplasmatales; f__Izemoplasmatales; g__Izemoplasmatales; s__uncultured_organism	0.9999620493379477
+OTU_350	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiaceae; g__Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	0.9816346167322492
+OTU_351	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__[Eubacterium]_coprostanoligenes_group; g__[Eubacterium]_coprostanoligenes_group; s__uncultured_organism	0.8880999358029561
+OTU_352	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridia_vadinBB60_group; f__Clostridia_vadinBB60_group; g__Clostridia_vadinBB60_group; s__uncultured_bacterium	0.980683192706901
+OTU_353	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenellaceae_R-7_group	0.9938213449161115
+OTU_354	d__Bacteria; p__Firmicutes; c__Bacilli; o__RF39; f__RF39; g__RF39	0.999999999797521
+OTU_355	d__Bacteria; p__Verrucomicrobiota; c__Lentisphaeria; o__Victivallales; f__Victivallaceae; g__Victivallis; s__uncultured_bacterium	0.7688497395818108
+OTU_356	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes	0.9999955429052753
+OTU_357	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Muribaculaceae; g__Muribaculaceae	0.9997601453110141
+OTU_358	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999996641860155
+OTU_359	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Paludicola; s__Ruminococcaceae_bacterium	0.9973406989829976
+OTU_360	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenellaceae_R-7_group; s__uncultured_marine	0.9999290013537213
+OTU_361	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridia_UCG-014; f__Clostridia_UCG-014; g__Clostridia_UCG-014	0.9999999977567638
+OTU_362	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.8711854390696164
+OTU_363	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae	0.9999978544763729
+OTU_364	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia-Shigella	0.9072739001986834
+OTU_365	d__Bacteria; p__Firmicutes; c__Bacilli; o__Lactobacillales; f__Lactobacillaceae; g__Lactobacillus	0.9999044595425434
+OTU_366	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Beijerinckiaceae	0.9999999844232131
+OTU_367	d__Bacteria; p__Firmicutes; c__Bacilli; o__Bacillales; f__Bacillaceae	0.9833903781936358
+OTU_368	d__Bacteria; p__Firmicutes; c__Clostridia	0.995946032284399
+OTU_369	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae; g__Lysobacter; s__Xanthomonadaceae_bacterium	0.8200939826558293
+OTU_370	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__GCA-900066575	0.7862246758073562
+OTU_371	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Candidatus_Stoquefichus	0.9989935383772695
+OTU_372	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenellaceae_R-7_group; s__uncultured_soil	0.9998969306241846
+OTU_373	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999999999464976
+OTU_374	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.8245217823129324
+OTU_375	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides; s__metagenome	0.9141446067147778
+OTU_376	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.882574515872123
+OTU_377	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Devosiaceae; g__Devosia	0.929525544777075
+OTU_378	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Veillonellales-Selenomonadales; f__Selenomonadaceae; g__Megamonas	0.9999710639915239
+OTU_379	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.9013618782121725
+OTU_380	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae; g__Paracoccus	0.9610480126796896
+OTU_381	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__Noviherbaspirillum	0.973265317269078
+OTU_382	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Micavibrionales; f__uncultured; g__uncultured; s__uncultured_gamma	0.9707264605732099
+OTU_383	d__Bacteria; p__Firmicutes; c__Negativicutes	0.7800700693561816
+OTU_384	d__Bacteria; p__Firmicutes; c__Bacilli; o__Thermicanales; f__Thermicanaceae; g__Thermicanus; s__uncultured_bacterium	0.9114094772833716
+OTU_385	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Tyzzerella; s__unidentified	0.9965440607599753
+OTU_386	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Stappiaceae; g__Pannonibacter; s__Pannonibacter_phragmitetus	0.7168228052758849
+OTU_387	d__Bacteria; p__Bdellovibrionota; c__Bdellovibrionia; o__Bacteriovoracales; f__Bacteriovoracaceae; g__Peredibacter	0.9999997633592959
+OTU_388	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae	0.9999851695177009
+OTU_389	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Colidextribacter; s__uncultured_bacterium	0.7549228664917316
+OTU_390	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__NK4A214_group; s__uncultured_organism	0.9798218640285338
+OTU_391	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Muribaculaceae; g__Muribaculaceae; s__uncultured_bacterium	0.9805135878873649
+OTU_392	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Muribaculaceae; g__Muribaculaceae	0.9941002651015616
+OTU_393	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999748662106125
+OTU_394	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.7682501084023109
+OTU_395	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999974293822599
+OTU_396	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__[Eubacterium]_brachy_group; s__uncultured_Eubacteriaceae	0.9995417023872921
+OTU_397	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae; g__Phenylobacterium; s__Phenylobacterium_hankyongense	0.8229725680121526
+OTU_398	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.9777444779764326
+OTU_399	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Hydrogenophaga	0.9444852400059864
+OTU_400	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae	0.9999982050956527
+OTU_401	d__Bacteria; p__Firmicutes; c__Bacilli; o__Bacillales; f__Bacillaceae; g__Bacillus	0.8981724977942852
+OTU_402	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-008; s__uncultured_organism	0.7997972538119724
+OTU_403	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Roseburia; s__gut_metagenome	0.9886868109600268
+OTU_404	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenellaceae_R-7_group	0.9778177081790915
+OTU_405	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__Family_XIII_AD3011_group; s__uncultured_bacterium	0.9600152563137282
+OTU_406	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter	0.8256574820753562
+OTU_407	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Hydrogenophilaceae; g__Tepidiphilus; s__uncultured_bacterium	0.9740401761110381
+OTU_408	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae	0.9910660752194096
+OTU_409	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.871463313834406
+OTU_410	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Prevotella	0.9999987371885877
+OTU_411	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Erysipelatoclostridium	0.8983937689399965
+OTU_412	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999513379513534
+OTU_413	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae; g__Brevundimonas	0.9998782486057823
+OTU_414	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridia_vadinBB60_group; f__Clostridia_vadinBB60_group; g__Clostridia_vadinBB60_group; s__uncultured_bacterium	0.99663890420632
+OTU_415	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_NK4A136_group	0.8039632587272729
+OTU_416	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9986914959966083
+OTU_417	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenellaceae_R-7_group	0.9800376079567555
+OTU_418	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.9708624890620059
+OTU_419	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Burkholderiaceae; g__Limnobacter	0.9996435742617242
+OTU_420	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004	0.7246941283559346
+OTU_421	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae; g__Rubellimicrobium; s__uncultured_Rubellimicrobium	0.7068216323863483
+OTU_422	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999805260194689
+OTU_423	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999998947776656
+OTU_424	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999111921369838
+OTU_425	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.8228449086998784
+OTU_426	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__Family_XIII_AD3011_group; s__uncultured_organism	0.96340653623179
+OTU_427	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999715616654
+OTU_428	d__Bacteria; p__Desulfobacterota; c__Desulfovibrionia; o__Desulfovibrionales; f__Desulfovibrionaceae; g__Bilophila; s__bacterium_NLAE-zl-H528	0.7071427864322593
+OTU_429	d__Bacteria; p__Cyanobacteria; c__Cyanobacteriia; o__Chloroplast; f__Chloroplast; g__Chloroplast	0.999999999999964
+OTU_430	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium_sensu_stricto_1	0.9996073764182788
+OTU_431	d__Bacteria; p__Firmicutes	0.9422903056159673
+OTU_432	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9999898766909792
+OTU_433	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Coprobacillus	0.9525925630325833
+OTU_434	d__Bacteria; p__Firmicutes; c__Bacilli; o__Brevibacillales; f__Brevibacillaceae; g__Brevibacillus; s__uncultured_bacterium	0.8449784028636705
+OTU_435	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Marinifilaceae	0.9492461688757072
+OTU_436	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.9728249313187515
+OTU_437	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999926178800607
+OTU_438	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Peptostreptococcaceae; g__Intestinibacter	0.9883610797331415
+OTU_439	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__uncultured; s__bacterium_enrichment	0.9384850436783813
+OTU_440	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Angelakisella; s__uncultured_bacterium	0.8946001371015225
+OTU_441	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999999808050953
+OTU_442	d__Bacteria; p__Cyanobacteria; c__Cyanobacteriia; o__Chloroplast; f__Chloroplast; g__Chloroplast	1.0000000000000024
+OTU_443	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_organism	0.8780615690990451
+OTU_444	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Marinifilaceae; g__Butyricimonas; s__Butyricimonas_paravirosa	0.8212108067956719
+OTU_445	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.7464994761593982
+OTU_446	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Barnesiella	0.9824450032620368
+OTU_447	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Flavonifractor	0.9938170363063619
+OTU_448	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pseudomonadales; f__Pseudomonadaceae; g__Pseudomonas	0.8595055411198315
+OTU_449	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.7607013378129706
+OTU_450	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999971797517907
+OTU_451	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999999992635616
+OTU_452	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Intestinimonas; s__Intestinimonas_butyriciproducens	0.9539101726609468
+OTU_453	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Flavobacteriales; f__Weeksellaceae; g__Chryseobacterium	0.9999294066004101
+OTU_454	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.998011269142416
+OTU_455	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.9909476095587411
+OTU_456	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter	0.7103791448400643
+OTU_457	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhodospirillales; f__uncultured; g__uncultured; s__gut_metagenome	0.9999921098596671
+OTU_458	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_NK4A136_group	0.754040601667405
+OTU_459	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9456034309798552
+OTU_460	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Hungatella	0.822028747244389
+OTU_461	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes	0.9999999998282487
+OTU_462	d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Frankiales; f__Geodermatophilaceae; g__Blastococcus	0.9997225616642985
+OTU_463	d__Bacteria; p__Bdellovibrionota; c__Bdellovibrionia; o__Bdellovibrionales; f__Bdellovibrionaceae; g__Bdellovibrio	0.9999999999999962
+OTU_464	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999884260691836
+OTU_465	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.8460331312857263
+OTU_466	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Barnesiella; s__gut_metagenome	0.7415634983874281
+OTU_467	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__Novosphingobium	0.9959631276401026
+OTU_468	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.8297932976512437
+OTU_469	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella	0.9970017081145625
+OTU_470	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Marinifilaceae; g__Butyricimonas; s__Butyricimonas_paravirosa	0.7398702624914263
+OTU_471	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae	0.7603562165151262
+OTU_472	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Marinifilaceae; g__Butyricimonas; s__Butyricimonas_paravirosa	0.7907499861000197
+OTU_473	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Sutterella	0.9999985110268815
+OTU_474	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999804752729538
+OTU_475	d__Bacteria	0.9999999999997853
+OTU_476	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Sutterella	0.9999973550840444
+OTU_477	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Faecalibacterium	0.9871431385020728
+OTU_478	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Prevotella	0.9999996081105976
+OTU_479	d__Bacteria; p__Firmicutes; c__Bacilli; o__Bacillales; f__Bacillaceae; g__Bacillus; s__Bacillus_thermoamylovorans	0.9898888918671278
+OTU_480	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__uncultured	0.8337508167800342
+OTU_481	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptococcales; f__Peptococcaceae; g__uncultured; s__uncultured_bacterium	0.7419583396761238
+OTU_482	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillospira; s__uncultured_bacterium	0.8418943069879539
+OTU_483	d__Bacteria; p__Firmicutes; c__Clostridia	0.9999997371686024
+OTU_484	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Flavonifractor; s__uncultured_bacterium	0.964875531893802
+OTU_485	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Prevotellaceae_UCG-001; s__uncultured_Bacteroidales	0.9375023199067994
+OTU_486	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.7995041567018624
+OTU_487	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999956894283253
+OTU_488	d__Bacteria	0.9999999999980899
+OTU_489	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Prevotella; s__Prevotella_colorans	0.9999668222153644
+OTU_490	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae	0.992200452270512
+OTU_491	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9998112881796276
+OTU_492	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9906195893293314
+OTU_493	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales	0.8021956123271874
+OTU_494	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__[Clostridium]_innocuum_group	0.9999972675912474
+OTU_495	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenellaceae_R-7_group; s__Christensenella_sp.	0.999999999999531
+OTU_496	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999998505011873
+OTU_497	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae	0.9451414360621823
+OTU_498	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemania	0.999971100803873
+OTU_499	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.7288587471701736
+OTU_500	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Devosiaceae; g__Devosia	0.8156633461960419
+OTU_501	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Paracaedibacterales; f__Paracaedibacteraceae; g__Candidatus_Paracaedibacter; s__endosymbiont_of	0.9793404384392947
+OTU_502	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9975061724833162
+OTU_503	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999417266684
+OTU_504	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Erysipelatoclostridium	0.9999312735364227
+OTU_505	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9998703840972684
+OTU_506	d__Bacteria; p__Desulfobacterota; c__Desulfovibrionia; o__Desulfovibrionales; f__Desulfovibrionaceae; g__Bilophila; s__bacterium_NLAE-zl-H528	0.7568706633333194
+OTU_507	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.9257170770333717
+OTU_508	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9998913526035372
+OTU_509	d__Bacteria	0.9999999999990693
+OTU_510	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.999998696080439
+OTU_511	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9991616584873556
+OTU_512	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Hungatella	0.8224125910089818
+OTU_513	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9980365933751308
+OTU_514	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9957415964033853
+OTU_515	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999736140678994
+OTU_516	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__Sphingoaurantiacus	0.9999915030749547
+OTU_517	d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Frankiales; f__Geodermatophilaceae; g__Blastococcus	0.9985786103783375
+OTU_518	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pasteurellales; f__Pasteurellaceae; g__Aggregatibacter; s__uncultured_bacterium	0.8322681065074125
+OTU_519	d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Corynebacteriales; f__Corynebacteriaceae; g__Lawsonella; s__uncultured_bacterium	0.930449396171323
+OTU_520	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Beijerinckiaceae; g__uncultured; s__uncultured_bacterium	0.8759195287177217
+OTU_521	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia	0.9995269237049091
+OTU_522	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__Akkermansia_muciniphila	0.7546620403542272
+OTU_523	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Incertae_Sedis	0.9999960424088067
+OTU_524	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.9555772272806453
+OTU_525	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999164929438308
+OTU_526	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999999967810744
+OTU_527	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Sutterella	0.9999986412180879
+OTU_528	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999994591712281
+OTU_529	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__UBA1819; s__Ruthenibacterium_lactatiformans	0.8128739764652013
+OTU_530	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.999950108066398
+OTU_531	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999618155557137
+OTU_532	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.9284110493125413
+OTU_533	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Beijerinckiaceae; g__Bosea	0.9999961246001999
+OTU_534	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Devosiaceae; g__Devosia	0.9869930736061776
+OTU_535	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Spirosomaceae; g__Rhabdobacter; s__uncultured_bacterium	0.9451841450044763
+OTU_536	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9979276302405095
+OTU_537	d__Bacteria; p__Firmicutes; c__Clostridia; o__Monoglobales; f__Monoglobaceae; g__Monoglobus; s__uncultured_bacterium	0.9257473619465364
+OTU_538	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9972996560050846
+OTU_539	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__uncultured_bacterium	0.9981967907729474
+OTU_540	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__Alistipes_sp.	0.9619480581786631
+OTU_541	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.9699749683938685
+OTU_542	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__Family_XIII_UCG-001; s__uncultured_bacterium	0.9996140095382194
+OTU_543	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999783449174046
+OTU_544	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.7592957866230122
+OTU_545	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Coprobacillus	0.8843365023683765
+OTU_546	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9781006197301304
+OTU_547	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9996330521467348
+OTU_548	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9998834253631578
+OTU_549	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.999856180548921
+OTU_550	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9940121069134839
+OTU_551	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptococcales; f__Peptococcaceae; g__uncultured; s__unidentified	0.9728144192174877
+OTU_552	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9949107818237173
+OTU_553	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9982276787593856
+OTU_554	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Barnesiella; s__uncultured_bacterium	0.8472832988552179
+OTU_555	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9997961362441455
+OTU_556	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptococcales; f__Peptococcaceae; g__uncultured; s__uncultured_bacterium	0.746751145810301
+OTU_557	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter; s__human_gut	0.8599338631945092
+OTU_558	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae; g__Stenotrophomonas; s__uncultured_organism	0.7445741819573126
+OTU_559	d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__Caldilineales; f__Caldilineaceae; g__uncultured; s__uncultured_bacterium	0.7760101200355712
+OTU_560	d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__SBR1031; f__A4b; g__OLB13; s__Chloroflexi_bacterium	0.8325060293898707
+OTU_561	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Veillonellales-Selenomonadales; f__Veillonellaceae; g__Dialister	0.9995213277321802
+OTU_562	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9998153448463131
+OTU_563	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9947177608272875
+OTU_564	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999972586586162
+OTU_565	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Marinifilaceae	0.9609458270871335
+OTU_566	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.992511880651053
+OTU_567	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999994884956369
+OTU_568	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9999057681698318
+OTU_569	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae	0.9999998992827842
+OTU_570	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__[Eubacterium]_nodatum_group	0.9281058668486022
+OTU_571	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae	0.9430527844909945
+OTU_572	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9784093085732541
+OTU_573	d__Bacteria; p__Firmicutes; c__Clostridia; o__Eubacteriales; f__Anaerofustaceae; g__Anaerofustis	0.9999919201542391
+OTU_574	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella; s__Paraprevotella_clara	0.8758287445455899
+OTU_575	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Coprobacillus; s__Coprobacillus_cateniformis	0.7158370465935722
+OTU_576	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9998748017525797
+OTU_577	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Erysipelatoclostridium	0.9999992813944105
+OTU_578	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9590081043994876
+OTU_579	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999997864389661
+OTU_580	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_organism	0.824750481051645
+OTU_581	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Sellimonas; s__Sellimonas_intestinalis	0.9665110725192295
+OTU_582	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia-Shigella	0.9227086661393099
+OTU_583	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9967042788996487
+OTU_584	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9939767800499134
+OTU_585	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.999614098533358
+OTU_586	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999950835318
+OTU_587	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia; s__Blautia_caecimuris	0.9868311648894662
+OTU_588	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Coprobacillus; s__Coprobacillus_cateniformis	0.7408417156242723
+OTU_589	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__uncultured_bacterium	0.8386184394705157
+OTU_590	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9999996431828813
+OTU_591	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes	0.9999999899483742
+OTU_592	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9816049314085455
+OTU_593	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.8795231522400585
+OTU_594	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.9283025332016958
+OTU_595	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Sutterella	0.9999963504181543
+OTU_596	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Hungatella	0.9956662710558467
+OTU_597	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999987889092788
+OTU_598	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.9901761122479145
+OTU_599	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae	0.9999125242391694
+OTU_600	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Flavonifractor	0.9471720075151101
+OTU_601	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.7159072319123346
+OTU_602	d__Bacteria; p__Deinococcota; c__Deinococci; o__Deinococcales; f__Deinococcaceae; g__Deinococcus; s__uncultured_Deinococcus	0.7894349754616808
+OTU_603	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Eisenbergiella	0.9958048492396107
+OTU_604	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999999992815338
+OTU_605	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9986891068745164
+OTU_606	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.9602648817562461
+OTU_607	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__[Clostridium]_innocuum_group	0.999784078468684
+OTU_608	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Candidatus_Stoquefichus; s__Longibaculum_muris	0.7292712499461605
+OTU_609	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridia_vadinBB60_group; f__Clostridia_vadinBB60_group; g__Clostridia_vadinBB60_group; s__uncultured_organism	0.9992282297482049
+OTU_610	d__Bacteria; p__Firmicutes; c__Incertae_Sedis; o__DTU014; f__DTU014; g__DTU014; s__unidentified	0.9999999981897076
+OTU_611	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9920900623418315
+OTU_612	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Muribaculaceae; g__Muribaculaceae; s__uncultured_bacterium	0.9968950895996921
+OTU_613	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_FCS020_group; s__uncultured_Clostridium	0.9952885084124491
+OTU_614	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides; s__uncultured_bacterium	0.7030999650966039
+OTU_615	d__Bacteria; p__Firmicutes; c__Bacilli; o__Lactobacillales; f__Streptococcaceae; g__Streptococcus; s__Streptococcus_pyogenes	0.9752834420303116
+OTU_616	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.99992648084335
+OTU_617	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__Akkermansia_muciniphila	0.7873351411652617
+OTU_618	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999473000462
+OTU_619	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Hungatella	0.9944418536885574
+OTU_620	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999793415255
+OTU_621	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Candidatus_Stoquefichus; s__Longibaculum_muris	0.8957725889875023
+OTU_622	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999994709356885
+OTU_623	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999996032247043
+OTU_624	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__Cnuella	0.9999785592470213
+OTU_625	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia-Shigella	0.9203357993579617
+OTU_626	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia-Shigella	0.9354965436976569
+OTU_627	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999880691519103
+OTU_628	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.9395651415289036
+OTU_629	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__[Eubacterium]_siraeum_group	0.9961852608503766
+OTU_630	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999983160870316
+OTU_631	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999985225177065
+OTU_632	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Turicibacter; s__Turicibacter_sp.	0.8005567863112467
+OTU_633	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Marinifilaceae; g__Butyricimonas	0.7925721786379536
+OTU_634	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.7824633377980308
+OTU_635	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9995440614709894
+OTU_636	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae	0.9678544488952746
+OTU_637	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9780329561129388
+OTU_638	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Coprobacter	0.9999923823358449
+OTU_639	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae	0.9999339994090244
+OTU_640	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Eubacterium]_oxidoreducens_group; s__uncultured_bacterium	0.8758108005542469
+OTU_641	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemania	0.9997750744735778
+OTU_642	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9408363499703893
+OTU_643	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9999856707908291
+OTU_644	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Coprobacillus	0.876727730990689
+OTU_645	d__Bacteria; p__Actinobacteriota; c__Coriobacteriia; o__Coriobacteriales; f__Coriobacteriales_Incertae_Sedis; g__uncultured; s__gut_metagenome	0.8893213170289496
+OTU_646	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9999903078747244
+OTU_647	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Colidextribacter; s__uncultured_Flavonifractor	0.8953711784921389
+OTU_648	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9998338943784124
+OTU_649	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Eubacterium]_oxidoreducens_group; s__uncultured_bacterium	0.762323290308204
+OTU_650	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.8321126507724814
+OTU_651	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.999518491354947
+OTU_652	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__UCG-010; g__UCG-010; s__uncultured_organism	0.9987627118573927
+OTU_653	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Subdoligranulum	0.9976519754072212
+OTU_654	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999972028413571
+OTU_655	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter; s__gut_metagenome	0.8144249484346513
+OTU_656	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9999787738804078
+OTU_657	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.994852209327769
+OTU_658	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9995793126245801
+OTU_659	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9992962888869313
+OTU_660	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9986298529754551
+OTU_661	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9977936061563509
+OTU_662	d__Bacteria; p__Cyanobacteria; c__Vampirivibrionia; o__Gastranaerophilales; f__Gastranaerophilales; g__Gastranaerophilales; s__Acinetobacter_sp.	0.8863329894428439
+OTU_663	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.8375705355133155
+OTU_664	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Intestinimonas; s__Intestinimonas_sp.	0.7073108678242647
+OTU_665	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Marinifilaceae	0.9990459365919007
+OTU_666	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9762909926731165
+OTU_667	d__Bacteria	0.999999999800986
+OTU_668	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella; s__Paraprevotella_clara	0.8674678367498279
+OTU_669	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__uncultured_bacterium	0.9811770505238286
+OTU_670	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.9987915096597855
+OTU_671	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9976629716278508
+OTU_672	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemania; s__Holdemania_massiliensis	0.9424747210250297
+OTU_673	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9999902138031392
+OTU_674	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9963000451443043
+OTU_675	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9999818963226355
+OTU_676	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella	0.9998052008082364
+OTU_677	d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Streptosporangiales; f__Nocardiopsaceae; g__Nocardiopsis	0.9999936731356638
+OTU_678	d__Bacteria; p__Desulfobacterota; c__Desulfovibrionia; o__Desulfovibrionales; f__Desulfovibrionaceae; g__Bilophila; s__bacterium_NLAE-zl-H528	0.7441324639797624
+OTU_679	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.9955952980579826
+OTU_680	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9999877147210425
+OTU_681	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9960168146909674
+OTU_682	d__Bacteria; p__Cyanobacteria; c__Vampirivibrionia; o__Gastranaerophilales; f__Gastranaerophilales; g__Gastranaerophilales; s__Acinetobacter_sp.	0.9675781077321912
+OTU_683	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.8798396483488824
+OTU_684	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides; s__uncultured_bacterium	0.7562392798646119
+OTU_685	d__Bacteria; p__Desulfobacterota; c__Desulfovibrionia; o__Desulfovibrionales; f__Desulfovibrionaceae; g__Bilophila	0.9999986589576322
+OTU_686	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella	0.9999996420826984
+OTU_687	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemania; s__Holdemania_filiformis	0.8467901969687517
+OTU_688	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.8708804999798296
+OTU_689	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenellaceae; s__Christensenella_sp.	0.7781455106600006
+OTU_690	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Coprobacillus	0.7993104346985008
+OTU_691	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.9769765107384868
+OTU_692	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia-Shigella	0.9032330557032996
+OTU_693	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__Sphingobium	0.9661621440340474
+OTU_694	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Coprobacter; s__Coprobacter_secundus	0.9998093782424159
+OTU_695	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Incertae_Sedis	0.7723740184356664
+OTU_696	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Subdoligranulum; s__metagenome	0.8157464741891314
+OTU_697	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Marinifilaceae	0.9999994411148826
+OTU_698	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter	0.9835360619827002
+OTU_699	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae	0.9886477340805069
+OTU_700	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.9953105316019906
+OTU_701	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.7338320466560685
+OTU_702	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides; s__uncultured_bacterium	0.7324010566356768
+OTU_703	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes	0.9274564733388609
+OTU_704	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9994091488607536
+OTU_705	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999806579194754
+OTU_706	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.9775133028520723
+OTU_707	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9804569085508986
+OTU_708	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides; s__Bacteroides_sp.	0.7124933430361453
+OTU_709	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9920230625661176
+OTU_710	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Peptostreptococcaceae; g__Paeniclostridium	0.7523616602312808
+OTU_711	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides; s__Bacteroides_caccae	0.9343861043288879
+OTU_712	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_organism	0.8348349542382179
+OTU_713	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella; s__Paraprevotella_clara	0.8683284534774988
+OTU_714	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.886730505557788
+OTU_715	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.98475921034068
+OTU_716	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales	0.970433939564225
+OTU_717	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter; s__gut_metagenome	0.9893673149961698
+OTU_718	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia-Shigella	0.969884523168451
+OTU_719	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9960662110181195
+OTU_720	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Coprobacter	0.9979792145860615
+OTU_721	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999039946924838
+OTU_722	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.923624769497527
+OTU_723	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Hungatella	0.8369744313084868
+OTU_724	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.999706622720214
+OTU_725	d__Bacteria	0.9999999999958201
+OTU_726	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales	0.9956478327262746
+OTU_727	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.8302975014486815
+OTU_728	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides; s__Parabacteroides_merdae	0.8301487176734257
+OTU_729	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__UBA1819; s__Ruthenibacterium_lactatiformans	0.8189290058821449
+OTU_730	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia; s__Blautia_luti	0.7771120221592618
+OTU_731	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Erysipelatoclostridium	0.9902128303733286
+OTU_732	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__[Clostridium]_innocuum_group	0.9970691043022583
+OTU_733	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.9991247104075228
+OTU_734	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__[Eubacterium]_brachy_group; s__uncultured_bacterium	0.999968964208506
+OTU_735	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9990419143922544
+OTU_736	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.996877088800195
+OTU_737	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__UBA1819; s__Ruthenibacterium_lactatiformans	0.7827817450598421
+OTU_738	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999777071094629
+OTU_739	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenellaceae_R-7_group; s__uncultured_marine	0.999354191422184
+OTU_740	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Roseburia	0.8572609922813164
+OTU_741	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.8809812764650266
+OTU_742	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.976211210382102
+OTU_743	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Peptostreptococcaceae; g__Terrisporobacter	0.9930460822551225
+OTU_744	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter; s__uncultured_organism	0.943259145698174
+OTU_745	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.991464453044895
+OTU_746	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-008; s__uncultured_organism	0.9775974884583272
+OTU_747	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9962907073145518
+OTU_748	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999990141542692
+OTU_749	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella	0.9999998800548054
+OTU_750	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999585738363209
+OTU_751	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Colidextribacter; s__gut_metagenome	0.8317477103639739
+OTU_752	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Flavonifractor	0.9913524887411198
+OTU_753	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemania; s__Holdemania_massiliensis	0.7108659679447165
+OTU_754	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9921738930233097
+OTU_755	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia	0.9344452892213585
+OTU_756	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999506073726181
+OTU_757	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.7098839318384683
+OTU_758	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__UBA1819; s__Ruthenibacterium_lactatiformans	0.7009858217564151
+OTU_759	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia	0.9894456065844826
+OTU_760	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.999061310282322
+OTU_761	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.958335463521696
+OTU_762	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999999275423094
+OTU_763	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Sutterella	0.9056789747117711
+OTU_764	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__uncultured_bacterium	0.8805254298679211
+OTU_765	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9998983924103415
+OTU_766	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__UBA1819	0.9361111644838339
+OTU_767	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-008; s__uncultured_bacterium	0.7827508469913724
+OTU_768	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Peptostreptococcaceae; g__Romboutsia	0.9937011479972105
+OTU_769	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9388850481524293
+OTU_770	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9983042892379034
+OTU_771	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999536139707699
+OTU_772	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia; s__Blautia_caecimuris	0.926928265667297
+OTU_773	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9981363256030719
+OTU_774	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999969516373751
+OTU_775	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__GCA-900066575; s__uncultured_bacterium	0.7896745114300698
+OTU_776	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9997885879589854
+OTU_777	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Hungatella	0.9625592385156385
+OTU_778	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9988992407539067
+OTU_779	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__GCA-900066575; s__uncultured_bacterium	0.9607374651401435
+OTU_780	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Intestinimonas; s__Intestinimonas_butyriciproducens	0.9850620574413214
+OTU_781	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Flavonifractor	0.9290321964588242
+OTU_782	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae; g__Cnuella; s__uncultured_Bifissio	0.9852266552874783
+OTU_783	d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Frankiales; f__Geodermatophilaceae; g__Blastococcus; s__Blastococcus_sp.	0.7250985888614999
+OTU_784	d__Bacteria; p__Firmicutes; c__Bacilli; o__Lactobacillales; f__Streptococcaceae; g__Streptococcus	0.9998406663128928
+OTU_785	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9999509364758677
+OTU_786	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Coprobacillus; s__Coprobacillus_cateniformis	0.7386128377616816
+OTU_787	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999677718898
+OTU_788	d__Bacteria; p__Firmicutes; c__Bacilli; o__Lactobacillales; f__Enterococcaceae; g__Enterococcus	0.9842734051187843
+OTU_789	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__UBA1819	0.837601818106588
+OTU_790	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9894649469457739
+OTU_791	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Eisenbergiella	0.9997481652108006
+OTU_792	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.9987343332971417
+OTU_793	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Veillonellales-Selenomonadales; f__Veillonellaceae; g__Veillonella	0.9999999979264705
+OTU_794	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae	0.8450236742458931
+OTU_795	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999915567270686
+OTU_796	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae	0.9971394987485319
+OTU_797	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_FCS020_group; s__uncultured_Clostridium	0.9749616283053414
+OTU_798	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.999982857779344
+OTU_799	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Ruminococcus; s__uncultured_Ruminococcus	0.9196301244334253
+OTU_800	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.979872461706257
+OTU_801	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__[Eubacterium]_siraeum_group	0.9996457307291167
+OTU_802	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9966663271510325
+OTU_803	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemania; s__Holdemania_filiformis	0.8417810241653165
+OTU_804	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia-Shigella	0.9285940856289554
+OTU_805	d__Bacteria; p__Firmicutes; c__Clostridia	0.9999998584351191
+OTU_806	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides; s__Parabacteroides_merdae	0.8049828826362366
+OTU_807	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999999852823778
+OTU_808	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Sutterella	0.9998241691702635
+OTU_809	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9994549577069816
+OTU_810	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Colidextribacter; s__gut_metagenome	0.7719163799161334
+OTU_811	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Roseburia	0.7506211362870567
+OTU_812	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.9971693832274745
+OTU_813	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Ruminococcus]_torques_group; s__Ruminococcus_torques	0.7714079924352087
+OTU_814	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Colidextribacter	0.8074657089882478
+OTU_815	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9959432459370284
+OTU_816	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9992464489494427
+OTU_817	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__Akkermansia_muciniphila	0.7734578079495601
+OTU_818	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia; s__Blautia_caecimuris	0.9582083161507391
+OTU_819	d__Bacteria; p__Firmicutes; c__Clostridia	0.9999947625247139
+OTU_820	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999726341747175
+OTU_821	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.9978089647841938
+OTU_822	d__Bacteria	0.9999999999993635
+OTU_823	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9995983031761753
+OTU_824	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae	0.9983058776794397
+OTU_825	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9958891873846365
+OTU_826	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9998890279330298
+OTU_827	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999999178959208
+OTU_828	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Veillonellales-Selenomonadales; f__Veillonellaceae; g__Dialister	0.7335360774687816
+OTU_829	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9929738565805573
+OTU_830	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides; s__Bacteroides_sp.	0.7168219133377999
+OTU_831	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.7714676331424676
+OTU_832	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9936207067484812
+OTU_833	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Erysipelatoclostridium	0.9982083558101084
+OTU_834	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter; s__gut_metagenome	0.9859610630435771
+OTU_835	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9883820495250347
+OTU_836	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Sutterella	0.9977123096342632
+OTU_837	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium_sensu_stricto_1; s__Clostridium_perfringens	0.7480178966731825
+OTU_838	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Sutterella	0.9999976502561738
+OTU_839	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__UBA1819; s__Ruthenibacterium_lactatiformans	0.8558955927516011
+OTU_840	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9551962574797197
+OTU_841	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pseudomonadales; f__Moraxellaceae; g__Acinetobacter	0.9999689814260876
+OTU_842	d__Bacteria	0.9999999803984067
+OTU_843	d__Bacteria	0.9999996132671319
+OTU_844	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella; s__uncultured_bacterium	0.9621056170196318
+OTU_845	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9952735587415623
+OTU_846	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9913213382800583
+OTU_847	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemania; s__Holdemania_filiformis	0.7291976386674832
+OTU_848	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.7714982561135917
+OTU_849	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9978805972532447
+OTU_850	d__Bacteria; p__Bdellovibrionota; c__Bdellovibrionia; o__Bdellovibrionales; f__Bdellovibrionaceae; g__Bdellovibrio; s__metagenome	0.9309421225405705
+OTU_851	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9137811707924084
+OTU_852	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella	0.9999982245296659
+OTU_853	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Subdoligranulum	0.9953546808141369
+OTU_854	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.7784199635157305
+OTU_855	d__Bacteria	0.9999999996521968
+OTU_856	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales	0.7157745129207497
+OTU_857	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Barnesiella	0.964339072481092
+OTU_858	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9904014700814092
+OTU_859	d__Bacteria	0.9999999999976863
+OTU_860	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999964160604682
+OTU_861	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Flavonifractor	0.8856482564688374
+OTU_862	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Erysipelatoclostridium	0.9994664764395376
+OTU_863	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9622259646852646
+OTU_864	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999977090615568
+OTU_865	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999782685350254
+OTU_866	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Marinifilaceae; g__Butyricimonas; s__Butyricimonas_paravirosa	0.8251832151874973
+OTU_867	d__Bacteria; p__Cyanobacteria; c__Vampirivibrionia; o__Gastranaerophilales; f__Gastranaerophilales; g__Gastranaerophilales; s__Acinetobacter_sp.	0.8060450817060218
+OTU_868	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999631277098557
+OTU_869	d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Bifidobacteriales; f__Bifidobacteriaceae; g__Bifidobacterium	0.9999766279829386
+OTU_870	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.7518193089745482
+OTU_871	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9998419959908589
+OTU_872	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.885183907144849
+OTU_873	d__Bacteria; p__Firmicutes; c__Clostridia; o__Monoglobales; f__Monoglobaceae; g__Monoglobus	0.9728015682067828
+OTU_874	d__Bacteria	0.9999999996522658
+OTU_875	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae	0.9424413185812683
+OTU_876	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.8407217842284153
+OTU_877	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.99999997537276
+OTU_878	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae	0.9984114648718325
+OTU_879	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridia_vadinBB60_group; f__Clostridia_vadinBB60_group; g__Clostridia_vadinBB60_group; s__gut_metagenome	0.9900058683916135
+OTU_880	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__GCA-900066755; s__uncultured_bacterium	0.7397206716148697
+OTU_881	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae	0.9999999631266734
+OTU_882	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella	0.8483641658477167
+OTU_883	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia; s__Blautia_faecis	0.811145969220882
+OTU_884	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Eubacterium]_fissicatena_group	0.9912062622815039
+OTU_885	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.870961490842689
+OTU_886	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia-Shigella	0.9072984345064687
+OTU_887	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999977254298922
+OTU_888	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9978818594317633
+OTU_889	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Sellimonas; s__Sellimonas_intestinalis	0.9494117700772268
+OTU_890	d__Bacteria; p__Actinobacteriota; c__Coriobacteriia; o__Coriobacteriales; f__Eggerthellaceae; g__Adlercreutzia	0.7221399717946497
+OTU_891	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.9704499263377678
+OTU_892	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.9691974953231698
+OTU_893	d__Bacteria; p__Firmicutes; c__Clostridia	0.9999830922843974
+OTU_894	d__Bacteria; p__Firmicutes; c__Clostridia	0.8981684525922075
+OTU_895	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Barnesiella	0.9999992613273874
+OTU_896	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9957499695805382
+OTU_897	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9697942742455875
+OTU_898	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter; s__human_gut	0.9662509860906835
+OTU_899	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9536602465582122
+OTU_900	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.937784615848911
+OTU_901	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999994228200029
+OTU_902	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9999584881036614
+OTU_903	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Barnesiella	0.9985114695548457
+OTU_904	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999728706012115
+OTU_905	d__Bacteria; p__Firmicutes; c__Clostridia	0.9246875926224938
+OTU_906	d__Bacteria; p__Firmicutes; c__Clostridia	0.9999944510216848
+OTU_907	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9992925065760415
+OTU_908	d__Bacteria; p__Actinobacteriota; c__Coriobacteriia; o__Coriobacteriales; f__Coriobacteriaceae; g__Collinsella	0.9999999874448751
+OTU_909	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.970434654650799
+OTU_910	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9992650251999948
+OTU_911	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Barnesiella	0.9988746619599091
+OTU_912	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Incertae_Sedis	0.7363911900897355
+OTU_913	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Marinifilaceae	0.9331310567097199
+OTU_914	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9997104384290351
+OTU_915	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.8559545536311539
+OTU_916	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.9962371444022786
+OTU_917	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__UBA1819; s__Ruthenibacterium_lactatiformans	0.8202499737384864
+OTU_918	d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Catabacter	0.9480974642527902
+OTU_919	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__uncultured; s__uncultured_organism	0.8582347928121903
+OTU_920	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae	0.9999140629959192
+OTU_921	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Flavonifractor	0.8932869289011346
+OTU_922	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemania; s__Holdemania_massiliensis	0.9724060548816623
+OTU_923	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999841488538216
+OTU_924	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9990164221932374
+OTU_925	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9958929268794586
+OTU_926	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.930936588115908
+OTU_927	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__GCA-900066755	0.9730366271401
+OTU_928	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999615364482638
+OTU_929	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemanella; s__uncultured_bacterium	0.9438491002464032
+OTU_930	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.9424035328585441
+OTU_931	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia-Shigella	0.9425538890635425
+OTU_932	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Coprobacter	0.9998068264324008
+OTU_933	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9865152251987998
+OTU_934	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.987739445764939
+OTU_935	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella	0.9292166001527481
+OTU_936	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9943078607300259
+OTU_937	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9981575676109654
+OTU_938	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9966318189472855
+OTU_939	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9962037563780398
+OTU_940	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9999933461308795
+OTU_941	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__uncultured	0.9478468957147501
+OTU_942	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.8638026253577157
+OTU_943	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.9683544544727503
+OTU_944	d__Bacteria; p__Firmicutes; c__Clostridia	0.9990893385427165
+OTU_945	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999951690997
+OTU_946	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__Family_XIII_AD3011_group; s__gut_metagenome	0.7678969756740261
+OTU_947	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides; s__uncultured_bacterium	0.8225467317510321
+OTU_948	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9838552256991832
+OTU_949	d__Bacteria; p__Desulfobacterota; c__Desulfuromonadia; o__PB19; f__PB19; g__PB19; s__uncultured_bacterium	0.8742364455001856
+OTU_950	d__Bacteria; p__Firmicutes; c__Bacilli; o__Lactobacillales; f__Lactobacillaceae; g__Lactobacillus; s__Lactobacillus_amylovorus	0.8548590677128647
+OTU_951	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Coprobacillus	0.9705793930552225
+OTU_952	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999975808504402
+OTU_953	d__Bacteria; p__Firmicutes; c__Clostridia	0.9999922969372721
+OTU_954	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemania; s__Holdemania_filiformis	0.7746679021034952
+OTU_955	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia; s__Blautia_faecis	0.9952373500589794
+OTU_956	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella	0.9999981542928752
+OTU_957	d__Bacteria	0.9999999556544765
+OTU_958	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9999154695094576
+OTU_959	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.8994071649143358
+OTU_960	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.8833292725972294
+OTU_961	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Barnesiella; s__gut_metagenome	0.7531997047805716
+OTU_962	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.997891094103133
+OTU_963	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Hungatella	0.9409511459370838
+OTU_964	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9201089636143622
+OTU_965	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Marinifilaceae	0.9998723182299454
+OTU_966	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__uncultured; s__uncultured_bacterium	0.8637143365875407
+OTU_967	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__[Clostridium]_innocuum_group	0.999990083863068
+OTU_968	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptococcales; f__Peptococcaceae; g__uncultured; s__uncultured_bacterium	0.887089762234975
+OTU_969	d__Bacteria; p__Firmicutes; c__Clostridia; o__Monoglobales; f__Monoglobaceae; g__Monoglobus	0.9999953100149027
+OTU_970	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.8420784086192925
+OTU_971	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9997961597701751
+OTU_972	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9979113074063437
+OTU_973	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia; s__Blautia_luti	0.7322540144575889
+OTU_974	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.8500753711737936
+OTU_975	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales	0.9984164146888018
+OTU_976	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridia_vadinBB60_group; f__Clostridia_vadinBB60_group; g__Clostridia_vadinBB60_group	0.9999922131128086
+OTU_977	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia	0.8573252641387387
+OTU_978	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella	0.9999994831026429
+OTU_979	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9589331040108034
+OTU_980	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Marinifilaceae; g__Odoribacter	0.9981728094801581
+OTU_981	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Coprobacillus; s__Coprobacillus_cateniformis	0.7743707263202081
+OTU_982	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Erysipelatoclostridium	0.9990630587816042
+OTU_983	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9998961679479271
+OTU_984	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales	0.999986128948127
+OTU_985	d__Bacteria; p__Desulfobacterota; c__Desulfovibrionia; o__Desulfovibrionales; f__Desulfovibrionaceae; g__Bilophila; s__bacterium_NLAE-zl-H528	0.9150607028604396
+OTU_986	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Coprobacter	0.8212518357821363
+OTU_987	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999397545539
+OTU_988	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Eisenbergiella	0.7900448149782792
+OTU_989	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9983073040992043
+OTU_990	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9904734599439134
+OTU_991	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter; s__gut_metagenome	0.9819684340501649
+OTU_992	d__Bacteria; p__Firmicutes; c__Clostridia	0.997630793248739
+OTU_993	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter; s__gut_metagenome	0.7054007493112985
+OTU_994	d__Bacteria; p__Actinobacteriota; c__Coriobacteriia; o__Coriobacteriales; f__Eggerthellaceae; g__Gordonibacter	0.9999993658162472
+OTU_995	d__Bacteria	0.9999999996635314
+OTU_996	d__Bacteria	0.9999999999980322
+OTU_997	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella; s__Paraprevotella_clara	0.9411080608670345
+OTU_998	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella; s__Paraprevotella_clara	0.9264535738619047
+OTU_999	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia-Shigella	0.9431727744807984
+OTU_1000	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-008; s__uncultured_bacterium	0.7423053727336163
+OTU_1001	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides; s__Bacteroides_sp.	0.7783806591011224
+OTU_1002	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9985560303259153
+OTU_1003	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-008; s__uncultured_bacterium	0.7592489886941282
+OTU_1004	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Legionellales; f__Legionellaceae; g__Legionella; s__uncultured_bacterium	0.7002857750669287
+OTU_1005	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999365511748
+OTU_1006	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides; s__uncultured_Bacteroidaceae	0.8404315090825745
+OTU_1007	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__UBA1819; s__Ruthenibacterium_lactatiformans	0.853917690837313
+OTU_1008	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Marinifilaceae; g__Odoribacter	0.9999999996779145
+OTU_1009	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999627113442522
+OTU_1010	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemanella	0.9999992825169876
+OTU_1011	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Papillibacter; s__uncultured_bacterium	0.9881225156175242
+OTU_1012	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter	0.7459343161256894
+OTU_1013	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__Alistipes_finegoldii	0.8131914150401517
+OTU_1014	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Hungatella	0.9432101510492076
+OTU_1015	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9888956416307222
+OTU_1016	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales	0.8092470835667849
+OTU_1017	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Barnesiella; s__gut_metagenome	0.8818798431027656
+OTU_1018	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.8673626039802802
+OTU_1019	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Ruminococcus]_torques_group	0.9680489018324614
+OTU_1020	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.858747399305198
+OTU_1021	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.9979158437162711
+OTU_1022	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.8991104013329471
+OTU_1023	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9998307665617301
+OTU_1024	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9988046715480975
+OTU_1025	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Barnesiella; s__gut_metagenome	0.798667249805744
+OTU_1026	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9992746052167544
+OTU_1027	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9997402673224587
+OTU_1028	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales	0.9999991045312776
+OTU_1029	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella; s__uncultured_bacterium	0.7069737879105611
+OTU_1030	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.9986609945782886
+OTU_1031	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella	0.9999885580516382
+OTU_1032	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemania; s__Holdemania_filiformis	0.7033861007438612
+OTU_1033	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__uncultured; g__uncultured; s__metagenome	0.997120254507353
+OTU_1034	d__Bacteria; p__Desulfobacterota; c__Desulfovibrionia; o__Desulfovibrionales; f__Desulfovibrionaceae; g__Bilophila	0.9998978261850873
+OTU_1035	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.7806630224817085
+OTU_1036	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999987821684241
+OTU_1037	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9913925195814856
+OTU_1038	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales	0.9971828459222933
+OTU_1039	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Sellimonas; s__Sellimonas_intestinalis	0.8457031626327721
+OTU_1040	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia-Shigella	0.931559011067363
+OTU_1041	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__UBA1819; s__Ruthenibacterium_lactatiformans	0.8547222924048437
+OTU_1042	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__[Eubacterium]_fissicatena_group	0.9602658871607734
+OTU_1043	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemania; s__Holdemania_filiformis	0.8292179753910989
+OTU_1044	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Erysipelatoclostridium	0.9999875948113391
+OTU_1045	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__[Clostridium]_innocuum_group	0.9999854541948593
+OTU_1046	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9999964876023714
+OTU_1047	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.8373635674837413
+OTU_1048	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae	0.9999998924030407
+OTU_1049	d__Bacteria; p__Verrucomicrobiota; c__Lentisphaeria; o__Victivallales; f__Victivallaceae; g__Victivallis	0.9999999656894838
+OTU_1050	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae; g__Escherichia-Shigella	0.9237475372113514
+OTU_1051	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales	0.9999990959536834
+OTU_1052	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Candidatus_Stoquefichus; s__Longibaculum_muris	0.8833707590801573
+OTU_1053	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Hungatella	0.9309273242123791
+OTU_1054	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter; s__human_gut	0.9557764531144751
+OTU_1055	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9688665529217975
+OTU_1056	d__Bacteria; p__Actinobacteriota; c__Coriobacteriia; o__Coriobacteriales; f__Eggerthellaceae; g__Eggerthella	0.9999997819818341
+OTU_1057	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter; s__gut_metagenome	0.7572422565502545
+OTU_1058	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia	0.9942738125098529
+OTU_1059	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia	0.7150081809459063
+OTU_1060	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.992758059367449
+OTU_1061	d__Bacteria	0.9999999999351796
+OTU_1062	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999932137842162
+OTU_1063	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9945452353319477
+OTU_1064	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia; s__Blautia_luti	0.724141987279004
+OTU_1065	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Flavonifractor	0.8960389951163068
+OTU_1066	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999975868772375
+OTU_1067	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.8358419654034498
+OTU_1068	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Faecalibacterium; s__uncultured_bacterium	0.8094464092603924
+OTU_1069	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9998876181139359
+OTU_1070	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia	0.8462612365518961
+OTU_1071	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__[Clostridium]_innocuum_group	0.9999543267588169
+OTU_1072	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Coprobacillus	0.9865485531916073
+OTU_1073	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9114405735497729
+OTU_1074	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales	0.9999762121513468
+OTU_1075	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes	0.997277706027007
+OTU_1076	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Sutterella	0.9999983335011106
+OTU_1077	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__Akkermansia_muciniphila	0.8100102716069109
+OTU_1078	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.9475188165282649
+OTU_1079	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.999977049899998
+OTU_1080	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.8100553569288715
+OTU_1081	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__Alistipes_finegoldii	0.898764265815917
+OTU_1082	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.99275028788551
+OTU_1083	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__Alistipes_finegoldii	0.9506135417274831
+OTU_1084	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999993963194909
+OTU_1085	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Paraprevotella; s__uncultured_bacterium	0.938950220975004
+OTU_1086	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__UBA1819	0.8684683931127011
+OTU_1087	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999992202653967
+OTU_1088	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae	0.9999601757784178
+OTU_1089	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9993962573445315
+OTU_1090	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__Alistipes_onderdonkii	0.7474013301029722
+OTU_1091	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9900006287943797
+OTU_1092	d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__[Eubacterium]_nodatum_group; s__uncultured_organism	0.7891590666126771
+OTU_1093	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__Porphyrobacter	0.9518522022775572
+OTU_1094	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9996501209221671
+OTU_1095	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia; s__Blautia_faecis	0.9949719820292527
+OTU_1096	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__Alistipes_onderdonkii	0.822194337967892
+OTU_1097	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9966145999728462
+OTU_1098	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter	0.9957934973951873
+OTU_1099	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Faecalibacterium; s__uncultured_Clostridiaceae	0.891690830935441
+OTU_1100	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9993054674905817
+OTU_1101	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Roseburia	0.8378584794071554
+OTU_1102	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Anaerostipes	0.9990883548006949
+OTU_1103	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9780710271453432
+OTU_1104	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.9827038839931374
+OTU_1105	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.9581905154294057
+OTU_1106	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_NK4A136_group	0.9463354556100967
+OTU_1107	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Anaerostipes	0.9998640861485665
+OTU_1108	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Ruminococcus	0.9722133070197598
+OTU_1109	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter; s__gut_metagenome	0.9868236430831642
+OTU_1110	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9444893797690452
+OTU_1111	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.8231516493426296
+OTU_1112	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9774024836207205
+OTU_1113	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.8545221759380484
+OTU_1114	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999715053315
+OTU_1115	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemania	0.7715267584394289
+OTU_1116	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales	0.9999992837683456
+OTU_1117	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.993829745794662
+OTU_1118	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.8140746794882056
+OTU_1119	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__uncultured_bacterium	0.7514449766599837
+OTU_1120	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9248071678786814
+OTU_1121	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Faecalibacterium	0.9956188730258209
+OTU_1122	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Blautia	0.9286372595815889
+OTU_1123	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__[Clostridium]_innocuum_group	0.9999965269810805
+OTU_1124	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9976242086835676
+OTU_1125	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.9958310367467144
+OTU_1126	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__Akkermansia_muciniphila	0.7250510855217945
+OTU_1127	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter; s__gut_metagenome	0.9792171167278687
+OTU_1128	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__UBA1819; s__Ruthenibacterium_lactatiformans	0.8520360258896893
+OTU_1129	d__Bacteria; p__Firmicutes; c__Clostridia	0.9453164771919853
+OTU_1130	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9901383566135522
+OTU_1131	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__UBA1819; s__Ruthenibacterium_lactatiformans	0.8054495096086173
+OTU_1132	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.989902520200646
+OTU_1133	d__Bacteria; p__Bdellovibrionota; c__Bdellovibrionia; o__Bdellovibrionales; f__Bdellovibrionaceae; g__Bdellovibrio; s__uncultured_bacterium	0.8464253558572102
+OTU_1134	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.9764031479115891
+OTU_1135	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9963959130098511
+OTU_1136	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Colidextribacter; s__gut_metagenome	0.9494612974572463
+OTU_1137	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.9902562931184797
+OTU_1138	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_NC2004_group; s__uncultured_bacterium	0.7718446666250719
+OTU_1139	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999909966678927
+OTU_1140	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.9952541868353603
+OTU_1141	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9987784679657316
+OTU_1142	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9808008288119004
+OTU_1143	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.9972326965298328
+OTU_1144	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.7545335315827492
+OTU_1145	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Sutterella	0.999994442231046
+OTU_1146	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium; s__metagenome	0.7537083655714395
+OTU_1147	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Flavonifractor	0.8732835488678665
+OTU_1148	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Rikenellaceae; g__Alistipes; s__Alistipes_onderdonkii	0.733336295627285
+OTU_1149	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9987793162242496
+OTU_1150	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999997874352238
+OTU_1151	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.9954831671387052
+OTU_1152	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999953781262632
+OTU_1153	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9313741849502049
+OTU_1154	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999864094026889
+OTU_1155	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.99914677987708
+OTU_1156	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.9992282328478131
+OTU_1157	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999998950155977
+OTU_1158	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9990107987459086
+OTU_1159	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999951183075702
+OTU_1160	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Colidextribacter; s__gut_metagenome	0.7530455367780556
+OTU_1161	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9821529450853266
+OTU_1162	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.8940552167940934
+OTU_1163	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Erysipelatoclostridium	0.9999977255830167
+OTU_1164	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter; s__gut_metagenome	0.9758324110021653
+OTU_1165	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Incertae_Sedis	0.9871600855261116
+OTU_1166	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9924897727678
+OTU_1167	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Butyricicoccaceae; g__Butyricicoccus; s__Butyricicoccus_sp.	0.8405857362936491
+OTU_1168	d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhodospirillales; f__Magnetospirillaceae; g__[Aquaspirillum]_polymorphum_group; s__Aquaspirillum_polymorphum	0.8964393669491189
+OTU_1169	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Holdemania; s__Holdemania_massiliensis	0.9815506732978759
+OTU_1170	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__uncultured; s__human_gut	0.9811927061553357
+OTU_1171	d__Bacteria; p__Firmicutes; c__Clostridia; o__Monoglobales; f__Monoglobaceae; g__Monoglobus	0.9995283732528594
+OTU_1172	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Colidextribacter	0.9651448131803626
+OTU_1173	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter	0.9320565994458662
+OTU_1174	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9937557675740334
+OTU_1175	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Coprococcus	0.9998459852607927
+OTU_1176	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__[Clostridium]_innocuum_group	0.9999914708004554
+OTU_1177	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae	0.8313472642830857
+OTU_1178	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.9721570891081283
+OTU_1179	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter; s__gut_metagenome	0.9713484637780609
+OTU_1180	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9981653897254921
+OTU_1181	d__Bacteria; p__Firmicutes; c__Clostridia; o__Monoglobales; f__Monoglobaceae; g__Monoglobus; s__uncultured_bacterium	0.778078837793938
+OTU_1182	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9657108327665317
+OTU_1183	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.9972326984649287
+OTU_1184	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__Akkermansia_muciniphila	0.7822374559026175
+OTU_1185	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__Akkermansia_muciniphila	0.7748159868362718
+OTU_1186	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999987793069836
+OTU_1187	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9999999983202188
+OTU_1188	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter; s__human_gut	0.9814727597157967
+OTU_1189	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.9035127877412102
+OTU_1190	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9984413077607149
+OTU_1191	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.76159791460721
+OTU_1192	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999790559374913
+OTU_1193	d__Bacteria; p__Firmicutes; c__Bacilli; o__Lactobacillales; f__Enterococcaceae	0.9200830810816238
+OTU_1194	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Oscillospiraceae; g__Oscillibacter	0.9999564694503488
+OTU_1195	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.9671716739580678
+OTU_1196	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9975617428684144
+OTU_1197	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9998156422389796
+OTU_1198	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9976062674337183
+OTU_1199	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9983296991790345
+OTU_1200	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9941952411739581
+OTU_1201	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Faecalibacterium	0.9980476212555048
+OTU_1202	d__Bacteria	0.9999999999907698
+OTU_1203	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium	0.9609968026063451
+OTU_1204	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.999988898076828
+OTU_1205	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.9941499363863577
+OTU_1206	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9850320109346064
+OTU_1207	d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridia_vadinBB60_group; f__Clostridia_vadinBB60_group; g__Clostridia_vadinBB60_group; s__gut_metagenome	0.708474117037285
+OTU_1208	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-004; s__uncultured_bacterium	0.866057571055798
+OTU_1209	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__[Eubacterium]_siraeum_group	0.8983604572776035
+OTU_1210	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.8711293489292249
+OTU_1211	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales	0.9969645008673944
+OTU_1212	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnospiraceae_UCG-008; s__uncultured_bacterium	0.7314627874177134
+OTU_1213	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Barnesiellaceae; g__Barnesiella	0.9996264612320499
+OTU_1214	d__Bacteria; p__Firmicutes; c__Negativicutes; o__Acidaminococcales; f__Acidaminococcaceae; g__Phascolarctobacterium	0.99767832690503
+OTU_1215	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Coprobacillus; s__Coprobacillus_cateniformis	0.8289423494228433
+OTU_1216	d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__Parasutterella; s__Parasutterella_excrementihominis	0.999475029155
+OTU_1217	d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae; g__Subdoligranulum; s__metagenome	0.8785235706006624
+OTU_1218	d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelatoclostridiaceae; g__Coprobacillus; s__Coprobacillus_cateniformis	0.7690844876964577
+OTU_1219	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia; s__uncultured_bacterium	0.9174408126613838
+OTU_1220	d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae	0.9999917588831982
+OTU_1221	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides	0.9996997170315816
+OTU_1222	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9999951716501772
+OTU_1223	d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Verrucomicrobiales; f__Akkermansiaceae; g__Akkermansia	0.9999967053890053
+OTU_1224	d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Tannerellaceae; g__Parabacteroides	0.9999996746833951
