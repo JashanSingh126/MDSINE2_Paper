@@ -9,3 +9,4 @@ __pycache__
 *.lprof
 dockers/
 *.err
+tmp/

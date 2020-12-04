@@ -122,9 +122,3 @@ if __name__ == '__main__':
         leave_out_subject=args.leave_out_subj))
     f.close()
     os.system('bsub < {}'.format(lsfname))
-
-
-
-
-
-    

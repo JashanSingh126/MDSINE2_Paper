@@ -14,6 +14,7 @@ Methodology
    (unaligned).
 3) Calculate the consensus sequences
 4) Rename the Taxas to OTUs
+5) Remove selected timepoints
 
 Parameters
 ----------
@@ -29,6 +30,8 @@ Parameters
     not replace them.
 --output-basepath, -o : str
     This is where you want to save the parsed dataset.
+--remove-timepoints : float, (+)
+    Which times to remove
 
 The file `paper_files/preprocessing/gibson_16S_rRNA_v4_seqs_aligned_filtered.fa` 
 was prepared by first aligning the Taxa sequences to the reference sequeunces in the 
@@ -59,9 +62,12 @@ if __name__ == '__main__':
         help='This is the fasta file location of the aligned sequences for each Taxa' \
             ' that was used for placement in the phylogenetic tree. If nothing is ' \
             'provided, then do not replace them.', default=None)
-    
+    parser.add_argument('--remove-timepoints', dest='remove_timepoints', nargs='+', default=None, 
+        type=float, help='Which times to remove')
+
     args = parser.parse_args()
     md2.config.LoggingConfig(level=logging.DEBUG)
+    os.makedirs(args.basepath, exist_ok=True)
 
     for dset in ['healthy', 'uc', 'replicates', 'inoculum']:
         # 1) Load the dataset
@@ -135,7 +141,12 @@ if __name__ == '__main__':
             print('Renaming Taxas with prefix {}'.format(args.rename_prefix))
             study.taxas.rename(prefix=args.rename_prefix, zero_based_index=False)
 
-        # 5) Save the study set and sequences
+        # 5) Remove timepoints
+        if args.remove_timepoints is not None:
+            # if dset in ['healthy', 'uc']:
+            study.pop_times(args.remove_timepoints)
+
+        # 6) Save the study set and sequences
         study.save(os.path.join(args.basepath, 'gibson_' + dset + '_agg.pkl'))
         ret = []
         for taxa in study.taxas:

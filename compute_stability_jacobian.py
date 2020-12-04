@@ -22,53 +22,6 @@ import argparse
 import logging
 from mdsine2.names import STRNAMES
 import time
-import matplotlib.pyplot as plt
-import numba
-import sys
-
-def _integrate_glv_no_perturbations_no_processvar_fast(initial_conditions, growth, interactions, 
-    sim_max, dt, times):
-    '''Integrate gLV dynamics with no perturbations
-    '''
-    '''Integrate gLV dynamics with no process variance. This has a faster execution time
-    than calling mdsine2.integrate
-
-    Parameters
-    ----------
-    initial_conditions : np.ndarray
-        These are the initial conditions for each taxa
-    growth : np.ndarray
-        These are the growth rates
-    interactions : np.ndarray
-        Square array of the interaction matrix
-    dt : 
-
-    '''
-    times = np.sort(times)
-    n_days = times[-1]
-    times_tmp = np.arange(n_days+dt, step=dt)
-    ret = np.zeros(shape=(len(times_tmp), len(growth)))
-    ret[0,:] = initial_conditions.ravel()
-    dtgrowth = growth.ravel() * dt
-    dtinteractions = interactions * dt
-
-    prev_logx = np.log(ret[0,:])
-    for i in range(1,ret.shape[0]):
-        x = ret[i-1, :]
-        prev_logx = prev_logx + (dtgrowth + dtinteractions.dot(x))
-        ret[i, :] = np.exp(prev_logx)
-
-        if np.any(ret[i] >= sim_max):
-            print('mer')
-
-    # Subsample times
-    idxs = []
-    for t in times:
-        tidx = np.searchsorted(times_tmp, t)
-        idxs.append(tidx)
-    ret = ret[np.asarray(idxs), :]
-    ret = ret.T
-    return ret, times
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
