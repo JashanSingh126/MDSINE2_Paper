@@ -10,10 +10,10 @@ lsfstr = '''#!/bin/bash
 #BSUB -o {lsf_files}{jobname}.out
 #BSUB -e {lsf_files}{jobname}.err
 
-#BSUB -q big-multi
-#BSUB -n 4
-#BSUB -M 12000
-#BSUB -R rusage[mem=12000]
+#BSUB -q {queue}
+#BSUB -n {cpus}
+#BSUB -M {mem}
+#BSUB -R rusage[mem={mem}]
 
 # 
 echo '---PROCESS RESOURCE LIMITS---'

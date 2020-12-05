@@ -70,7 +70,7 @@ if __name__ == '__main__':
         help='How often to write the posterior to disk. Note that `--burnin` and ' \
              '`--n-samples` must be a multiple of `--checkpoint` (e.g. checkpoint = 100, ' \
              'n_samples = 600, burnin = 300)')
-    parser.add_argument('--basepath', '-b', type=str, dest='basepath',
+    parser.add_argument('--basepath', '--output-basepath','-b', type=str, dest='basepath',
         help='This is folder to save the output of inference')
     parser.add_argument('--multiprocessing', '-mp', type=int, dest='mp',
         help='If 1, run the inference with multiprocessing. Else run on a single process',
@@ -83,7 +83,8 @@ if __name__ == '__main__':
     logging.info('Loading dataset {}'.format(args.input))
     study = md2.Study.load(args.input)
     if args.rename_study is not None:
-        study.name = args.rename_study
+        if args.rename_study.lower() != 'none':
+            study.name = args.rename_study
 
     # 2) Load the model parameters
     os.makedirs(args.basepath, exist_ok=True)
