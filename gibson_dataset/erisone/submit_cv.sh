@@ -32,7 +32,7 @@ MAX_TLA = "8"
 
 # Run healthy for each subject
 # ----------------------------
-python cv.py \
+python scripts/run_cv.py \
     --dataset $HEALTHY_DATASET \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
@@ -47,7 +47,7 @@ python cv.py \
     --leave-out-subject 2 \
     --max-tla $MAX_TLA
 
-python cv.py \
+python scripts/run_cv.py \
     --dataset $HEALTHY_DATASET \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
@@ -62,7 +62,7 @@ python cv.py \
     --leave-out-subject 3 \
     --max-tla $MAX_TLA
 
-python cv.py \
+python scripts/run_cv.py \
     --dataset $HEALTHY_DATASET \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
@@ -77,7 +77,7 @@ python cv.py \
     --leave-out-subject 4 \
     --max-tla $MAX_TLA
 
-python cv.py \
+python scripts/run_cv.py \
     --dataset $HEALTHY_DATASET \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
@@ -94,7 +94,7 @@ python cv.py \
 
 # Run uc for each subject
 # -----------------------
-python cv.py \
+python scripts/run_cv.py \
     --dataset $UC_DATASET \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
@@ -109,7 +109,7 @@ python cv.py \
     --leave-out-subject 6 \
     --max-tla $MAX_TLA
 
-python cv.py \
+python scripts/run_cv.py \
     --dataset $UC_DATASET \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
@@ -124,7 +124,7 @@ python cv.py \
     --leave-out-subject 7 \
     --max-tla $MAX_TLA
 
-python cv.py \
+python scripts/run_cv.py \
     --dataset $UC_DATASET \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
@@ -139,7 +139,7 @@ python cv.py \
     --leave-out-subject 8 \
     --max-tla $MAX_TLA
 
-python cv.py \
+python scripts/run_cv.py \
     --dataset $UC_DATASET \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
@@ -154,7 +154,7 @@ python cv.py \
     --leave-out-subject 9 \
     --max-tla $MAX_TLA
 
-python cv.py \
+python scripts/run_cv.py \
     --dataset $UC_DATASET \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
