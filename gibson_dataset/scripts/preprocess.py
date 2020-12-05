@@ -47,6 +47,10 @@ import numpy as np
 import logging
 import mdsine2 as md2
 import os
+import sys
+
+sys.path.append('..')
+import util
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -71,7 +75,7 @@ if __name__ == '__main__':
 
     for dset in ['healthy', 'uc', 'replicates', 'inoculum']:
         # 1) Load the dataset
-        study = md2.dataset.gibson(dset=dset, as_df=False, species_assignment='both')
+        study = util.load_gibson_dataset(dset=dset, as_df=False, species_assignment='both')
 
         # 2) Set the sequences for each Taxa
         #    Remove all taxas that are not contained in that file
@@ -125,7 +129,7 @@ if __name__ == '__main__':
         # 3) compute consensus sequences
         if args.sequences is not None:
             # put original sequences in study
-            orig = md2.dataset.gibson(dset=dset, as_df=False, species_assignment='both')
+            orig = util.load_gibson_dataset(dset=dset, as_df=False, species_assignment='both')
             for taxa in study.taxas:
                 if md2.isotu(taxa):
                     for asvname in taxa.aggregated_taxas:

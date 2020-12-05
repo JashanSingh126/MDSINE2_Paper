@@ -18,8 +18,10 @@ Parameters
 --fixed-clustering : str
     If provided, this is the chain used to set the fixed clustering
     during inference.
---negbin-run : str
-    This is the MCMC object that was run to learn a0 and a1
+--negbin : str, int (+)
+    If there is a single argument, then this is the MCMC object that was run to 
+    learn a0 and a1. If there are two arguments passed, these are the a0 and a1 
+    of the negative binomial dispersion parameters.
 --seed, -s : int
     This is the seed to initialize the inference with
 --burnin, -b : int
@@ -34,6 +36,8 @@ Parameters
     Folder location to save to
 --multiprocessing : int
     If 1, run the inference with multiprocessing. Else run on a single process
+--rename-study : str
+    If provided, rename the study to this
 '''
 import argparse
 import mdsine2 as md2
@@ -50,8 +54,12 @@ if __name__ == '__main__':
     parser.add_argument('--fixed-clustering', type=str, dest='fixed_clustering',
         help='If you are running fixed clustering, this is the location of the chain ' \
              'that you are setting from.', default=None)
-    parser.add_argument('--negbin-run', type=str, dest='negbin',
-        help='This is the MCMC object that was run to learn a0 and a1')
+    parser.add_argument('--negbin', type=str, dest='negbin', nargs='+',
+        help='If there is a single argument, then this is the MCMC object that was run to ' \
+             'learn a0 and a1. If there are two arguments passed, these are the a0 and a1 ' \
+             'of the negative binomial dispersion parameters. Example: ' \
+             '--negbin /path/to/negbin/mcmc.pkl. Example: ' \
+             '--negbin 0.0025 0.025')
     parser.add_argument('--seed', '-s', type=int, dest='seed',
         help='This is the seed to initialize the inference with')
     parser.add_argument('--burnin', '-nb', type=int, dest='burnin',
@@ -67,11 +75,15 @@ if __name__ == '__main__':
     parser.add_argument('--multiprocessing', '-mp', type=int, dest='mp',
         help='If 1, run the inference with multiprocessing. Else run on a single process',
         default=0)
+    parser.add_argument('--rename-study', type=str, dest='rename_study',
+        help='Specify the name of the study to set', default=None)
     args = parser.parse_args()
 
     # 1) load dataset
     logging.info('Loading dataset {}'.format(args.input))
     study = md2.Study.load(args.input)
+    if args.rename_study is not None:
+        study.name = args.rename_study
 
     # 2) Load the model parameters
     os.makedirs(args.basepath, exist_ok=True)
@@ -80,9 +92,18 @@ if __name__ == '__main__':
     md2.config.LoggingConfig(level=logging.INFO, basepath=basepath)
 
     # Load the negative binomial parameters
-    negbin = md2.BaseMCMC.load(args.negbin)
-    a0 = md2.summary(negbin.graph[STRNAMES.NEGBIN_A0])['mean']
-    a1 = md2.summary(negbin.graph[STRNAMES.NEGBIN_A1])['mean']
+    if len(args.negbin) == 1:
+        negbin = md2.BaseMCMC.load(args.negbin)
+        a0 = md2.summary(negbin.graph[STRNAMES.NEGBIN_A0])['mean']
+        a1 = md2.summary(negbin.graph[STRNAMES.NEGBIN_A1])['mean']
+        
+    elif len(args.negbin) == 2:
+        a0 = float(args.negbin[0])
+        a1 = float(args.negbin[1])
+    else:
+        raise ValueError('There must be only 1 or two arguments. use `python ' \
+            'step_5_infer_mdsine2.py --help` for options')
+
     logging.info('Setting a0 = {:.4E}, a1 = {:.4E}'.format(a0,a1))
 
     # 3) Begin inference

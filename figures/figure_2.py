@@ -10,6 +10,7 @@ Parameters
 import mdsine2 as md2
 import pandas as pd
 import numpy as np
+import sys
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -136,7 +137,10 @@ def _get_top(df, cutoff_frac_abundance, taxlevel, taxaname_map=None):
     return df
 
 def _make_full_df(dset):
-    subjset = md2.dataset.gibson(dset=dset)
+    sys.path.append('..')
+    from util import load_gibson_dataset
+
+    subjset = load_gibson_dataset(dset=dset)
     # Make the data frame
     taxidx = TAXLEVEL_REV_IDX[TAXLEVEL]
     upper_tax = TAXLEVEL_INTS[taxidx+1]

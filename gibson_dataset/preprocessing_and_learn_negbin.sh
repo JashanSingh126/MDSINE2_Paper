@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Agglomerate ASVs into OTUs
-python preprocess.py \
+python scripts/preprocess.py \
     --hamming-distance 2 \
     --rename-prefix OTU \
     --sequences files/preprocessing/gibson_16S_rRNA_v4_ASV_seqs_aligned_filtered.fa \
@@ -9,7 +9,7 @@ python preprocess.py \
     --remove-timepoints 0 0.5 1
 
 # Assign taxonomy for OTUs
-python assign_taxonomy_for_consensus_seqs.py \
+python scripts/assign_taxonomy_for_consensus_seqs.py \
     --rdp-table files/assign_taxonomy_OTUs/taxonomy_RDP.txt \
     --confidence-threshold 50 \
     --output-basepath ../output/processed_data
@@ -33,7 +33,7 @@ python ../step_2_filtering.py \
     --colonization-time 5
 
 # Learn negative binomial dispersion parameters
-python filter_replicates_like_other_dataset.py \
+python scripts/filter_replicates_like_other_dataset.py \
     --replicate-dataset ../output/processed_data/gibson_replicates_agg_taxa.pkl \
     --like-other ../output/processed_data/gibson_healthy_agg_taxa.pkl \
     --output-basepath ../output/processed_data/gibson_replicates_agg_taxa_filtered.pkl

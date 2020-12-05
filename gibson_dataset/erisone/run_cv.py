@@ -44,22 +44,36 @@ echo '---TEMPORARY SCRATCH FOLDER ($TMPDIR):---'
 echo $TMPDIR
 
 
-# Run the job
+# Load the environment
 module load anaconda/default
 source activate {environment_name}
-cd {code_basepath}
 
-python ../../run_cross_validation.py \
+
+# Run a fold in the cross validation
+cd {code_basepath}
+python run_cross_validation.py \
     --dataset {dset_fileloc} \
     --cv-basepath {cv_basepath} \
     --dset-basepath {dset_basepath} \
-    --negbin-run {negbin_run} \
+    --negbin {negbin_run} \
     --seed {seed} \
     --burnin {burnin} \
     --n-samples {n_samples} \
     --checkpoint {checkpoint} \
     --multiprocessing {mp} \
     --leave-out-subject {leave_out_subject}
+
+# Compute forward simulations for this fold
+cd gibson_dataset/erisone
+
+python run_forward_sim_for_fold.py \
+    --chain {chain_path} \
+    --output-basepath {tla_basepath} \
+    --validation-subject {validation_subject} \
+    --max-tla {max_tla}
+    --environment-name {environment_name}
+    --code-basepath {code_basepath}
+    --lsf-basepath {tla_lsf_basepath}
 '''
 
 import mdsine2 as md2
@@ -78,7 +92,7 @@ if __name__ == '__main__':
         help='This is the basepath to save the lsf files', default='lsf_files/')
     parser.add_argument('--leave-out-subject', '-lo', type=str, dest='leave_out_subj',
         help='This is the subject to leave out')
-    parser.add_argument('--negbin-run', type=str, dest='negbin',
+    parser.add_argument('--negbin', type=str, dest='negbin',
         help='This is the MCMC object that was run to learn a0 and a1')
     parser.add_argument('--seed', '-s', type=int, dest='seed',
         help='This is the seed to initialize the inference with')
@@ -97,6 +111,8 @@ if __name__ == '__main__':
         help='Name of the conda environment to activate when the job starts')
     parser.add_argument('--code-basepath', type=str, dest='code_basepath',
         help='Where the `run_cross_validation` script is located')
+    parser.add_argument('--max-tla', type=int, dest='max_tla',
+        help='Maximum time for time lookahead')
 
     args = parser.parse_args()
     study = md2.Study.load(args.dataset)
@@ -109,6 +125,22 @@ if __name__ == '__main__':
 
     jobname = dset + '-cv' + args.leave_out_subj
 
+    # Make parameters for time-lookahead
+    chain_path = os.path.join(
+        '../../',
+        args.output_basepath,
+        jobname,
+        'mcmc.pkl')
+    validation_subject = os.path.join(
+        '../../',
+        args.input_basepath,
+        jobname + '-validate.pkl')
+    tla_basepath = os.path.join(
+        '../../',
+        args.output_basepath,
+        'forward_sims')
+    tla_lsf_basepath = os.path.join(lsf_basepath, 'tla')
+
     lsfname = os.path.join(lsf_basepath, jobname + '.lsf')
     f = open(lsfname, 'w')
     f.write(lsfstr.format(
@@ -119,6 +151,9 @@ if __name__ == '__main__':
         dset_basepath=args.input_basepath, negbin_run=args.negbin, 
         seed=args.seed, burnin=args.burnin, n_samples=args.n_samples,
         checkpoint=args.checkpoint, mp=args.mp, 
-        leave_out_subject=args.leave_out_subj))
+        leave_out_subject=args.leave_out_subj,
+        chain_path=chain_path, tla_basepath=tla_basepath,
+        max_tla=args.max_tla, validation_subject=validation_subject,
+        tla_lsf_basepath=tla_lsf_basepath))
     f.close()
     os.system('bsub < {}'.format(lsfname))

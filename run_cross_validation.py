@@ -18,7 +18,7 @@ Parameters
     This is the path to save the datasets that are created for each CV
 --leave-out-subject, -lo : str
     Subject to leave out
---negbin-run : str
+--negbin : str
     This is the MCMC object that was run to learn a0 and a1
 --seed, -s : int
     This is the seed to initialize the inference with
@@ -41,7 +41,7 @@ import pathlib
 import sys
 
 command_fmt = 'python {script} --input {dset} ' \
-    '--negbin-run {negbin} ' \
+    '--negbin {negbin} ' \
     '--seed {seed} ' \
     '--burnin {burnin} ' \
     '--n-samples {n_samples} ' \
@@ -59,7 +59,7 @@ if __name__ == '__main__':
         help='This is the basepath to load and save the cv datasets')
     parser.add_argument('--leave-out-subject', '-lo', type=str, dest='leave_out_subj',
         help='This is the subject to leave out')
-    parser.add_argument('--negbin-run', type=str, dest='negbin',
+    parser.add_argument('--negbin', type=str, dest='negbin',
         help='This is the MCMC object that was run to learn a0 and a1')
     parser.add_argument('--seed', '-s', type=int, dest='seed',
         help='This is the seed to initialize the inference with')
