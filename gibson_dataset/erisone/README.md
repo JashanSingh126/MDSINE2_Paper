@@ -11,10 +11,13 @@ To run cross validation and forward simulation, run
 ```bash
 ./submit_cv_and_tla.sh
 ```
-Note that computing forward simulation submits many jobs to the short and medium queue
+To only run forward simulation, run
+```bash
+./submit_tla.sh
+```
 
 ### Run the model
 Run the model and fixed_clustering with two different seeds
 ```bash
-./run_model.sh
+./submit_mdsine2.sh
 ```

@@ -17,7 +17,6 @@ lsfstr = '''#!/bin/bash
 #BSUB -M {mem}
 #BSUB -R rusage[mem={mem}]
 
-# 
 echo '---PROCESS RESOURCE LIMITS---'
 ulimit -a
 echo '---SHARED LIBRARY PATH---'

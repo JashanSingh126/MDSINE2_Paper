@@ -47,10 +47,9 @@ echo $TMPDIR
 # Load the environment
 module load anaconda/default
 source activate {environment_name}
-
+cd {code_basepath}
 
 # Run a fold in the cross validation
-cd {code_basepath}
 python run_cross_validation.py \
     --dataset {dset_fileloc} \
     --cv-basepath {cv_basepath} \
@@ -65,7 +64,6 @@ python run_cross_validation.py \
 
 # Compute forward simulations for this fold
 cd gibson_dataset/erisone
-
 python run_forward_sim_for_fold.py \
     --chain {chain_path} \
     --output-basepath {tla_basepath} \
