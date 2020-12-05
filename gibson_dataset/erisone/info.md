@@ -13,5 +13,5 @@ Note that computing forward simulation submits many jobs to the short and medium
 ### Run the model
 Run the model with two different seeds
 ```bash
-./submit_infer_mdsine2_and_fixed_top.sh
+./run_model.sh
 ```

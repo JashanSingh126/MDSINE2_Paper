@@ -1,15 +1,22 @@
 #!/bin/bash
 
+NEGBIN = "../output/negbin/replicates/mcmc.pkl"
+SEED = "0"
+BURNIN = "5000"
+N_SAMPLES = "15000"
+CHECKPOINT = "100"
+MULTIPROCESSING = "1"
+
 # Healthy cohort
 # --------------
 python ../step_5_infer_mdsine2.py \
     --input ../output/processed_data/gibson_healthy_agg_taxa_filtered.pkl \
-    --negbin ../output/negbin/replicates/mcmc.pkl \
-    --seed 0 \
-    --burnin 5000 \
-    --n-samples 15000 \
-    --checkpoint 100 \
-    --multiprocessing 1 \
+    --negbin $NEGBIN \
+    --seed $SEED \
+    --burnin $BURNIN \
+    --n-samples $N_SAMPLES \
+    --checkpoint $CHECKPOINT \
+    --multiprocessing $MULTIPROCESSING \
     --basepath ../output/mdsine2/fixed_clustering \
     --fixed-clustering ../output/mdsine2/healthy-seed0/mcmc.pkl
 python ../step_6_visualize_mdsine2.py \
@@ -21,12 +28,12 @@ python ../step_6_visualize_mdsine2.py \
 # ---------
 python ../step_5_infer_mdsine2.py \
     --input ../output/processed_data/gibson_uc_agg_taxa_filtered.pkl \
-    --negbin ../output/negbin/replicates/mcmc.pkl \
-    --seed 0 \
-    --burnin 5000 \
-    --n-samples 15000 \
-    --checkpoint 100 \
-    --multiprocessing 1 \
+    --negbin $NEGBIN \
+    --seed $SEED \
+    --burnin $BURNIN \
+    --n-samples $N_SAMPLES \
+    --checkpoint $CHECKPOINT \
+    --multiprocessing $MULTIPROCESSING \
     --basepath ../output/mdsine2/fixed_clustering \
     --fixed-clustering ../output/mdsine2/uc-seed0/mcmc.pkl
 python ../step_6_visualize_mdsine2.py \
