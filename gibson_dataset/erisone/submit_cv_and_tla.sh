@@ -45,7 +45,13 @@ python scripts/run_cv.py \
     --environment-name $ENVIRONMENT_NAME \
     --code-basepath $MDSINE2_PAPER_CODE_PATH \
     --leave-out-subject 2 \
-    --max-tla $MAX_TLA
+    --max-tla $MAX_TLA \
+    --cv-queue $CV_QUEUE \
+    --cv-memory $CV_MEM \
+    --cv-n-cpus $CV_N \
+    --tla-queue $TLA_QUEUE \
+    --tla-n-cpus $TLA_N \
+    --tla-memory $TLA_MEM
 
 python scripts/run_cv.py \
     --dataset $HEALTHY_DATASET \
@@ -60,7 +66,13 @@ python scripts/run_cv.py \
     --environment-name $ENVIRONMENT_NAME \
     --code-basepath $MDSINE2_PAPER_CODE_PATH \
     --leave-out-subject 3 \
-    --max-tla $MAX_TLA
+    --max-tla $MAX_TLA \
+    --cv-queue $CV_QUEUE \
+    --cv-memory $CV_MEM \
+    --cv-n-cpus $CV_N \
+    --tla-queue $TLA_QUEUE \
+    --tla-n-cpus $TLA_N \
+    --tla-memory $TLA_MEM
 
 python scripts/run_cv.py \
     --dataset $HEALTHY_DATASET \
@@ -75,7 +87,13 @@ python scripts/run_cv.py \
     --environment-name $ENVIRONMENT_NAME \
     --code-basepath $MDSINE2_PAPER_CODE_PATH \
     --leave-out-subject 4 \
-    --max-tla $MAX_TLA
+    --max-tla $MAX_TLA \
+    --cv-queue $CV_QUEUE \
+    --cv-memory $CV_MEM \
+    --cv-n-cpus $CV_N \
+    --tla-queue $TLA_QUEUE \
+    --tla-n-cpus $TLA_N \
+    --tla-memory $TLA_MEM
 
 python scripts/run_cv.py \
     --dataset $HEALTHY_DATASET \
@@ -90,7 +108,13 @@ python scripts/run_cv.py \
     --environment-name $ENVIRONMENT_NAME \
     --code-basepath $MDSINE2_PAPER_CODE_PATH \
     --leave-out-subject 5 \
-    --max-tla $MAX_TLA
+    --max-tla $MAX_TLA \
+    --cv-queue $CV_QUEUE \
+    --cv-memory $CV_MEM \
+    --cv-n-cpus $CV_N \
+    --tla-queue $TLA_QUEUE \
+    --tla-n-cpus $TLA_N \
+    --tla-memory $TLA_MEM
 
 # Run uc for each subject
 # -----------------------
@@ -107,7 +131,13 @@ python scripts/run_cv.py \
     --environment-name $ENVIRONMENT_NAME \
     --code-basepath $MDSINE2_PAPER_CODE_PATH \
     --leave-out-subject 6 \
-    --max-tla $MAX_TLA
+    --max-tla $MAX_TLA \
+    --cv-queue $CV_QUEUE \
+    --cv-memory $CV_MEM \
+    --cv-n-cpus $CV_N \
+    --tla-queue $TLA_QUEUE \
+    --tla-n-cpus $TLA_N \
+    --tla-memory $TLA_MEM
 
 python scripts/run_cv.py \
     --dataset $UC_DATASET \
@@ -122,7 +152,13 @@ python scripts/run_cv.py \
     --environment-name $ENVIRONMENT_NAME \
     --code-basepath $MDSINE2_PAPER_CODE_PATH \
     --leave-out-subject 7 \
-    --max-tla $MAX_TLA
+    --max-tla $MAX_TLA \
+    --cv-queue $CV_QUEUE \
+    --cv-memory $CV_MEM \
+    --cv-n-cpus $CV_N \
+    --tla-queue $TLA_QUEUE \
+    --tla-n-cpus $TLA_N \
+    --tla-memory $TLA_MEM
 
 python scripts/run_cv.py \
     --dataset $UC_DATASET \
@@ -137,7 +173,13 @@ python scripts/run_cv.py \
     --environment-name $ENVIRONMENT_NAME \
     --code-basepath $MDSINE2_PAPER_CODE_PATH \
     --leave-out-subject 8 \
-    --max-tla $MAX_TLA
+    --max-tla $MAX_TLA \
+    --cv-queue $CV_QUEUE \
+    --cv-memory $CV_MEM \
+    --cv-n-cpus $CV_N \
+    --tla-queue $TLA_QUEUE \
+    --tla-n-cpus $TLA_N \
+    --tla-memory $TLA_MEM
 
 python scripts/run_cv.py \
     --dataset $UC_DATASET \
@@ -152,7 +194,13 @@ python scripts/run_cv.py \
     --environment-name $ENVIRONMENT_NAME \
     --code-basepath $MDSINE2_PAPER_CODE_PATH \
     --leave-out-subject 9 \
-    --max-tla $MAX_TLA
+    --max-tla $MAX_TLA \
+    --cv-queue $CV_QUEUE \
+    --cv-memory $CV_MEM \
+    --cv-n-cpus $CV_N \
+    --tla-queue $TLA_QUEUE \
+    --tla-n-cpus $TLA_N \
+    --tla-memory $TLA_MEM
 
 python scripts/run_cv.py \
     --dataset $UC_DATASET \
@@ -167,4 +215,10 @@ python scripts/run_cv.py \
     --environment-name $ENVIRONMENT_NAME \
     --code-basepath $MDSINE2_PAPER_CODE_PATH \
     --leave-out-subject 10 \
-    --max-tla $MAX_TLA
+    --max-tla $MAX_TLA \
+    --cv-queue $CV_QUEUE \
+    --cv-memory $CV_MEM \
+    --cv-n-cpus $CV_N \
+    --tla-queue $TLA_QUEUE \
+    --tla-n-cpus $TLA_N \
+    --tla-memory $TLA_MEM

@@ -7,8 +7,8 @@ LSF, RUN THE SCRIPT `MDSINE2/gibson_dataset/run_cv.sh`.
 
 lsfstr = '''#!/bin/bash
 #BSUB -J {jobname}
-#BSUB -o {lsf_files}{jobname}.out
-#BSUB -e {lsf_files}{jobname}.err
+#BSUB -o {stdout_loc}{jobname}.out
+#BSUB -e {stderr_loc}{jobname}.err
 
 #BSUB -q {cv_queue}
 #BSUB -n {cv_cpus}
@@ -62,15 +62,24 @@ python run_cross_validation.py \
     --multiprocessing {mp} \
     --leave-out-subject {leave_out_subject}
 
-# Compute forward simulations for this fold
-cd gibson_dataset/erisone
-python run_forward_sim_for_fold.py \
+python gibson_dataset/scripts/convert_trace_to_numpy.py \
     --chain {chain_path} \
+    --output-basepath {numpy_basepath} \
+    --section posterior
+
+# Compute forward simulations for this fold
+python gibson_dataset/erisone/run_forward_sim_for_fold.py \
+    --chain {numpy_basepath} \
+    --validation {validation_subject} \
+    --n-days {max_tla} \
+    --limit-of-detection {lim_of_detection} \
+    --sim-max {sim_max} \
     --output-basepath {tla_basepath} \
-    --validation-subject {validation_subject} \
-    --max-tla {max_tla}
-    --environment-name {environment_name}
-    --code-basepath {code_basepath}
+    --environment-name {environment_name} \
+    --code-basepath {code_basepath} \
+    --queue {tla_queue} \
+    --memory {tla_mem} \
+    --n-cpus {tla_cpus} \
     --lsf-basepath {tla_lsf_basepath}
 '''
 
@@ -105,8 +114,15 @@ if __name__ == '__main__':
     parser.add_argument('--multiprocessing', '-mp', type=int, dest='mp',
         help='If 1, run the inference with multiprocessing. Else run on a single process',
         default=0)
+
+    # TLA arguments
     parser.add_argument('--max-tla', type=int, dest='max_tla',
         help='Maximum time for time lookahead')
+    parser.add_argument('--simulation-dt', type=float, dest='simulation_dt',
+        help='Timesteps we go in during forward simulation', default=0.01)
+    parser.add_argument('--sim-max', dest='sim_max',
+        help='Maximum value', default=1e20)
+    
     #ErisOne arguments
     parser.add_argument('--environment-name', dest='environment_name', type=str,
         help='Name of the conda environment to activate when the job starts')
@@ -134,28 +150,31 @@ if __name__ == '__main__':
     lsf_basepath = os.path.join(args.lsf_basepath, dset)
     os.makedirs(lsf_basepath, exist_ok=True)
 
+    script_path = os.path.join(lsf_basepath, 'scripts')
+    stdout_loc = os.path.join(lsf_basepath, 'stdout')
+    stderr_loc = os.path.join(lsf_basepath, 'stderr')
+    os.makedirs(script_path, exist_ok=True)
+    os.makedirs(stdout_loc, exist_ok=True)
+    os.makedirs(stderr_loc, exist_ok=True)
+
+
     jobname = dset + '-cv' + args.leave_out_subj
 
     # Make parameters for time-lookahead
-    chain_path = os.path.join(
-        '../../',
-        args.output_basepath,
-        jobname,
-        'mcmc.pkl')
-    validation_subject = os.path.join(
-        '../../',
-        args.input_basepath,
-        jobname + '-validate.pkl')
-    tla_basepath = os.path.join(
-        '../../',
-        args.output_basepath,
-        'forward_sims')
+    chain_path = os.path.join(args.output_basepath, jobname, 'mcmc.pkl')
+    numpy_basepath = os.path.join(args.output_basepath, jobname, 'numpy_trace')
+    validation_subject = os.path.join(args.input_basepath, jobname + '-validate.pkl')
+    tla_basepath = os.path.join(args.output_basepath, 'forward_sims')
     tla_lsf_basepath = os.path.join(lsf_basepath, 'tla')
 
-    lsfname = os.path.join(lsf_basepath, jobname + '.lsf')
+    os.makedirs(numpy_basepath, exist_ok=True)
+    os.makedirs(tla_basepath, exist_ok=True)
+    os.makedirs(tla_lsf_basepath, exist_ok=True)
+
+    lsfname = os.path.join(script_path, jobname + '.lsf')
     f = open(lsfname, 'w')
     f.write(lsfstr.format(
-        jobname=jobname, lsf_files=lsf_basepath,
+        jobname=jobname, stdout_loc=stdout_loc, stderr_loc=stderr_loc,
         environment_name=args.environment_name, 
         cv_queue=args.cv_queue, cv_cpus=args.cv_cpus, cv_memory=args.cv_memory,
         code_basepath=args.code_basepath,
@@ -164,9 +183,12 @@ if __name__ == '__main__':
         seed=args.seed, burnin=args.burnin, n_samples=args.n_samples,
         checkpoint=args.checkpoint, mp=args.mp, 
         leave_out_subject=args.leave_out_subj,
-        chain_path=chain_path, tla_basepath=tla_basepath,
-        max_tla=args.max_tla, validation_subject=validation_subject,
-        tla_lsf_basepath=tla_lsf_basepath))
+        chain_path=chain_path, numpy_basepath=numpy_basepath,
+        validation_subject=validation_subject, 
+        max_tla=args.max_tla, lim_of_detection=args.limit_of_detection, 
+        sim_max=args.sim_max, tla_basepath=tla_basepath, 
+        tla_queue=args.tla_queue, tla_mem=args.tla_memory, 
+        tla_cpus=args.tla_cpus, tla_lsf_basepath=tla_lsf_basepath))
     f.close()
     command = 'bsub < {}'.format(lsfname)
     print(command)

@@ -9,8 +9,8 @@ LSF, RUN THE SCRIPT `MDSINE2/gibson_dataset/run_msine2.sh` and
 
 lsfstr = '''#!/bin/bash
 #BSUB -J {jobname}
-#BSUB -o {lsf_files}{jobname}.out
-#BSUB -e {lsf_files}{jobname}.err
+#BSUB -o {stdout_loc}{jobname}.out
+#BSUB -e {stderr_loc}{jobname}.err
 
 #BSUB -q {queue}
 #BSUB -n {cpus}
@@ -145,12 +145,21 @@ if __name__ == '__main__':
     fixed_posterior_path = os.path.join(args.fixed_basepath, jobname, 'posterior')
 
     lsfdir = args.lsf_basepath
+
+    script_path = os.path.join(lsfdir, 'scripts')
+    stdout_loc = os.path.join(lsfdir, 'stdout')
+    stderr_loc = os.path.join(lsfdir, 'stderr')
+    os.makedirs(script_path, exist_ok=True)
+    os.makedirs(stdout_loc, exist_ok=True)
+    os.makedirs(stderr_loc, exist_ok=True)
+
     os.makedirs(lsfdir, exist_ok=True)
-    lsfname = os.path.join(lsfdir, jobname + '.lsf')
+    lsfname = os.path.join(script_path, jobname + '.lsf')
 
     f = open(lsfname, 'w')
     f.write(lsfstr.format(
-        jobname=jobname, lsf_files=lsfdir, environment_name=args.environment_name,
+        jobname=jobname, stdout_loc=stdout_loc, stderr_loc=stderr_loc, 
+        environment_name=args.environment_name,
         code_basepath=args.code_basepath, queue=args.queue, cpus=args.cpus, 
         mem=args.memory, dset_fileloc=args.dataset, 
         negbin_run=args.negbin, seed=args.seed, burnin=args.burnin, 

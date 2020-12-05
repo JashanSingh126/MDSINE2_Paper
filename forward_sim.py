@@ -261,9 +261,9 @@ if __name__ == '__main__':
         help='Data to do inference with')
     parser.add_argument('--simulation-dt', type=float, dest='simulation_dt',
         help='Timesteps we go in during forward simulation', default=0.01)
-    parser.add_argument('--start', type=float, dest='start',
+    parser.add_argument('--start', type=str, dest='start',
         help='Day to start on', default=None)
-    parser.add_argument('--n-days', type=float, dest='n_days',
+    parser.add_argument('--n-days', type=str, dest='n_days',
         help='Number of days to simulate for', default=None)
     parser.add_argument('--limit-of-detection', dest='limit_of_detection',
         help='If any of the taxas have a 0 abundance at the start, then we ' \
@@ -283,6 +283,21 @@ if __name__ == '__main__':
     save_intermediate_times = bool(args.save_intermediate_times)
     os.makedirs(args.basepath, exist_ok=True)
 
+    # Set the start and end times
+    start_time = args.start
+    if start_time is not None:
+        if start_time.lower() == 'none':
+            start_time = None
+        else:
+            start_time = float(start_time)
+
+    n_days_total = args.n_days
+    if n_days_total is not None:
+        if n_days_total.lower() == 'none':
+            n_days_total = None
+        else:
+            n_days_total = float(n_days_total)
+
     # Get the traces of the parameters
     # --------------------------------
     if '.pkl' in args.input:
@@ -300,6 +315,7 @@ if __name__ == '__main__':
             for pert in mcmc.graph.perturbations:
                 perturbations[pert.name] = {}
                 perturbations[pert.name]['value'] = pert.get_trace_from_disk()
+                perturbations[pert.name]['value'][np.isnan(perturbations[pert.name]['value'])] = 0
 
         else:
             logging.info('Did not find perturbations')
@@ -319,7 +335,7 @@ if __name__ == '__main__':
             logging.info('Did not find perturbations')
             perturbations = None
 
-    if args.start is None and args.n_days is None and not save_intermediate_times:
+    if start_time is None and n_days_total is None and not save_intermediate_times:
         full_pred = True
     else:
         full_pred = False
@@ -328,18 +344,18 @@ if __name__ == '__main__':
     for subj in study:
         logging.info('Subject {}'.format(subj.name))
         logging.info('{}'.format(subj.times))
-        if args.start is None:
+        if start_time is None:
             start = subj.times[0]
         else:
-            start = args.start
+            start = start_time
         if start not in subj.times:
             logging.warning('Start time {} not contained in subject {} times ({}). skipping'.format(
                 start, subj.name, subj.times))
             continue
-        if args.n_days is None:
+        if n_days_total is None:
             n_days = subj.times[-1] - start
         else:
-            n_days = args.n_days
+            n_days = n_days_total
 
         if perturbations is not None:
             for pert in subj.perturbations:
