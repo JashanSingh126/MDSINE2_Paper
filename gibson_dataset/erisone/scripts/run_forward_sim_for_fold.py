@@ -76,8 +76,6 @@ if __name__ == '__main__':
         help='Data to do inference with')
     parser.add_argument('--simulation-dt', type=float, dest='simulation_dt',
         help='Timesteps we go in during forward simulation', default=0.01)
-    parser.add_argument('--start', type=str, dest='start',
-        help='Day to start on', default=None)
     parser.add_argument('--n-days', type=str, dest='n_days',
         help='Number of days to simulate for', default=None)
     parser.add_argument('--limit-of-detection', dest='limit_of_detection',
@@ -123,7 +121,7 @@ if __name__ == '__main__':
     os.makedirs(stdout_loc, exist_ok=True)
     os.makedirs(stderr_loc, exist_ok=True)
 
-    # Do time lookahead
+    # Do time lookahead (do not include last time point)
     for start in times[:-1]:
         jobname = study.name + '-{}-{}'.format(start, n_days)
 
