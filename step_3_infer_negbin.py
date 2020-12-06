@@ -3,24 +3,7 @@ of the reads. We learn these parameters with replicate measurements of the reads
 
 Author: David Kaplan
 Date: 11/30/20
-MDSINE2 version: 4.0.4
-
-Parameters
-----------
---input, -i : str
-    This is the dataset to do inference with
---seed, -s : int
-    This is the seed to initialize the inference with
---burnin, -b : int
-    How many burn-in Gibb steps for Markov Chain Monte Carlo (MCMC)
---n-samples, -n : int
-    Total number Gibb steps to perform during MCMC inference
---checkpoint, -c : int
-    How often to write the posterior to disk. Note that `--burnin` and
-    `--n-samples` must be a multiple of `--checkpoint` (e.g. checkpoint = 100, 
-    n_samples = 600, burnin = 300)
---basepath, -b : str
-    Folder location to save to
+MDSINE2 version: 4.0.6
 '''
 import mdsine2 as md2
 import argparse
@@ -28,7 +11,7 @@ import logging
 import os
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--input', '-i', type=str, dest='input',
         help='This is the dataset to do inference with.')
     parser.add_argument('--seed', '-s', type=int, dest='seed',

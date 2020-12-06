@@ -2,22 +2,13 @@
 another dataset. We cannot pass the `replicates` dataset into a consistency
 filter because there is no such thing as a consecutive timepoint in that 
 dataset
-
-Parameters
-----------
---replicate-dataset, -r : str
-    Location of the replicate dataset
---like-other, -l : str
-    Location of the other dataset to filter like
---output-basepath, -o : str
-    Location to save the output
 '''
 import mdsine2 as md2
 import argparse
 import logging
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--replicate-dataset', '-r', type=str, dest='replicate',
         help='Location of the replicate dataset')
     parser.add_argument('--like-other', '-l', type=str, dest='other',

@@ -3,15 +3,7 @@ parameters that was produced with the script `step_3_infer_negbin`
 
 Author: David Kaplan
 Date: 11/30/20
-MDSINE2 version: 4.0.4
-
-Parameters
-----------
---chain, -c : str
-    This is the MCMC object that inference was performed on. This is most likely
-    the `mcmc.pkl` file that is in the output folder of `step_3_infer_negbin`
---output-basepath, -o : str
-    This is the folder to save the output
+MDSINE2 version: 4.0.6
 '''
 import argparse
 import mdsine2 as md2
@@ -21,7 +13,7 @@ import matplotlib.pyplot as plt
 from mdsine2.names import STRNAMES
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--chain', '-c', type=str, dest='chain',
         help='This is the MCMC object that inference was performed on. This is most likely' \
         'the `mcmc.pkl` file that is in the output folder of `step_3_infer_negbin`')

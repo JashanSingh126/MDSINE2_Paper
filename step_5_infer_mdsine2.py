@@ -2,7 +2,7 @@
 
 Author: David Kaplan
 Date: 11/30/20
-MDSINE2 version: 4.0.4
+MDSINE2 version: 4.0.6
 
 Fixed Clustering
 ----------------
@@ -10,34 +10,6 @@ To run inference with fixed clustering, use the parameter `--fixed-clustering` w
 this is the location of the MCMC object ob the inference. This will automatically set the
 parameters for the clustering intialization and set learning turned off for the 
 cluster assignments.
-
-Parameters
-----------
---input, -i : str
-    This is the dataset to do inference with
---fixed-clustering : str
-    If provided, this is the chain used to set the fixed clustering
-    during inference.
---negbin : str, int (+)
-    If there is a single argument, then this is the MCMC object that was run to 
-    learn a0 and a1. If there are two arguments passed, these are the a0 and a1 
-    of the negative binomial dispersion parameters.
---seed, -s : int
-    This is the seed to initialize the inference with
---burnin, -b : int
-    How many burn-in Gibb steps for Markov Chain Monte Carlo (MCMC)
---n-samples, -n : int
-    Total number Gibb steps to perform during MCMC inference
---checkpoint, -c : int
-    How often to write the posterior to disk. Note that `--burnin` and
-    `--n-samples` must be a multiple of `--checkpoint` (e.g. checkpoint = 100, 
-    n_samples = 600, burnin = 300)
---basepath, -b : str
-    Folder location to save to
---multiprocessing : int
-    If 1, run the inference with multiprocessing. Else run on a single process
---rename-study : str
-    If provided, rename the study to this
 '''
 import argparse
 import mdsine2 as md2
@@ -47,8 +19,7 @@ import time
 from mdsine2.names import STRNAMES
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-
+    parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--input', '-i', type=str, dest='input',
         help='This is the dataset to do inference with.')
     parser.add_argument('--fixed-clustering', type=str, dest='fixed_clustering',

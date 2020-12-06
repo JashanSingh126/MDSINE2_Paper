@@ -3,7 +3,7 @@ Ulcerative Colitis cohort, inoculum, and replicate read datasets.
 
 Author: David Kaplan
 Date: 11/30/20
-MDSINE2 version: 4.0.4
+MDSINE2 version: 4.0.6
 
 Methodology
 -----------
@@ -15,23 +15,6 @@ Methodology
 3) Calculate the consensus sequences
 4) Rename the Taxas to OTUs
 5) Remove selected timepoints
-
-Parameters
-----------
---hamming-distance, -hd : int
-    This is the hamming radius to aggregate Taxa sequences. If nothing is provided, 
-    then there will be no aggregation.
---rename-prefix, -rp : str
-    This is the prefix you are renaming the aggregate Taxas to. If nothing is provided,
-    then they will not be renamed.
---sequences, -s : str
-    This is the fasta file location of the aligned sequences for each Taxa that was 
-    used for placement in the phylogenetic tree. If nothing is provided, then do 
-    not replace them.
---output-basepath, -o : str
-    This is where you want to save the parsed dataset.
---remove-timepoints : float, (+)
-    Which times to remove
 
 The file `paper_files/preprocessing/gibson_16S_rRNA_v4_seqs_aligned_filtered.fa` 
 was prepared by first aligning the Taxa sequences to the reference sequeunces in the 
@@ -53,7 +36,7 @@ sys.path.append('..')
 import util
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--output-basepath', '-o', type=str, dest='basepath',
         help='This is where you want to save the parsed dataset.')
     parser.add_argument('--hamming-distance', '-hd', type=int, dest='hamming_distance',

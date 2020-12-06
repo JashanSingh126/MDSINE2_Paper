@@ -1,11 +1,6 @@
 '''Convert the parameters in a MCMC chain object into a folder of numpy arrays.
 This is used so that you can forward simulate from a trace without having to worry
 about permission in HDF5.
-
-
-
-Parameters
-----------
 '''
 
 import mdsine2 as md2
@@ -17,7 +12,7 @@ import logging
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--chain', '-c', type=str, dest='chain',
         help='This is the chain to save')
     parser.add_argument('--section', '-s', type=str, dest='section',

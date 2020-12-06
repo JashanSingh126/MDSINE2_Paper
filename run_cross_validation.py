@@ -2,36 +2,10 @@
 
 Author: David Kaplan
 Date: 11/30/20
-MDSINE2 version: 4.0.4
+MDSINE2 version: 4.0.6
 
 This script runs inference for each cross validation for a single fold. Specify the
 fold by saying which subject (by name) to leave out
-
-Parameters
-----------
---dataset, -d : strto do cross validation with
-    This is the dataset to do inference with
---cv-basepath, -b : str
-    Folder location to save to. Note that this is the basepath for cross validation
-    as a whole. Each fold has its own folder within this folder
---dset-basepath, -db : str
-    This is the path to save the datasets that are created for each CV
---leave-out-subject, -lo : str
-    Subject to leave out
---negbin : str
-    This is the MCMC object that was run to learn a0 and a1
---seed, -s : int
-    This is the seed to initialize the inference with
---burnin, -b : int
-    How many burn-in Gibb steps for Markov Chain Monte Carlo (MCMC)
---n-samples, -n : int
-    Total number Gibb steps to perform during MCMC inference
---checkpoint, -c : int
-    How often to write the posterior to disk. Note that `--burnin` and
-    `--n-samples` must be a multiple of `--checkpoint` (e.g. checkpoint = 100, 
-    n_samples = 600, burnin = 300)
---multiprocessing, -mp : int
-    If 1, run the inference with multiprocessing. Else run on a single process
 '''
 import mdsine2 as md2
 import argparse
@@ -50,7 +24,7 @@ command_fmt = 'python {script} --input {dset} ' \
     '--multiprocessing {mp}'
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--dataset', '-d', type=str, dest='dataset',
         help='This is the Gibson dataset we want to do cross validation on')
     parser.add_argument('--cv-basepath', '-o', type=str, dest='output_basepath',

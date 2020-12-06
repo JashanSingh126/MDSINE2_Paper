@@ -68,7 +68,7 @@ import os
 import numpy as np
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--chain', '-c', type=str, dest='chain',
         help='This is the path of the chain for inference or the folder that contains ' \
              'numpy arrays of the traces for the different parameters')

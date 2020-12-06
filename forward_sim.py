@@ -2,7 +2,7 @@
 
 Author: David Kaplan
 Date: 12/01/20
-MDSINE2 version: 4.0.4
+MDSINE2 version: 4.0.6
 
 Input format
 ------------
@@ -30,9 +30,6 @@ forward simulate from a subjset of the times. Specify the start time with
 `--start` and the number of days to forward simulate with with `--n-days`. If you
 additionally want to save all of the intermediate times within start and end, include
 the flag `--save-intermediate-times`.
-
-Parameters
-----------
 '''
 
 import argparse
@@ -253,7 +250,7 @@ def forward_simulate(growth, self_interactions, interactions, perturbations,
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--input', type=str, dest='input',
         help='Location of input (either folder of the numpy arrays or ' \
             'MDSINE2.BaseMCMC chain)')

@@ -1,20 +1,17 @@
 '''Compute the jacobian of the stability for each Gibb step
 
+    ################################################
+    ##
+    ##
+    ## CHANGE
+    ##
+    ################################################
     let x = -inv(A)@r
     then stability_jacobian = diag(x) @ A
 
 Author: David Kaplan
 Date: 11/30/20
-MDSINE2 version: 4.0.4
-
-Parameters
-----------
---chain, -c : str
-    This is the location of the chain pickle object
---outfile, -o : str
-    This is the filename to save it as
---section, -s : str
-    This is the section of the trace to compute the jacobian over
+MDSINE2 version: 4.0.6
 '''
 import mdsine2 as md2
 import numpy as np
@@ -24,7 +21,7 @@ from mdsine2.names import STRNAMES
 import time
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--chain', '-c', type=str, dest='chain',
         help='This is the path of the chain for inference.')
     parser.add_argument('--outfile', '-o', type=str, dest='outfile',

@@ -3,16 +3,7 @@ computed with the script `preprocess.py` with RDP
 
 Author: David Kaplan
 Date: 11/30/20
-MDSINE2 version: 4.0.4
-
-Parameters
-----------
---rdp-table, -r : str
-    Location of RDP file
---confidence-threshold, -c : float
-    This is the minimum confidence required for us to use the classification
---output-basepath, -o : str
-    This is where you want to save the parsed dataset.
+MDSINE2 version: 4.0.6
 '''
 import pandas as pd
 import mdsine2 as md2
@@ -134,7 +125,7 @@ def parse_silva_NOT_USED(fname):
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--rdp-table', '-r', type=str, dest='rdp_table',
         help='Location of RDP file')
     parser.add_argument('--confidence-threshold', '-c', type=float, dest='confidence_threshold',

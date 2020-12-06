@@ -1,6 +1,6 @@
 '''Parse the input files
 
-mdsine2 version: 4.0.4
+mdsine2 version: 4.0.6
 Author : David Kaplan
 Date: 11/30/20
 
@@ -59,23 +59,6 @@ Taxonomy
         Genus taxonomic classification
     species : str
         Species taxonomic classification
-
-Parameters
-----------
---name : str
-    Name of the dataset
---taxonomy : str
-    This is the taxonomy table
---metadata : str
-    This is the metadata table
---reads : str
-    This is the reads table
---qpcr : str
-    This is the qPCR table
---perturbations : str
-    This is the perturbations table
---sep : str
-    This is the separator for the tables
 '''
 import argparse
 import mdsine2 as md2
@@ -83,7 +66,7 @@ import logging
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--name', '-n', type=str, dest='name',
         help='Name of the dataset')
     parser.add_argument('--taxonomy', '-t', type=str, dest='taxonomy',
@@ -99,7 +82,6 @@ if __name__ == '__main__':
         help='This is the perturbation table', default=None)
     parser.add_argument('--sep', '-s', type=str, dest='sep',
         help='This is the separator for the tables', default='\t')
-    
     parser.add_argument('--outfile', '-o', type=str, dest='outfile',
         help='This is where you want to save the parsed dataset')
     args = parser.parse_args()
