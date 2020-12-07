@@ -58,6 +58,7 @@ python scripts/run_cv.py \
 
 python scripts/run_cv.py \
     --dataset $HEALTHY_DATASET \
+    --dataset-curr-path $HEALTHY_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
     --negbin $NEGBIN \
@@ -79,6 +80,7 @@ python scripts/run_cv.py \
 
 python scripts/run_cv.py \
     --dataset $HEALTHY_DATASET \
+    --dataset-curr-path $HEALTHY_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
     --negbin $NEGBIN \
@@ -100,6 +102,7 @@ python scripts/run_cv.py \
 
 python scripts/run_cv.py \
     --dataset $HEALTHY_DATASET \
+    --dataset-curr-path $HEALTHY_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
     --negbin $NEGBIN \
@@ -123,6 +126,7 @@ python scripts/run_cv.py \
 # -----------------------
 python scripts/run_cv.py \
     --dataset $UC_DATASET \
+    --dataset-curr-path $UC_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
     --negbin $NEGBIN \
@@ -144,6 +148,7 @@ python scripts/run_cv.py \
 
 python scripts/run_cv.py \
     --dataset $UC_DATASET \
+    --dataset-curr-path $UC_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
     --negbin $NEGBIN \
@@ -165,6 +170,7 @@ python scripts/run_cv.py \
 
 python scripts/run_cv.py \
     --dataset $UC_DATASET \
+    --dataset-curr-path $UC_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
     --negbin $NEGBIN \
@@ -186,6 +192,7 @@ python scripts/run_cv.py \
 
 python scripts/run_cv.py \
     --dataset $UC_DATASET \
+    --dataset-curr-path $UC_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
     --negbin $NEGBIN \
@@ -207,6 +214,7 @@ python scripts/run_cv.py \
 
 python scripts/run_cv.py \
     --dataset $UC_DATASET \
+    --dataset-curr-path $UC_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \
     --dset-basepath $DSET_BASEPATH \
     --negbin $NEGBIN \
