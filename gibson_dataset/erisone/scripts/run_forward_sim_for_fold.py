@@ -51,13 +51,11 @@ cd {code_basepath}
 
 # Run time lookahead
 python forward_sim.py \
-    --chain {chain} \
+    --input {chain} \
     --validation {validation_path} \
     --simulation-dt {sim_dt} \
     --start {start} \
-    --n_days {n_days} \
-    --limit-of-detection {lim_of_detection} \
-    --sim-max {sim_max} \
+    --n-days {n_days} \
     --output-basepath {basepath} \
     --save-intermediate-times {save_intermed_times}
 '''
@@ -66,8 +64,11 @@ import mdsine2 as md2
 import argparse
 import os
 import numpy as np
+import logging
 
 if __name__ == '__main__':
+    md2.LoggingConfig(level=logging.INFO)
+
     parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--chain', '-c', type=str, dest='chain',
         help='This is the path of the chain for inference or the folder that contains ' \
@@ -75,7 +76,8 @@ if __name__ == '__main__':
     parser.add_argument('--validation', type=str, dest='validation',
         help='Data to do inference with. This we use in the lsf file')
     parser.add_argument('--validation-curr-path', type=str, dest='validation_curr_path',
-        help='Data with a path relative to erisone folder. This is used in this script')
+        help='Data with a path relative to erisone folder. This is used in this script',
+        default=None)
     parser.add_argument('--simulation-dt', type=float, dest='simulation_dt',
         help='Timesteps we go in during forward simulation', default=0.01)
     parser.add_argument('--n-days', type=str, dest='n_days',
@@ -83,8 +85,6 @@ if __name__ == '__main__':
     parser.add_argument('--limit-of-detection', dest='limit_of_detection',
         help='If any of the taxas have a 0 abundance at the start, then we ' \
             'set it to this value.',default=1e5)
-    parser.add_argument('--sim-max', dest='sim_max',
-        help='Maximum value', default=1e20)
     parser.add_argument('--output-basepath', '-o', type=str, dest='basepath',
         help='This is where you are saving the posterior renderings')
 
@@ -105,6 +105,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
     n_days =args.n_days
     basepath = args.basepath
+
+    if args.validation_curr_path is None:
+        logging.info('`validation_curr_path` not passed in. St to the same as validation')
+        args.validation_curr_path = args.validation
 
     # Get all the union timepoints within this study object
     study = md2.Study.load(args.validation_curr_path )
@@ -135,8 +139,7 @@ if __name__ == '__main__':
             queue=args.queue, cpus=args.cpus, mem=args.memory,
             environment_name=args.environment_name, code_basepath=args.code_basepath,
             chain=args.chain, validation_path=args.validation, sim_dt=args.simulation_dt,
-            start=start, n_days=n_days, lim_of_detection=args.limit_of_detection,
-            sim_max=args.sim_max, basepath=basepath, save_intermed_times=1))
+            start=start, n_days=n_days, basepath=basepath, save_intermed_times=1))
         f.close()
         command = 'bsub < {}'.format(lsfname)
         print(command)
@@ -153,8 +156,7 @@ if __name__ == '__main__':
         queue=args.queue, cpus=args.cpus, mem=args.memory,
         environment_name=args.environment_name, code_basepath=args.code_basepath,
         chain=args.chain, validation_path=args.validation, sim_dt=args.simulation_dt,
-        start=None, n_days=None, lim_of_detection=args.limit_of_detection,
-        sim_max=args.sim_max, basepath=basepath, save_intermed_times=0))
+        start=None, n_days=None, basepath=basepath, save_intermed_times=0))
     f.close()
     command = 'bsub < {}'.format(lsfname)
     print(command)

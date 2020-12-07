@@ -24,6 +24,9 @@ if __name__ == '__main__':
         help='How often to write the posterior to disk. Note that `--burnin` and ' \
              '`--n-samples` must be a multiple of `--checkpoint` (e.g. checkpoint = 100, ' \
              'n_samples = 600, burnin = 300)')
+    parser.add_argument('--multiprocessing', '-mp', type=int, dest='mp',
+        help='If 1, run the inference with multiprocessing. Else run on a single process',
+        default=0)
     parser.add_argument('--basepath', '-b', type=str, dest='basepath',
         help='This is folder to save the output of inference')
     args = parser.parse_args()
@@ -37,7 +40,12 @@ if __name__ == '__main__':
     # 1) Load the parameters    
     params = md2.config.NegBinConfig(seed=args.seed, burnin=args.burnin, n_samples=args.n_samples,
         ckpt=args.checkpoint, basepath=basepath)
-    params.MP_FILTERING = 'full'
+    if args.multiprocessing == 1:
+        params.MP_FILTERING = 'full'
+    elif args.multiprocessing == 0:
+        params.MP_FILTERING = 'debug'
+    else:
+        raise ValueError('`multiprocessing` ({}) not recognized'.format(args.multiprocessing))
 
     # 2) Perform inference
     mcmc = md2.negbin.build_graph(params=params, graph_name=study.name, subjset=study)

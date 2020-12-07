@@ -29,8 +29,6 @@ if __name__ == '__main__':
     parser.add_argument('--limit-of-detection', dest='limit_of_detection',
         help='If any of the taxas have a 0 abundance at the start, then we ' \
             'set it to this value.',default=1e5)
-    parser.add_argument('--sim-max', dest='sim_max',
-        help='Maximum value', default=1e20)
     parser.add_argument('--output-basepath', '-o', type=str, dest='basepath',
         help='This is where you are saving the posterior renderings')
     args = parser.parse_args()

@@ -1,4 +1,5 @@
 import mdsine2 as md2
+from mdsine2.names import STRNAMES
 import pandas as pd
 import logging
 import re
@@ -25,18 +26,14 @@ md2.LoggingConfig(level=logging.INFO)
 
 # study.taxas.generate_consensus_taxonomies()
 
+chain2 = 'output/negbin2/replicates/mcmc.pkl'
+chain2 = md2.BaseMCMC.load(chain2)
+a1_2 = chain2.graph[STRNAMES.NEGBIN_A1].get_trace_from_disk()
 
-pred_fname = 'output/mdsine2/cv/forward_sims/healthy-cv2-validate-2-start1.0-ndays1.0.npy'
-truth_fname = 'output/mdsine2/cv/forward_sims/healthy-cv2-validate-2-start1.0-ndays1.0-truth.npy'
-times_fname = 'output/mdsine2/cv/forward_sims/healthy-cv2-validate-2-start1.0-ndays1.0-times.npy'
+chain1 = 'output/negbin/replicates/mcmc.pkl'
+chain1 = md2.BaseMCMC.load(chain1)
+a1_1 = chain1.graph[STRNAMES.NEGBIN_A1].get_trace_from_disk()
 
-pred = np.load(pred_fname)
-truth = np.load(truth_fname)
-times = np.load(times_fname)
+print(np.sum(np.absolute(a1_2-a1_1)))
 
-print(pred.shape)
-print(truth.shape)
 
-# print(pred[0])
-print(times)
-print(np.all(np.isnan(pred)))

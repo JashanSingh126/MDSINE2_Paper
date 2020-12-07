@@ -76,7 +76,7 @@ python ../../step_6_visualize_mdsine2.py \
     --fixed-clustering 0
 
 # Compute forward simulations for this fold
-python gibson_dataset/erisone/run_forward_sim_for_fold.py \
+python gibson_dataset/erisone/scripts/run_forward_sim_for_fold.py \
     --chain {numpy_basepath} \
     --validation {validation_subject} \
     --n-days {max_tla} \
@@ -130,8 +130,6 @@ if __name__ == '__main__':
         help='Maximum time for time lookahead')
     parser.add_argument('--simulation-dt', type=float, dest='simulation_dt',
         help='Timesteps we go in during forward simulation', default=0.01)
-    parser.add_argument('--sim-max', dest='sim_max',
-        help='Maximum value', default=1e20)
     
     #ErisOne arguments
     parser.add_argument('--environment-name', dest='environment_name', type=str,

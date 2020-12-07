@@ -44,6 +44,7 @@ python ../step_3_infer_negbin.py \
     --burnin 2000 \
     --n-samples 6000 \
     --checkpoint 200 \
+    --multiprocessing 0 \
     --basepath ../output/negbin/
 
 python ../step_4_visualize_negbin.py \

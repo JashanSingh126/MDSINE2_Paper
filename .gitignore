@@ -10,3 +10,4 @@ __pycache__
 dockers/
 *.err
 tmp/
+lsf_files
