@@ -60,7 +60,9 @@ python run_cross_validation.py \
     --n-samples {n_samples} \
     --checkpoint {checkpoint} \
     --multiprocessing {mp} \
-    --leave-out-subject {leave_out_subject}
+    --leave-out-subject {leave_out_subject} \
+    --interaction-ind-prior {interaction_prior} \
+    --perturbation-ind-prior {perturbation_prior}
 
 # Make the posterior as numpy arrays
 python gibson_dataset/scripts/convert_trace_to_numpy.py \
@@ -124,6 +126,10 @@ if __name__ == '__main__':
     parser.add_argument('--multiprocessing', '-mp', type=int, dest='mp',
         help='If 1, run the inference with multiprocessing. Else run on a single process',
         default=0)
+    parser.add_argument('--interaction-ind-prior', '-ip', type=str, dest='interaction_prior',
+        help='Prior of the indicator of the interactions')
+    parser.add_argument('--perturbation-ind-prior', '-pp', type=str, dest='perturbation_prior',
+        help='Prior of the indicator of the perturbations')
 
     # TLA arguments
     parser.add_argument('--max-tla', type=int, dest='max_tla',
@@ -190,6 +196,8 @@ if __name__ == '__main__':
         seed=args.seed, burnin=args.burnin, n_samples=args.n_samples,
         checkpoint=args.checkpoint, mp=args.mp, 
         leave_out_subject=args.leave_out_subj,
+        interaction_prior=args.interaction_prior,
+        perturbation_prior=args.perturbation_prior,
         chain_path=chain_path, numpy_basepath=numpy_basepath,
         posterior_basepath=posterior_basepath, validation_subject=validation_subject, 
         max_tla=args.max_tla, tla_basepath=tla_basepath, 

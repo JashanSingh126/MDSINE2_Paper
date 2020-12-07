@@ -21,7 +21,9 @@ command_fmt = 'python {script} --input {dset} ' \
     '--n-samples {n_samples} ' \
     '--checkpoint {ckpt} ' \
     '--basepath {basepath} ' \
-    '--multiprocessing {mp}'
+    '--multiprocessing {mp} ' \
+    '--interaction-ind-prior {interaction_prior} ' \
+    '--perturbation-ind-prior {perturbation_prior}' 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage=__doc__)
@@ -50,6 +52,10 @@ if __name__ == '__main__':
     parser.add_argument('--multiprocessing', '-mp', type=int, dest='mp',
         help='If 1, run the inference with multiprocessing. Else run on a single process',
         default=0)
+    parser.add_argument('--interaction-ind-prior', '-ip', type=str, dest='interaction_prior',
+        help='Prior of the indicator of the interactions')
+    parser.add_argument('--perturbation-ind-prior', '-pp', type=str, dest='perturbation_prior',
+        help='Prior of the indicator of the perturbations')
     
     args = parser.parse_args()
     md2.config.LoggingConfig(level=logging.INFO)
@@ -81,6 +87,8 @@ if __name__ == '__main__':
         script=path,
         dset=study_fname, negbin=args.negbin, seed=args.seed, 
         burnin=args.burnin, n_samples=args.n_samples, ckpt=args.checkpoint,
-        basepath=args.output_basepath, mp=args.mp)
+        basepath=args.output_basepath, mp=args.mp,
+        interaction_prior=args.interaction_prior,
+        perturbation_prior=args.perturbation_prior)
     logging.info(command)
     os.system(command)

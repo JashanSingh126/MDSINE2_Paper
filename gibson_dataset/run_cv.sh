@@ -10,6 +10,8 @@ DSET_BASEPATH="../output/processed_data/cv"
 CV_BASEPATH="../output/mdsine2/cv"
 HEALTHY_DATASET="../output/processed_data/gibson_healthy_agg_taxa_filtered.pkl"
 UC_DATASET="../output/processed_data/gibson_uc_agg_taxa_filtered.pkl"
+INTERACTION_IND_PRIOR="weak-agnostic"
+PERTURBATION_IND_PRIOR="weak-agnostic"
 
 # Run healthy for each subject
 # ----------------------------
@@ -24,7 +26,9 @@ python ../run_cross_validation.py \
     --n-samples $N_SAMPLES \
     --checkpoint $CHECKPOINT \
     --multiprocessing $MULTIPROCESSING \
-    --leave-out-subject 2
+    --leave-out-subject 2 \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
     --chain ${CV_BASEPATH}/healthy-cv2/mcmc.pkl
     --output-basepath ${CV_BASEPATH}/healthy-cv2/posterior"
@@ -40,7 +44,9 @@ python ../run_cross_validation.py \
     --n-samples $N_SAMPLES \
     --checkpoint $CHECKPOINT \
     --multiprocessing $MULTIPROCESSING \
-    --leave-out-subject 3
+    --leave-out-subject 3 \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
     --chain ${CV_BASEPATH}/healthy-cv3/mcmc.pkl
     --output-basepath ${CV_BASEPATH}/healthy-cv3/posterior"
@@ -56,7 +62,9 @@ python ../run_cross_validation.py \
     --n-samples $N_SAMPLES \
     --checkpoint $CHECKPOINT \
     --multiprocessing $MULTIPROCESSING \
-    --leave-out-subject 4
+    --leave-out-subject 4 \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
     --chain ${CV_BASEPATH}/healthy-cv4/mcmc.pkl
     --output-basepath ${CV_BASEPATH}/healthy-cv4/posterior"
@@ -72,7 +80,9 @@ python ../run_cross_validation.py \
     --n-samples $N_SAMPLES \
     --checkpoint $CHECKPOINT \
     --multiprocessing $MULTIPROCESSING \
-    --leave-out-subject 5
+    --leave-out-subject 5 \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
     --chain ${CV_BASEPATH}/healthy-cv5/mcmc.pkl
     --output-basepath ${CV_BASEPATH}/healthy-cv5/posterior"
@@ -90,7 +100,9 @@ python ../run_cross_validation.py \
     --n-samples $N_SAMPLES \
     --checkpoint $CHECKPOINT \
     --multiprocessing $MULTIPROCESSING \
-    --leave-out-subject 6
+    --leave-out-subject 6 \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
     --chain ${CV_BASEPATH}/uc-cv6/mcmc.pkl
     --output-basepath ${CV_BASEPATH}/uc-cv6/posterior"
@@ -106,7 +118,9 @@ python ../run_cross_validation.py \
     --n-samples $N_SAMPLES \
     --checkpoint $CHECKPOINT \
     --multiprocessing $MULTIPROCESSING \
-    --leave-out-subject 7
+    --leave-out-subject 7 \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
     --chain ${CV_BASEPATH}/uc-cv7/mcmc.pkl
     --output-basepath ${CV_BASEPATH}/uc-cv7/posterior"
@@ -122,7 +136,9 @@ python ../run_cross_validation.py \
     --n-samples $N_SAMPLES \
     --checkpoint $CHECKPOINT \
     --multiprocessing $MULTIPROCESSING \
-    --leave-out-subject 8
+    --leave-out-subject 8 \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
     --chain ${CV_BASEPATH}/uc-cv8/mcmc.pkl
     --output-basepath ${CV_BASEPATH}/uc-cv8/posterior"
@@ -138,7 +154,9 @@ python ../run_cross_validation.py \
     --n-samples $N_SAMPLES \
     --checkpoint $CHECKPOINT \
     --multiprocessing $MULTIPROCESSING \
-    --leave-out-subject 9
+    --leave-out-subject 9 \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
     --chain ${CV_BASEPATH}/uc-cv9/mcmc.pkl
     --output-basepath ${CV_BASEPATH}/uc-cv9/posterior"
@@ -154,7 +172,9 @@ python ../run_cross_validation.py \
     --n-samples $N_SAMPLES \
     --checkpoint $CHECKPOINT \
     --multiprocessing $MULTIPROCESSING \
-    --leave-out-subject 10
+    --leave-out-subject 10 \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
     --chain ${CV_BASEPATH}/uc-cv10/mcmc.pkl
     --output-basepath ${CV_BASEPATH}/uc-cv10/posterior"

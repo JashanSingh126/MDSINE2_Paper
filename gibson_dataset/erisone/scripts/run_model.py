@@ -61,7 +61,9 @@ python step_5_infer_mdsine2.py \
     --checkpoint {checkpoint} \
     --multiprocessing {mp} \
     --rename-study {rename_study} \
-    --output-basepath {basepath}
+    --output-basepath {basepath} \
+    --interaction-ind-prior {interaction_prior} \
+    --perturbation-ind-prior {perturbation_prior}
 # Plot the posterior
 python step_6_visualize_mdsine2.py \
     --chain {chain_loc} \
@@ -81,7 +83,9 @@ python step_5_infer_mdsine2.py \
     --checkpoint {checkpoint} \
     --multiprocessing {mp} \
     --rename-study {rename_study} \
-    --output-basepath {fixed_basepath}
+    --output-basepath {fixed_basepath} \
+    --interaction-ind-prior {interaction_prior} \
+    --perturbation-ind-prior {perturbation_prior}
 # Plot the posterior of fixed clustering
 python step_6_visualize_mdsine2.py \
     --chain {fixed_chain_loc} \
@@ -121,6 +125,10 @@ if __name__ == '__main__':
         help='Output of the model', default=None)
     parser.add_argument('--fixed-output-basepath', type=str, dest='fixed_basepath',
         help='Output of the fixed-clustering model', default=None)
+    parser.add_argument('--interaction-ind-prior', '-ip', type=str, dest='interaction_prior',
+        help='Prior of the indicator of the interactions')
+    parser.add_argument('--perturbation-ind-prior', '-pp', type=str, dest='perturbation_prior',
+        help='Prior of the indicator of the perturbations')
     
     # Erisone Parameters
     parser.add_argument('--environment-name', dest='environment_name', type=str,
@@ -169,7 +177,9 @@ if __name__ == '__main__':
         rename_study=args.rename_study, basepath=args.basepath, 
         chain_loc=chain_loc, posterior_path=posterior_path, 
         fixed_basepath=args.fixed_basepath, fixed_chain_loc=fixed_chain_loc, 
-        fixed_posterior_path=fixed_posterior_path))
+        fixed_posterior_path=fixed_posterior_path,
+        interaction_prior=args.interaction_prior,
+        perturbation_prior=args.perturbation_prior))
     f.close()
     command = 'bsub < {}'.format(lsfname)
     print(command)

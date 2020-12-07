@@ -10,6 +10,11 @@ To run inference with fixed clustering, use the parameter `--fixed-clustering` w
 this is the location of the MCMC object ob the inference. This will automatically set the
 parameters for the clustering intialization and set learning turned off for the 
 cluster assignments.
+
+Priors on the sparsity
+----------------------
+Set the sparsity of the prior indicator of the interactions and perturbations with the
+arguments `--interaction-ind-prior` and `perturbation-ind-prior`.
 '''
 import argparse
 import mdsine2 as md2
@@ -48,6 +53,10 @@ if __name__ == '__main__':
         default=0)
     parser.add_argument('--rename-study', type=str, dest='rename_study',
         help='Specify the name of the study to set', default=None)
+    parser.add_argument('--interaction-ind-prior', '-ip', type=str, dest='interaction_prior',
+        help='Prior of the indicator of the interactions')
+    parser.add_argument('--perturbation-ind-prior', '-pp', type=str, dest='perturbation_prior',
+        help='Prior of the indicator of the perturbations')
     args = parser.parse_args()
 
     # 1) load dataset
@@ -95,6 +104,17 @@ if __name__ == '__main__':
 
         params.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value_option'] = 'fixed-clustering'
         params.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value'] = args.fixed_clustering
+
+    # Set the sparsities
+    if args.interaction_prior is None:
+        raise ValueError('Must specify `--interaction-ind-prior`')
+    params.INITIALIZATION_KWARGS[STRNAMES.CLUSTER_INTERACTION_INDICATOR_PROB]['hyperparam_option'] = \
+        args.interaction_prior
+    if args.perturbation_prior is None:
+        raise ValueError('Must specify `--perturbation-ind-prior`')
+    params.INITIALIZATION_KWARGS[STRNAMES.PERT_INDICATOR_PROB]['hyperparam_option'] = \
+        args.perturbation_prior
+
 
     mcmc = md2.initialize_graph(params=params, graph_name=study.name, subjset=study)
     mdata_fname = os.path.join(params.MODEL_PATH, 'metadata.txt')

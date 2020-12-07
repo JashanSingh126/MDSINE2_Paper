@@ -31,6 +31,8 @@ HEALTHY_DATASET_CURR_PATH="../../output/processed_data/gibson_healthy_agg_taxa_f
 UC_DATASET="output/processed_data/gibson_uc_agg_taxa_filtered.pkl"
 UC_DATASET_CURR_PATH="../../output/processed_data/gibson_uc_agg_taxa_filtered.pkl"
 MAX_TLA="8"
+INTERACTION_IND_PRIOR="weak-agnostic"
+PERTURBATION_IND_PRIOR="weak-agnostic"
 
 # Run healthy for each subject
 # ----------------------------
@@ -54,7 +56,9 @@ python scripts/run_cv.py \
     --cv-n-cpus $CV_N \
     --tla-queue $TLA_QUEUE \
     --tla-n-cpus $TLA_N \
-    --tla-memory $TLA_MEM
+    --tla-memory $TLA_MEM \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 python scripts/run_cv.py \
     --dataset $HEALTHY_DATASET \
@@ -76,7 +80,9 @@ python scripts/run_cv.py \
     --cv-n-cpus $CV_N \
     --tla-queue $TLA_QUEUE \
     --tla-n-cpus $TLA_N \
-    --tla-memory $TLA_MEM
+    --tla-memory $TLA_MEM \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 python scripts/run_cv.py \
     --dataset $HEALTHY_DATASET \
@@ -98,7 +104,9 @@ python scripts/run_cv.py \
     --cv-n-cpus $CV_N \
     --tla-queue $TLA_QUEUE \
     --tla-n-cpus $TLA_N \
-    --tla-memory $TLA_MEM
+    --tla-memory $TLA_MEM \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 python scripts/run_cv.py \
     --dataset $HEALTHY_DATASET \
@@ -120,7 +128,9 @@ python scripts/run_cv.py \
     --cv-n-cpus $CV_N \
     --tla-queue $TLA_QUEUE \
     --tla-n-cpus $TLA_N \
-    --tla-memory $TLA_MEM
+    --tla-memory $TLA_MEM \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 # Run uc for each subject
 # -----------------------
@@ -144,7 +154,9 @@ python scripts/run_cv.py \
     --cv-n-cpus $CV_N \
     --tla-queue $TLA_QUEUE \
     --tla-n-cpus $TLA_N \
-    --tla-memory $TLA_MEM
+    --tla-memory $TLA_MEM \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 python scripts/run_cv.py \
     --dataset $UC_DATASET \
@@ -166,7 +178,9 @@ python scripts/run_cv.py \
     --cv-n-cpus $CV_N \
     --tla-queue $TLA_QUEUE \
     --tla-n-cpus $TLA_N \
-    --tla-memory $TLA_MEM
+    --tla-memory $TLA_MEM \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 python scripts/run_cv.py \
     --dataset $UC_DATASET \
@@ -188,7 +202,9 @@ python scripts/run_cv.py \
     --cv-n-cpus $CV_N \
     --tla-queue $TLA_QUEUE \
     --tla-n-cpus $TLA_N \
-    --tla-memory $TLA_MEM
+    --tla-memory $TLA_MEM \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 python scripts/run_cv.py \
     --dataset $UC_DATASET \
@@ -210,7 +226,9 @@ python scripts/run_cv.py \
     --cv-n-cpus $CV_N \
     --tla-queue $TLA_QUEUE \
     --tla-n-cpus $TLA_N \
-    --tla-memory $TLA_MEM
+    --tla-memory $TLA_MEM \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 python scripts/run_cv.py \
     --dataset $UC_DATASET \
@@ -232,4 +250,6 @@ python scripts/run_cv.py \
     --cv-n-cpus $CV_N \
     --tla-queue $TLA_QUEUE \
     --tla-n-cpus $TLA_N \
-    --tla-memory $TLA_MEM
+    --tla-memory $TLA_MEM \
+    --interaction-ind-prior $INTERACTION_IND_PRIOR \
+    --perturbation-ind-prior $PERTURBATION_IND_PRIOR
