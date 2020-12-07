@@ -7,8 +7,8 @@ LSF, RUN THE SCRIPT `MDSINE2/gibson_dataset/run_cv.sh`.
 
 lsfstr = '''#!/bin/bash
 #BSUB -J {jobname}
-#BSUB -o {stdout_loc}{jobname}.out
-#BSUB -e {stderr_loc}{jobname}.err
+#BSUB -o {stdout_loc}
+#BSUB -e {stderr_loc}
 
 #BSUB -q {cv_queue}
 #BSUB -n {cv_cpus}
@@ -62,18 +62,24 @@ python run_cross_validation.py \
     --multiprocessing {mp} \
     --leave-out-subject {leave_out_subject}
 
+# Make the posterior as numpy arrays
 python gibson_dataset/scripts/convert_trace_to_numpy.py \
     --chain {chain_path} \
     --output-basepath {numpy_basepath} \
     --section posterior
+
+# Visualize the posterior
+python ../../step_6_visualize_mdsine2.py \
+    --chain {chain_path} \
+    --section posterior \
+    --output-basepath {posterior_basepath} \
+    --fixed-clustering 0
 
 # Compute forward simulations for this fold
 python gibson_dataset/erisone/run_forward_sim_for_fold.py \
     --chain {numpy_basepath} \
     --validation {validation_subject} \
     --n-days {max_tla} \
-    --limit-of-detection {lim_of_detection} \
-    --sim-max {sim_max} \
     --output-basepath {tla_basepath} \
     --environment-name {environment_name} \
     --code-basepath {code_basepath} \
@@ -90,7 +96,11 @@ import os
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--dataset', '-d', type=str, dest='dataset',
-        help='This is the Gibson dataset we want to do cross validation on')
+        help='This is the Gibson dataset we want to do cross validation on. This path' \
+             ' is relative to the code basepath.')
+    parser.add_argument('--dataset-curr-path', '-dcp', type=str, dest='dataset_curr_path',
+        help='This is the Gibson dataset we want to do cross validation on. This path ' \
+             'is relative to the erisone path')
     parser.add_argument('--cv-basepath', '-o', type=str, dest='output_basepath',
         help='This is the basepath to save the output')
     parser.add_argument('--dset-basepath', '-db', type=str, dest='input_basepath',
@@ -142,7 +152,7 @@ if __name__ == '__main__':
         help='Number of cpus to reserve on ErisOne')
 
     args = parser.parse_args()
-    study = md2.Study.load(args.dataset)
+    study = md2.Study.load(args.dataset_curr_path)
     dset = study.name
 
     # Make directory for lsf files
@@ -150,19 +160,18 @@ if __name__ == '__main__':
     lsf_basepath = os.path.join(args.lsf_basepath, dset)
     os.makedirs(lsf_basepath, exist_ok=True)
 
+    jobname = dset + '-cv' + args.leave_out_subj
     script_path = os.path.join(lsf_basepath, 'scripts')
-    stdout_loc = os.path.join(lsf_basepath, 'stdout')
-    stderr_loc = os.path.join(lsf_basepath, 'stderr')
+    stdout_loc = os.path.join(lsf_basepath, 'stdout', jobname + '.out')
+    stderr_loc = os.path.join(lsf_basepath, 'stderr', jobname + '.err')
     os.makedirs(script_path, exist_ok=True)
     os.makedirs(stdout_loc, exist_ok=True)
     os.makedirs(stderr_loc, exist_ok=True)
 
-
-    jobname = dset + '-cv' + args.leave_out_subj
-
     # Make parameters for time-lookahead
     chain_path = os.path.join(args.output_basepath, jobname, 'mcmc.pkl')
     numpy_basepath = os.path.join(args.output_basepath, jobname, 'numpy_trace')
+    posterior_basepath = os.path.join(args.output_basepath, jobname, 'posterior')
     validation_subject = os.path.join(args.input_basepath, jobname + '-validate.pkl')
     tla_basepath = os.path.join(args.output_basepath, 'forward_sims')
     tla_lsf_basepath = os.path.join(lsf_basepath, 'tla')
@@ -176,7 +185,7 @@ if __name__ == '__main__':
     f.write(lsfstr.format(
         jobname=jobname, stdout_loc=stdout_loc, stderr_loc=stderr_loc,
         environment_name=args.environment_name, 
-        cv_queue=args.cv_queue, cv_cpus=args.cv_cpus, cv_memory=args.cv_memory,
+        cv_queue=args.cv_queue, cv_cpus=args.cv_cpus, cv_mem=args.cv_memory,
         code_basepath=args.code_basepath,
         dset_fileloc=args.dataset, cv_basepath=args.output_basepath,
         dset_basepath=args.input_basepath, negbin_run=args.negbin, 
@@ -184,9 +193,8 @@ if __name__ == '__main__':
         checkpoint=args.checkpoint, mp=args.mp, 
         leave_out_subject=args.leave_out_subj,
         chain_path=chain_path, numpy_basepath=numpy_basepath,
-        validation_subject=validation_subject, 
-        max_tla=args.max_tla, lim_of_detection=args.limit_of_detection, 
-        sim_max=args.sim_max, tla_basepath=tla_basepath, 
+        posterior_basepath=posterior_basepath, validation_subject=validation_subject, 
+        max_tla=args.max_tla, tla_basepath=tla_basepath, 
         tla_queue=args.tla_queue, tla_mem=args.tla_memory, 
         tla_cpus=args.tla_cpus, tla_lsf_basepath=tla_lsf_basepath))
     f.close()

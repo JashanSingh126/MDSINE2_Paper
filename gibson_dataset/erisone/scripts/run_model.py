@@ -9,8 +9,8 @@ LSF, RUN THE SCRIPT `MDSINE2/gibson_dataset/run_msine2.sh` and
 
 lsfstr = '''#!/bin/bash
 #BSUB -J {jobname}
-#BSUB -o {stdout_loc}{jobname}.out
-#BSUB -e {stderr_loc}{jobname}.err
+#BSUB -o {stdout_loc}
+#BSUB -e {stderr_loc}
 
 #BSUB -q {queue}
 #BSUB -n {cpus}
@@ -60,13 +60,13 @@ python step_5_infer_mdsine2.py \
     --n-samples {n_samples} \
     --checkpoint {checkpoint} \
     --multiprocessing {mp} \
-    --rename-study {rename_study}
+    --rename-study {rename_study} \
     --output-basepath {basepath}
 # Plot the posterior
 python step_6_visualize_mdsine2.py \
     --chain {chain_loc} \
     --output-basepath {posterior_path} \
-    --section posterior
+    --section posterior \
     --fixed-clustering 0
 
 # Run the model that was just learned with fixed clustering
@@ -80,13 +80,13 @@ python step_5_infer_mdsine2.py \
     --n-samples {n_samples} \
     --checkpoint {checkpoint} \
     --multiprocessing {mp} \
-    --rename-study {rename_study}
+    --rename-study {rename_study} \
     --output-basepath {fixed_basepath}
 # Plot the posterior of fixed clustering
 python step_6_visualize_mdsine2.py \
     --chain {fixed_chain_loc} \
     --output-basepath {fixed_posterior_path} \
-    --section posterior
+    --section posterior \
     --fixed-clustering 1
 '''
 
@@ -147,11 +147,13 @@ if __name__ == '__main__':
     lsfdir = args.lsf_basepath
 
     script_path = os.path.join(lsfdir, 'scripts')
-    stdout_loc = os.path.join(lsfdir, 'stdout')
-    stderr_loc = os.path.join(lsfdir, 'stderr')
+    stdout_loc = os.path.abspath(os.path.join(lsfdir, 'stdout'))
+    stderr_loc = os.path.abspath(os.path.join(lsfdir, 'stderr'))
     os.makedirs(script_path, exist_ok=True)
     os.makedirs(stdout_loc, exist_ok=True)
     os.makedirs(stderr_loc, exist_ok=True)
+    stdout_loc = os.path.join(stdout_loc, jobname + '.out')
+    stderr_loc = os.path.join(stderr_loc, jobname + '.err')
 
     os.makedirs(lsfdir, exist_ok=True)
     lsfname = os.path.join(script_path, jobname + '.lsf')
@@ -164,9 +166,10 @@ if __name__ == '__main__':
         mem=args.memory, dset_fileloc=args.dataset, 
         negbin_run=args.negbin, seed=args.seed, burnin=args.burnin, 
         n_samples=args.n_samples, checkpoint=args.checkpoint, mp=args.mp,
-        rename_study=args.rename_study, basepath=args.fixed_basepath, 
+        rename_study=args.rename_study, basepath=args.basepath, 
         chain_loc=chain_loc, posterior_path=posterior_path, 
-        fixed_chain_loc=fixed_chain_loc, fixed_posterior_path=fixed_posterior_path))
+        fixed_basepath=args.fixed_basepath, fixed_chain_loc=fixed_chain_loc, 
+        fixed_posterior_path=fixed_posterior_path))
     f.close()
     command = 'bsub < {}'.format(lsfname)
     print(command)

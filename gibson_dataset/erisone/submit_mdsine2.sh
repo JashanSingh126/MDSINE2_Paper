@@ -26,72 +26,74 @@ FIXED_BASEPATH="output/mdsine2/fixed_clustering"
 
 # Healthy
 # -------
-python scripts/run_model.py \
-    --dataset $HEALTHY_DATASET \
-    --negbin $NEGBIN \
-    --seed 0 \
-    --burnin $BURNIN \
-    --n-samples $N_SAMPLES \
-    --checkpoint $CHECKPOINT \
-    --multiprocessing $MULTIPROCESSING \
-    --rename-study "healthy-seed0" \
-    --output-basepath $BASEPATH \
-    --fixed-output-basepath $FIXED_BASEPATH \
-    --environment-name $ENVIRONMENT_NAME \
-    --code-basepath $MDSINE2_PAPER_CODE_PATH \
-    --queue $QUEUE \
-    --memory $MEM \
-    --n-cpus $N_CPUS
+python scripts/run_model.py `
+    --dataset output/processed_data/gibson_healthy_agg_taxa_filtered.pkl `
+    --negbin output/negbin/replicates/mcmc.pkl `
+    --seed 0 `
+    --burnin 100 `
+    --n-samples 200 `
+    --checkpoint 100 `
+    --multiprocessing 1 `
+    --rename-study "healthy-seed0" `
+    --output-basepath output/mdsine2 `
+    --fixed-output-basepath output/mdsine2/fixed_clustering `
+    --environment-name mdsine2_403 `
+    --code-basepath /data/cctm/darpa_perturbation_mouse_study/MDSINE2_paper `
+    --queue big-multi `
+    --memory 10000 `
+    --n-cpus 4
 
-python scripts/run_model.py \
-    --dataset $HEALTHY_DATASET \
-    --negbin $NEGBIN \
-    --seed 1 \
-    --burnin $BURNIN \
-    --n-samples $N_SAMPLES \
-    --checkpoint $CHECKPOINT \
-    --multiprocessing $MULTIPROCESSING \
-    --rename-study "healthy-seed1" \
-    --output-basepath $BASEPATH \
-    --fixed-output-basepath $FIXED_BASEPATH \
-    --environment-name $ENVIRONMENT_NAME \
-    --code-basepath $MDSINE2_PAPER_CODE_PATH \
-    --queue $QUEUE \
-    --memory $MEM \
-    --n-cpus $N_CPUS
+sleep 1000
 
-# UC Cohort
-# ---------
-python scripts/run_model.py \
-    --dataset $UC_DATASET \
-    --negbin $NEGBIN \
-    --seed 0 \
-    --burnin $BURNIN \
-    --n-samples $N_SAMPLES \
-    --checkpoint $CHECKPOINT \
-    --multiprocessing $MULTIPROCESSING \
-    --rename-study "uc-seed0" \
-    --output-basepath $BASEPATH \
-    --fixed-output-basepath $FIXED_BASEPATH \
-    --environment-name $ENVIRONMENT_NAME \
-    --code-basepath $MDSINE2_PAPER_CODE_PATH \
-    --queue $QUEUE \
-    --memory $MEM \
-    --n-cpus $N_CPUS
+# python scripts/run_model.py \
+#     --dataset $HEALTHY_DATASET \
+#     --negbin $NEGBIN \
+#     --seed 1 \
+#     --burnin $BURNIN \
+#     --n-samples $N_SAMPLES \
+#     --checkpoint $CHECKPOINT \
+#     --multiprocessing $MULTIPROCESSING \
+#     --rename-study "healthy-seed1" \
+#     --output-basepath $BASEPATH \
+#     --fixed-output-basepath $FIXED_BASEPATH \
+#     --environment-name $ENVIRONMENT_NAME \
+#     --code-basepath $MDSINE2_PAPER_CODE_PATH \
+#     --queue $QUEUE \
+#     --memory $MEM \
+#     --n-cpus $N_CPUS
 
-python scripts/run_model.py \
-    --dataset $UC_DATASET \
-    --negbin $NEGBIN \
-    --seed 1 \
-    --burnin $BURNIN \
-    --n-samples $N_SAMPLES \
-    --checkpoint $CHECKPOINT \
-    --multiprocessing $MULTIPROCESSING \
-    --rename-study "uc-seed1" \
-    --output-basepath $BASEPATH \
-    --fixed-output-basepath $FIXED_BASEPATH \
-    --environment-name $ENVIRONMENT_NAME \
-    --code-basepath $MDSINE2_PAPER_CODE_PATH \
-    --queue $QUEUE \
-    --memory $MEM \
-    --n-cpus $N_CPUS
+# # UC Cohort
+# # ---------
+# python scripts/run_model.py \
+#     --dataset $UC_DATASET \
+#     --negbin $NEGBIN \
+#     --seed 0 \
+#     --burnin $BURNIN \
+#     --n-samples $N_SAMPLES \
+#     --checkpoint $CHECKPOINT \
+#     --multiprocessing $MULTIPROCESSING \
+#     --rename-study "uc-seed0" \
+#     --output-basepath $BASEPATH \
+#     --fixed-output-basepath $FIXED_BASEPATH \
+#     --environment-name $ENVIRONMENT_NAME \
+#     --code-basepath $MDSINE2_PAPER_CODE_PATH \
+#     --queue $QUEUE \
+#     --memory $MEM \
+#     --n-cpus $N_CPUS
+
+# python scripts/run_model.py \
+#     --dataset $UC_DATASET \
+#     --negbin $NEGBIN \
+#     --seed 1 \
+#     --burnin $BURNIN \
+#     --n-samples $N_SAMPLES \
+#     --checkpoint $CHECKPOINT \
+#     --multiprocessing $MULTIPROCESSING \
+#     --rename-study "uc-seed1" \
+#     --output-basepath $BASEPATH \
+#     --fixed-output-basepath $FIXED_BASEPATH \
+#     --environment-name $ENVIRONMENT_NAME \
+#     --code-basepath $MDSINE2_PAPER_CODE_PATH \
+#     --queue $QUEUE \
+#     --memory $MEM \
+#     --n-cpus $N_CPUS

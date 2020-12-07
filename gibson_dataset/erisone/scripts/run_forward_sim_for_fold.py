@@ -7,8 +7,8 @@ called from the lsf script in `run_cv.py`
 
 lsfstr = '''#!/bin/bash
 #BSUB -J {jobname}
-#BSUB -o {stdout_loc}{jobname}.out
-#BSUB -e {stderr_loc}{jobname}.err
+#BSUB -o {stdout_loc}
+#BSUB -e {stderr_loc}
 
 #BSUB -q {queue}
 #BSUB -n {cpus}
@@ -73,7 +73,9 @@ if __name__ == '__main__':
         help='This is the path of the chain for inference or the folder that contains ' \
              'numpy arrays of the traces for the different parameters')
     parser.add_argument('--validation', type=str, dest='validation',
-        help='Data to do inference with')
+        help='Data to do inference with. This we use in the lsf file')
+    parser.add_argument('--validation-curr-path', type=str, dest='validation_curr_path',
+        help='Data with a path relative to erisone folder. This is used in this script')
     parser.add_argument('--simulation-dt', type=float, dest='simulation_dt',
         help='Timesteps we go in during forward simulation', default=0.01)
     parser.add_argument('--n-days', type=str, dest='n_days',
@@ -103,10 +105,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     n_days =args.n_days
     basepath = args.basepath
-    os.makedirs(basepath, exist_ok=True)
 
     # Get all the union timepoints within this study object
-    study = md2.Study.load(args.validation)
+    study = md2.Study.load(args.validation_curr_path )
     times = []
     for subj in study:
         times.append(subj.times)
@@ -125,13 +126,15 @@ if __name__ == '__main__':
     for start in times[:-1]:
         jobname = study.name + '-{}-{}'.format(start, n_days)
 
+        stdout_name = os.path.join(stdout_loc, jobname + '.out')
+        stderr_name = os.path.join(stderr_loc, jobname + '.err')
         lsfname = os.path.join(script_path, jobname + '.lsf')
         f = open(lsfname, 'w')
         f.write(lsfstr.format(
-            jobname=jobname, stdout_loc=stdout_loc, stderr_loc=stderr_loc,
+            jobname=jobname, stdout_loc=stdout_name, stderr_loc=stderr_name,
             queue=args.queue, cpus=args.cpus, mem=args.memory,
             environment_name=args.environment_name, code_basepath=args.code_basepath,
-            chain=args.chain, validate_path=args.validation, sim_dt=args.simulation_dt,
+            chain=args.chain, validation_path=args.validation, sim_dt=args.simulation_dt,
             start=start, n_days=n_days, lim_of_detection=args.limit_of_detection,
             sim_max=args.sim_max, basepath=basepath, save_intermed_times=1))
         f.close()
@@ -141,13 +144,15 @@ if __name__ == '__main__':
 
     # Do full simulation
     jobname = study.name + '-full'
+    stdout_name = os.path.join(stdout_loc, jobname + '.out')
+    stderr_name = os.path.join(stderr_loc, jobname + '.err')
     lsfname = os.path.join(script_path, jobname + '.lsf')
     f = open(lsfname, 'w')
     f.write(lsfstr.format(
-        jobname=jobname, stdout_loc=stdout_loc, stderr_loc=stderr_loc,
+        jobname=jobname, stdout_loc=stdout_name, stderr_loc=stderr_name,
         queue=args.queue, cpus=args.cpus, mem=args.memory,
         environment_name=args.environment_name, code_basepath=args.code_basepath,
-        chain=args.chain, validate_path=args.validation, sim_dt=args.simulation_dt,
+        chain=args.chain, validation_path=args.validation, sim_dt=args.simulation_dt,
         start=None, n_days=None, lim_of_detection=args.limit_of_detection,
         sim_max=args.sim_max, basepath=basepath, save_intermed_times=0))
     f.close()

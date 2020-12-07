@@ -21,7 +21,7 @@ To only run forward simulation, run
 Computing the errors from a forward simulation does not take that much compute power and can be done on a single interactive node. Use the script `MDSINE2_paper/gibson_dataset/compute_errors_tla.sh`.
 
 ### Run the model
-Run the model and fixed_clustering with two different seeds. Each job first runs the unfixed clustering job then immediately after runs the fixed clustering job.
+Run the model and fixed clustering with two different seeds. Each job first runs the unfixed clustering job then immediately after runs the fixed clustering job. These scripts also visualize the posterior of the jobs.
 ```bash
 ./submit_mdsine2.sh
 ```
