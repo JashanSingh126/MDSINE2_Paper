@@ -3,20 +3,20 @@
 # ErisOne parameters
 # ------------------
 # Path to MDSINE2_Paper code
-MDSINE2_PAPER_CODE_PATH = "/data/cctm/darpa_perturbation_mouse_study/MDSINE2_paper"
+MDSINE2_PAPER_CODE_PATH="/data/cctm/darpa_perturbation_mouse_study/MDSINE2_paper"
 # Conda environment
-ENVIRONMENT_NAME = "mdsine2_403"
+ENVIRONMENT_NAME="mdsine2_403"
 # Queues, memory, and numpy of cpus
-QUEUE = "short"
-MEM = "4000"
-N_CPUS = "1"
-LSF_BASEPATH = "lsf_files/tla"
+QUEUE="short"
+MEM="4000"
+N_CPUS="1"
+LSF_BASEPATH="lsf_files/tla"
 
 # Forward simulation parameters
 # -----------------------------
-SIM_DT = "0.01"
-N_DAYS = "8"
-OUTPUT_BASEPATH = "output/mdsine2/cv/forward_sims"
+SIM_DT="0.01"
+N_DAYS="8"
+OUTPUT_BASEPATH="output/mdsine2/cv/forward_sims"
 
 # Healthy cohort
 # --------------

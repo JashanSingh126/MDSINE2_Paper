@@ -11,6 +11,7 @@ Order of scripts from start to finish of running forward simulation and cross va
 ```bash
 ./run_cv.sh
 ./run_tla.sh
+./compute_errors_tla.sh
 ```
 
 ### Learning parameters of MDSINE2

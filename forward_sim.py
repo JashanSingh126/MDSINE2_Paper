@@ -41,7 +41,7 @@ import numpy as np
 import pickle
 import time
 
-def forward_simulate(growth, self_interactions, interactions, perturbations, 
+def forward_simulate(growth, interactions, perturbations, 
     dt, subject, start, n_days, limit_of_detection, full_pred, studyname, 
     basepath, sim_max=None, save_intermediate_times=False):
     '''Forward simulate from day `start` for `n_days` days with data from subject
@@ -52,8 +52,6 @@ def forward_simulate(growth, self_interactions, interactions, perturbations,
     ----------
     growth : np.ndarray(n_gibbs, n_taxa)
         Growth values
-    self_interactions : np.ndarray(n_gibbs, n_taxa)
-        Self-interaction values
     interactons : np.ndarray(n_gibbs, n_taxa, n_taxa)
         Off-diagonal interaction values
     perturbations : dict, None
@@ -151,11 +149,6 @@ def forward_simulate(growth, self_interactions, interactions, perturbations,
 
     # Make the objects
     # ----------------
-    n_taxa = growth.shape[1]
-    si = -np.absolute(self_interactions)
-    for i in range(n_taxa):
-        interactions[:,i,i] = si[:,i]
-    
     if perturbations is not None:
         perts = []
         pert_starts = []
@@ -305,6 +298,9 @@ if __name__ == '__main__':
         self_interactions = mcmc.graph[STRNAMES.SELF_INTERACTION_VALUE].get_trace_from_disk()
         interactions = mcmc.graph[STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk()
         interactions[np.isnan(interactions)] = 0
+        self_interactions = -np.absolute(self_interactions)
+        for i in range(self_interactions.shape[1]):
+            interactions[:,i,i] = self_interactions[:, i]
 
         if mcmc.graph.perturbations is not None:
             logging.info('Perturbations exist')
@@ -360,7 +356,7 @@ if __name__ == '__main__':
                 perturbations[pert.name]['end'] = pert.ends[subj.name]
 
         forward_simulate(
-            growth=growth, self_interactions=self_interactions, interactions=interactions,
+            growth=growth, interactions=interactions,
             perturbations=perturbations, dt=args.simulation_dt, subject=subj,full_pred=full_pred,
             start=start, n_days=n_days, limit_of_detection=args.limit_of_detection, 
             sim_max=args.sim_max, save_intermediate_times=save_intermediate_times,

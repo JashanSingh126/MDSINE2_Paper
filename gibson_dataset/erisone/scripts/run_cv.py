@@ -49,7 +49,7 @@ module load anaconda/default
 source activate {environment_name}
 cd {code_basepath}
 
-# Run a fold in the cross validation
+# Run a fold in cross validation
 python run_cross_validation.py \
     --dataset {dset_fileloc} \
     --cv-basepath {cv_basepath} \

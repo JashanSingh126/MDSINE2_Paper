@@ -9,6 +9,7 @@ import numpy as np
 import argparse
 import os
 import logging
+import pickle
 
 if __name__ == '__main__':
 
@@ -60,6 +61,10 @@ if __name__ == '__main__':
             perts[pert.name] = {}
             perts[pert.name]['value'] = pert.get_trace_from_disk()
             perts[pert.name]['value'][np.isnan(perts[pert.name]['value'])] = 0
+
+        pert_fname = os.path.join(basepath, 'perturbations.pkl')
+        with open(pert_fname, 'wb') as handle:
+            pickle.dump(perts, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     else:
         logging.info('There are no perturbations')

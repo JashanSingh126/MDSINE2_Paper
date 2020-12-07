@@ -3,25 +3,25 @@
 # ErisOne parameters
 # ------------------
 # Path to MDSINE2_Paper code
-MDSINE2_PAPER_CODE_PATH = "/data/cctm/darpa_perturbation_mouse_study/MDSINE2_paper"
+MDSINE2_PAPER_CODE_PATH="/data/cctm/darpa_perturbation_mouse_study/MDSINE2_paper"
 # Conda environment
-ENVIRONMENT_NAME = "mdsine2_403"
+ENVIRONMENT_NAME="mdsine2_403"
 # Queues, memory, and numpy of cpus
-QUEUE = "vlong"
-MEM = "8000"
-N_CPUS = "1"
+QUEUE="vlong"
+MEM="8000"
+N_CPUS="1"
 
 # NOTE: THESE PATHS MUST BE RELATIVE TO `MDSINE2_PAPER_CODE_PATH`
-NEGBIN = "output/negbin/replicates/mcmc.pkl"
-BURNIN = "5000"
-N_SAMPLES = "15000"
-CHECKPOINT = "100"
-MULTIPROCESSING = "1"
+NEGBIN="output/negbin/replicates/mcmc.pkl"
+BURNIN="5000"
+N_SAMPLES="15000"
+CHECKPOINT="100"
+MULTIPROCESSING="1"
 
-HEALTHY_DATASET = 'output/processed_data/gibson_healthy_agg_taxa_filtered.pkl'
-UC_DATASET = 'output/processed_data/gibson_uc_agg_taxa_filtered.pkl'
-BASEPATH = 'output/mdsine2'
-FIXED_BASEPATH = 'output/mdsine2/fixed_clustering'
+HEALTHY_DATASET="output/processed_data/gibson_healthy_agg_taxa_filtered.pkl"
+UC_DATASET="output/processed_data/gibson_uc_agg_taxa_filtered.pkl"
+BASEPATH="output/mdsine2"
+FIXED_BASEPATH="output/mdsine2/fixed_clustering"
 
 
 # Healthy
@@ -95,4 +95,3 @@ python scripts/run_model.py \
     --queue $QUEUE \
     --memory $MEM \
     --n-cpus $N_CPUS
-

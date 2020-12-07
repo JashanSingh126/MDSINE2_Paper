@@ -3,17 +3,17 @@
 # ErisOne parameters
 # ------------------
 # Path to MDSINE2_Paper code
-MDSINE2_PAPER_CODE_PATH = "/data/cctm/darpa_perturbation_mouse_study/MDSINE2_paper"
+MDSINE2_PAPER_CODE_PATH="/data/cctm/darpa_perturbation_mouse_study/MDSINE2_paper"
 # Conda environment
-ENVIRONMENT_NAME = "mdsine2_403"
+ENVIRONMENT_NAME="mdsine2_403"
 # Queues, memory (_MEM), and nodes (_N) for forward simulation (TLA) and cross-validation (CV)
-TLA_QUEUE = "medium"
-TLA_MEM = "8000"
-TLA_N = "1"
+TLA_QUEUE="medium"
+TLA_MEM="8000"
+TLA_N="1"
 
-CV_QUEUE = "big-multi"
-CV_MEM = "10000"
-CV_N = "4"
+CV_QUEUE="big-multi"
+CV_MEM="10000"
+CV_N="4"
 
 
 # Running parameters
