@@ -36,7 +36,8 @@ if __name__ == '__main__':
 
     # 1) Load the parameters    
     params = md2.config.NegBinConfig(seed=args.seed, burnin=args.burnin, n_samples=args.n_samples,
-        ckpt=args.checkpoint, basepath=args.basepath)
+        ckpt=args.checkpoint, basepath=basepath)
+    params.MP_FILTERING = 'full'
 
     # 2) Perform inference
     mcmc = md2.negbin.build_graph(params=params, graph_name=study.name, subjset=study)

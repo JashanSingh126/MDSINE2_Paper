@@ -194,7 +194,7 @@ def _spearman_err(pred, truth):
     corr = np.zeros(pred.shape[0])
     for i in range(pred.shape[0]):
         temp = np.zeros(pred.shape[1])
-        for aidx in pred.shape[1]:
+        for aidx in range(pred.shape[1]):
             temp[aidx] = scipy.stats.spearmanr(pred[i,aidx,:], truth[aidx,:])[0]
         corr[i] = np.nanmean(temp)
     if logging.root.level == logging.DEBUG:
@@ -206,7 +206,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--input', '-i', type=str, dest='input_basepath',
         help='Location of the predicted trajectory')
-    parser.add_argument('-error', '-e', type=str, dest='errors', nargs='+',
+    parser.add_argument('--error', '-e', type=str, dest='errors', nargs='+',
         help='Error Type. You can pass in multiple errors. Options: ' \
             '"relRMSE", "spearman", "RMSE"')
     parser.add_argument('--output', '-o', type=str, dest='output',
@@ -215,7 +215,7 @@ if __name__ == "__main__":
         help='Separator for the output table')
 
     args = parser.parse_args()
-    md2.LoggingConfig(level=logging.INFO)
+    md2.LoggingConfig(level=logging.DEBUG)
     input_basepath = args.input_basepath
 
     # Check if the input path exists
@@ -268,20 +268,29 @@ if __name__ == "__main__":
                 fnames_used.add(pred_fname)
                 fnames_used.add(truth_fname)
 
-                studyname, subjectname = re_full_pred.findall(pred_fname)[0]
+                try:
+                    studyname, subjectname = re_full_pred.findall(pred_fname)[0]
+                except:
+                    logging.warning('{} not recognized as a pattern. skipping'.format(fname))
+                    continue
                 start = np.nan
                 ndays = np.nan
             else:
                 if 'truth' in fname:
                     truth_fname = fname
-                    pred_fname = fname.replace('.npy', '-truth.npy')
+                    pred_fname = fname.replace('-truth.npy', '.npy')
                 else:
-                    truth_fname = fname.replace('-truth.npy', '.npy')
+                    truth_fname = fname.replace('.npy', '-truth.npy')
                     pred_fname = fname
-                studyname, subjectname, start, ndays = re_tla_pred.findall(pred_fname)[0]
+                try:
+                    studyname, subjectname, start, ndays = re_tla_pred.findall(pred_fname)[0]
+                except:
+                    logging.warning('{} not recognized as a pattern. skipping'.format(fname))
+                    continue
 
-            truth_fname = os.path.join(input_basepath, truth_fname)
-            pred_fname = os.path.join(input_basepath, pred_fname)
+            truth_fname = os.path.abspath(os.path.join(input_basepath, truth_fname))
+            pred_fname = os.path.abspath(os.path.join(input_basepath, pred_fname))
+
             truth = np.load(truth_fname)
             pred = np.load(pred_fname)
 

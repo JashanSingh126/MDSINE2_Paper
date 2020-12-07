@@ -51,4 +51,6 @@ if __name__ == '__main__':
         min_num_consecutive=args.min_num_consecutive,
         min_num_subjects=args.min_num_subjects,
         colonization_time=args.colonization_time)
+
+    print('{} taxas left in {}'.format(len(study.taxas), study.name))
     study.save(args.outfile)

@@ -249,7 +249,6 @@ def forward_simulate(growth, self_interactions, interactions, perturbations,
             np.save(fname_times, times)
 
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--input', type=str, dest='input',
         help='Location of input (either folder of the numpy arrays or ' \
@@ -305,6 +304,7 @@ if __name__ == '__main__':
         growth = mcmc.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk()
         self_interactions = mcmc.graph[STRNAMES.SELF_INTERACTION_VALUE].get_trace_from_disk()
         interactions = mcmc.graph[STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk()
+        interactions[np.isnan(interactions)] = 0
 
         if mcmc.graph.perturbations is not None:
             logging.info('Perturbations exist')

@@ -5,8 +5,8 @@ python scripts/preprocess.py \
     --hamming-distance 2 \
     --rename-prefix OTU \
     --sequences files/preprocessing/gibson_16S_rRNA_v4_ASV_seqs_aligned_filtered.fa \
-    --output-basepath ../putput/processed_data \
-    --remove-timepoints 0 0.5 1
+    --output-basepath ../output/processed_data \
+    --remove-timepoints 0 0.5
 
 # Assign taxonomy for OTUs
 python scripts/assign_taxonomy_for_consensus_seqs.py \
@@ -35,7 +35,7 @@ python ../step_2_filtering.py \
 # Learn negative binomial dispersion parameters
 python scripts/filter_replicates_like_other_dataset.py \
     --replicate-dataset ../output/processed_data/gibson_replicates_agg_taxa.pkl \
-    --like-other ../output/processed_data/gibson_healthy_agg_taxa.pkl \
+    --like-other ../output/processed_data/gibson_healthy_agg_taxa_filtered.pkl \
     --output-basepath ../output/processed_data/gibson_replicates_agg_taxa_filtered.pkl
 
 python ../step_3_infer_negbin.py \

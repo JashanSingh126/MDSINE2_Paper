@@ -130,8 +130,8 @@ if __name__ == '__main__':
 
         # 5) Remove timepoints
         if args.remove_timepoints is not None:
-            # if dset in ['healthy', 'uc']:
-            study.pop_times(args.remove_timepoints)
+            if dset in ['healthy', 'uc']:
+                study.pop_times(args.remove_timepoints)
 
         # 6) Save the study set and sequences
         study.save(os.path.join(args.basepath, 'gibson_' + dset + '_agg.pkl'))

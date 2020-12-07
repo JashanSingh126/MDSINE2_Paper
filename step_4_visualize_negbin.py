@@ -12,7 +12,7 @@ import os
 import matplotlib.pyplot as plt
 from mdsine2.names import STRNAMES
 
-if __name__ == '__main__':
+if __name__ == '__main__': 
     parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--chain', '-c', type=str, dest='chain',
         help='This is the MCMC object that inference was performed on. This is most likely' \

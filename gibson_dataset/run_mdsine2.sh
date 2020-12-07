@@ -1,12 +1,12 @@
 #!/bin/bash
 
-NEGBIN = "../output/negbin/replicates/mcmc.pkl"
-BURNIN = "5000"
-N_SAMPLES = "15000"
-CHECKPOINT = "100"
-MULTIPROCESSING = "1"
-HEALTHY_DSET = "../output/processed_data/gibson_healthy_agg_taxa_filtered.pkl"
-UC_DSET = "../output/processed_data/gibson_uc_agg_taxa_filtered.pkl"
+NEGBIN="../output/negbin/replicates/mcmc.pkl"
+BURNIN="5000"
+N_SAMPLES="15000"
+CHECKPOINT="100"
+MULTIPROCESSING="1"
+HEALTHY_DSET="../output/processed_data/gibson_healthy_agg_taxa_filtered.pkl"
+UC_DSET="../output/processed_data/gibson_uc_agg_taxa_filtered.pkl"
 
 # Healthy cohort
 # --------------
@@ -23,9 +23,6 @@ python ../step_5_infer_mdsine2.py \
 python ../step_6_visualize_mdsine2.py \
     --chain  ../output/mdsine2/healthy-seed0/mcmc.pkl
     --output-basepath ../output/mdsine2/healthy-seed0/posterior
-
-# Fixed clustering
-
 
 python ../step_5_infer_mdsine2.py \
     --input $HEALTHY_DSET \

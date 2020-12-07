@@ -1,11 +1,11 @@
 #!/bin/bash
 
-NEGBIN = "../output/negbin/replicates/mcmc.pkl"
-SEED = "0"
-BURNIN = "5000"
-N_SAMPLES = "15000"
-CHECKPOINT = "100"
-MULTIPROCESSING = "1"
+NEGBIN="../output/negbin/replicates/mcmc.pkl"
+SEED="0"
+BURNIN="5000"
+N_SAMPLES="15000"
+CHECKPOINT="100"
+MULTIPROCESSING="1"
 
 # Healthy cohort
 # --------------

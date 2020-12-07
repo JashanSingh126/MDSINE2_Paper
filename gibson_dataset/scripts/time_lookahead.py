@@ -7,13 +7,13 @@ import os
 import numpy as np
 import logging
 
-script_format = '../../forward_sim.py --input {chain} ' \
+script_format = 'python ../forward_sim.py --input {chain} ' \
     '--validation {validation} ' \
     '--simulation-dt {sim_dt} ' \
     '--start {start} ' \
     '--n-days {n_days} ' \
     '--output-basepath {basepath} ' \
-    'save-intermediate-times {save_inter_times}'
+    '--save-intermediate-times {save_inter_times}'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage=__doc__)

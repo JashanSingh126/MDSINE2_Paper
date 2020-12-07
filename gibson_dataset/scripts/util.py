@@ -9,6 +9,7 @@ class _Gibson:
     '''
     _HEALTHY_SUBJECTS = set(['2', '3', '4', '5'])
     _UC_SUBJECTS = set(['6', '7', '8', '9', '10'])
+    _REL_PATH = '../../datasets/gibson'
 
     @staticmethod
     def load_taxonomy(species_assignment):
@@ -24,15 +25,15 @@ class _Gibson:
             If None, have no species assignment and just return the taxonomy provided by DADA2
         '''
         if species_assignment == 'silva':
-            path = os.path.join(os.path.dirname(__file__),'datasets/gibson' ,'silva_species.tsv')
+            path = os.path.join(os.path.dirname(__file__), _Gibson._REL_PATH,'silva_species.tsv')
             taxonomy = pd.read_csv(path, sep='\t', index_col=0)
         elif species_assignment == 'rdp':
-            path = os.path.join(os.path.dirname(__file__),'datasets/gibson' ,'rdp_species.tsv')
+            path = os.path.join(os.path.dirname(__file__), _Gibson._REL_PATH,'rdp_species.tsv')
             taxonomy = pd.read_csv(path, sep='\t', index_col=0)
         elif species_assignment == 'both':
-            rdp = os.path.join(os.path.dirname(__file__),'datasets/gibson' ,'rdp_species.tsv')
+            rdp = os.path.join(os.path.dirname(__file__), _Gibson._REL_PATH,'rdp_species.tsv')
             rdp = pd.read_csv(rdp, sep='\t', index_col=0)
-            silva = os.path.join(os.path.dirname(__file__),'datasets/gibson' ,'silva_species.tsv')
+            silva = os.path.join(os.path.dirname(__file__), _Gibson._REL_PATH,'silva_species.tsv')
             silva = pd.read_csv(silva, sep='\t', index_col=0)
 
             rdp.columns = rdp.columns.str.lower()
@@ -82,7 +83,7 @@ class _Gibson:
         -------
         pandas.DataFrame
         '''
-        path = os.path.join(os.path.dirname(__file__),'datasets/gibson' ,'perturbations.tsv')
+        path = os.path.join(os.path.dirname(__file__), _Gibson._REL_PATH,'perturbations.tsv')
         df = pd.read_csv(path, sep='\t')
         return df
 
@@ -94,7 +95,7 @@ class _Gibson:
         -------
         pandas.DataFrame
         '''
-        path = os.path.join(os.path.dirname(__file__),'datasets/gibson' ,'qpcr.tsv')
+        path = os.path.join(os.path.dirname(__file__), _Gibson._REL_PATH,'qpcr.tsv')
         df = pd.read_csv(path, sep='\t')
         df = df.set_index('sampleID')
 
@@ -111,7 +112,7 @@ class _Gibson:
         -------
         pandas.DataFrame
         '''
-        path = os.path.join(os.path.dirname(__file__),'datasets/gibson' ,'counts.tsv')
+        path = os.path.join(os.path.dirname(__file__), _Gibson._REL_PATH,'counts.tsv')
         df = pd.read_csv(path, sep='\t', index_col=0)
 
         if dset is not None:
@@ -127,7 +128,7 @@ class _Gibson:
         -------
         pandas.DataFrame
         '''
-        path = os.path.join(os.path.dirname(__file__),'datasets/gibson' ,'metadata.tsv')
+        path = os.path.join(os.path.dirname(__file__), _Gibson._REL_PATH,'metadata.tsv')
         df = pd.read_csv(path, sep='\t')
         df = df.set_index('sampleID')
 
@@ -236,9 +237,9 @@ class _Gibson:
         ete3.Tree
         '''
         if with_reference_sequences:
-            path = os.path.join(os.path.dirname(__file__),'datasets/gibson' ,'phylogenetic_tree_with_reference.nhx')
+            path = os.path.join(os.path.dirname(__file__),'../../datasets/gibson' ,'phylogenetic_tree_with_reference.nhx')
         else:
-            path = os.path.join(os.path.dirname(__file__),'datasets/gibson' ,'phylogenetic_tree_w_branch_len_preserved.nhx')
+            path = os.path.join(os.path.dirname(__file__),'../../datasets/gibson' ,'phylogenetic_tree_w_branch_len_preserved.nhx')
 
         return ete3.Tree(path)
 

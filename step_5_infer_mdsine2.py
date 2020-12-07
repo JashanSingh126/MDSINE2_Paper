@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     # Load the negative binomial parameters
     if len(args.negbin) == 1:
-        negbin = md2.BaseMCMC.load(args.negbin)
+        negbin = md2.BaseMCMC.load(args.negbin[0])
         a0 = md2.summary(negbin.graph[STRNAMES.NEGBIN_A0])['mean']
         a1 = md2.summary(negbin.graph[STRNAMES.NEGBIN_A1])['mean']
         

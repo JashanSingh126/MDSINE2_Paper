@@ -3,6 +3,7 @@ import pandas as pd
 import logging
 import re
 import sys
+import numpy as np
 
 md2.LoggingConfig(level=logging.INFO)
 # study = md2.Study.load('processed_data/gibson_healthy_agg.pkl')
@@ -25,11 +26,17 @@ md2.LoggingConfig(level=logging.INFO)
 # study.taxas.generate_consensus_taxonomies()
 
 
-s_pred = 'healthy-cv3-3-start1.5-ndays7.5.npy'
-s_full = 'healthy-cv3-3-full.npy'
+pred_fname = 'output/mdsine2/cv/forward_sims/healthy-cv2-validate-2-start1.0-ndays1.0.npy'
+truth_fname = 'output/mdsine2/cv/forward_sims/healthy-cv2-validate-2-start1.0-ndays1.0-truth.npy'
+times_fname = 'output/mdsine2/cv/forward_sims/healthy-cv2-validate-2-start1.0-ndays1.0-times.npy'
 
-re_tla_pred = re.compile(r'^(.*)-(.*)-start(.*)-ndays(.*).npy$')
-re_full_pred = re.compile(r'^(.*)-(.*)-full.npy$')
+pred = np.load(pred_fname)
+truth = np.load(truth_fname)
+times = np.load(times_fname)
 
-print(re_tla_pred.findall(s_pred)[0])
-print(re_full_pred.findall(s_full)[0])
+print(pred.shape)
+print(truth.shape)
+
+# print(pred[0])
+print(times)
+print(np.all(np.isnan(pred)))
