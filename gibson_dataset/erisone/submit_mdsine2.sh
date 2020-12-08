@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Input arguments
+# ---------------
+# This allows a single argument. The argument is a string indicating the 
+# prior to use for the perturbation indicators and interaction indicators
+
 # ErisOne parameters
 # ------------------
 # Path to MDSINE2_Paper code
@@ -11,8 +16,7 @@ QUEUE="vlong"
 MEM="8000"
 N_CPUS="1"
 
-# Have the first argument be the sparsity we are running with. Default to
-# strong sparse
+# Have the first argument be the sparsity we are running with. Default to strong sparse
 DEFAULT_IND_PRIOR="strong-sparse"
 IND_PRIOR=${1:-$DEFAULT_IND_PRIOR}
 
@@ -29,11 +33,11 @@ INTERACTION_IND_PRIOR=${IND_PRIOR}
 PERTURBATION_IND_PRIOR=${IND_PRIOR}
 
 if [ "$IND_PRIOR" == "$DEFAULT_IND_PRIOR" ]; then
-    echo "Default"
+    echo "Default parameters"
     BASEPATH="output/mdsine2"
     FIXED_BASEPATH="output/mdsine2/fixed_clustering"
 else
-    echo "sensitivity"
+    echo "From sensitivity"
     BASEPATH="output/mdsine2/sensitivity"
     FIXED_BASEPATH="output/mdsine2/sensitivity/fixed_clustering"
 fi

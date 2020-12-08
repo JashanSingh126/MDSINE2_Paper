@@ -25,3 +25,16 @@ Run the model and fixed clustering with two different seeds. Each job first runs
 ```bash
 ./submit_mdsine2.sh
 ```
+
+### Running on ErisOne/ErisTwo
+If running the scripts above you get the following error:
+```bash
+/bin/bash^M: bad interpreter: No such file or directory
+```
+this does not mean there is something wrong with the script, this is becuase the permissions are
+wrong and/or the script is in the wrong format. This can occur if you work on a windows device and push these scripts to the github. To fix this, run the following commands on the script in question:
+```bash
+chmod +x script.sh
+dos2unix -k -o script.sh
+```
+`dos2unix` is a standard command on Linux systems so you do not need to install anything.
