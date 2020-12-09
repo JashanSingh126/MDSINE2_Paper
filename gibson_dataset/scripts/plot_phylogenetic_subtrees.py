@@ -24,6 +24,7 @@ if __name__ == "__main__":
         help='Path to newick tree')
     parser.add_argument('--seq-info', type=str, dest='seq_info',
         help='Maps the sequence id of the reference sequences identifying info')
+    parser.add_argument('--sep', type=str, dest='sep', default='\t')
     parser.add_argument('--family-radius-factor', type=float, dest='family_radius_factor', 
         help='How much to multiply the radius of each family', default=1.5)
     args = parser.parse_args()
@@ -45,7 +46,7 @@ if __name__ == "__main__":
 
     # Get the families of the reference trees
     logging.info('Read genbank file')
-    df_seqs = pd.read_csv(args.seq_info, sep='\t', index_col=0)
+    df_seqs = pd.read_csv(args.seq_info, sep=args.sep, index_col=0)
 
     logging.info('get families of reference seqs')
     ref_families = {}
