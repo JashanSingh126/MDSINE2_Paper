@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Agglomerate ASVs into OTUs
-python scripts/preprocess.py \
-    --hamming-distance 2 \
-    --rename-prefix OTU \
-    --sequences files/preprocessing/gibson_16S_rRNA_v4_ASV_seqs_aligned_filtered.fa \
-    --output-basepath ../output/processed_data \
-    --remove-timepoints 0 0.5
+# # Agglomerate ASVs into OTUs
+# python scripts/preprocess.py \
+#     --hamming-distance 2 \
+#     --rename-prefix OTU \
+#     --sequences files/preprocessing/gibson_16S_rRNA_v4_ASV_seqs_aligned_filtered.fa \
+#     --output-basepath ../output/processed_data \
+#     --remove-timepoints 0 0.5
 
 # Assign taxonomy for OTUs
 python scripts/assign_taxonomy_for_consensus_seqs.py \
@@ -38,16 +38,16 @@ python scripts/filter_replicates_like_other_dataset.py \
     --like-other ../output/processed_data/gibson_healthy_agg_taxa_filtered.pkl \
     --output-basepath ../output/processed_data/gibson_replicates_agg_taxa_filtered.pkl
 
-python ../step_3_infer_negbin.py \
-    --input ../output/processed_data/gibson_replicates_agg_taxa_filtered.pkl \
-    --seed 0 \
-    --burnin 2000 \
-    --n-samples 6000 \
-    --checkpoint 200 \
-    --multiprocessing 0 \
-    --basepath ../output/negbin/
+# python ../step_3_infer_negbin.py \
+#     --input ../output/processed_data/gibson_replicates_agg_taxa_filtered.pkl \
+#     --seed 0 \
+#     --burnin 2000 \
+#     --n-samples 6000 \
+#     --checkpoint 200 \
+#     --multiprocessing 0 \
+#     --basepath ../output/negbin/
 
-python ../step_4_visualize_negbin.py \
-    --chain ../output/negbin/replicates/mcmc.pkl \
-    --output-basepath ../output/negbin/replicates/posterior
+# python ../step_4_visualize_negbin.py \
+#     --chain ../output/negbin/replicates/mcmc.pkl \
+#     --output-basepath ../output/negbin/replicates/posterior
 

@@ -22,6 +22,13 @@ Order of scripts from start to finish of generating the posteriors
 ./run_mdsine2_fixed_clustering.sh
 ```
 
+### Post-processing
+Once `run_mdsine2.sh` has finished running, you can perform keystoneness and the perturbation analysis
+```bash
+./compute_keystoneness.sh
+./compute_perturbation_analysis.sh
+```
+
 ### Making figures
 Once cross-validation and learning the parameters are done, you can generate the figures used in the paper:
 ```bash

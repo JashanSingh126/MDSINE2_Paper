@@ -37,9 +37,9 @@ def parse_rdp(fname, confidence_threshold):
     txt = f.read()
     f.close()
 
-    tax_order = ['tax_kingdom', 'tax_phylum', 'tax_class', 'tax_order', 'tax_family', 
-        'tax_genus', 'tax_species']
-    d_rdp = {}
+    columns = ['kingdom', 'phylum', 'class', 'order', 'family', 'genus']
+    data = []
+    index = []
 
     for i, line in enumerate(txt.split('\n')):
         if 'OTU' != line[:3]:
@@ -49,20 +49,27 @@ def parse_rdp(fname, confidence_threshold):
         otuname = splitting[0].split(';')[0]
         splitting = splitting[1:]
 
-        d_rdp[otuname] = {}
+        index.append(otuname)
+
+        temp = []
+        taxaed = []
 
         for tax_idx in range(len(splitting)):
-            tax_key = tax_order[tax_idx]
+            tax_key = columns[tax_idx]
             tax, confidence = splitting[tax_idx].replace('%', '').split(';')
             if float(confidence) > confidence_threshold:
-                d_rdp[otuname][tax_key] = tax
+                temp.append(tax)
+                taxaed.append(tax_key)
             else:
                 break
 
-        for tax_key in tax_order:
-            if tax_key not in d_rdp[otuname]:
-                d_rdp[otuname][tax_key] = md2.pylab.base.DEFAULT_TAXA_NAME
-    return d_rdp
+        for tax_key in columns:
+            if tax_key not in taxaed:
+                temp.append(md2.pylab.base.DEFAULT_TAXA_NAME)
+        data.append(temp)
+
+    df = pd.DataFrame(data, columns=columns, index=index)
+    return df
 
 def parse_silva_NOT_USED(fname):
     '''Parse the taxonomic assignment table from Silva
@@ -136,15 +143,15 @@ if __name__ == '__main__':
 
     md2.config.LoggingConfig(level=logging.INFO)
 
-    d_rdp = parse_rdp(fname=args.rdp_table, confidence_threshold=args.confidence_threshold)
+    logging.info('Parsing RDP')
+    df = parse_rdp(fname=args.rdp_table, confidence_threshold=args.confidence_threshold)
+
     for dset in ['healthy', 'uc', 'replicates', 'inoculum']:
         logging.info('Replacing {}'.format(dset))
         study_fname = os.path.join(args.basepath, 'gibson_{dset}_agg.pkl'.format(dset=dset))
         study = md2.Study.load(study_fname)
 
-        for taxa in study.taxas:
-            taxa.set_taxonomy(**d_rdp[taxa.name])
-
+        study.taxas.generate_consensus_taxonomies(df)
         study_fname = os.path.join(args.basepath, 'gibson_{dset}_agg_taxa.pkl'.format(dset=dset))
         study.save(study_fname)
 
