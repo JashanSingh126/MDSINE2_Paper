@@ -76,7 +76,7 @@ class _Gibson:
         return taxonomy
     
     @staticmethod
-    def load_perturbations():
+    def load_perturbations(dset=None):
         '''Load the perturbations for Gibson dataset as a `pandas.DataFrame`.
 
         Returns
@@ -85,6 +85,27 @@ class _Gibson:
         '''
         path = os.path.join(os.path.dirname(__file__), _Gibson._REL_PATH,'perturbations.tsv')
         df = pd.read_csv(path, sep='\t')
+
+        if dset is None:
+            pass
+        elif dset == 'inoculum':
+            df = None
+        elif dset == 'replicates':
+            df = None
+        elif dset == 'healthy':
+            row_to_keep = []
+            for i, subj in enumerate(df['subject']):
+                if str(subj) in _Gibson._HEALTHY_SUBJECTS:
+                    row_to_keep.append(i)
+            df = df.iloc[row_to_keep, :]
+        elif dset == 'uc':
+            row_to_keep = []
+            for i, subj in enumerate(df['subject']):
+                if str(subj) in _Gibson._UC_SUBJECTS:
+                    row_to_keep.append(i)
+            df = df.iloc[row_to_keep, :]
+        else:
+            raise ValueError('`dset` ({}) not recognized'.format(dset))
         return df
 
     @staticmethod
@@ -285,7 +306,7 @@ def load_gibson_dataset(dset=None, as_df=False, with_perturbations=True, species
     reads = _Gibson.load_reads(dset=dset)
     qpcr = _Gibson.load_qpcr_masses(dset=dset)
     if with_perturbations:
-        perturbations = _Gibson.load_perturbations()
+        perturbations = _Gibson.load_perturbations(dset=dset)
     else:
         perturbations = None
 

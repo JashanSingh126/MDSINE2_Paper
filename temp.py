@@ -32,8 +32,11 @@ md2.LoggingConfig(level=logging.INFO)
 #  rows, taxa fmt
 # columns are the clusters
 
-study = md2.Study.load('processed_data/gibson_healthy_agg.pkl')
+from gibson_dataset.scripts.util import load_gibson_dataset
 
-md2.visualization.taxonomic_distribution_over_time(study['2'], 
-    taxlevel='family', label_formatter='%(family)s')
-plt.show()
+study = load_gibson_dataset(dset='healthy')
+
+# study = md2.Study.load('processed_data/gibson_healthy_agg.pkl')
+
+for perturbation in study.perturbations:
+    print(perturbation)

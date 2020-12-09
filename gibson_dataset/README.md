@@ -10,7 +10,7 @@ Preprocessing and agglomeration. Note that when running data from scratch, manua
 ### Filtering and visualizing the data (the tutorials start here)
 Visualize the OTUs and filter the data 
 ```bash
-./preprocess_assign_consensus_taxonomy.sh
+./assign_consensus_taxonomy.sh
 ./plot_aggregates.sh
 ./plot_phylogenetic_subtrees.sh
 ./preprocessing_filtering.sh
