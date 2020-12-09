@@ -9,9 +9,9 @@ For tutorials on running MDSINE2, post-processing, and how to use the MDSINE2 so
 
 tutorial outline
 tutorial 1 data processing
-   * what is needed to start, give a list of the specific files we are using
+  * what is needed to start, give a list of the specific files we are using
     * ASV abundance table
-    * 
+    * sdfsdf
 
 tutorial 2 main mdsine inference
 
