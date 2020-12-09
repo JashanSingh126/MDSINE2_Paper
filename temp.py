@@ -34,18 +34,6 @@ md2.LoggingConfig(level=logging.INFO)
 
 study = md2.Study.load('processed_data/gibson_healthy_agg.pkl')
 
-# for taxa in study.taxas:
-#     print(taxa)
-
-for subj in study:
-    for taxa in study.taxas:
-        if not md2.isotu(taxa):
-            continue
-
-        fig = plt.figure(figsize=(10, 5))
-        ax = fig.add_subplot(111)
-        ax = md2.visualization.aggregate_taxa_abundances(subj=subj, agg=taxa, dtype='rel', ax=ax)
-        fig = plt.gcf()
-        fig.tight_layout()
-        # plt.savefig('output/agglomerates/{}.pdf'.format(taxa.name))
-        plt.show()
+md2.visualization.taxonomic_distribution_over_time(study['2'], 
+    taxlevel='family', label_formatter='%(family)s')
+plt.show()

@@ -1,12 +1,5 @@
 #!/bin/bash
 
-
-# Assign taxonomy for OTUs
-python scripts/assign_taxonomy_for_consensus_seqs.py \
-    --rdp-table files/assign_taxonomy_OTUs/taxonomy_RDP.txt \
-    --confidence-threshold 50 \
-    --output-basepath ../output/processed_data
-
 # Filter the OTUs using consistency filtering
 python ../step_2_filtering.py \
     --dataset ../processed_data/gibson_healthy_agg_taxa.pkl \

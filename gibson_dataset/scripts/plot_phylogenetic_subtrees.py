@@ -27,6 +27,8 @@ if __name__ == "__main__":
     parser.add_argument('--sep', type=str, dest='sep', default='\t')
     parser.add_argument('--family-radius-factor', type=float, dest='family_radius_factor', 
         help='How much to multiply the radius of each family', default=1.5)
+    parser.add_argument('--top', type=int, dest='top',
+        help='Plot up to this number', default=None)
     args = parser.parse_args()
 
     basepath = args.basepath
@@ -136,11 +138,18 @@ if __name__ == "__main__":
 
     # Make the phylogenetic subtrees for each OTU
     # -------------------------------------------
+    if args.top is None:
+        top = len(study.taxas)
+    else:
+        top = args.top
+
     i = 0
     names = df_distance_matrix.index
     fname = os.path.join(basepath, 'table.tsv')
     f = open(fname, 'w')
-    for taxa in study.taxas:
+    for iii, taxa in enumerate(study.taxas):
+        if iii >= top:
+            break
         logging.info('\n\nLooking at {}, {}'.format(i,taxa))
         logging.info('-------------------------')
         

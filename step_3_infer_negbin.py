@@ -40,9 +40,9 @@ if __name__ == '__main__':
     # 1) Load the parameters    
     params = md2.config.NegBinConfig(seed=args.seed, burnin=args.burnin, n_samples=args.n_samples,
         ckpt=args.checkpoint, basepath=basepath)
-    if args.multiprocessing == 1:
+    if args.mp == 1:
         params.MP_FILTERING = 'full'
-    elif args.multiprocessing == 0:
+    elif args.mp == 0:
         params.MP_FILTERING = 'debug'
     else:
         raise ValueError('`multiprocessing` ({}) not recognized'.format(args.multiprocessing))

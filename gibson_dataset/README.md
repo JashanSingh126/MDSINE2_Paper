@@ -10,6 +10,7 @@ Preprocessing and agglomeration. Note that when running data from scratch, manua
 ### Filtering and visualizing the data (the tutorials start here)
 Visualize the OTUs and filter the data 
 ```bash
+./preprocess_assign_consensus_taxonomy.sh
 ./plot_aggregates.sh
 ./plot_phylogenetic_subtrees.sh
 ./preprocessing_filtering.sh
@@ -20,15 +21,6 @@ Learn the negative binomial dispersion parameters
 ```bash
 ./learn_negbin.sh
 ```
-
-### Cross-validation and forward simulation
-Order of scripts from start to finish of running forward simulation and cross validation:
-```bash
-./run_cv.sh
-./run_tla.sh
-./compute_errors_tla.sh
-```
-
 ### Learning parameters of MDSINE2
 Order of scripts from start to finish of generating the posteriors
 
@@ -42,6 +34,14 @@ Once `run_mdsine2.sh` has finished running, you can perform keystoneness and the
 ```bash
 ./compute_keystoneness.sh
 ./compute_perturbation_analysis.sh
+```
+
+### Cross-validation and forward simulation
+Order of scripts from start to finish of running forward simulation and cross validation:
+```bash
+./run_cv.sh
+./run_tla.sh
+./compute_errors_tla.sh
 ```
 
 ### Making figures
