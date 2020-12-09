@@ -12,7 +12,7 @@ python -m ipykernel install --user --name mdsine2 --display-name "mdsine2"
 git clone https://github.com/gerberlab/MDSINE2
 pip install MDSINE2/.
 git clone https://github.com/gerberlab/MDSINE2_Paper
-cd MDSINE2_Paper/local_tutorial
+cd MDSINE2_Paper/localtutorials
 jupyter notebook
 ```
 
