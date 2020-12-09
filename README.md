@@ -7,12 +7,31 @@
 ## Tutorials
 For tutorials on running MDSINE2, post-processing, and how to use the MDSINE2 software, see `tutorials`.
 
-tutorial outline
+outline
 tutorial 1 data processing
-  * what is needed to start, give a list of the specific files we are using
-    * ASV abundance table
-    * sdfsdf
-
+  * List of files needed as input for this and where they are
+    * ASV abundance table: asv_abund.tsv
+    * Taxonomy of xyz: taxa.tsv
+    * etc
+  * Step through the scripts executing them, for one of the scripts 'open the hood' to show them what the command looks like and execute it not from the script but in the notebook like one normally wood
+  * after all of the scripts have been run give a list of what has been made
+  * look at what has been made somehow
+  * discuss any pickles that have been made
+  * do some head commands or other plotting
+tutorial 2 run the model
+  * List of files needed as input for this and where they are
+   * ...
+   * ..
+   * ...
+  * discuss the basic structure of the input data looking at heads
+  * comment out the command to run the full model, and instead have a command for running on a simplified system
+  * look at output
+  * discuss output
+  * we need a link to have them download the real output if they want (dropbox link i am thinking? or zonodo)
+tutorial 3 as an example we can run with the data they created, not sure how feasible it is to run the real data for some tasks that may be large and cumbersome 
+  *
+  *
+  
 tutorial 2 main mdsine inference
 
 
