@@ -12,7 +12,7 @@ PERTURBATION_IND_PRIOR="strong-sparse"
 # Healthy cohort
 # --------------
 python ../step_5_infer_mdsine2.py \
-    --input ../output/processed_data/gibson_healthy_agg_taxa_filtered.pkl \
+    --input ../processed_data/gibson_healthy_agg_taxa_filtered.pkl \
     --negbin $NEGBIN \
     --seed $SEED \
     --burnin $BURNIN \
@@ -31,7 +31,7 @@ python ../step_6_visualize_mdsine2.py \
 # UC cohort
 # ---------
 python ../step_5_infer_mdsine2.py \
-    --input ../output/processed_data/gibson_uc_agg_taxa_filtered.pkl \
+    --input ../processed_data/gibson_uc_agg_taxa_filtered.pkl \
     --negbin $NEGBIN \
     --seed $SEED \
     --burnin $BURNIN \

@@ -32,7 +32,7 @@ md2.LoggingConfig(level=logging.INFO)
 #  rows, taxa fmt
 # columns are the clusters
 
-study = md2.Study.load('output/processed_data/gibson_healthy_agg.pkl')
+study = md2.Study.load('processed_data/gibson_healthy_agg.pkl')
 
 # for taxa in study.taxas:
 #     print(taxa)

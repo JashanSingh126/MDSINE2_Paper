@@ -102,3 +102,18 @@ The raw data of the Gibson dataset is in the folder `datasets/gibson`. To run th
 
 
 
+
+The only offline operations done out of this repository are:
+* Running DADA2. 
+* Phylogenetic placement of the ASVs **and** OTUs (from consensus sequences). . Note that you only have the consensus sequences after 
+
+The data you **need** to start this processed is contained in the folder `MDSINE2_Paper/datasets/gibson`:
+* `counts.tsv`: This is the ASV table from DADA2
+* `metadata.tsv`: This maps sampled ID to a subject and timepoint. This is done manually
+* `perturbations.tsv`: These map which subjects get which perturbation and when. This is produced manually
+* `qpcr.tsv`: These are the qPCR triplicate measurements for each sample ID. This is produced manually from the Massachusetts Host Microbiome Center standard qPCR outputs.
+* `rdp_species.tsv` and `silva_species.tsv`: These are the species assignments for each ASV from running them through the RDP 11-5 and Silva 138 databases, respectivelly. These were produced in DADA using the command `assignSpecies`.
+
+Additional files that we used for our preprocessing. These files are contained in `MDSINE2_Paper/gibson_dataset/files`:
+* `preprocessing/*`: These files were produced from placing the ASV sequences of the phylogenetic tree. This is done offline and not included in this repository. For people with access to ErisOne, these scripts can be found in `/data/cctm/darpa_perturbation_mouse_study/phylogenetic_placement`. See `documentation.docx` and `run_phyloplacement_ASVs.sh`.
+* `assign_taxonomy_OTUs/taxonomy_RDP.txt`

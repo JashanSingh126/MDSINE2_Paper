@@ -27,8 +27,8 @@ N_SAMPLES="15000"
 CHECKPOINT="100"
 MULTIPROCESSING="0"
 
-HEALTHY_DATASET="output/processed_data/gibson_healthy_agg_taxa_filtered.pkl"
-UC_DATASET="output/processed_data/gibson_uc_agg_taxa_filtered.pkl"
+HEALTHY_DATASET="processed_data/gibson_healthy_agg_taxa_filtered.pkl"
+UC_DATASET="processed_data/gibson_uc_agg_taxa_filtered.pkl"
 INTERACTION_IND_PRIOR=${IND_PRIOR}
 PERTURBATION_IND_PRIOR=${IND_PRIOR}
 

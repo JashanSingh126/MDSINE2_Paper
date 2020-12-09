@@ -7,7 +7,7 @@ __These are for internal use only__. If you try to run these scripts, the job wi
 Each bash script runs a Python script located in `scripts` that generates a LSF file with the desired parameters.
 
 ### Preprocessing
-Preprocessing and learning the negative binomial dispersion parameters do not take that much compute power, so we do not need to dispatch these jobs. Instead, create an interactive session and run the script `MDSINE2_paper/gibson_dataset/preprocessing_and_learn_negbin.sh`.
+Preprocessing and learning the negative binomial dispersion parameters do not take that much compute power, so we do not need to dispatch these jobs. Instead, see steps in `MDSINE2_Paper/gibson_dataset` for preprocessing (everything before learning the MDSINE2 model). 
 
 ### Forward simulation and cross-validation
 To run cross validation and forward simulation, run

@@ -1,9 +1,24 @@
 # Replication of MDSINE2 results
 
-### Preprocess the data
-Before any inference, perform preprocessing:
+### Preprocess the data (Note that this has already been done for this dataset)
+
+Preprocessing and agglomeration. Note that when running data from scratch, manual steps are involved (phylogenetic placement, etc.). All of the outputs from preprocessing are already provided here for you. For information on manual steps see [internal_doc_for_manual_steps.md](internal_doc_for_manual_steps.md) before running the following command:
 ```bash
-./preprocessing_and_learn_negbin.sh
+./preprocessing_agglomeration.sh
+```
+
+### Filtering and visualizing the data (the tutorials start here)
+Visualize the OTUs and filter the data 
+```bash
+./plot_aggregates.sh
+./plot_phylogenetic_subtrees.sh
+./preprocessing_filtering.sh
+```
+
+### Learn Negative binomial dispersion parameters
+Learn the negative binomial dispersion parameters
+```bash
+./learn_negbin.sh
 ```
 
 ### Cross-validation and forward simulation
