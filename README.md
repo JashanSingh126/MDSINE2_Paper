@@ -7,6 +7,19 @@
 ## Tutorials
 For tutorials on running MDSINE2, post-processing, and how to use the MDSINE2 software, see `tutorials`.
 
+tutorial outline
+tutorial 1 data processing
+* what is needed to start, give a list of the specific files we are using
+   * ASV abundance table
+   * 
+
+tutorial 2 main mdsine inference
+
+
+
+tutorial 3 output
+
+
 ## Quick start
 #### Running MDSINE2 with Gibson dataset
 The raw data of the Gibson dataset is in the folder `datasets/gibson`. To run the MDSINE2 model, use the scripts in the the folder `gibson_dataset`. 
