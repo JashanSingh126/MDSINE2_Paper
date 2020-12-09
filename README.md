@@ -3,6 +3,18 @@
 ****************************************High level description of the package
 
 ## Installation
+These instructions install MDSINE2 and download the MDSINE2_Paper git repo
+
+```bash
+conda create -n mdsine2 -c conda-forge python=3.7.3 jupyterlab
+conda activate mdsine2
+python -m ipykernel install --user --name mdsine2 --display-name "mdsine2"
+git clone https://github.com/gerberlab/MDSINE2
+pip install MDSINE2/.
+git clone https://github.com/gerberlab/MDSINE2_Paper
+cd MDSINE2_Paper/local_tutorial
+jupyter notebook
+```
 
 ## Tutorials
 For tutorials on running MDSINE2, post-processing, and how to use the MDSINE2 software, see `tutorials`.
