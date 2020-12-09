@@ -33,13 +33,6 @@ tutorial 2 run the model
 tutorial 3 as an example we can run with the data they created, not sure how feasible it is to run the real data for some tasks that may be large and cumbersome 
   *
   *
-  
-tutorial 2 main mdsine inference
-
-
-
-tutorial 3 output
-
 
 ## Quick start
 #### Running MDSINE2 with Gibson dataset
