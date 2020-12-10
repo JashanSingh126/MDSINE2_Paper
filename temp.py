@@ -34,9 +34,29 @@ md2.LoggingConfig(level=logging.INFO)
 
 from gibson_dataset.scripts.util import load_gibson_dataset
 
-study = load_gibson_dataset(dset='healthy')
+# dset = md2.Study.load('processed_data/gibson_healthy_agg_taxa_filtered.pkl')
 
-# study = md2.Study.load('processed_data/gibson_healthy_agg.pkl')
+# to_delete = []
+# for taxa in dset.taxas:
+#     if taxa.idx > 10:
+#         to_delete.append(taxa.name)
+# dset.pop_taxas(to_delete)
 
-for perturbation in study.perturbations:
-    print(perturbation)
+
+# reads = pd.read_csv('bindertutorials/data/healthy/reads.tsv', sep='\t')
+
+# reads = reads.set_index('name')
+# for col in reads.columns:
+#     print(col)
+
+# print(reads.head())
+
+
+dset = md2.dataset.parse(name='example-dataset', 
+    taxonomy='bindertutorials/data/healthy/taxonomy.tsv', 
+    reads='bindertutorials/data/healthy/reads.tsv', 
+    qpcr='bindertutorials/data/healthy/qpcr.tsv', 
+    perturbations='bindertutorials/data/healthy/perturbations.tsv', 
+    metadata='bindertutorials/data/healthy/metadata.tsv')
+
+
