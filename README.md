@@ -1,51 +1,119 @@
-# Replication of MDSINE2 results
+# MDSINE2: Microbial Dynamical Systems Inference Engine 2
 
-### Preprocess the data (Note that this has already been done for this dataset)
+****************************************High level description of the package
 
-Preprocessing and agglomeration. Note that when running data from scratch, manual steps are involved (phylogenetic placement, etc.). All of the outputs from preprocessing are already provided here for you. For information on manual steps see [internal_doc_for_manual_steps.md](internal_doc_for_manual_steps.md) before running the following command:
-```bash
-./preprocessing_agglomeration.sh
-```
-
-### Filtering and visualizing the data (the tutorials start here)
-Visualize the OTUs and filter the data 
-```bash
-./plot_aggregates.sh
-./plot_phylogenetic_subtrees.sh
-./preprocessing_filtering.sh
-```
-
-### Learn Negative binomial dispersion parameters
-Learn the negative binomial dispersion parameters
-```bash
-./learn_negbin.sh
-```
-
-### Cross-validation and forward simulation
-Order of scripts from start to finish of running forward simulation and cross validation:
-```bash
-./run_cv.sh
-./run_tla.sh
-./compute_errors_tla.sh
-```
-
-### Learning parameters of MDSINE2
-Order of scripts from start to finish of generating the posteriors
+## Installation
+These instructions install MDSINE2 and download the MDSINE2_Paper git repo
 
 ```bash
-./run_mdsine2.sh
-./run_mdsine2_fixed_clustering.sh
+conda create -n mdsine2 -c conda-forge python=3.7.3 jupyterlab
+conda activate mdsine2
+python -m ipykernel install --user --name mdsine2 --display-name "mdsine2"
+git clone https://github.com/gerberlab/MDSINE2
+pip install MDSINE2/.
+git clone https://github.com/gerberlab/MDSINE2_Paper
+cd MDSINE2_Paper/localtutorials
+jupyter notebook
 ```
 
-### Post-processing
-Once `run_mdsine2.sh` has finished running, you can perform keystoneness and the perturbation analysis
-```bash
-./compute_keystoneness.sh
-./compute_perturbation_analysis.sh
-```
+## Tutorials
+For tutorials on running MDSINE2, post-processing, and how to use the MDSINE2 software, see `tutorials`.
 
-### Making figures
-Once cross-validation and learning the parameters are done, you can generate the figures used in the paper:
-```bash
-./make_figures.sh
-```
+outline
+tutorial 1 data processing
+  * List of files needed as input for this and where they are
+    * ASV abundance table: asv_abund.tsv
+    * Taxonomy of xyz: taxa.tsv
+    * etc
+  * Step through the scripts executing them, for one of the scripts 'open the hood' to show them what the command looks like and execute it not from the script but in the notebook like one normally wood
+  * after all of the scripts have been run give a list of what has been made
+  * look at what has been made somehow
+  * discuss any pickles that have been made
+  * do some head commands or other plotting
+  
+tutorial 2 run the model
+  * List of files needed as input for this and where they are
+    * ...
+    * ..
+    * ...
+  * discuss the basic structure of the input data looking at heads
+  * comment out the command to run the full model, and instead have a command for running on a simplified system
+  * look at output
+  * discuss output
+  * we need a link to have them download the real output if they want (dropbox link i am thinking? or zonodo)
+  
+tutorial 3 as an example we can run with the data they created, not sure how feasible it is to run the real data for some tasks that may be large and cumbersome 
+  *
+  *
+
+## Quick start
+#### Running MDSINE2 with Gibson dataset
+The raw data of the Gibson dataset is in the folder `datasets/gibson`. To run the MDSINE2 model, use the scripts in the the folder `gibson_dataset`. 
+
+#### Running MDSINE2 with your own dataset
+*****************************************************Describe the required tables
+
+1) Parse the tables into a `Study` object
+   First we need to parse in the tables of raw data into an MDSINE2 `Study` object
+    ```bash
+    python step-1_parse_data.py \
+        --name name-of-dataset \
+        --taxonomy path/to/taxonomy-table.tsv \
+        --metadata path/to/metadata-table.tsv \
+        --reads path/to/reads-table.tsv \
+        --qpcr path/to/qpcr-table.tsv \
+        --outfile output/study.pkl
+    ```
+2) (Optional) Filter the data
+    Filter out taxas that don't have enough information
+    ```bash
+    python step_2_filtering.py \
+        --dataset output/study.pkl \
+        --outfile output/study_filtered.pkl \
+        --dtype DTYPE \
+        --threshold THRESHOLD \
+        --min-num-consecutive MIN_NUM_CONSECUTIVE \
+        --min-num-subjects MIN_NUM_SUBJECTS \
+        --colonization-time COLONIZATION_TIME
+    ```
+
+3) Learn parameters of MDSINE2 model
+   Run the inference of MDSINE2
+   ```bash
+   python step_5_infer_mdsine2.py \
+       --input output/study_filtered.pkl \
+       --negbin A0 A1 \
+       --seed SEED \
+       --burnin BURNIN \
+       --n-samples N_SAMPLES \
+       --checkpoint CHECKPOINT \
+       --basepath output \
+       --multiprocessing 0
+   ```
+
+4) Visualize the MDSINE2 parameters
+   Visualize the parameters
+   ```bash
+   python step_6_visualize_mdsine2.py \
+       --chain output/name-of-dataset/mcmc.pkl \
+       --output-basepath output/name-of-dataset/posterior \
+       --section posterior
+    ```
+
+
+
+
+The only offline operations done out of this repository are:
+* Running DADA2. 
+* Phylogenetic placement of the ASVs **and** OTUs (from consensus sequences). . Note that you only have the consensus sequences after 
+
+The data you **need** to start this processed is contained in the folder `MDSINE2_Paper/datasets/gibson`:
+* `counts.tsv`: This is the ASV table from DADA2
+* `metadata.tsv`: This maps sampled ID to a subject and timepoint. This is done manually
+* `perturbations.tsv`: These map which subjects get which perturbation and when. This is produced manually
+* `qpcr.tsv`: These are the qPCR triplicate measurements for each sample ID. This is produced manually from the Massachusetts Host Microbiome Center standard qPCR outputs.
+* `rdp_species.tsv` and `silva_species.tsv`: These are the species assignments for each ASV from running them through the RDP 11-5 and Silva 138 databases, respectivelly. These were produced in DADA using the command `assignSpecies`.
+
+Additional files that we used for our preprocessing. These files are contained in `MDSINE2_Paper/gibson_dataset/files`:
+* `preprocessing/*`: These files were produced from placing the ASV sequences of the phylogenetic tree. This is done offline and not included in this repository. For people with access to ErisOne, these scripts can be found in `/data/cctm/darpa_perturbation_mouse_study/phylogenetic_placement`. See `documentation.docx` and `run_phyloplacement_ASVs.sh`.
+* `assign_taxonomy_OTUs/taxonomy_RDP.txt`
