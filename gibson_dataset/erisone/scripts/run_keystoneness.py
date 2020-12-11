@@ -53,6 +53,7 @@ python keystoneness.py \
     --leave-out-index {leaveoutindex} \
     --forward-simulate {forward_sim} \
     --make-table {maketable} \
+    --compute-keystoneness {compute_keystoneness} \
     --sep {sep}
     --simulation-dt {sim_dt} \
     --n-days {n_days} \
@@ -62,6 +63,7 @@ python keystoneness.py \
 import mdsine2 as md2
 import argparse
 import os
+import logging
 
 if __name__ == '__main__':
     md2.LoggingConfig(level=logging.INFO)
@@ -132,7 +134,7 @@ if __name__ == '__main__':
             stderr_loc=stderr_name, queue=args.queue, cpus=args.cpus, mem=args.memory,
             environment_name=args.environment_name, code_basepath=args.code_basepath,
             chain=args.chain, study=args.study, leaveouttable=args.leave_out_table,
-            leaveoutindex=leave_out, forward_sim=1, maketable=0,
+            leaveoutindex=leave_out, forward_sim=1, maketable=0, compute_keystoneness=0,
             sep=args.sep, sim_dt=args.simulation_dt, n_days=args.n_days, 
             basepath=args.basepath))
         f.close()

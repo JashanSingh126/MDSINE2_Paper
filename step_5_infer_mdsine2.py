@@ -89,7 +89,7 @@ if __name__ == '__main__':
 
     # 3) Begin inference
     params = md2.config.MDSINE2ModelConfig(
-        basepath=basepath, data_seed=args.seed, init_seed=args.seed, 
+        basepath=basepath, seed=args.seed, 
         burnin=args.burnin, n_samples=args.n_samples, negbin_a1=a1, 
         negbin_a0=a0, checkpoint=args.checkpoint)
     # Run with multiprocessing if necessary
@@ -114,6 +114,10 @@ if __name__ == '__main__':
         raise ValueError('Must specify `--perturbation-ind-prior`')
     params.INITIALIZATION_KWARGS[STRNAMES.PERT_INDICATOR_PROB]['hyperparam_option'] = \
         args.perturbation_prior
+
+    # Change the cluster initialization to no clustering if there are less than 30 clusters
+    if len(study.taxas) <= 30:
+        params.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value_option'] = 'no-clusters'
 
 
     mcmc = md2.initialize_graph(params=params, graph_name=study.name, subjset=study)

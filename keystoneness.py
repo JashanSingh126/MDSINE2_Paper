@@ -87,6 +87,30 @@ def _forward_sim(growth, interactions, initial_conditions, dt, sim_max, n_days):
         pred_matrix[gibb] = x['X']
     return pred_matrix
 
+def _compute_distance(base, leftout, distance, mask):
+    '''Compute the distance between `leftout` and `base` with the 
+    distance `distance`. Note that `leftout` will have some NaNs that need to 
+    be indexed out for base.
+
+    Parameters
+    ----------
+    base : np.ndarray(n_taxa)
+        steady-state of the system without any taxa left out
+    leftout : np.ndarray(n_taxa)
+        steady-state of the system with taxa left out
+    distance : str
+        distance metric
+    '''
+    def _l2(arr1, arr2):
+        diff = arr1 - arr2
+        return np.sqrt(np.sum(np.square(diff)))
+    base = base[mask]
+    if distance == 'l2':
+        d = _l2(base, leftout)
+    else:
+        raise ValueError('`distance` ({}) metric not recognized'.format(distance))
+    return d
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--input', type=str, dest='input',
@@ -105,6 +129,10 @@ if __name__ == '__main__':
         help='If 1, compute the forward simulation of the index. If 0, do not', default=1)
     parser.add_argument('--make-table', '-mt', type=int, dest='make_table',
         help='If 1, make the table of the steady states. If 0, do not', default=1)
+    parser.add_argument('--compute-keystoneness', type=int, dest='compute_keystoneness',
+        help='If 1, compute the keystoneness. Otherwise dont.', default=1)
+    parser.add_argument('--distance', type=str, dest='distance', default='l2',
+        help='This is the distance to compute from the base and the left out set.')
     parser.add_argument('--sep', type=str, dest='sep', default=',',
         help='separator for the leave out table')
     parser.add_argument('--simulation-dt', type=float, dest='simulation_dt',
@@ -230,12 +258,25 @@ if __name__ == '__main__':
         # Make the table
         # --------------
         logging.info('Make the table')
-
         re_find = re.compile(r'^study(.*)-lo(.*)-forward-sims.npy$')
 
+        # Get the steady-state of the base
+        fname = os.path.join(basepath, 'study{studyname}-lonone-forward-sims.npy'.format(
+            studyname=study.name))
+        if os.path.isfile(fname):
+            base = np.load(fname)
+            base = base[:,:,-1] # Get last timepoint
+            ss_base = np.mean(base, axis=0)
+        else:
+            raise ValueError('`base` ({}) not found'.format(fname))
+
         fnames = os.listdir(basepath)
+        
         data = []
         idxs = []
+
+        if args.compute_keystoneness:
+            keystoneness = []
         for fname in fnames:
             try:
                 studyname, leaveout = re_find.findall(fname)[0]
@@ -246,27 +287,34 @@ if __name__ == '__main__':
                 logging.warning('{} not the same study as input {}. skipping'.format(
                     studyname, study.name))
                 continue
-
             if leaveout == 'none':
-                leaveout = -1
+                continue
             else:
                 leaveout = int(leaveout)
 
             M = np.load(os.path.join(basepath, fname))
-            steady_state = np.nanmean(M[:, :, 0], axis=0)
-            
-            if leaveout != -1:
-                oidxs = [int(ele) for ele in lines[leaveout].split(args.sep)]
-                mask = np.ones(len(study.taxas), dtype=bool)
-                mask[oidxs] = False
-                ss = np.zeros(len(study.taxas)) * np.nan
-                ss[mask] = steady_state
-                steady_state = ss
+            M = M[:, :, -1]  # Get last timepoint
+            steady_state = np.nanmean(M, axis=0)
+
+            # Set the respective elements to nan
+            oidxs = [int(ele) for ele in lines[leaveout].split(args.sep)]
+            mask = np.ones(len(study.taxas), dtype=bool)
+            mask[oidxs] = False
+            ss = np.zeros(len(study.taxas)) * np.nan
+            ss[mask] = steady_state
+            steady_state = ss
+
+            # compute the distance over each gibb step
+            if args.compute_keystoneness:
+                dists = np.zeros(M.shape[0])
+                for i in range(len(dists)):
+                    dists[i] = _compute_distance(base[i], M[i], distance=args.distance, mask=mask)
+                keystoneness.append(np.mean(dists))
             
             data.append(steady_state)
             idxs.append(leaveout)
         
-        if len(data) != len(lines) + 1:
+        if len(data) != len(lines):
             raise ValueError('You are making the table. {} total lines were found instead of {}'.format( 
                 len(data), len(lines)+1))
         
@@ -274,9 +322,23 @@ if __name__ == '__main__':
         data = np.asarray(data)
         idxs = np.argsort(idxs)
         data = data[idxs, :]
+        data = np.vstack((ss_base.reshape(1,-1), data))
 
         columns = [taxa.name for taxa in study.taxas]
         index = ['base'] + lines
 
+        print(data.shape)
+        print(columns)
+        print(index)
+
         df = pd.DataFrame(data, index=index, columns=columns)
-        df.to_csv(os.path.join(basepath, 'table.tsv'), sep='\t', index=True, header=True)
+        df.to_csv(os.path.join(basepath, 'steady-state-table.tsv'), sep='\t', index=True, header=True)
+
+        # Make the keystoneness
+        if args.compute_keystoneness:
+
+            columns = ['{} distance'.format(args.distance)]
+            data = np.asarray(keystoneness).reshape(-1,1)
+
+            df = pd.DataFrame(data, index=index[1:], columns=columns)
+            df.to_csv(os.path.join(basepath, 'keystoneness.tsv'), sep='\t', index=True, header=True)
