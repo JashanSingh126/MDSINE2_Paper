@@ -64,7 +64,8 @@ import re
 import pandas as pd
 
 def _forward_sim(growth, interactions, initial_conditions, dt, sim_max, n_days):
-    '''Forward simulate with the given dynamics
+    '''Forward simulate with the given dynamics 
+    (n_gibbs, n_taxa, n_times)
     '''
 
     dyn = md2.model.gLVDynamicsSingleClustering(growth=None, interactions=None, 

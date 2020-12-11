@@ -57,7 +57,7 @@ python keystoneness.py \
     --sep {sep}
     --simulation-dt {sim_dt} \
     --n-days {n_days} \
-    --output-basepath {basepath} \
+    --output-basepath {basepath}
 '''
 
 import mdsine2 as md2

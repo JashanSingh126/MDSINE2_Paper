@@ -38,13 +38,17 @@ def _forward_sim(growth, interactions, perturbation, initial_conditions, dt, sim
     n_days : float
         Total number of days
     '''
-
+    print(dt)
+    print(pert_end_day)
+    print(pert_start_day)
+    print(n_days)
     dyn = md2.model.gLVDynamicsSingleClustering(growth=None, interactions=None, 
         perturbation_ends=[pert_end_day], perturbation_starts=[pert_start_day], 
         start_day=0, sim_max=sim_max)
     initial_conditions = initial_conditions.reshape(-1,1)
 
-    n_steps = int(n_days/dt)
+    n_steps = int(n_days/dt) + 1
+    print(n_steps)
 
     start_time = time.time()
     pred_matrix = np.zeros(shape=(growth.shape[0], growth.shape[1], n_steps))
@@ -58,7 +62,7 @@ def _forward_sim(growth, interactions, perturbation, initial_conditions, dt, sim
         dyn.perturbations = [perturbation[gibb]]
 
         x = md2.integrate(dynamics=dyn, initial_conditions=initial_conditions, 
-            dt=dt, n_days=n_days+dt, subsample=False)
+            dt=dt, n_days=n_days, subsample=False)
         pred_matrix[gibb] = x['X']
     return pred_matrix
 
