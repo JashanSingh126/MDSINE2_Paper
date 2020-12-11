@@ -117,7 +117,7 @@ def _get_top(df, cutoff_frac_abundance, taxlevel, taxaname_map=None):
     if cutoff_num is None:
         raise ValueError('Error')
     #Number of taxa whose abundance is greater than the threshold
-    print('Cutoff Num:', cutoff_num)
+    #print('Cutoff Num:', cutoff_num)
 
     idxs = np.argsort(abunds)[-cutoff_num:][::-1]
     dfnew = df.iloc[idxs, :]
@@ -139,15 +139,6 @@ def _get_top(df, cutoff_frac_abundance, taxlevel, taxaname_map=None):
     dfother = pd.DataFrame([vals], columns=df.columns, index=['{} with <{}% total abund'.format(
         TAXLEVEL_PLURALS[taxlevel], cutoff_frac_abundance*100)])
     df = dfnew.append(dfother)
-
-    #if taxaname_map is not None:
-    #    print('\n\n')
-    #    print('Name map')
-    #    print('--------')
-    #    for k,v in namemap.items():
-    #        print()
-    #        print(k)
-    #        print(v)
 
     return df
 
@@ -305,7 +296,6 @@ def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axqpcr, axrel, axper
         matrix = np.flipud(matrix)
         times = np.asarray(list(new_df.columns))
         #print("shapes", matrix.shape)
-    print("times:", times)
     # Plot relative abundance, Create a stacked bar chart
     offset = np.zeros(matrix.shape[1])
     for row in range(matrix.shape[0]):
@@ -362,7 +352,7 @@ def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axqpcr, axrel, axper
     else:
         inoc = subjset_inoc["Ulcerative Colitis"]
 
-    print("Adding inoculum")
+    #print("Adding inoculum")
     df_inoc, taxa_map_inoc = inoc.cluster_by_taxlevel(dtype='raw',
             taxlevel=TAXLEVEL, index_formatter='%({})s %({})s'.format(upper_tax,
             lower_tax), smart_unspec=False)

@@ -293,7 +293,6 @@ def alpha_diversity_mean_std(subjset_healthy, subjset_uc, subjset_innoc, name,
      test_results)
 
     times_idxs = np.arange(len(times))
-    #print('times:', times)
 
     times_idxs_healthy = times_idxs-(0.25/2)
     times_idxs_uc = times_idxs+(0.25/2)
@@ -524,11 +523,11 @@ def beta_diversity_figure(subjset_healthy, subjset_uc, subjset_innoc, name = Non
     for row in range(data.shape[0]):
         if 'inoculum' in labels[row]:
             if 'Healthy' in labels[row]:
-                print("healthy innoc")
+                #print("healthy innoc")
                 x_healthy = -data[row,0]
                 y_healthy = data[row,1]
             else:
-                print("uc innoc")
+                #print("uc innoc")
                 x_uc = -data[row,0]
                 y_uc = data[row,1]
         else:
@@ -542,7 +541,7 @@ def beta_diversity_figure(subjset_healthy, subjset_uc, subjset_innoc, name = Non
     # PERT_MARKERS = ['+', 'd', 'v', 's', 'v', 'x', 'v']
     INOCULUM_MARKER = '*'
     for ix, ax in enumerate([axright, axleft]):
-        print('ix', ix)
+        #print('ix', ix)
 
         # Plot the points
         for subj in subjset_healthy:
@@ -561,7 +560,7 @@ def beta_diversity_figure(subjset_healthy, subjset_uc, subjset_innoc, name = Non
                     markersize=6, alpha=0.75)
 
         # Plot the inoculum
-        print(x_healthy, y_healthy, x_uc, y_uc)
+        #print(x_healthy, y_healthy, x_uc, y_uc)
         ax.plot([x_healthy], [y_healthy], INOCULUM_MARKER, color=colorinoculumhealthy,
             markersize=15, alpha=0.75)
         ax.plot([x_uc], [y_uc], INOCULUM_MARKER, color=colorinoculumuc,
@@ -623,7 +622,7 @@ def beta_diversity_figure(subjset_healthy, subjset_uc, subjset_innoc, name = Non
     for p in subjset_healthy.perturbations:
         pert_names.append(p.name)
         pert_names.append(p.name)
-    print(pert_names)
+    #print(pert_names)
     for pidx in range(1,7):
         pert_name = pert_names[pidx - 1]
 
@@ -794,7 +793,10 @@ def diversity_plot(subjset_healthy, subjset_uc, subjset_innoc, name = None):
     alpha_diversity_mean_std(subjset_healthy, subjset_uc, subjset_innoc,
     name = name, ax = ax1, axlegend = ax1)
     #alpha_diversity_mean_std()
-    fig.savefig(SAVEPATH + "supplemental_figure4.pdf", bbox_inches = "tight")
+    fig.savefig(SAVEPATH + "supplemental_figure4.pdf", bbox_inches = "tight",
+    dpi = 400)
+    fig.savefig(SAVEPATH + "supplemental_figure4.png", bbox_inches = "tight",
+    dpi = 400)
     plt.close()
 
 def loaddata(healthy):
