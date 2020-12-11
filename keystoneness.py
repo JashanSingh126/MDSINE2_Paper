@@ -254,6 +254,7 @@ if __name__ == '__main__':
                 name = str(idx)
             fname = os.path.join(basepath, 'study{}-lo{}-forward-sims.npy'.format(study.name, name))
             np.save(fname, pred_matrix)
+    
     if args.make_table == 1:
         # Make the table
         # --------------
