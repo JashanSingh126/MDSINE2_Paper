@@ -138,9 +138,8 @@ def _get_top(df, cutoff_frac_abundance, taxlevel, taxaname_map=None):
 
 def _make_full_df(dset):
     sys.path.append('..')
-    from util import load_gibson_dataset
 
-    subjset = load_gibson_dataset(dset=dset)
+    subjset = md2.dataset.load_gibson(dset=dset)
     # Make the data frame
     taxidx = TAXLEVEL_REV_IDX[TAXLEVEL]
     upper_tax = TAXLEVEL_INTS[taxidx+1]
