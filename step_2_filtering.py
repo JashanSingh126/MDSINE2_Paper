@@ -52,11 +52,5 @@ if __name__ == '__main__':
         min_num_subjects=args.min_num_subjects,
         colonization_time=args.colonization_time)
 
-    to_delete = []
-    for taxon in study.taxa:
-        if taxon.idx > 30:
-            to_delete.append(taxon.name)
-    study.pop_taxa(to_delete)
-
     print('{} taxa left in {}'.format(len(study.taxa), study.name))
     study.save(args.outfile)

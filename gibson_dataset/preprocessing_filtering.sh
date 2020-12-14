@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Performing consistency filtering over Study objects"
+
 # Filter the OTUs using consistency filtering
 python ../step_2_filtering.py \
     --dataset ../processed_data/gibson_healthy_agg_taxa.pkl \
