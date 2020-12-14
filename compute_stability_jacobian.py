@@ -40,7 +40,7 @@ if __name__ == '__main__':
     interactions = mcmc.graph[STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk(section=section)
 
     interactions[np.isnan(interactions)] = 0
-    for i in range(len(mcmc.graph.data.taxas)):
+    for i in range(len(mcmc.graph.data.taxa)):
         interactions[:, i, i] = -np.absolute(si[:, i])
 
     jacobian = np.zeros(shape=interactions.shape)

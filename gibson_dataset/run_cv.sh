@@ -2,9 +2,12 @@
 
 NEGBIN="../output/negbin/replicates/mcmc.pkl"
 SEED="0"
-BURNIN="5000"
-N_SAMPLES="15000"
-CHECKPOINT="100"
+# BURNIN="5000"
+# N_SAMPLES="15000"
+# CHECKPOINT="100"
+BURNIN="20"
+N_SAMPLES="40"
+CHECKPOINT="20"
 MULTIPROCESSING="0"
 DSET_BASEPATH="../processed_data/cv"
 CV_BASEPATH="../output/mdsine2/cv"
@@ -30,7 +33,7 @@ python ../run_cross_validation.py \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
-    --chain ${CV_BASEPATH}/healthy-cv2/mcmc.pkl
+    --chain ${CV_BASEPATH}/healthy-cv2/mcmc.pkl \
     --output-basepath ${CV_BASEPATH}/healthy-cv2/posterior"
 eval $CMD
 
@@ -48,7 +51,7 @@ python ../run_cross_validation.py \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
-    --chain ${CV_BASEPATH}/healthy-cv3/mcmc.pkl
+    --chain ${CV_BASEPATH}/healthy-cv3/mcmc.pkl \
     --output-basepath ${CV_BASEPATH}/healthy-cv3/posterior"
 eval $CMD
 
@@ -66,7 +69,7 @@ python ../run_cross_validation.py \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
-    --chain ${CV_BASEPATH}/healthy-cv4/mcmc.pkl
+    --chain ${CV_BASEPATH}/healthy-cv4/mcmc.pkl \
     --output-basepath ${CV_BASEPATH}/healthy-cv4/posterior"
 eval $CMD
 
@@ -84,7 +87,7 @@ python ../run_cross_validation.py \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
-    --chain ${CV_BASEPATH}/healthy-cv5/mcmc.pkl
+    --chain ${CV_BASEPATH}/healthy-cv5/mcmc.pkl \
     --output-basepath ${CV_BASEPATH}/healthy-cv5/posterior"
 eval $CMD
 
@@ -104,7 +107,7 @@ python ../run_cross_validation.py \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
-    --chain ${CV_BASEPATH}/uc-cv6/mcmc.pkl
+    --chain ${CV_BASEPATH}/uc-cv6/mcmc.pkl \
     --output-basepath ${CV_BASEPATH}/uc-cv6/posterior"
 eval $CMD
 
@@ -122,7 +125,7 @@ python ../run_cross_validation.py \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
-    --chain ${CV_BASEPATH}/uc-cv7/mcmc.pkl
+    --chain ${CV_BASEPATH}/uc-cv7/mcmc.pkl \
     --output-basepath ${CV_BASEPATH}/uc-cv7/posterior"
 eval $CMD
 
@@ -140,7 +143,7 @@ python ../run_cross_validation.py \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
-    --chain ${CV_BASEPATH}/uc-cv8/mcmc.pkl
+    --chain ${CV_BASEPATH}/uc-cv8/mcmc.pkl \
     --output-basepath ${CV_BASEPATH}/uc-cv8/posterior"
 eval $CMD
 
@@ -158,7 +161,7 @@ python ../run_cross_validation.py \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
-    --chain ${CV_BASEPATH}/uc-cv9/mcmc.pkl
+    --chain ${CV_BASEPATH}/uc-cv9/mcmc.pkl \
     --output-basepath ${CV_BASEPATH}/uc-cv9/posterior"
 eval $CMD
 
@@ -176,6 +179,6 @@ python ../run_cross_validation.py \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 CMD="python ../step_6_visualize_mdsine2.py \
-    --chain ${CV_BASEPATH}/uc-cv10/mcmc.pkl
+    --chain ${CV_BASEPATH}/uc-cv10/mcmc.pkl \
     --output-basepath ${CV_BASEPATH}/uc-cv10/posterior"
 eval $CMD

@@ -42,12 +42,12 @@ if __name__ == '__main__':
     # counts.txt
     columns = ['#OTU ID'] + [a+1 for a in range(sampleid)]
     data = []
-    for taxa in study.taxas:
-        temp = [taxa.name]
+    for taxon in study.taxa:
+        temp = [taxon.name]
         sampleid = 1
         for subj in study:
             for t in subj.times:
-                temp.append(subj.reads[t][taxa.idx])
+                temp.append(subj.reads[t][taxon.idx])
         data.append(temp)
 
     

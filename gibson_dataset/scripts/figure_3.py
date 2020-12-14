@@ -17,7 +17,7 @@ from matplotlib.colors import LogNorm
 import ete3
 from Bio import Phylo
 
-def phylogenetic_heatmap_gram_split(chain_healthy, chain_uc, outfile, tree_fname, taxas):
+def phylogenetic_heatmap_gram_split(chain_healthy, chain_uc, outfile, tree_fname, taxa):
     '''Split the phylogenetic tree into gram negative and gram positive side by side.
     Gram positive is on left, gram negative is on right.
 
@@ -30,7 +30,7 @@ def phylogenetic_heatmap_gram_split(chain_healthy, chain_uc, outfile, tree_fname
         Location to save the figure
     tree_fname : str
         Location to load the newick tree that shows the placement of the OTUs
-    taxas : md2.TaxaSet
+    taxa : md2.TaxaSet
         This is the MDSINE2.TaxaSet object that contains all of the OTUs. This
         is used for naming
     '''
@@ -40,7 +40,7 @@ def phylogenetic_heatmap_gram_split(chain_healthy, chain_uc, outfile, tree_fname
     names = set([])
     for chainname in [chain_healthy, chain_uc]:
         chain = md2.BaseMCMC.load(chainname)
-        for otu in chain.graph.data.taxas:
+        for otu in chain.graph.data.taxa:
             names.add(str(otu.name))
     names = list(names)
 
@@ -49,8 +49,8 @@ def phylogenetic_heatmap_gram_split(chain_healthy, chain_uc, outfile, tree_fname
     gramneg_taxanames = []
     grampos_taxanames = []
     for name in names:
-        taxa = taxas[name]
-        if md2.is_gram_negative(taxa=taxa):
+        taxon = taxa[name]
+        if md2.is_gram_negative(taxon=taxon):
             gramneg_taxanames.append(name)
         else:
             grampos_taxanames.append(name)
@@ -145,7 +145,7 @@ def phylogenetic_heatmap_gram_split(chain_healthy, chain_uc, outfile, tree_fname
     # Plot gram positive subplots
     # ---------------------------
     ax_grampos_tree, grampos_taxaname_order = _make_phylogenetic_tree(
-        tree_fname=tree_fname, names=grampos_taxanames, taxas=taxas, fig=fig,
+        tree_fname=tree_fname, names=grampos_taxanames, taxa=taxa, fig=fig,
         ax=ax_grampos_tree, figlabel='E', figlabelax=ax_grampos_tree_full)
     
     ax_grampos_healthy_abund, grampos_healthy_colorder = _make_cluster_membership_heatmap(
@@ -170,7 +170,7 @@ def phylogenetic_heatmap_gram_split(chain_healthy, chain_uc, outfile, tree_fname
     # Plot gram negative subplots
     # ---------------------------
     ax_gramneg_tree, gramneg_taxaname_order = _make_phylogenetic_tree(
-        tree_fname=tree_fname, names=gramneg_taxanames, taxas=taxas, fig=fig,
+        tree_fname=tree_fname, names=gramneg_taxanames, taxa=taxa, fig=fig,
         ax=ax_gramneg_tree, figlabel='F', figlabelax=ax_gramneg_tree_full)
     
     ax_gramneg_healthy_abund, gramneg_healthy_colorder = _make_cluster_membership_heatmap(
@@ -216,11 +216,11 @@ def phylogenetic_heatmap_gram_split(chain_healthy, chain_uc, outfile, tree_fname
     #     transform=ax_uc_network.transAxes, zorder=50)
     
     # Add in the taxonomic key
-    suffix_taxa = {'genus': '*',
+    suffix_taxon = {'genus': '*',
         'family': '**', 'order': '***', 'class': '****', 'phylum': '*****', 'kingdom': '******'}
     text = '$\\bf{Taxonomy} \\bf{Key}$\n'
-    for taxa in suffix_taxa:
-        text += '{} - {}\n'.format(suffix_taxa[taxa], taxa)
+    for taxon in suffix_taxon:
+        text += '{} - {}\n'.format(suffix_taxon[taxon], taxon)
     fig.text(x=0.875, y=0.45, s=text, fontsize=35)
 
 
@@ -242,7 +242,7 @@ def _remove_border(ax):
     ax.set_ylabel('')
     return ax
 
-def _make_phylogenetic_tree(tree_fname, names, taxas, ax, fig, figlabel=None, figlabelax=None):
+def _make_phylogenetic_tree(tree_fname, names, taxa, ax, fig, figlabel=None, figlabelax=None):
 
     tree = ete3.Tree(tree_fname)
     tree.prune(names, True)
@@ -259,40 +259,40 @@ def _make_phylogenetic_tree(tree_fname, names, taxas, ax, fig, figlabel=None, fi
     taxa_order = []
     for text in ax.texts:
         taxa_order.append(text._text)
-        # Substitute the name of the taxa with the species/genus if possible
-        taxaname = str(text._text).replace(' ','')
-        taxa = taxas[taxaname]
+        # Substitute the name of the taxon with the species/genus if possible
+        taxonname = str(text._text).replace(' ','')
+        taxon = taxa[taxonname]
         suffix = '' # for defining taxonomic level outside genus
-        if taxa.tax_is_defined('genus'):
-            taxaname = ' ' + taxa.taxonomy['genus']
-            if taxa.tax_is_defined('species'):
-                spec = taxa.taxonomy['species']
+        if taxon.tax_is_defined('genus'):
+            taxonname = ' ' + taxon.taxonomy['genus']
+            if taxon.tax_is_defined('species'):
+                spec = taxon.taxonomy['species']
                 l = spec.split('/')
                 if len(l) < 3:
                     spec = '/'.join(l)
-                    taxaname = taxaname + ' {}'.format(spec)
+                    taxonname = taxonname + ' {}'.format(spec)
                 elif len(l) >= 3:
                     spec = '/'.join(l[:2])
-                    taxaname = taxaname + ' {}'.format(spec)
+                    taxonname = taxonname + ' {}'.format(spec)
             else:
                 suffix = suffix_taxa['genus']
         else:
             found = False
-            for taxalevel in taxonomies:
+            for taxlevel in taxonomies:
                 if found:
                     break
-                if taxa.tax_is_defined(taxalevel):
+                if taxon.tax_is_defined(taxlevel):
                     found = True
-                    taxaname = ' ' + taxa.taxonomy[taxalevel]
-                    suffix = suffix_taxa[taxalevel]
-                    extra_taxa_added.add(taxalevel)
+                    taxonname = ' ' + taxon.taxonomy[taxlevel]
+                    suffix = suffix_taxa[taxlevel]
+                    extra_taxa_added.add(taxlevel)
 
             if not found:
-                taxaname = '#'*40
+                taxonname = '#'*40
 
-        taxaname += ' ' + taxa.name
-        taxaname = ' ' + suffix + taxaname
-        text._text = taxaname
+        taxonname += ' ' + taxon.name
+        taxonname = ' ' + suffix + taxonname
+        text._text = taxonname
         text._text = text._text + '- ' * 55
         text.set_fontsize(fontsize)
 
@@ -302,8 +302,8 @@ def _make_phylogenetic_tree(tree_fname, names, taxas, ax, fig, figlabel=None, fi
 
     # # Make the taxnonmic key on the right hand side
     # text = '$\\bf{Taxonomy} \\bf{Key}$\n'
-    # for taxa in suffix_taxa:
-    #     text += '{} - {}\n'.format(suffix_taxa[taxa], taxa)
+    # for taxon in suffix_taxa:
+    #     text += '{} - {}\n'.format(suffix_taxa[taxon], taxon)
     # if side_by_side is not None:
     #     if not side_by_side:
     #         fig.text(0.1, 0.875, text, fontsize=18)
@@ -379,7 +379,7 @@ def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig, m
 def _make_cluster_membership_heatmap(chainname, ax, order, binary, fig, make_colorbar=True, figlabel=None):
     '''Make the heatmap of the cluster membership
     If `binary` is True, then we just have a binary vector of the membership of
-    the taxa in the cluster. If `binary` is False, then the coloring is the average relative
+    the taxon in the cluster. If `binary` is False, then the coloring is the average relative
     abundance of the ASV and the colorbar is on a log scale.
     '''
     chain = md2.BaseMCMC.load(chainname)
@@ -389,7 +389,7 @@ def _make_cluster_membership_heatmap(chainname, ax, order, binary, fig, make_col
     # If binary is False, then get the relative abundances of the ASVS
     rel_abund = None
     if not binary:
-        rel_abund = np.zeros(len(subjset.taxas))
+        rel_abund = np.zeros(len(subjset.taxa))
         for subj in subjset:
             M = subj.matrix()['rel']
             start_idx = np.searchsorted(subj.times, 7)
@@ -407,7 +407,7 @@ def _make_cluster_membership_heatmap(chainname, ax, order, binary, fig, make_col
     rel_abund[rel_abund == 0] = min_rel
     # print(max_rel)
 
-    matrix = np.zeros(shape=(len(subjset.taxas), len(clusters)))
+    matrix = np.zeros(shape=(len(subjset.taxa), len(clusters)))
     for cidx, cluster in enumerate(clusters):
         for oidx in cluster:
             if binary:
@@ -415,12 +415,12 @@ def _make_cluster_membership_heatmap(chainname, ax, order, binary, fig, make_col
             else:
                 matrix[oidx, cidx] = rel_abund[oidx]
 
-    index = [taxa.name for taxa in subjset.taxas]
+    index = [taxon.name for taxon in subjset.taxa]
 
     iii = 0
-    for taxanew in order:
-        if taxanew not in index:
-            index.append(taxanew)
+    for taxonnew in order:
+        if taxonnew not in index:
+            index.append(taxonnew)
             iii += 1
 
     # Add in nan rows in places that order is not in index
@@ -517,8 +517,8 @@ if __name__ == '__main__':
     outfile = 'tmp/figure_3.pdf'
     tree_fname = '../gibson_dataset/files/phylogenetic_placement_OTUs/phylogenetic_tree_only_query.nhx'
     study = md2.Study.load('../processed_data/gibson_healthy_agg_taxa.pkl')
-    taxas = study.taxas
+    taxa = study.taxa
 
     phylogenetic_heatmap_gram_split(chain_healthy=chain_healthy, chain_uc=chain_uc, 
         outfile=outfile,
-        tree_fname=tree_fname, taxas=taxas)
+        tree_fname=tree_fname, taxa=taxa)

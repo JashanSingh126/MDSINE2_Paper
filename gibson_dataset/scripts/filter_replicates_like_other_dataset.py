@@ -1,4 +1,4 @@
-'''Filter the `replicates` dataset so that it has identical taxas to 
+'''Filter the `replicates` dataset so that it has identical taxa to 
 another dataset. We cannot pass the `replicates` dataset into a consistency
 filter because there is no such thing as a consecutive timepoint in that 
 dataset
@@ -22,10 +22,10 @@ if __name__ == '__main__':
     other = md2.Study.load(args.other)
 
     to_delete = []
-    for taxa in replicates.taxas:
-        if taxa.name not in other.taxas:
-            to_delete.append(taxa.name)
-    replicates.pop_taxas(to_delete)
+    for taxon in replicates.taxa:
+        if taxon.name not in other.taxa:
+            to_delete.append(taxon.name)
+    replicates.pop_taxa(to_delete)
     replicates.save(args.path)
     
     

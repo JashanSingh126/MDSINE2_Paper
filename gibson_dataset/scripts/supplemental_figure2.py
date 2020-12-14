@@ -365,7 +365,7 @@ def get_hierarchy(taxo):
     """
        returns the lowest defined hierarchy
        @parameters
-       taxo : (pl.Taxa)
+       taxo : (pl.Taxon)
     """
 
     name = ""
@@ -394,11 +394,11 @@ def get_names(df, subjset):
 
     """
 
-    taxas = subjset.taxas
+    taxa = subjset.taxa
     index_old = df.index
     names_dict = {}
     for otu in index_old:
-        taxonomy = taxas[otu]
+        taxonomy = taxa[otu]
         hierarchy = get_hierarchy(taxonomy)
         names_dict[otu] = otu.replace("_", " ") + ", " + hierarchy
 

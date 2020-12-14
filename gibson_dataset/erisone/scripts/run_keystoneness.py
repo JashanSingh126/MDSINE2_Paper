@@ -81,7 +81,7 @@ if __name__ == '__main__':
     parser.add_argument('--output-basepath', '-o', type=str, dest='basepath',
         help='This is where you are saving the posterior renderings')
     parser.add_argument('--leave-out-table', type=str, dest='leave_out_table',
-        help='Table of which taxas to leave out')
+        help='Table of which taxa to leave out')
     parser.add_argument('--sep', type=str, dest='sep', default=',',
         help='separator for the leave out table')
 

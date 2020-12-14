@@ -6,7 +6,7 @@ MDSINE2 version: 4.0.6
 
 Array shapes
 ------------
-N_O : number of taxas
+N_O : number of taxa
 N_T : number of timepoints
 N_g : number of Gibb steps
 
@@ -29,8 +29,8 @@ Options:
         Convert the input data into relative abudnance and then calculate 
         the RMSE
     `spearman` - Spearman Correlation
-        Calculate the spearman correlation for each Taxa's trajectory, then return 
-        the mean spearman correlation over all of the taxa
+        Calculate the spearman correlation for each taxon's trajectory, then return 
+        the mean spearman correlation over all of the taxon
     `RMSE` - Root Mean Square Error
         Compute the straight RMSE
 
@@ -104,7 +104,7 @@ def _relRMSE_err(pred, truth):
     ----------
     pred : np.ndarray 2-dim or 3-dim
         Predicted trajectory.
-        N_O : number of taxas
+        N_O : number of taxa
         N_T : number of timepoints
         N_g : number of Gibb steps
         2-dimensional
@@ -139,7 +139,7 @@ def _RMSE_err(pred, truth):
     ----------
     pred : np.ndarray 2-dim or 3-dim
         Predicted trajectory.
-        N_O : number of taxas
+        N_O : number of taxa
         N_T : number of timepoints
         N_g : number of Gibb steps
         2-dimensional
@@ -172,7 +172,7 @@ def _spearman_err(pred, truth):
     ----------
     pred : np.ndarray 2-dim or 3-dim
         Predicted trajectory.
-        N_O : number of taxas
+        N_O : number of taxa
         N_T : number of timepoints
         N_g : number of Gibb steps
         2-dimensional

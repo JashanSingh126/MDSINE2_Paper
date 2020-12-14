@@ -33,18 +33,18 @@ qPCR
         Rest of the columns are the replicate measurements
 
 Counts
-    These are the counts for each taxa. Columns:
+    These are the counts for each taxon. Columns:
     name : str
-        Name of the taxa
+        Name of the taxon
     `sampleID`s
         Each sampleID has its own count
 
 Taxonomy
-    This is the taxonomy name for each taxa in counts. Columns:
+    This is the taxonomy name for each taxon in counts. Columns:
     name : str
-        Name of the taxa. This corresponds to the name in `counts`
+        Name of the taxon. This corresponds to the name in `counts`
     sequence : str
-        Sequence associated with the taxa
+        Sequence associated with the taxon
     kingdom : str
         Kingdom taxonomic classification
     phylum : str

@@ -65,6 +65,7 @@ if __name__ == '__main__':
     if args.rename_study is not None:
         if args.rename_study.lower() != 'none':
             study.name = args.rename_study
+    md2.seed(args.seed)
 
     # 2) Load the model parameters
     os.makedirs(args.basepath, exist_ok=True)
@@ -116,8 +117,8 @@ if __name__ == '__main__':
         args.perturbation_prior
 
     # Change the cluster initialization to no clustering if there are less than 30 clusters
-    if len(study.taxas) <= 30:
-        logging.info('Since there is less than 30 Taxa, we set the initialization of the clustering to `no-clusters`')
+    if len(study.taxa) <= 30:
+        logging.info('Since there is less than 30 taxa, we set the initialization of the clustering to `no-clusters`')
         params.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value_option'] = 'no-clusters'
 
 

@@ -27,7 +27,7 @@ if __name__ == '__main__':
     parser.add_argument('--n-days', type=str, dest='n_days',
         help='Number of days to simulate for', default=None)
     parser.add_argument('--limit-of-detection', dest='limit_of_detection',
-        help='If any of the taxas have a 0 abundance at the start, then we ' \
+        help='If any of the taxa have a 0 abundance at the start, then we ' \
             'set it to this value.',default=1e5)
     parser.add_argument('--output-basepath', '-o', type=str, dest='basepath',
         help='This is where you are saving the posterior renderings')

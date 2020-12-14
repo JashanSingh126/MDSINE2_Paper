@@ -2,10 +2,13 @@
 
 NEGBIN="../output/negbin/replicates/mcmc.pkl"
 SEED="0"
-BURNIN="5000"
-N_SAMPLES="15000"
-CHECKPOINT="100"
-MULTIPROCESSING="1"
+# BURNIN="5000"
+# N_SAMPLES="15000"
+# CHECKPOINT="100"
+BURNIN="20"
+N_SAMPLES="40"
+CHECKPOINT="20"
+MULTIPROCESSING="0"
 INTERACTION_IND_PRIOR="strong-sparse"
 PERTURBATION_IND_PRIOR="strong-sparse"
 
@@ -24,8 +27,8 @@ python ../step_5_infer_mdsine2.py \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 python ../step_6_visualize_mdsine2.py \
-    --chain  ../output/mdsine2/fixed_clustering/healthy/mcmc.pkl
-    --output-basepath ../output/mdsine2/fixed_clustering/healthy/posterior
+    --chain  ../output/mdsine2/fixed_clustering/healthy/mcmc.pkl \
+    --output-basepath ../output/mdsine2/fixed_clustering/healthy/posterior \
     --fixed-clustering 1
 
 # UC cohort
@@ -43,6 +46,6 @@ python ../step_5_infer_mdsine2.py \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 python ../step_6_visualize_mdsine2.py \
-    --chain  ../output/mdsine2/fixed_clustering/uc/mcmc.pkl
-    --output-basepath ../output/mdsine2/fixed_clustering/uc/posterior
+    --chain  ../output/mdsine2/fixed_clustering/uc/mcmc.pkl \
+    --output-basepath ../output/mdsine2/fixed_clustering/uc/posterior \
     --fixed-clustering 1

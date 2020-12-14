@@ -15,7 +15,7 @@ Methodology
     dset.save('file/location.pkl')
     ```
 2) Perform filtering
-   Filter out the Taxas/OTUs that do not have enough dynamical information for 
+   Filter out the Taxa/OTUs that do not have enough dynamical information for 
    effective inference.
 3) Save the filtered dataset
 '''
@@ -33,7 +33,7 @@ if __name__ == '__main__':
         help='This is what data we are thresholding. Options are "raw" (counts), "rel" (relative ' \
              'abundance), or "abs" (absolute abundance).')
     parser.add_argument('--threshold', '-t', type=float, dest='threshold',
-        help='This is the threshold the taxa must pass at each timepoint')
+        help='This is the threshold the taxon must pass at each timepoint')
     parser.add_argument('--min-num-consecutive', '-m', type=int, dest='min_num_consecutive',
         help='Number of consecutive timepoints to look for in a row')
     parser.add_argument('--min-num-subjects', '-s', type=int, dest='min_num_subjects',
@@ -52,5 +52,11 @@ if __name__ == '__main__':
         min_num_subjects=args.min_num_subjects,
         colonization_time=args.colonization_time)
 
-    print('{} taxas left in {}'.format(len(study.taxas), study.name))
+    to_delete = []
+    for taxon in study.taxa:
+        if taxon.idx > 30:
+            to_delete.append(taxon.name)
+    study.pop_taxa(to_delete)
+
+    print('{} taxa left in {}'.format(len(study.taxa), study.name))
     study.save(args.outfile)

@@ -99,7 +99,7 @@ def _add_unequal_col_dataframes(df, dfother, times, times_cnts, t2idx):
 
 def _get_top(df, cutoff_frac_abundance, taxlevel, taxaname_map=None):
     """
-       selects the data associated with taxa (at taxlevel) whose abundace is
+       selects the data associated with taxon (at taxlevel) whose abundace is
        greater than the cutoff_frac_abundance
     """
     matrix = df.values
@@ -186,7 +186,7 @@ def checker(df1, df2):
     sum2 = np.sum(df2.to_numpy(), axis = 0)
 
 def set_colors(df, color_idx, color_taxa_dict, color_set):
-    """choose the color to represent each taxa level"""
+    """choose the color to represent each tax level"""
 
     M = df.to_numpy()
     a = np.sum(M, axis = 1)

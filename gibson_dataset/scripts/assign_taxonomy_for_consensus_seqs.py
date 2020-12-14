@@ -65,70 +65,11 @@ def parse_rdp(fname, confidence_threshold):
 
         for tax_key in columns:
             if tax_key not in taxaed:
-                temp.append(md2.pylab.base.DEFAULT_TAXA_NAME)
+                temp.append(md2.pylab.base.DEFAULT_TAXLEVEL_NAME)
         data.append(temp)
 
     df = pd.DataFrame(data, columns=columns, index=index)
     return df
-
-def parse_silva_NOT_USED(fname):
-    '''Parse the taxonomic assignment table from Silva
-
-    Parameters
-    ----------
-    fname : str
-        This is the name of the taxonomic assignment table from Silva
-
-    Returns
-    -------
-    dict( key1 -> dict ( key2 -> value ) )
-        key1 : str
-            OTU name
-        key2 : str
-            taxonomic level
-        value : str
-            taxonomic name
-    '''
-    tbl = pd.read_csv(fname, sep='\t', index_col=0)
-    for otuname in tbl.index:
-        if 'OTU' not in otuname:
-            continue
-
-        d_silva[otuname] = {}
-        
-        taxas = tbl['Taxon'][otuname].split('; ')
-        for tax in taxas:
-            if 'd__' in tax:
-                key = 'tax_kingdom'
-                tax = tax.replace('d__', '')
-            elif 'p__' in tax:
-                key = 'tax_phylum'
-                tax = tax.replace('p__', '')
-            elif 'c__' in tax:
-                key = 'tax_class'
-                tax = tax.replace('c__', '')
-            elif 'o__' in tax:
-                key = 'tax_order'
-                tax = tax.replace('o__', '')
-            elif 'f__' in tax:
-                key = 'tax_family'
-                tax = tax.replace('f__', '')
-            elif 'g__' in tax:
-                key = 'tax_genus'
-                tax = tax.replace('g__', '')
-            elif 's__' in tax:
-                key = 'tax_species'
-                tax = tax.replace('s__', '')
-
-                # replace the {genus}_ prefix of the species
-                tax = tax.replace(d_silva[otuname]['tax_genus'] + '_', '')
-
-            if 'uncultured' in tax:
-                tax = None
-                # Break here - everything under an uncultured does not make sense
-                break
-            d_silva[otuname][key] = tax
-    return d_silva
 
 if __name__ == '__main__':
 
@@ -151,7 +92,7 @@ if __name__ == '__main__':
         study_fname = os.path.join(args.basepath, 'gibson_{dset}_agg.pkl'.format(dset=dset))
         study = md2.Study.load(study_fname)
 
-        study.taxas.generate_consensus_taxonomies(df)
+        study.taxa.generate_consensus_taxonomies(df)
         study_fname = os.path.join(args.basepath, 'gibson_{dset}_agg_taxa.pkl'.format(dset=dset))
         study.save(study_fname)
 

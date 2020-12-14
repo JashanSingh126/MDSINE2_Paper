@@ -28,7 +28,7 @@ they are ignored
 Leave-out table
 ---------------
 The table passed into `--leave-out-table` is a table that indicates the index of
-taxa(s) that should be left out for each keystoneness. Each line represents the taxa(s)
+taxon(s) that should be left out for each keystoneness. Each line represents the taxon(s)
 that should be left out. Each line is a separated list of the indexes that 
 should be left out. Example:
 table.csv
@@ -47,7 +47,7 @@ use the argument `--leave-out-index all`.
 Forward simulate vs. making the table
 -------------------------------------
 Once you have forward simulated each index of the table, make the table of the steady states.
-Taxas that are left out are set to nan.
+taxa that are left out are set to nan.
 
 Default is to forward simulate all of the indexes and to make the table.
 To forward simulate, set `--forward-sim 1`. To not forward simulate, set `--forward-sim 0`.
@@ -120,7 +120,7 @@ if __name__ == '__main__':
     parser.add_argument('--study', type=str, dest='study',
         help='Study object to use for initial conditions')
     parser.add_argument('--leave-out-table', type=str, dest='leave_out_table',
-        help='Table of which taxas to leave out')
+        help='Table of which taxa to leave out')
     parser.add_argument('--leave-out-index', type=str, dest='leave_out_index',
         help='Index of the table to leave out. If you want to compute all of ' \
              'the lines in `--leave-out-table`, then set to "all". If nothing ' \
@@ -141,7 +141,7 @@ if __name__ == '__main__':
     parser.add_argument('--n-days', type=int, dest='n_days',
         help='Number of days to simulate for', default=60)
     parser.add_argument('--limit-of-detection', dest='limit_of_detection',
-        help='If any of the taxas have a 0 abundance at the start, then we ' \
+        help='If any of the taxa have a 0 abundance at the start, then we ' \
             'set it to this value.',default=1e5, type=float)
     parser.add_argument('--sim-max', dest='sim_max', type=float,
         help='Maximum value', default=1e20)
@@ -181,7 +181,7 @@ if __name__ == '__main__':
     if md2.isstr(leave_out_index):
         leave_out_index = leave_out_index.lower()
     if leave_out_index is None or leave_out_index == 'none':
-        logging.info('No index provided, not indexing out any taxa')
+        logging.info('No index provided, not indexing out any taxon')
         idxs = [None]
     elif leave_out_index == 'all':
         logging.info('"all" provided as index. Iterating over each index')
@@ -300,9 +300,9 @@ if __name__ == '__main__':
 
             # Set the respective elements to nan
             oidxs = [int(ele) for ele in lines[leaveout].split(args.sep)]
-            mask = np.ones(len(study.taxas), dtype=bool)
+            mask = np.ones(len(study.taxa), dtype=bool)
             mask[oidxs] = False
-            ss = np.zeros(len(study.taxas)) * np.nan
+            ss = np.zeros(len(study.taxa)) * np.nan
             ss[mask] = steady_state
             steady_state = ss
 
@@ -326,7 +326,7 @@ if __name__ == '__main__':
         data = data[idxs, :]
         data = np.vstack((ss_base.reshape(1,-1), data))
 
-        columns = [taxa.name for taxa in study.taxas]
+        columns = [taxa.name for taxa in study.taxa]
         index = ['base'] + lines
 
         print(data.shape)

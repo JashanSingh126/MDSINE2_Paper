@@ -1,12 +1,21 @@
 #!/bin/bash
 
 
+# python ../step_3_infer_negbin.py \
+#     --input ../processed_data/gibson_replicates_agg_taxa_filtered.pkl \
+#     --seed 0 \
+#     --burnin 2000 \
+#     --n-samples 6000 \
+#     --checkpoint 200 \
+#     --multiprocessing 0 \
+#     --basepath ../output/negbin/
+
 python ../step_3_infer_negbin.py \
     --input ../processed_data/gibson_replicates_agg_taxa_filtered.pkl \
     --seed 0 \
-    --burnin 2000 \
-    --n-samples 6000 \
-    --checkpoint 200 \
+    --burnin 100 \
+    --n-samples 200 \
+    --checkpoint 100 \
     --multiprocessing 0 \
     --basepath ../output/negbin/
 

@@ -83,12 +83,12 @@ if __name__ == '__main__':
         f.write('Cluster assignments\n')
         f.write('-------------------\n')
         clustering = mcmc.graph[STRNAMES.CLUSTERING_OBJ]
-        taxas = mcmc.graph.data.taxas
+        taxa = mcmc.graph.data.taxa
         for cidx, cluster in enumerate(clustering):
             f.write('Cluster {}\n'.format(cidx+1))
             for oidx in cluster.members:
                 f.write('\t{}\n'.format(
-                    md2.taxaname_for_paper(taxa=taxas[oidx], taxas=taxas)))
+                    md2.taxaname_for_paper(taxon=taxa[oidx], taxa=taxa)))
     else:
         clusterpath = os.path.join(basepath, 'clustering')
         os.makedirs(clusterpath, exist_ok=True)

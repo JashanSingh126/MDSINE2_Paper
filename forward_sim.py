@@ -142,7 +142,7 @@ def forward_simulate(growth, interactions, perturbations,
 
     initial_conditions = M[:, 0]
     if np.any(initial_conditions == 0):
-        logging.info('{} taxas have a 0 abundance at time {}. Setting to {}'.format(
+        logging.info('{} taxa have a 0 abundance at time {}. Setting to {}'.format(
             np.sum(initial_conditions == 0), start, limit_of_detection))
         initial_conditions[initial_conditions == 0] = limit_of_detection
     initial_conditions = initial_conditions.reshape(-1,1)
@@ -255,7 +255,7 @@ if __name__ == '__main__':
     parser.add_argument('--n-days', type=str, dest='n_days',
         help='Number of days to simulate for', default=None)
     parser.add_argument('--limit-of-detection', dest='limit_of_detection',
-        help='If any of the taxas have a 0 abundance at the start, then we ' \
+        help='If any of the taxa have a 0 abundance at the start, then we ' \
             'set it to this value.',default=1e5)
     parser.add_argument('--sim-max', dest='sim_max',
         help='Maximum value', default=1e20)

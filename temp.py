@@ -44,10 +44,10 @@ N_SAMPLES = 200
 md2.seed(SEED)
 healthy = md2.Study.load('processed_data/gibson_healthy_agg_taxa_filtered.pkl')
 to_delete = []
-for taxa in healthy.taxas:
-    if taxa.idx > 50:
-        to_delete.append(taxa.name)
-healthy.pop_taxas(to_delete)
+for taxon in healthy.taxa:
+    if taxon.idx > 50:
+        to_delete.append(taxon.name)
+healthy.pop_taxa(to_delete)
 
 params1 = md2.config.MDSINE2ModelConfig(
         basepath='tmp/params1', seed=SEED, 

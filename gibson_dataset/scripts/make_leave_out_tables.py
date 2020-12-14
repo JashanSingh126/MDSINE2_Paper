@@ -20,11 +20,11 @@ if __name__ == "__main__":
 
     mcmc = md2.BaseMCMC.load(args.chain)
     study = mcmc.graph.data.subjects
-    taxas = mcmc.graph.data.taxas
+    taxa = mcmc.graph.data.taxa
 
-    # Make the taxas
-    s = '\n'.join([str(i) for i in range(len(taxas))])
-    fname = os.path.join(basepath, '{}-taxas.csv'.format(study.name))
+    # Make the taxa
+    s = '\n'.join([str(i) for i in range(len(taxa))])
+    fname = os.path.join(basepath, '{}-taxa.csv'.format(study.name))
     f = open(fname, 'w')
     f.write(s)
     f.close()

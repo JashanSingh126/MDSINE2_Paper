@@ -65,7 +65,7 @@ The raw data of the Gibson dataset is in the folder `datasets/gibson`. To run th
         --outfile output/study.pkl
     ```
 2) (Optional) Filter the data
-    Filter out taxas that don't have enough information
+    Filter out taxa that don't have enough information
     ```bash
     python step_2_filtering.py \
         --dataset output/study.pkl \

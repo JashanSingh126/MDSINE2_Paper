@@ -74,7 +74,7 @@ if __name__ == "__main__":
     parser.add_argument('--study', type=str, dest='study',
         help='Study object to use for initial conditions')
     parser.add_argument('--leave-out-table', type=str, dest='leave_out_table',
-        help='Table of which taxas to leave out')
+        help='Table of which taxa to leave out')
     parser.add_argument('--leave-out-index', type=str, dest='leave_out_index',
         help='Index of the table to leave out. If you want to compute all of ' \
              'the lines in `--leave-out-table`, then set to "all". If nothing ' \
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     parser.add_argument('--simulation-dt', type=float, dest='simulation_dt',
         help='Timesteps we go in during forward simulation', default=0.01)
     parser.add_argument('--limit-of-detection', dest='limit_of_detection',
-        help='If any of the taxas have a 0 abundance at the start, then we ' \
+        help='If any of the taxa have a 0 abundance at the start, then we ' \
             'set it to this value.',default=1e5, type=float)
     parser.add_argument('--sim-max', dest='sim_max', type=float,
         help='Maximum value', default=1e20)

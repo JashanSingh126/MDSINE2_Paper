@@ -1,4 +1,4 @@
-'''Plot the phylogenetic subtree for each taxa
+'''Plot the phylogenetic subtree for each taxon
 '''
 import ete3
 from ete3 import TreeStyle
@@ -40,15 +40,15 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------------------
     import treeswift
     # Make the distance matrix - this is a 2D dict
-    logging.info('Making distance matrix')
+    logging.info('Making distance matrix (this may take a minute)')
     tree = treeswift.read_tree_newick(args.tree)
     M = tree.distance_matrix(leaf_labels=True)
     df_distance_matrix = pd.DataFrame(M)
     node_dict = tree.label_to_node()
 
     # Get the families of the reference trees
-    logging.info('Read genbank file')
-    df_seqs = pd.read_csv(args.seq_info, sep=args.sep, index_col=0)
+    logging.info('Read sequence info file')
+    df_seqs = pd.read_csv(args.seq_info, sep='\t', index_col=0)
 
     logging.info('get families of reference seqs')
     ref_families = {}
@@ -63,17 +63,17 @@ if __name__ == "__main__":
             ref_families[family] = []
         ref_families[family].append(seq)
 
-    # Get the distance of every taxa to the respective family in the reference seqs
+    # Get the distance of every taxon to the respective family in the reference seqs
     d = {}
     percents = []
     not_found = set([])
-    for i, taxa in enumerate(study.taxas):
+    for i, taxon in enumerate(study.taxa):
         if i % 100 == 0:
-            logging.info('{}/{} - {}'.format(i,len(study.taxas), np.mean(percents)))
+            logging.info('{}/{} - {}'.format(i,len(study.taxa), np.mean(percents)))
             percents = []
 
-        if taxa.tax_is_defined('family'):
-            family = taxa.taxonomy['family'].lower()
+        if taxon.tax_is_defined('family'):
+            family = taxon.taxonomy['family'].lower()
             if family not in d:
                 d[family] = []
 
@@ -85,16 +85,16 @@ if __name__ == "__main__":
             aaa = 0
             for ref in refs:
                 try:
-                    dist = tree.distance_between(node_dict[taxa.name],node_dict[ref])
+                    dist = tree.distance_between(node_dict[taxon.name],node_dict[ref])
                     d[family].append(dist)
                     aaa += 1
                 except Exception as e:
                     not_found.add(ref)
-                    # logging.debug('no worked - {}, {}'.format(taxa.name, ref))
+                    # logging.debug('no worked - {}, {}'.format(taxon.name, ref))
                     continue
             percents.append(aaa/len(refs))
         else:
-            print('family is not defined for', taxa.name)
+            print('family is not defined for', taxon.name)
 
     # make a text file indicating the intra family distances
     fname = os.path.join(basepath, 'family_distances.txt')
@@ -127,7 +127,7 @@ if __name__ == "__main__":
         if node.is_leaf():
             if 'OTU' in node.name:
                 node.img_style["bgcolor"] = "#9db0cf"
-                node.name = md2.taxaname_for_paper(taxa=study.taxas[node.name], taxas=study.taxas)
+                node.name = md2.taxaname_for_paper(taxon=study.taxa[node.name], taxa=study.taxa)
             else:
                 if node.name in df_seqs.index:
                     # replace the sequence name with the species id
@@ -139,7 +139,7 @@ if __name__ == "__main__":
     # Make the phylogenetic subtrees for each OTU
     # -------------------------------------------
     if args.top is None:
-        top = len(study.taxas)
+        top = len(study.taxa)
     else:
         top = args.top
 
@@ -147,35 +147,35 @@ if __name__ == "__main__":
     names = df_distance_matrix.index
     fname = os.path.join(basepath, 'table.tsv')
     f = open(fname, 'w')
-    for iii, taxa in enumerate(study.taxas):
+    for iii, taxon in enumerate(study.taxa):
         if iii >= top:
             break
-        logging.info('\n\nLooking at {}, {}'.format(i,taxa))
+        logging.info('\n\nLooking at {}, {}'.format(i,taxon))
         logging.info('-------------------------')
         
-        f.write('{}\n'.format(taxa.name))
+        f.write('{}\n'.format(taxon.name))
         tree = ete3.Tree(args.tree)
         # Get the all elements within `radius`
         
 
-        row = df_distance_matrix[taxa.name].to_numpy()
+        row = df_distance_matrix[taxon.name].to_numpy()
         idxs = np.argsort(row)
 
         names_found = False
         mult = 1.
-        title = taxa.name
+        title = taxon.name
         while not names_found:
             if mult == 3:
                 # title += '\nTOO MANY, BREAKING'
                 break
-            if taxa.tax_is_defined('family'):
-                family = taxa.taxonomy['family'].lower()
+            if taxon.tax_is_defined('family'):
+                family = taxon.taxonomy['family'].lower()
                 if family_dists[family] < 1e-2:
                     radius = default_radius * mult
-                    # title += '\nfamily defined but not ref: {} Median family distance: {:.4f}'.format(taxa.taxonomy['family'], radius)
+                    # title += '\nfamily defined but not ref: {} Median family distance: {:.4f}'.format(taxon.taxonomy['family'], radius)
                 else:
                     radius = family_dists[family] * mult
-                    # title += '\nfamily defined: Median {} distance: {:.4f}'.format(taxa.taxonomy['family'], radius)
+                    # title += '\nfamily defined: Median {} distance: {:.4f}'.format(taxon.taxonomy['family'], radius)
             else:
                 radius = default_radius * mult * args.family_radius_factor
                 mmm = mult*100*args.family_radius_factor
@@ -190,7 +190,7 @@ if __name__ == "__main__":
                 names_to_keep.append(names[idx])
 
             if len(names_to_keep) > 5:
-                print(len(names_to_keep), ' found for ', taxa.name)
+                print(len(names_to_keep), ' found for ', taxon.name)
                 names_found = True
             else:
                 print('expand radius')
@@ -218,12 +218,12 @@ if __name__ == "__main__":
         # print(names_to_keep)
 
         # Make subtree of just these names
-        names_to_keep.append(taxa.name)
+        names_to_keep.append(taxon.name)
         tree.prune(names_to_keep, preserve_branch_length=False)
 
         ts = TreeStyle()
         ts.layout_fn = my_layout_fn
         ts.title.add_face(ete3.TextFace(title, fsize=15), column=1)
-        fname = os.path.join(basepath, '{}.pdf'.format(taxa.name))
+        fname = os.path.join(basepath, '{}.pdf'.format(taxon.name))
         tree.render(fname, tree_style=ts)
     f.close()

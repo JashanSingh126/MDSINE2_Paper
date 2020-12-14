@@ -44,7 +44,7 @@ if __name__ == '__main__':
     interactions_trace = mcmc.graph[STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk(section=section)
 
     interactions_trace[np.isnan(interactions_trace)] = 0
-    for i in range(len(mcmc.graph.data.taxas)):
+    for i in range(len(mcmc.graph.data.taxa)):
         interactions_trace[:,i,i] = si_trace[:,i]
 
     np.save(os.path.join(basepath, 'interactions.npy'), interactions_trace)

@@ -26,7 +26,7 @@ if __name__ == "__main__":
     md2.LoggingConfig(level=logging.INFO)
 
     if args.top is None:
-        top = len(study.taxas)
+        top = len(study.taxa)
     else:
         top = args.top
 
@@ -34,16 +34,16 @@ if __name__ == "__main__":
         subjpath = os.path.join(basepath, 'Subject {}'.format(subj.name))
         os.makedirs(subjpath, exist_ok=True)
         logging.info('Subject {}'.format(subj.name))
-        for iii, taxa in enumerate(study.taxas):
-            if not md2.isotu(taxa):
+        for iii, taxon in enumerate(study.taxa):
+            if not md2.isotu(taxon):
                 continue
             if iii >= top:
                 break
-            logging.info('taxa {}/{}'.format(taxa.idx, len(study.taxas)))
+            logging.info('taxon {}/{}'.format(taxon.idx, len(study.taxa)))
             fig = plt.figure(figsize=(10, 5))
             ax = fig.add_subplot(111)
-            ax = md2.visualization.aggregate_taxa_abundances(subj=subj, agg=taxa, dtype='rel', ax=ax)
+            ax = md2.visualization.aggregate_taxa_abundances(subj=subj, agg=taxon, dtype='rel', ax=ax)
             fig = plt.gcf()
             fig.tight_layout()
-            plt.savefig(os.path.join(subjpath, '{}.pdf'.format(taxa.name)))
+            plt.savefig(os.path.join(subjpath, '{}.pdf'.format(taxon.name)))
             plt.close()

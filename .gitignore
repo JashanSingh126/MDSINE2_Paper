@@ -11,3 +11,4 @@ dockers/
 *.err
 tmp/
 lsf_files
+.ipynb_checkpoints
