@@ -32,9 +32,6 @@ import mdsine2 as md2
 import os
 import sys
 
-sys.path.append('..')
-import util
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--output-basepath', '-o', type=str, dest='basepath',
@@ -51,6 +48,8 @@ if __name__ == '__main__':
             'provided, then do not replace them.', default=None)
     parser.add_argument('--remove-timepoints', dest='remove_timepoints', nargs='+', default=None, 
         type=float, help='Which times to remove')
+    parser.add_argument('--max-n-species', '-ms', dest='max_n_species', type=int, default=2,
+        help='Maximum number of species assignments to have in the name')
 
     args = parser.parse_args()
     md2.config.LoggingConfig(level=logging.DEBUG)
@@ -58,7 +57,13 @@ if __name__ == '__main__':
 
     for dset in ['healthy', 'uc', 'replicates', 'inoculum']:
         # 1) Load the dataset
-        study = md2.dataset.load_gibson(dset=dset, as_df=False, species_assignment='both')
+        try:
+            study = md2.dataset.load_gibson(dset=dset, as_df=False, species_assignment='both',
+                max_n_species=args.max_n_species)
+        except:
+            logging.warning('Trouble connect to the internet, loading them locally')
+            study = md2.dataset.load_gibson(dset=dset, as_df=False, species_assignment='both', load_local='../datasets/gibson',
+                max_n_species=args.max_n_species)
 
         # 2) Set the sequences for each Taxa
         #    Remove all taxas that are not contained in that file
@@ -112,7 +117,14 @@ if __name__ == '__main__':
         # 3) compute consensus sequences
         if args.sequences is not None:
             # put original sequences in study
-            study = md2.dataset.load_gibson(dset=dset, as_df=False, species_assignment='both')
+            try:
+                orig = md2.dataset.load_gibson(dset=dset, as_df=False, species_assignment='both',
+                    max_n_species=args.max_n_species)
+            except:
+                logging.warning('Trouble connect to the internet, loading them locally')
+                orig = md2.dataset.load_gibson(dset=dset, as_df=False, species_assignment='both', load_local='../datasets/gibson',
+                    max_n_species=args.max_n_species)
+
             for taxa in study.taxas:
                 if md2.isotu(taxa):
                     for asvname in taxa.aggregated_taxas:

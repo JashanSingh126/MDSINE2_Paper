@@ -6,4 +6,5 @@ python scripts/preprocess.py \
     --rename-prefix OTU \
     --sequences files/preprocessing/gibson_16S_rRNA_v4_ASV_seqs_aligned_filtered.fa \
     --output-basepath ../processed_data \
-    --remove-timepoints 0 0.5
+    --remove-timepoints 0 0.5 \
+    --max-n-species 2

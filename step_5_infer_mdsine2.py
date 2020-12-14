@@ -117,6 +117,7 @@ if __name__ == '__main__':
 
     # Change the cluster initialization to no clustering if there are less than 30 clusters
     if len(study.taxas) <= 30:
+        logging.info('Since there is less than 30 Taxa, we set the initialization of the clustering to `no-clusters`')
         params.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value_option'] = 'no-clusters'
 
 
