@@ -40,6 +40,9 @@ if __name__ == '__main__':
         help='This is the minimum number of subjects this needs to be valid for.')
     parser.add_argument('--colonization-time', '-c', type=int, dest='colonization_time',
         help='This is the time we are looking after for colonization. Default to nothing', default=None)
+    parser.add_argument('--max-n-otus', type=int, dest='max_n_otus',
+        help='If defined, truncates the OTUs to only the `--max-n-otus` top OTUs and removes everything else',
+        defualt=None)
 
     args = parser.parse_args()
     md2.config.LoggingConfig(level=logging.INFO)
@@ -51,6 +54,16 @@ if __name__ == '__main__':
         min_num_consecutive=args.min_num_consecutive,
         min_num_subjects=args.min_num_subjects,
         colonization_time=args.colonization_time)
+
+    if args.max_n_otus is not None:
+        n = args.max_n_otus
+        if n <= 0:
+            raise ValueError('`max_n_otus` ({}) must be > 0'.format(n))
+        to_delete = []
+        for taxon in study.taxa:
+            if taxon.idx >= n:
+                to_delete.append(taxon.name)
+        study.pop_taxa(to_delete)
 
     print('{} taxa left in {}'.format(len(study.taxa), study.name))
     study.save(args.outfile)

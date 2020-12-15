@@ -10,7 +10,8 @@ python ../../step_2_filtering.py \
     --threshold 0.0001 \
     --min-num-consecutive 7 \
     --min-num-subjects 2 \
-    --colonization-time 5
+    --colonization-time 5 \
+    --max-n-otus 15
 python ../../step_2_filtering.py \
     --dataset ../../processed_data/gibson_uc_agg_taxa.pkl \
     --outfile ../../processed_data/gibson_uc_agg_taxa_filtered.pkl \
@@ -18,7 +19,8 @@ python ../../step_2_filtering.py \
     --threshold 0.0001 \
     --min-num-consecutive 7 \
     --min-num-subjects 2 \
-    --colonization-time 5
+    --colonization-time 5 \
+    --max-n-otus 15
 
 # Learn negative binomial dispersion parameters
 python ../scripts/filter_replicates_like_other_dataset.py \
