@@ -42,7 +42,7 @@ if __name__ == '__main__':
         help='This is the time we are looking after for colonization. Default to nothing', default=None)
     parser.add_argument('--max-n-otus', type=int, dest='max_n_otus',
         help='If defined, truncates the OTUs to only the `--max-n-otus` top OTUs and removes everything else',
-        defualt=None)
+        default=None)
 
     args = parser.parse_args()
     md2.config.LoggingConfig(level=logging.INFO)

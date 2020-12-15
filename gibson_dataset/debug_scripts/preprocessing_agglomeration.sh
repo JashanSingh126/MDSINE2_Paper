@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASEPATH="../../processed_data"
+BASEPATH="../../output/debug/processed_data"
 
 echo "Agglomerating ASVs into OTUs"
 echo "Writing files in the folder ${BASEPATH}"

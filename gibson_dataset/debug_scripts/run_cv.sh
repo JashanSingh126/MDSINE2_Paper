@@ -1,15 +1,15 @@
 #!/bin/bash
 
-NEGBIN="../../output/negbin/replicates/mcmc.pkl"
+NEGBIN="../../output/debug/negbin/replicates/mcmc.pkl"
 SEED="0"
 BURNIN="20"
 N_SAMPLES="40"
 CHECKPOINT="20"
 MULTIPROCESSING="0"
-DSET_BASEPATH="../../processed_data/cv"
-CV_BASEPATH="../../output/mdsine2/cv"
-HEALTHY_DATASET="../../processed_data/gibson_healthy_agg_taxa_filtered.pkl"
-UC_DATASET="../../processed_data/gibson_uc_agg_taxa_filtered.pkl"
+DSET_BASEPATH="../../output/debug/processed_data/cv"
+CV_BASEPATH="../../output/debug/mdsine2/cv"
+HEALTHY_DATASET="../../output/debug/processed_data/gibson_healthy_agg_taxa_filtered.pkl"
+UC_DATASET="../../output/debug/processed_data/gibson_uc_agg_taxa_filtered.pkl"
 INTERACTION_IND_PRIOR="weak-agnostic"
 PERTURBATION_IND_PRIOR="weak-agnostic"
 

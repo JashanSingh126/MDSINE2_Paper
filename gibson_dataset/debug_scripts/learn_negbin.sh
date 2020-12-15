@@ -1,12 +1,12 @@
 #!/bin/bash
 
-BASEPATH="../../output/negbin/"
+BASEPATH="../../output/debug/negbin/"
 
 echo "Learning negative binomial dispersion parameters"
 echo "Writing the output to ${BASEPATH}"
 
 python ../../step_3_infer_negbin.py \
-    --input ../../processed_data/gibson_replicates_agg_taxa_filtered.pkl \
+    --input ../../output/debug/processed_data/gibson_replicates_agg_taxa_filtered.pkl \
     --seed 0 \
     --burnin 100 \
     --n-samples 200 \
