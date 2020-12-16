@@ -74,6 +74,8 @@ if __name__ == '__main__':
              'numpy arrays of the traces for the different parameters')
     parser.add_argument('--study', type=str, dest='study',
         help='Study object to use for initial conditions')
+    parser.add_argument('--curr-path-study', type=str, dest='curr_path_study',
+        help='Study objects location from where this function is being called')
     parser.add_argument('--simulation-dt', type=float, dest='simulation_dt',
         help='Timesteps we go in during forward simulation', default=0.01)
     parser.add_argument('--n-days', type=str, dest='n_days',
@@ -82,6 +84,8 @@ if __name__ == '__main__':
         help='This is where you are saving the posterior renderings')
     parser.add_argument('--leave-out-table', type=str, dest='leave_out_table',
         help='Table of which taxa to leave out')
+    parser.add_argument('--curr-path-leave-out-table', type=str, dest='curr_path_table',
+        help='Leave out tables locatin from where this script is called')
     parser.add_argument('--sep', type=str, dest='sep', default=',',
         help='separator for the leave out table')
 
@@ -101,13 +105,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     md2.config.LoggingConfig(level=logging.INFO)
-    curr_path_table = os.path.join('../../', args.leave_out_table)
+    curr_path_table = args.curr_path_table
     f = open(curr_path_table, 'r')
     tbl = f.read()
     f.close()
     nlines = len(tbl.split('\n'))
 
-    curr_path_study = os.path.join('../../', args.study)
+    curr_path_study = args.curr_path_study
     study = md2.Study.load(curr_path_table)
     leave_outs = ['none'] + [str(i) for i in range(nlines)]
 
