@@ -6,92 +6,35 @@ import re
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 md2.LoggingConfig(level=logging.INFO)
 
-# ############################################################
-# import random
-# import scipyz
+fname = 'output/mdsine2/healthy-seed0/mcmc.pkl'
 
+syn = md2.synthetic.make_semisynthetic(chain=fname, min_bayes_factor=5)
 
-# md2.seed(0)
-# print(np.random.randint(100, size=5))
-# print(random.randint(10, 20))
-# print(scipy.stats.gamma.rvs(2))
+init_dist = md2.variables.Uniform(5e5, 1e7)
+processvar = md2.model.MultiplicativeGlobal(0.2**2)
 
-# print(md2.random.misc.fast_sample_normal(0, 1))
+syn.times = md2.synthetic.subsample_timepoints(syn.times, N=35)
 
+syn.generate_trajectories(dt=0.01, init_dist=init_dist, processvar=processvar)
 
+# print(syn.model.growth)
+# print(syn.times)
 
-# md2.seed(1)
-# print(np.random.randint(100, size=5))
-# print(random.randint(10, 20))
-# print(scipy.stats.gamma.rvs(2))
-
-# print(md2.random.misc.fast_sample_normal(0, 1))
-
-
+# for pert in syn.G.perturbations:
+#     print(pert)
 
 # sys.exit()
 
+study = syn.simulateMeasurementNoise(a0=1e-10, a1=0.06, qpcr_noise_scale=0.3, 
+    approx_read_depth=60000, name='ssss')
 
-# Seeeeeeeed
-
-SEED = 5
-BURNIN = 100
-N_SAMPLES = 200
-
-md2.seed(SEED)
-healthy = md2.Study.load('processed_data/gibson_healthy_agg_taxa_filtered.pkl')
-to_delete = []
-for taxon in healthy.taxa:
-    if taxon.idx > 50:
-        to_delete.append(taxon.name)
-healthy.pop_taxa(to_delete)
-
-params1 = md2.config.MDSINE2ModelConfig(
-        basepath='tmp/params1', seed=SEED, 
-        burnin=BURNIN, n_samples=N_SAMPLES, negbin_a1=0.0025, 
-        negbin_a0=0.025, checkpoint=BURNIN)
-# params1.INITIALIZATION_KWARGS[STRNAMES.CLUSTER_INTERACTION_INDICATOR_PROB]['hyperparam_option'] = 'strong-dense'
-# params1.INITIALIZATION_KWARGS[STRNAMES.PERT_INDICATOR_PROB]['hyperparam_option'] = 'strong-dense'
-# params1.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value_option'] = 'no-clusters'
-# params1.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['delay'] = 2
-# params1.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['run_every_n_iterations'] = 4
-
-params1.LEARN[STRNAMES.CLUSTERING] = True
-params1.LEARN[STRNAMES.CONCENTRATION] = True
-params1.LEARN[STRNAMES.CLUSTER_INTERACTION_INDICATOR] = True
-
-mcmc1 = md2.initialize_graph(params=params1, graph_name=healthy.name, subjset=healthy)
-
-md2.seed(SEED)
-params2 = md2.config.MDSINE2ModelConfig(
-        basepath='tmp/tmp/tmp/params2', seed=SEED, 
-        burnin=BURNIN, n_samples=N_SAMPLES, negbin_a1=0.0025, 
-        negbin_a0=0.025, checkpoint=BURNIN)
-# params2.INITIALIZATION_KWARGS[STRNAMES.CLUSTER_INTERACTION_INDICATOR_PROB]['hyperparam_option'] = 'strong-dense'
-# params2.INITIALIZATION_KWARGS[STRNAMES.PERT_INDICATOR_PROB]['hyperparam_option'] = 'strong-dense'
-# params2.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value_option'] = 'no-clusters'
-# params2.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['delay'] = 2
-# params2.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['run_every_n_iterations'] = 4
-params2.LEARN[STRNAMES.CLUSTERING] = True
-params2.LEARN[STRNAMES.CONCENTRATION] = True
-params2.LEARN[STRNAMES.CLUSTER_INTERACTION_INDICATOR] = True
-mcmc2 = md2.initialize_graph(params=params2, graph_name=healthy.name, subjset=healthy)
-
-mcmc1 = md2.run_graph(mcmc1, crash_if_error=True)
-print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n==============================================================')
-mcmc2 = md2.run_graph(mcmc2, crash_if_error=True)
+md2.visualization.abundance_over_time(study['2'], dtype='abs', yscale_log=True)
 
 
-# ele1 = mcmc1.graph[STRNAMES.FILTERING].x.value
-# ele2 = mcmc2.graph[STRNAMES.FILTERING].x.value
-# for idx in range(len(ele1)):
-#     e1 = ele1[idx].value
-#     e2 = ele2[idx].value
-#     print(e1-e2)
-ele1 = mcmc1.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk(section='entire')[:,0]
-ele2 = mcmc2.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk(section='entire')[:,0]
-for i in range(len(ele1)):
-    print('{}: {}'.format(i, ele1[i]-ele2[i]))
+
+
+plt.show()
