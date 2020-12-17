@@ -17,6 +17,7 @@ from matplotlib.colors import LogNorm
 import pylab as pl
 import mdsine2 as md2
 import argparse
+import os 
 
 PERTURBATION_COLOR = 'orange'
 
@@ -357,8 +358,12 @@ def draw_heatmap(data_healthy, data_uc, uc_filter, healthy_filter, max_, min_,
     fig.text(0, -0.05, leg_text, fontsize = 40, fontweight = "bold", transform =
     axes1.transAxes)
 
-    plt.savefig(name + ".pdf", bbox_inches = "tight", dpi = 100)
-    plt.savefig(name + ".png", bbox_inches = "tight", dpi = 100)
+    loc = "output_figures/"
+    if not os.path.exists(loc):
+        os.makedirs(loc, exist_ok = True)
+
+    plt.savefig(loc + name + ".pdf", bbox_inches = "tight", dpi = 100)
+    plt.savefig(loc + name + ".png", bbox_inches = "tight", dpi = 100)
 
 
 def get_hierarchy(taxo):
@@ -432,7 +437,7 @@ def main():
               " ***** : Phylum, ****** : Kingdom"
 
     draw_heatmap(df_healthy, df_uc, uc_pass_filtering,
-                 healthy_pass_filtering, max_, min_, save_path + "supplemental_figure2",
+                 healthy_pass_filtering, max_, min_, "supplemental_figure2",
                  subjset_uc, times, legend, "A", "B")
 
 if __name__ == "__main__":

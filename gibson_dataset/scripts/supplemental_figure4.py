@@ -18,6 +18,7 @@ import seaborn as sns
 
 import numpy as np
 import pickle
+import os 
 
 from scipy.stats import mannwhitneyu
 from statsmodels.stats.multitest import multipletests, fdrcorrection
@@ -778,7 +779,6 @@ def diversity_plot(subjset_healthy, subjset_uc, subjset_innoc, name = None):
        subjset_innoc : ([pylab.subject]) data at the time of inoculum
     """
 
-    SAVEPATH = "output_figures/"
     fig = plt.figure(figsize = (15, 15))
     spec = GridSpec(nrows = 2, ncols = 2, hspace = 0.25)
 
@@ -792,10 +792,14 @@ def diversity_plot(subjset_healthy, subjset_uc, subjset_innoc, name = None):
     name = name, axleft = ax4, axright = ax3, axcenter = ax2)
     alpha_diversity_mean_std(subjset_healthy, subjset_uc, subjset_innoc,
     name = name, ax = ax1, axlegend = ax1)
-    #alpha_diversity_mean_std()
-    fig.savefig(SAVEPATH + "supplemental_figure4.pdf", bbox_inches = "tight",
+
+    loc = "output_figures/"
+    if not os.path.exists(loc):
+        os.makedirs(loc, exist_ok = True)
+
+    fig.savefig(loc + "supplemental_figure4.pdf", bbox_inches = "tight",
     dpi = 400)
-    fig.savefig(SAVEPATH + "supplemental_figure4.png", bbox_inches = "tight",
+    fig.savefig(loc + "supplemental_figure4.png", bbox_inches = "tight",
     dpi = 400)
     plt.close()
 

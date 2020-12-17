@@ -9,6 +9,7 @@ import mdsine2 as md2
 import pandas as pd
 import numpy as np
 import argparse
+import os 
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -617,8 +618,12 @@ def main():
     fig.subplots_adjust(wspace = 0.58, left = 0.05, right = 0.95, top =  0.925,
     bottom = .075, hspace = 0.8)
 
-    plt.savefig(SAVEPATH + "main_figure2.png", dpi = 100, bbox_inches = "tight")
-    plt.savefig(SAVEPATH + "main_figure2.pdf", dpi = 400, bbox_inches = "tight")
+    loc = "output_figures/"
+    if not os.path.exists(loc):
+        os.makedirs(loc, exist_ok = True)
+        
+    plt.savefig(loc + "main_figure2.png", dpi = 100, bbox_inches = "tight")
+    plt.savefig(loc + "main_figure2.pdf", dpi = 400, bbox_inches = "tight")
 
 def plot_legend(axlegend, level, cutoff, color_taxa_dict):
     """plots the legend"""
