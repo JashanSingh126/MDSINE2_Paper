@@ -30,10 +30,18 @@ Order of scripts from start to finish of generating the posteriors
 ```
 
 ### Post-processing
-Once `run_mdsine2.sh` has finished running, you can perform keystoneness and the perturbation analysis
+Once `run_mdsine2.sh` has finished running, you can perform keystoneness and the perturbation analysis,
 ```bash
 ./compute_keystoneness.sh
 ./compute_perturbation_analysis.sh
+```
+the cycle counting procedure,
+```bash
+./cycle_counting.sh
+```
+and the eigenvalue computation
+```bash
+./compute_eigenvalues.sh
 ```
 
 ### Cross-validation and forward simulation
