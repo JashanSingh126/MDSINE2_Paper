@@ -1,4 +1,9 @@
-# MDSINE2: Microbial Dynamical Systems Inference Engine 2
+# Paper for MDSINE2: Microbial Dynamical Systems Inference Engine 2
+
+**For a quick start** exploring the use of MDSINE2. **Note** this is not the full data set. Number of tax and number of Gibbs steps are reduced so that the tutorials run in a reasonable amoutn of time
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/gerberlab/MDSINE2_Paper/HEAD?filepath=bindertutorials)
+
+
 
 ****************************************High level description of the package
 
