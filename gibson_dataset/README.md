@@ -1,13 +1,13 @@
 # Replication of MDSINE2 results
 
-### Preprocess the data (Note that this has already been done for this dataset)
+### 1. Preprocess the data (Note that this has already been done for this dataset)
 
 Preprocessing and agglomeration. Note that when running data from scratch, manual steps are involved (phylogenetic placement, etc.). All of the outputs from preprocessing are already provided here for you. For information on manual steps see [internal_doc_for_manual_steps.md](internal_doc_for_manual_steps.md) before running the following command:
 ```bash
 ./preprocessing_agglomeration.sh
 ```
 
-### Filtering and visualizing the data (the tutorials start here)
+### 2. Filtering and visualizing the data (the tutorials start here)
 Visualize the OTUs and filter the data 
 ```bash
 ./assign_consensus_taxonomy.sh
@@ -16,12 +16,12 @@ Visualize the OTUs and filter the data
 ./preprocessing_filtering.sh
 ```
 
-### Learn Negative binomial dispersion parameters
+### 3. Learn Negative binomial dispersion parameters
 Learn the negative binomial dispersion parameters
 ```bash
 ./learn_negbin.sh
 ```
-### Learning parameters of MDSINE2
+### 4. Learning parameters of MDSINE2
 Order of scripts from start to finish of generating the posteriors
 
 ```bash
@@ -29,14 +29,14 @@ Order of scripts from start to finish of generating the posteriors
 ./run_mdsine2_fixed_clustering.sh
 ```
 
-### Post-processing
+### 5. Post-processing
 Once `run_mdsine2.sh` has finished running, you can perform keystoneness and the perturbation analysis
 ```bash
 ./compute_keystoneness.sh
 ./compute_perturbation_analysis.sh
 ```
 
-### Cross-validation and forward simulation
+### 6. Cross-validation and forward simulation
 Order of scripts from start to finish of running forward simulation and cross validation:
 ```bash
 ./run_cv.sh
@@ -44,7 +44,7 @@ Order of scripts from start to finish of running forward simulation and cross va
 ./compute_errors_tla.sh
 ```
 
-### Making figures
+### 7. Making figures
 Once cross-validation and learning the parameters are done, you can generate the figures used in the paper:
 ```bash
 ./make_figures.sh

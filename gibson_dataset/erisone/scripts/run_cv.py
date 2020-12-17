@@ -71,7 +71,7 @@ python gibson_dataset/scripts/convert_trace_to_numpy.py \
     --section posterior
 
 # Visualize the posterior
-python ../../step_6_visualize_mdsine2.py \
+python step_6_visualize_mdsine2.py \
     --chain {chain_path} \
     --section posterior \
     --output-basepath {posterior_basepath} \
