@@ -38,7 +38,7 @@ def parse_args():
 
 def load_interactions(chain_path):
     mcmc = md2.BaseMCMC.load(chain_path)
-    return mcmc.graph[STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk(section='entire')
+    return mcmc.graph[STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk(section='posterior')
 
 
 # ===================================================================================================
@@ -66,6 +66,7 @@ def freq_cycles(interactions: np.ndarray,
         for (i, j) in np.argwhere(~np.isnan(interaction_matrix)):
             add_idx_to_edge(graph, j, i, k, interaction_matrix[i, j])
     logging.info("Finished graph pre-processing ({:.2f} sec).".format(time.time() - start))
+    logging.info("Performing depth-first exploration.")
 
     for src in tqdm(range(N)):
         for path, samples, path_signs in freq_paths_rooted(graph, src,

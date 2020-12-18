@@ -36,6 +36,29 @@ def parse_args():
     return parser.parse_args()
 
 
+def tax_string(taxa, taxonomy_dict):
+    phylum = taxonomy_dict["phylum"]
+    class_ = taxonomy_dict["class"]
+    order = taxonomy_dict["order"]
+    family = taxonomy_dict["family"]
+    genus = taxonomy_dict["genus"]
+    species = taxonomy_dict["species"]
+    if phylum == "NA":
+        raise ValueError("Classification of Taxa {} not specified, even at Phylum level.".format(taxa))
+    elif class_ == "NA":
+        return "{}*****".format(phylum)
+    elif order == "NA":
+        return "{}****".format(class_)
+    elif family == "NA":
+        return "{}***".format(order)
+    elif genus == "NA":
+        return "{}**".format(family)
+    elif species == "NA":
+        return "{}, {}*".format(family, genus)
+    else:
+        return "{}, {} {}".format(family, genus, species)
+
+
 def load_cluster_interactions(chain_path):
     mcmc = md2.BaseMCMC.load(chain_path)
     otu_interactions = mcmc.graph[STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk(section='posterior')
@@ -45,9 +68,13 @@ def load_cluster_interactions(chain_path):
 
     cluster_reps = []
     clusters = []
-    for cluster_key, cluster in mcmc.graph[STRNAMES.CLUSTERING].clusters.items():
+
+    for cluster in mcmc.graph[STRNAMES.CLUSTERING].clustering:
         cluster_reps.append(next(iter(cluster.members)))
-        cluster_otu_arr = [taxa[idx] for idx in cluster.members]
+        cluster_otu_arr = [
+            "{} {}".format(taxa[idx].name, tax_string(taxa[idx].name, taxa[idx].taxonomy))
+            for idx in cluster.members
+        ]
         clusters.append(cluster_otu_arr)
 
     cluster_interactions = np.zeros(shape=(otu_interactions.shape[0],
@@ -57,7 +84,7 @@ def load_cluster_interactions(chain_path):
 
     for i in range(cluster_interactions.shape[0]):
         cluster_interactions[i] = otu_interactions[i][np.ix_(cluster_reps, cluster_reps)]
-    return cluster_interactions
+    return cluster_interactions, clusters
 
 
 # ===================================================================================================
@@ -85,6 +112,7 @@ def freq_cycles(interactions: np.ndarray,
         for (i, j) in np.argwhere(~np.isnan(interaction_matrix)):
             add_idx_to_edge(graph, j, i, k, interaction_matrix[i, j])
     logging.info("Finished graph pre-processing ({:.2f} sec).".format(time.time() - start))
+    logging.info("Performing depth-first exploration.")
 
     for src in tqdm(range(N)):
         for path, samples, path_signs in freq_paths_rooted(graph, src,
@@ -350,24 +378,25 @@ def bayes_factor_chain(path, sample_count, total_samples, gamma_shape, gamma_sca
 def output_clusters(clusters, cluster_path):
     with open(cluster_path, "w") as f:
         for i, cluster in enumerate(clusters):
+            if i > 0:
+                print("\n", file=f)
             print("Cluster {}".format(i+1), file=f)
             print("-------------", file=f)
-            for otu in cluster:
-                print("{}; {}".format(
-                    cluster.parent.items[otu].cluster_str(),
-                    otu.name
-                ), file=f)
+            for otu_str in cluster:
+                print(otu_str, file=f)
 
 
 def main():
     args = parse_args()
     md2.config.LoggingConfig(level=logging.INFO)
 
-    logging.info("Loading data from {}.".format(args.interaction_path))
+    logging.info("Loading data from {}.".format(args.mcmc_path))
     interactions, clusters = load_cluster_interactions(args.mcmc_path)
 
     start = time.time()
 
+    if not os.path.exists(args.out_dir):
+        os.makedirs(args.out_dir)
     logging.info("Writing outputs to directory {}.".format(args.out_dir))
 
     output_clusters(clusters, os.path.join(args.out_dir, "clusters.txt"))

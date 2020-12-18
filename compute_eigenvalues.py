@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import scipy.stats
 import argparse
@@ -17,8 +19,8 @@ def parse_args():
                         help='Path to the MCMC pickle file for healthy.')
     parser.add_argument('--uc', required=True,
                         help='Path to the MCMC pickle file for UC.')
-    parser.add_argument('-o', '--out_path',
-                        help='Path to output to.')
+    parser.add_argument('-o', '--out_dir',
+                        help='Directory to output to.')
     parser.add_argument('-t', '--thresh', type=float, required=False, default=1e20)
 
     return parser.parse_args()
@@ -59,24 +61,30 @@ def save_eigenvalues(healthy, uc, out_path):
 
 def main():
     args = parse_args()
+    md2.config.LoggingConfig(level=logging.INFO)
+
+    if not os.path.exists(args.out_dir):
+        os.makedirs(args.out_dir)
+
+    outpath = os.path.join(args.out_dir, "eigenvalues.npz")
 
     healthy_eig = compute_eigenvalues(load_matrices(args.healthy), args.thresh)
     uc_eig = compute_eigenvalues(load_matrices(args.uc), args.thresh)
 
     # ================== Some statistics
     print(" ----------------- Eigenvalue statistics: ----------------")
-    X_healthy = healthy_eig.real.flatten()
-    healthy_pos_frac = np.sum(X_healthy > 0) / X_healthy.shape[0]
-    X_uc = uc_eig.real.flatten()
-    uc_pos_frac = np.sum(X_uc > 0) / X_uc.shape[0]
-    print("Healthy > 0 frac: ", np.mean(healthy_pos_frac))
-    print("UC > 0 frac: ", np.mean(uc_pos_frac))
+    X_healthy = healthy_eig.real
+    healthy_pos_frac = np.sum(X_healthy > 0, axis=1) / X_healthy.shape[1]
+    X_uc = uc_eig.real
+    uc_pos_frac = np.sum(X_uc > 0, axis=1) / X_uc.shape[1]
+    print("mean (Healthy > 0 frac): ", np.mean(healthy_pos_frac))
+    print("mean (UC > 0 frac): ", np.mean(uc_pos_frac))
     stat, pval = scipy.stats.ranksums(healthy_pos_frac, uc_pos_frac)
     print("Rank-sum -- stat: {}, pval: {}".format(stat, pval))
     # ===========================================
 
-    save_eigenvalues(healthy_eig, uc_eig, args.out_path)
-    logging.info("Saved eigenvalues to {}.".format(args.out_path))
+    save_eigenvalues(healthy_eig, uc_eig, outpath)
+    logging.info("Saved eigenvalues to {}.".format(outpath))
 
 
 if __name__ == "__main__":

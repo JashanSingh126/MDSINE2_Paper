@@ -11,6 +11,7 @@ import pandas as pd
 from collections import defaultdict
 
 import logging
+import mdsine2 as md2
 
 
 def parse_args():
@@ -117,7 +118,7 @@ def plot_unsigned_counts(healthy, uc, ax, title="", do_log=False):
     # plt.savefig(outpath, format='pdf')
 
 
-def plot_signed_counts(healthy, uc, ax, title="", do_log=False):
+def plot_signed_counts(n_samples, healthy, uc, ax, title="", do_log=False):
     # Per sign
     signs = ['(+ +)',
              '(- -)',
@@ -130,29 +131,29 @@ def plot_signed_counts(healthy, uc, ax, title="", do_log=False):
     df = pd.DataFrame(columns=["Healthy", "UC"],
                       dtype=np.float,
                       index=pd.MultiIndex.from_product(
-                          [signs, range(len(healthy))]
+                          [signs, range(n_samples)]
                       ))
 
     data_healthy = [
-        [healthy[i][3]['++'] for i in range(len(healthy))],
-        [healthy[i][3]['--'] for i in range(len(healthy))],
-        [healthy[i][3]['+-'] + healthy[i][3]['-+'] for i in range(len(healthy))],
-        [healthy[i][4]['+++'] for i in range(len(healthy))],
-        [healthy[i][4]['---'] for i in range(len(healthy))],
-        [healthy[i][4]['++-'] + healthy[i][4]['+-+'] + healthy[i][4]['-++'] for i in range(len(healthy))],
-        [healthy[i][4]['--+'] + healthy[i][4]['-+-'] + healthy[i][4]['+--'] for i in range(len(healthy))]
+        [healthy[i][3]['++'] for i in range(n_samples)],
+        [healthy[i][3]['--'] for i in range(n_samples)],
+        [healthy[i][3]['+-'] + healthy[i][3]['-+'] for i in range(n_samples)],
+        [healthy[i][4]['+++'] for i in range(n_samples)],
+        [healthy[i][4]['---'] for i in range(n_samples)],
+        [healthy[i][4]['++-'] + healthy[i][4]['+-+'] + healthy[i][4]['-++'] for i in range(n_samples)],
+        [healthy[i][4]['--+'] + healthy[i][4]['-+-'] + healthy[i][4]['+--'] for i in range(n_samples)]
     ]
     for sign, arr in zip(signs, data_healthy):
         df.loc[(sign, slice(None)), "Healthy"] = arr
 
     data_uc = [
-        [uc[i][3]['++'] for i in range(len(uc))],
-        [uc[i][3]['--'] for i in range(len(uc))],
-        [uc[i][3]['+-'] + uc[i][3]['-+'] for i in range(len(uc))],
-        [uc[i][4]['+++'] for i in range(len(uc))],
-        [uc[i][4]['---'] for i in range(len(uc))],
-        [uc[i][4]['++-'] + uc[i][4]['+-+'] + uc[i][4]['-++'] for i in range(len(uc))],
-        [uc[i][4]['--+'] + uc[i][4]['-+-'] + uc[i][4]['+--'] for i in range(len(uc))]
+        [uc[i][3]['++'] for i in range(n_samples)],
+        [uc[i][3]['--'] for i in range(n_samples)],
+        [uc[i][3]['+-'] + uc[i][3]['-+'] for i in range(n_samples)],
+        [uc[i][4]['+++'] for i in range(n_samples)],
+        [uc[i][4]['---'] for i in range(n_samples)],
+        [uc[i][4]['++-'] + uc[i][4]['+-+'] + uc[i][4]['-++'] for i in range(n_samples)],
+        [uc[i][4]['--+'] + uc[i][4]['-+-'] + uc[i][4]['+--'] for i in range(n_samples)]
     ]
     for sign, arr in zip(signs, data_uc):
         df.loc[(sign, slice(None)), "UC"] = arr
@@ -218,7 +219,8 @@ def parse_csv_cycle_counts(filepath):
             count = int(tokens[1].strip())
             bayes = float(tokens[2].strip())
             sampled_signs = tokens[3].split(",") # TODO parse signs and get consensus sign via majority vote.
-            for idx, sgn in sampled_signs:
+            for idx, sgn in enumerate(sampled_signs):
+                sgn = sgn.strip()
                 if len(sgn) > 0:
                     yield idx, cycle, count, sgn
 
@@ -230,10 +232,16 @@ def handle_dataset(cycles_path):
             lambda: defaultdict(int)  # value for missing sign: 0
         )
     )
+
+    with open(cycles_path, 'r') as f:
+        line = f.readline()
+        tokens = line.split(";")
+        sampled_signs = tokens[3].split(",")
+        n_samples = len(sampled_signs)
+
     for idx, cycle, count, sign in parse_csv_cycle_counts(cycles_path):
-        cycle_len = len(cycle) - 1
-        counts[idx][cycle_len][sign] = counts[idx][cycle_len][sign] + count
-    return counts
+        counts[idx][len(cycle)][sign] = counts[idx][len(cycle)][sign] + count
+    return counts, n_samples
 
 
 def generate_eigenvalue_figure(fig, ax1, ax2, cbar_ax, eig_path):
@@ -270,6 +278,7 @@ def generate_eigenvalue_figure(fig, ax1, ax2, cbar_ax, eig_path):
 
 def main():
     args = parse_args()
+    md2.config.LoggingConfig(level=logging.INFO)
     FORMAT = args.format
     DPI = args.dpi
 
@@ -291,10 +300,10 @@ def main():
     ax2.autoscale()
 
     # =================== ASV-ASV ====================
-    healthy_thresholded_otu_cycles = handle_dataset(
+    healthy_thresholded_otu_cycles, n_samples = handle_dataset(
         cycles_path=args.healthy_cycles_taxa,
     )
-    uc_thresholded_otu_cycles = handle_dataset(
+    uc_thresholded_otu_cycles, _ = handle_dataset(
         cycles_path=args.uc_cycles_taxa,
     )
 
@@ -305,19 +314,19 @@ def main():
     plot_unsigned_counts(healthy_thresholded_otu_cycles, uc_thresholded_otu_cycles,
                          ax=ax1,
                          do_log=True)
-    ax1.set_ylabel("ASV-ASV Log-Count")
+    ax1.set_ylabel("ASV-ASV Count")
 
-    plot_signed_counts(healthy_thresholded_otu_cycles, uc_thresholded_otu_cycles,
+    plot_signed_counts(n_samples, healthy_thresholded_otu_cycles, uc_thresholded_otu_cycles,
                        ax=ax2,
                        do_log=True)
     ax2.set_ylabel("ASV-ASV Count")
 
 
     # ================== Cluster-Cluster ==================
-    healthy_clustered_cycles = handle_dataset(
+    healthy_clustered_cycles, _ = handle_dataset(
         cycles_path=args.healthy_cycles_clusters,
     )
-    uc_clustered_cycles = handle_dataset(
+    uc_clustered_cycles, _ = handle_dataset(
         cycles_path=args.uc_cycles_clusters,
     )
 
@@ -328,7 +337,7 @@ def main():
     plot_unsigned_counts(healthy_clustered_cycles, uc_clustered_cycles,
                          ax=ax1)
     ax1.set_ylabel("Cluster-Cluster Count")
-    plot_signed_counts(healthy_clustered_cycles, uc_clustered_cycles,
+    plot_signed_counts(n_samples, healthy_clustered_cycles, uc_clustered_cycles,
                        ax=ax2)
     ax2.set_ylabel("Cluster-Cluster Count")
 
