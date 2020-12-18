@@ -26,6 +26,16 @@ Run the model and fixed clustering with two different seeds. Each job first runs
 ./submit_mdsine2.sh
 ```
 
+After the models have run, you can then dispatch keystoneness:
+```bash
+./submit_keystoneness.py
+```
+Note that this will only do the forward simulation for each keystoneness. To make the table, 
+rerun the keystoneness script without doing the forward simulation:
+```bash
+TODO
+```
+
 ### Running on ErisOne/ErisTwo
 If running the scripts above you get the following error:
 ```bash
