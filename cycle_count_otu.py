@@ -38,7 +38,7 @@ def parse_args():
 
 def load_interactions(chain_path):
     mcmc = md2.BaseMCMC.load(chain_path)
-    return mcmc.graph[STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk(section='posterior')
+    return mcmc.graph[STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk(section='entire')
 
 
 # ===================================================================================================
@@ -330,14 +330,18 @@ def bayes_factor_chain(path, sample_count, total_samples, gamma_shape, gamma_sca
 
 def main():
     args = parse_args()
+    md2.config.LoggingConfig(level=logging.INFO)
 
-    logging.info("Loading data from {}.".format(args.interaction_path))
+    logging.info("Loading data from {}.".format(args.mcmc_path))
     interactions = load_interactions(args.mcmc_path)
 
     start = time.time()
 
     logging.info("Writing outputs to directory {}.".format(args.out_dir))
+    if not os.path.exists(args.out_dir):
+        os.makedirs(args.out_dir)
     out_path = os.path.join(args.out_dir, "paths.csv")
+
     with open(out_path, "w") as outfile:
         for cycle, samples, bayes, path_signs in freq_cycles(
                 interactions,

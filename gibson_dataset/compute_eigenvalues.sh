@@ -1,8 +1,8 @@
 #!/bin/bash
 
-HEALTHY_MCMC=TODO
-UC_MCMC=TODO
-OUTPATH=TODO
+HEALTHY_MCMC="../output/mdsine2/healthy-seed0/mcmc.pkl"
+UC_MCMC="../output/mdsine2/uc-seed0/mcmc.pkl"
+OUTPATH="../output/postprocessing/eigenvalues.npz"
 
 python ../compute_eigenvalues.py \
     --healthy $HEALTHY_MCMC \

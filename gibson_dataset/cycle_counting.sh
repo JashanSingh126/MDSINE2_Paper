@@ -1,13 +1,13 @@
 #!/bin/bash
 
-HEALTHY_UNFIXED_MCMC=TODO
-HEALTHY_UNFIXED_OUTDIR=TODO
-UC_UNFIXED_MCMC=TODO
-UC_UNFIXED_OUTDIR=TODO
-HEALTHY_FIXED_MCMC=TODO
-HEALTHY_FIXED_OUTDIR=TODO
-UC_FIXED_MCMC=TODO
-UC_FIXED_OUTDIR=TODO
+HEALTHY_UNFIXED_MCMC="../output/mdsine2/healthy-seed0/mcmc.pkl"
+HEALTHY_UNFIXED_OUTDIR="../output/postprocessing/cycles/unfixed_clustering/healthy"
+UC_UNFIXED_MCMC="../output/mdsine2/uc-seed0/mcmc.pkl"
+UC_UNFIXED_OUTDIR="../output/postprocessing/cycles/unfixed_clustering/uc"
+HEALTHY_FIXED_MCMC="../output/mdsine2/fixed_clustering/healthy/mcmc.pkl"
+HEALTHY_FIXED_OUTDIR="../output/postprocessing/cycles/fixed_clustering/healthy"
+UC_FIXED_MCMC="../output/mdsine2/fixed_clustering/uc/mcmc.pkl"
+UC_FIXED_OUTDIR="../output/postprocessing/cycles/fixed_clustering/uc"
 
 python ../cycle_count_otu.py \
     --mcmc_path $HEALTHY_UNFIXED_MCMC \

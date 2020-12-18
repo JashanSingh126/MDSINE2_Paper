@@ -353,11 +353,15 @@ def output_clusters(clusters, cluster_path):
             print("Cluster {}".format(i+1), file=f)
             print("-------------", file=f)
             for otu in cluster:
-                print(otu.name, file=f)
+                print("{}; {}".format(
+                    cluster.parent.items[otu].cluster_str(),
+                    otu.name
+                ), file=f)
 
 
 def main():
     args = parse_args()
+    md2.config.LoggingConfig(level=logging.INFO)
 
     logging.info("Loading data from {}.".format(args.interaction_path))
     interactions, clusters = load_cluster_interactions(args.mcmc_path)
