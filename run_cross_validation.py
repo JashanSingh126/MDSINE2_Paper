@@ -19,7 +19,7 @@ command_fmt = 'python {script} --input {dset} ' \
     '--seed {seed} ' \
     '--burnin {burnin} ' \
     '--n-samples {n_samples} ' \
-    '--checkpoint {ckpt} ' \
+    '--checkpoint {checkpoint} ' \
     '--basepath {basepath} ' \
     '--multiprocessing {mp} ' \
     '--interaction-ind-prior {interaction_prior} ' \
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     command = command_fmt.format(
         script=path,
         dset=study_fname, negbin=args.negbin, seed=args.seed, 
-        burnin=args.burnin, n_samples=args.n_samples, ckpt=args.checkpoint,
+        burnin=args.burnin, n_samples=args.n_samples, checkpoint=args.checkpoint,
         basepath=args.output_basepath, mp=args.mp,
         interaction_prior=args.interaction_prior,
         perturbation_prior=args.perturbation_prior)
