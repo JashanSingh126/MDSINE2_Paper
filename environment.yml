@@ -1,5 +1,7 @@
 name: mdsine2
 channels:
+  - default
+  - anaconda
   - conda-forge
   - etetoolkit
 dependencies:
