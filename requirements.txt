@@ -1,2 +1,2 @@
-ete3
-git+git://github.com/gerberlab/MDSINE2@master
+# ete3
+# git+git://github.com/gerberlab/MDSINE2@master
