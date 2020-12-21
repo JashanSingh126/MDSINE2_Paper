@@ -5,7 +5,7 @@ channels:
   - conda-forge
   - etetoolkit
 dependencies:
-  - python=3.7.3
+  - python=3.7
   - ete3
   - ete_toolchain
   - pip
