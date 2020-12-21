@@ -46,7 +46,7 @@ echo $TMPDIR
 
 
 # Load the environment
-module load anaconda/default
+module load anaconda/4.8.2
 source activate {environment_name}
 cd {code_basepath}
 
