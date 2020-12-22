@@ -3,4 +3,4 @@ channels:
   - etetoolkit
 dependencies:
   - ete3
-  - pyqt
+  - pyqt5-sip
