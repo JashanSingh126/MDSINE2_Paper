@@ -6,6 +6,5 @@ channels:
   - defaults
 dependencies:
   - python=3.7
-  - ete3
-  - ete_toolchain
-  - pmodeltest=1.4
+  - ete3=3.1.1=pyhf5214e1_0
+  - ete_toolchain=3.0.0=h73706c9_0
