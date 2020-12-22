@@ -1,1 +1,1 @@
-git+git://github.com/gerberlab/MDSINE2@master
+git+git://github.com/gerberlab/MDSINE2@e5babf69b2328b8b9eac8ad1c457c1e928c927ca
