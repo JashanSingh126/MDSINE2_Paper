@@ -17,4 +17,3 @@ python ../step_3_infer_negbin.py \
 python ../step_4_visualize_negbin.py \
     --chain "${BASEPATH}replicates/mcmc.pkl" \
     --output-basepath "${BASEPATH}replicates/posterior"
-

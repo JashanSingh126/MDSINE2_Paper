@@ -300,15 +300,6 @@ def _make_phylogenetic_tree(tree_fname, names, taxa, ax, fig, figlabel=None, fig
         figlabelax.text(x=0.15, y=1.0, s=figlabel, fontsize=50, fontweight='bold',
             transform=ax.transAxes)
 
-    # # Make the taxnonmic key on the right hand side
-    # text = '$\\bf{Taxonomy} \\bf{Key}$\n'
-    # for taxon in suffix_taxa:
-    #     text += '{} - {}\n'.format(suffix_taxa[taxon], taxon)
-    # if side_by_side is not None:
-    #     if not side_by_side:
-    #         fig.text(0.1, 0.875, text, fontsize=18)
-    #     else:
-    #         fig.text(0.9, 0.3, text, fontsize=18)
     return ax, taxa_order
 
 def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig, make_colorbar=True, figlabel=None,
