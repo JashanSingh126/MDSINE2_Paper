@@ -8,3 +8,4 @@ dependencies:
   - python=3.7
   - ete3
   - ete_toolchain
+  - pmodeltest=1.4
