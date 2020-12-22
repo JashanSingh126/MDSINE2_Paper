@@ -12,6 +12,7 @@ md2.LoggingConfig(level=logging.INFO)
 
 # fname = 'output/mdsine2/healthy-seed0/mcmc.pkl'
 
+
 # syn = md2.synthetic.make_semisynthetic(chain=fname, min_bayes_factor=5)
 # syn.set_subjects(['subj1', 'subj5'])
 
@@ -34,6 +35,7 @@ md2.LoggingConfig(level=logging.INFO)
 # plt.show()
 
 taxa = md2.TaxaSet()
+a = 99
 
 a = md2.istaxaset(taxa)
 taxa.add_taxon(name='lama', sequence='AAAAAAAA')
