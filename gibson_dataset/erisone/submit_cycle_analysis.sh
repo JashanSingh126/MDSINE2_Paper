@@ -40,7 +40,7 @@ python scripts/run_eigenvalue_analysis.py \
     --lsf-basepath $LSF_BASEPATH
 
 
-# Compute keystoneness
+# Compute cycles
 # --------------------
 python scripts/run_cycle_analysis.py \
     --chain $HEALTHY_CHAIN \
@@ -50,7 +50,8 @@ python scripts/run_cycle_analysis.py \
     --queue $QUEUE \
     --memory $MEM \
     --n-cpus $N_CPUS \
-    --lsf-basepath $LSF_BASEPATH
+    --lsf-basepath $LSF_BASEPATH \
+    --jobname "cycle-healthy-unfixed"
 
 python scripts/run_cycle_analysis.py \
     --chain $HEALTHY_FIXED_CHAIN \
@@ -60,7 +61,8 @@ python scripts/run_cycle_analysis.py \
     --queue $QUEUE \
     --memory $MEM \
     --n-cpus $N_CPUS \
-    --lsf-basepath $LSF_BASEPATH
+    --lsf-basepath $LSF_BASEPATH \
+    --jobname "cycle-healthy-fixed"
 
 python scripts/run_cycle_analysis.py \
     --chain $UC_CHAIN \
@@ -70,7 +72,8 @@ python scripts/run_cycle_analysis.py \
     --queue $QUEUE \
     --memory $MEM \
     --n-cpus $N_CPUS \
-    --lsf-basepath $LSF_BASEPATH
+    --lsf-basepath $LSF_BASEPATH \
+    --jobname "cycle-uc-unfixed"
 
 python scripts/run_cycle_analysis.py \
     --chain $UC_FIXED_CHAIN \
@@ -80,4 +83,5 @@ python scripts/run_cycle_analysis.py \
     --queue $QUEUE \
     --memory $MEM \
     --n-cpus $N_CPUS \
-    --lsf-basepath $LSF_BASEPATH
+    --lsf-basepath $LSF_BASEPATH \
+    --jobname "cycle-uc-fixed"

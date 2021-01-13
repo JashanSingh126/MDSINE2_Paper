@@ -60,6 +60,7 @@ if __name__ == '__main__':
     md2.LoggingConfig(level=logging.INFO)
 
     parser = argparse.ArgumentParser(usage=__doc__)
+    parser.add_argument('--jobname', type=str, required=True)
     parser.add_argument('--chain', type=str, required=True)
     parser.add_argument('--outdir', type=str, required=True)
     parser.add_argument('--path_len', type=int, default=4, required=False)
@@ -80,15 +81,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     md2.config.LoggingConfig(level=logging.INFO)
-    curr_path_table = args.curr_path_table
-    f = open(curr_path_table, 'r')
-    tbl = f.read()
-    f.close()
-    nlines = len(tbl.split('\n'))
-
-    curr_path_study = args.curr_path_study
-    study = md2.Study.load(curr_path_table)
-    leave_outs = ['none'] + [str(i) for i in range(nlines)]
 
     lsfdir = args.lsf_basepath
     os.makedirs(lsfdir, exist_ok=True)
@@ -99,32 +91,22 @@ if __name__ == '__main__':
     os.makedirs(stdout_loc, exist_ok=True)
     os.makedirs(stderr_loc, exist_ok=True)
 
-    # Dispatch keystoneness
-    for leave_out in leave_outs:
-        jobname = study.name + '-keystone-{}'.format(leave_out)
-
-        stdout_name = os.path.join(stdout_loc, jobname + '.out')
-        stderr_name = os.path.join(stderr_loc, jobname + '.err')
-        lsfname = os.path.join(script_path, jobname + '.lsf')
-
-        f = open(lsfname, 'w')
-        f.write(lsfstr.format(
-            jobname=jobname, stdout_loc=stdout_name,
-            stderr_loc=stderr_name, queue=args.queue,
-            cpus=args.cpus, mem=args.memory,
-            environment_name=args.environment_name,
-            code_basepath=args.code_basepath,
-            chain=args.chain,
-            outdir=args.outdir,
-            pathlen=args.path_len
-        ))
-        f.close()
-        command = 'bsub < {}'.format(lsfname)
-        print(command)
-        os.system(command)
-
-
-
-
-
-
+    jobname = args.jobname
+    stdout_name = os.path.join(stdout_loc, jobname + '.out')
+    stderr_name = os.path.join(stderr_loc, jobname + '.err')
+    lsfname = os.path.join(script_path, jobname + '.lsf')
+    f = open(lsfname, 'w')
+    f.write(lsfstr.format(
+        jobname=jobname, stdout_loc=stdout_name,
+        stderr_loc=stderr_name, queue=args.queue,
+        cpus=args.cpus, mem=args.memory,
+        environment_name=args.environment_name,
+        code_basepath=args.code_basepath,
+        chain=args.chain,
+        outdir=args.outdir,
+        pathlen=args.path_len
+    ))
+    f.close()
+    command = 'bsub < {}'.format(lsfname)
+    print(command)
+    os.system(command)
