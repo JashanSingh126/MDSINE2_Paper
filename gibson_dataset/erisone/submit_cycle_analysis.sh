@@ -14,12 +14,12 @@ LSF_BASEPATH="lsf_files/cycles"
 
 # Forward simulation parameters
 # -----------------------------
-HEALTHY_CHAIN="output/mdsine2/healthy-seed0/mcmc.pkl"
-UC_CHAIN="output/mdsine2/uc-seed0/mcmc.pkl"
-HEALTHY_FIXED_CHAIN="output/mdsine2/fixed_clustering/healthy/mcmc.pkl"
-UC_FIXED_CHAIN="output/mdsine2/fixed_clustering/uc/mcmc.pkl"
+HEALTHY_CHAIN="output/mdsine2/healthy-seed0-strong-sparse/mcmc.pkl"
+UC_CHAIN="output/mdsine2/uc-seed0-strong-sparse/mcmc.pkl"
+HEALTHY_FIXED_CHAIN="output/mdsine2/fixed_clustering/healthy-seed0-strong-sparse/mcmc.pkl"
+UC_FIXED_CHAIN="output/mdsine2/fixed_clustering/uc-seed0-strong-sparse/mcmc.pkl"
 
-EIGEN_OUTDIR="../output/postprocessing/eigenvalues"
+EIGEN_OUTDIR="output/postprocessing/eigenvalues"
 HEALTHY_UNFIXED_DIR="output/postprocessing/cycles/unfixed_clustering/healthy"
 HEALTHY_FIXED_DIR="output/postprocessing/cycles/fixed_clustering/healthy"
 UC_UNFIXED_DIR="output/postprocessing/cycles/unfixed_clustering/uc"

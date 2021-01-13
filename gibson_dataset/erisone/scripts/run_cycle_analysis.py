@@ -46,8 +46,8 @@ source activate {environment_name}
 cd {code_basepath}
 
 python cycle_count_otu.py \
-    --mcmc_path {chain}
-    --out_dir {outdir}
+    --mcmc_path {chain} \
+    --out_dir {outdir} \
     --max_path_len {pathlen}
 '''
 

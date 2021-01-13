@@ -44,6 +44,7 @@ echo $TMPDIR
 module load anaconda/4.8.2
 source activate {environment_name}
 cd {code_basepath}
+echo code_basepath
 
 # Run eigenvalue
 python compute_eigenvalues.py \
