@@ -31,23 +31,53 @@ UC_FIXED_DIR="output/postprocessing/cycles/fixed_clustering/uc"
 python scripts/run_eigenvalue_analysis.py \
     --healthy_chain $HEALTHY_CHAIN \
     --uc_chain $UC_CHAIN \
-    --outdir $EIGEN_OUTDIR
+    --outdir $EIGEN_OUTDIR \
+    --environment-name $ENVIRONMENT_NAME \
+    --code-basepath $MDSINE2_PAPER_CODE_PATH \
+    --queue $QUEUE \
+    --memory $MEM \
+    --n-cpus $N_CPUS \
+    --lsf-basepath $LSF_BASEPATH
 
 
 # Compute keystoneness
 # --------------------
 python scripts/run_cycle_analysis.py \
     --chain $HEALTHY_CHAIN \
-    --outdir $HEALTHY_UNFIXED_DIR
+    --outdir $HEALTHY_UNFIXED_DIR \
+    --environment-name $ENVIRONMENT_NAME \
+    --code-basepath $MDSINE2_PAPER_CODE_PATH \
+    --queue $QUEUE \
+    --memory $MEM \
+    --n-cpus $N_CPUS \
+    --lsf-basepath $LSF_BASEPATH
 
 python scripts/run_cycle_analysis.py \
     --chain $HEALTHY_FIXED_CHAIN \
-    --outdir $HEALTHY_FIXED_DIR
+    --outdir $HEALTHY_FIXED_DIR \
+    --environment-name $ENVIRONMENT_NAME \
+    --code-basepath $MDSINE2_PAPER_CODE_PATH \
+    --queue $QUEUE \
+    --memory $MEM \
+    --n-cpus $N_CPUS \
+    --lsf-basepath $LSF_BASEPATH
 
 python scripts/run_cycle_analysis.py \
     --chain $UC_CHAIN \
-    --outdir $UC_UNFIXED_DIR
+    --outdir $UC_UNFIXED_DIR \
+    --environment-name $ENVIRONMENT_NAME \
+    --code-basepath $MDSINE2_PAPER_CODE_PATH \
+    --queue $QUEUE \
+    --memory $MEM \
+    --n-cpus $N_CPUS \
+    --lsf-basepath $LSF_BASEPATH
 
 python scripts/run_cycle_analysis.py \
     --chain $UC_FIXED_CHAIN \
-    --outdir $UC_FIXED_DIR
+    --outdir $UC_FIXED_DIR \
+    --environment-name $ENVIRONMENT_NAME \
+    --code-basepath $MDSINE2_PAPER_CODE_PATH \
+    --queue $QUEUE \
+    --memory $MEM \
+    --n-cpus $N_CPUS \
+    --lsf-basepath $LSF_BASEPATH
