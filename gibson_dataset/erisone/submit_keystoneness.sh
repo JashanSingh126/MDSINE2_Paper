@@ -5,6 +5,7 @@
 # Path to MDSINE2_Paper code
 MDSINE2_PAPER_CODE_PATH="/data/cctm/darpa_perturbation_mouse_study/MDSINE2_Paper"
 SCRIPT_BASEPATH="${MDSINE2_PAPER_CODE_PATH}/gibson_dataset/scripts"
+ERISONE_SCRIPT_BASEPATH="${MDSINE2_PAPER_CODE_PATH}/gibson_dataset/erisone/scripts"
 OUTPUT_BASEPATH="${MDSINE2_PAPER_CODE_PATH}/output"
 # Conda environment
 ENVIRONMENT_NAME="mdsine2"
@@ -55,7 +56,7 @@ python ${SCRIPT_BASEPATH}/make_leave_out_tables.py \
 
 # Compute keystoneness
 # --------------------
-python scripts/run_keystoneness.py \
+python ${ERISONE_SCRIPT_BASEPATH}/run_keystoneness.py \
     --chain $HEALTHY_CHAIN \
     --study $HEALTHY_STUDY \
     --simulation-dt $SIM_DT \
@@ -70,7 +71,7 @@ python scripts/run_keystoneness.py \
     --n-cpus $N_CPUS \
     --lsf-basepath $LSF_BASEPATH
 
-python scripts/run_keystoneness.py \
+python ${ERISONE_SCRIPT_BASEPATH}/run_keystoneness.py \
     --chain $HEALTHY_CHAIN \
     --study $HEALTHY_STUDY \
     --simulation-dt $SIM_DT \
@@ -85,7 +86,7 @@ python scripts/run_keystoneness.py \
     --n-cpus $N_CPUS \
     --lsf-basepath $LSF_BASEPATH
 
-python scripts/run_keystoneness.py \
+python ${ERISONE_SCRIPT_BASEPATH}/run_keystoneness.py \
     --chain $UC_CHAIN \
     --study $UC_STUDY \
     --simulation-dt $SIM_DT \
@@ -100,7 +101,7 @@ python scripts/run_keystoneness.py \
     --n-cpus $N_CPUS \
     --lsf-basepath $LSF_BASEPATH
 
-python scripts/run_keystoneness.py \
+python ${ERISONE_SCRIPT_BASEPATH}/run_keystoneness.py \
     --chain $UC_CHAIN \
     --study $UC_STUDY \
     --simulation-dt $SIM_DT \
