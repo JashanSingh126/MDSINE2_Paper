@@ -54,7 +54,7 @@ python keystoneness.py \
     --forward-simulate {forward_sim} \
     --make-table {maketable} \
     --compute-keystoneness {compute_keystoneness} \
-    --sep {sep}
+    --sep {sep} \
     --simulation-dt {sim_dt} \
     --n-days {n_days} \
     --output-basepath {basepath}
