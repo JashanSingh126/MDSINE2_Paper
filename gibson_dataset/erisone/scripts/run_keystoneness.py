@@ -74,8 +74,6 @@ if __name__ == '__main__':
              'numpy arrays of the traces for the different parameters')
     parser.add_argument('--study', type=str, dest='study',
         help='Study object to use for initial conditions')
-    parser.add_argument('--curr-path-study', type=str, dest='curr_path_study',
-        help='Study objects location from where this function is being called')
     parser.add_argument('--simulation-dt', type=float, dest='simulation_dt',
         help='Timesteps we go in during forward simulation', default=0.01)
     parser.add_argument('--n-days', type=str, dest='n_days',
@@ -109,8 +107,7 @@ if __name__ == '__main__':
     f.close()
     nlines = len(tbl.split('\n'))
 
-    curr_path_study = args.curr_path_study
-    study = md2.Study.load(curr_path_table)
+    study = md2.Study.load(args.study)
     leave_outs = ['none'] + [str(i) for i in range(nlines)]
 
     lsfdir = args.lsf_basepath
@@ -124,7 +121,7 @@ if __name__ == '__main__':
 
     # Dispatch keystoneness
     for leave_out in leave_outs:
-        print("[Submitting job: Leave-out {} of {}]".format(leave_out, nlines))
+        print("[Submitting job: Leave-out {} of {}]".format(leave_out + 1, nlines))
         jobname = study.name + '-keystone-{}'.format(leave_out)
 
         stdout_name = os.path.join(stdout_loc, jobname + '.out')

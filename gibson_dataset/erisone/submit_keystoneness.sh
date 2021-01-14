@@ -26,11 +26,13 @@ TABLE_BASEPATH="${KY_OUTPUT_BASEPATH}/tables"
 CLUSTER_BASEPATH="${KY_OUTPUT_BASEPATH}/clusters"
 TAXA_BASEPATH="${KY_OUTPUT_BASEPATH}/taxa"
 
-HEALTHY_CHAIN="${OUTPUT_BASEPATH}/mdsine2/healthy-seed0/mcmc.pkl"
-UC_CHAIN="${OUTPUT_BASEPATH}/mdsine2/uc-seed0/mcmc.pkl"
+HEALTHY_RUN="healthy-seed0-strong-sparse"
+UC_RUN="uc-seed0-strong-sparse"
 
-HEALTHY_STUDY="${OUTPUT_BASEPATH}/mdsine2/healthy-seed0/subjset.pkl"
-UC_STUDY="${OUTPUT_BASEPATH}/mdsine2/uc-seed0/subjset.pkl"
+HEALTHY_CHAIN="${OUTPUT_BASEPATH}/mdsine2/${HEALTHY_RUN}/mcmc.pkl"
+UC_CHAIN="${OUTPUT_BASEPATH}/mdsine2/${UC_RUN}/mcmc.pkl"
+HEALTHY_STUDY="${OUTPUT_BASEPATH}/mdsine2/${HEALTHY_RUN}/subjset.pkl"
+UC_STUDY="${OUTPUT_BASEPATH}/mdsine2/${UC_RUN}/subjset.pkl"
 
 
 # Make the tables
@@ -38,19 +40,11 @@ UC_STUDY="${OUTPUT_BASEPATH}/mdsine2/uc-seed0/subjset.pkl"
 echo "Make the tables"
 
 python ${SCRIPT_BASEPATH}/make_leave_out_tables.py \
-    --chain ${OUTPUT_BASEPATH}/mdsine2/healthy-seed0/mcmc.pkl \
+    --chain ${HEALTHY_CHAIN} \
     --output-basepath "${TABLE_BASEPATH}" \
     --sep $SEP
 python ${SCRIPT_BASEPATH}/make_leave_out_tables.py \
-    --chain ../../output/mdsine2/healthy-seed1/mcmc.pkl \
-    --output-basepath "${TABLE_BASEPATH}" \
-    --sep $SEP
-python ${SCRIPT_BASEPATH}/make_leave_out_tables.py \
-    --chain ../../output/mdsine2/uc-seed0/mcmc.pkl \
-    --output-basepath "${TABLE_BASEPATH}" \
-    --sep $SEP
-python ${SCRIPT_BASEPATH}/make_leave_out_tables.py \
-    --chain ../../output/mdsine2/uc-seed1/mcmc.pkl \
+    --chain ${UC_CHAIN} \
     --output-basepath "${TABLE_BASEPATH}" \
     --sep $SEP
 
@@ -62,7 +56,7 @@ python ${ERISONE_SCRIPT_BASEPATH}/run_keystoneness.py \
     --simulation-dt $SIM_DT \
     --n-days $N_DAYS  \
     --output-basepath $TAXA_BASEPATH \
-    --leave-out-table "${TABLE_BASEPATH}/healthy-seed0-taxa.csv" \
+    --leave-out-table "${TABLE_BASEPATH}/${HEALTHY_RUN}-taxa.csv" \
     --sep $SEP \
     --environment-name $ENVIRONMENT_NAME \
     --code-basepath $MDSINE2_PAPER_CODE_PATH \
@@ -77,7 +71,7 @@ python ${ERISONE_SCRIPT_BASEPATH}/run_keystoneness.py \
     --simulation-dt $SIM_DT \
     --n-days $N_DAYS  \
     --output-basepath $CLUSTER_BASEPATH \
-    --leave-out-table "${TABLE_BASEPATH}/healthy-seed0-clusters.csv" \
+    --leave-out-table "${TABLE_BASEPATH}/${HEALTHY_RUN}-clusters.csv" \
     --sep $SEP \
     --environment-name $ENVIRONMENT_NAME \
     --code-basepath $MDSINE2_PAPER_CODE_PATH \
@@ -92,7 +86,7 @@ python ${ERISONE_SCRIPT_BASEPATH}/run_keystoneness.py \
     --simulation-dt $SIM_DT \
     --n-days $N_DAYS  \
     --output-basepath $TAXA_BASEPATH \
-    --leave-out-table "${TABLE_BASEPATH}/uc-seed0-taxa.csv" \
+    --leave-out-table "${TABLE_BASEPATH}/${UC_RUN}-taxa.csv" \
     --sep $SEP \
     --environment-name $ENVIRONMENT_NAME \
     --code-basepath $MDSINE2_PAPER_CODE_PATH \
@@ -107,7 +101,7 @@ python ${ERISONE_SCRIPT_BASEPATH}/run_keystoneness.py \
     --simulation-dt $SIM_DT \
     --n-days $N_DAYS  \
     --output-basepath $CLUSTER_BASEPATH \
-    --leave-out-table "${TABLE_BASEPATH}/uc-seed0-clusters.csv" \
+    --leave-out-table "${TABLE_BASEPATH}/${UC_RUN}-clusters.csv" \
     --sep $SEP \
     --environment-name $ENVIRONMENT_NAME \
     --code-basepath $MDSINE2_PAPER_CODE_PATH \
