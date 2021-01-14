@@ -4,6 +4,8 @@
 # ------------------
 # Path to MDSINE2_Paper code
 MDSINE2_PAPER_CODE_PATH="/data/cctm/darpa_perturbation_mouse_study/MDSINE2_Paper"
+SCRIPT_BASEPATH="${MDSINE2_PAPER_CODE_PATH}/gibson_dataset/scripts"
+OUTPUT_BASEPATH="${MDSINE2_PAPER_CODE_PATH}/output"
 # Conda environment
 ENVIRONMENT_NAME="mdsine2"
 # Queues, memory, and numpy of cpus
@@ -19,36 +21,36 @@ N_DAYS="60"
 OUTPUT_BASEPATH="output/keystoneness"
 SEP=","
 
-TABLE_BASEPATH="output/keystoneness/tables"
-CLUSTER_BASEPATH="../output/keystoneness/clusters"
-TAXA_BASEPATH="../output/keystoneness/taxa"
+TABLE_BASEPATH="${OUTPUT_BASEPATH}/keystoneness/tables"
+CLUSTER_BASEPATH="${OUTPUT_BASEPATH}/keystoneness/clusters"
+TAXA_BASEPATH="${OUTPUT_BASEPATH}/keystoneness/taxa"
 
-HEALTHY_CHAIN="output/mdsine2/healthy-seed0/mcmc.pkl"
-UC_CHAIN="output/mdsine2/uc-seed0/mcmc.pkl"
+HEALTHY_CHAIN="${OUTPUT_BASEPATH}/mdsine2/healthy-seed0/mcmc.pkl"
+UC_CHAIN="${OUTPUT_BASEPATH}/mdsine2/uc-seed0/mcmc.pkl"
 
-HEALTHY_STUDY="output/mdsine2/healthy-seed0/subjset.pkl"
-UC_STUDY="output/mdsine2/uc-seed0/subjset.pkl"
+HEALTHY_STUDY="${OUTPUT_BASEPATH}/mdsine2/healthy-seed0/subjset.pkl"
+UC_STUDY="${OUTPUT_BASEPATH}/mdsine2/uc-seed0/subjset.pkl"
 
 
 # Make the tables
 # ---------------
 echo "Make the tables"
 
-python scripts/make_leave_out_tables.py \
-    --chain ../../output/mdsine2/healthy-seed0/mcmc.pkl \
-    --output-basepath "../../${TABLE_BASEPATH}" \
+python ${SCRIPT_BASEPATH}/make_leave_out_tables.py \
+    --chain ${OUTPUT_BASEPATH}/mdsine2/healthy-seed0/mcmc.pkl \
+    --output-basepath "${TABLE_BASEPATH}" \
     --sep $SEP
-python scripts/make_leave_out_tables.py \
+python ${SCRIPT_BASEPATH}/make_leave_out_tables.py \
     --chain ../../output/mdsine2/healthy-seed1/mcmc.pkl \
-    --output-basepath "../../${TABLE_BASEPATH}" \
+    --output-basepath "${TABLE_BASEPATH}" \
     --sep $SEP
-python scripts/make_leave_out_tables.py \
+python ${SCRIPT_BASEPATH}/make_leave_out_tables.py \
     --chain ../../output/mdsine2/uc-seed0/mcmc.pkl \
-    --output-basepath "../../${TABLE_BASEPATH}" \
+    --output-basepath "${TABLE_BASEPATH}" \
     --sep $SEP
-python scripts/make_leave_out_tables.py \
+python ${SCRIPT_BASEPATH}/make_leave_out_tables.py \
     --chain ../../output/mdsine2/uc-seed1/mcmc.pkl \
-    --output-basepath "../../${TABLE_BASEPATH}" \
+    --output-basepath "${TABLE_BASEPATH}" \
     --sep $SEP
 
 # Compute keystoneness
