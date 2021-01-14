@@ -121,7 +121,7 @@ if __name__ == '__main__':
 
     # Dispatch keystoneness
     for i, leave_out in enumerate(leave_outs):
-        print("[Submitting job: Leave-out {} ({} of {})]".format(leave_out, i + 1, nlines))
+        print("[Submitting job: Leave-out {} ({} of {})]".format(leave_out, i + 1, len(leave_outs)))
         jobname = study.name + '-keystone-{}'.format(leave_out)
 
         stdout_name = os.path.join(stdout_loc, jobname + '.out')
