@@ -60,7 +60,7 @@ python ${ERISONE_SCRIPT_BASEPATH}/run_keystoneness.py \
     --chain $HEALTHY_CHAIN \
     --study $HEALTHY_STUDY \
     --simulation-dt $SIM_DT \
-    --n-days$N_DAYS  \
+    --n-days $N_DAYS  \
     --output-basepath $TAXA_BASEPATH \
     --leave-out-table "${TABLE_BASEPATH}/healthy-seed0-taxa.csv" \
     --sep $SEP \
@@ -75,7 +75,7 @@ python ${ERISONE_SCRIPT_BASEPATH}/run_keystoneness.py \
     --chain $HEALTHY_CHAIN \
     --study $HEALTHY_STUDY \
     --simulation-dt $SIM_DT \
-    --n-days$N_DAYS  \
+    --n-days $N_DAYS  \
     --output-basepath $CLUSTER_BASEPATH \
     --leave-out-table "${TABLE_BASEPATH}/healthy-seed0-clusters.csv" \
     --sep $SEP \
@@ -90,7 +90,7 @@ python ${ERISONE_SCRIPT_BASEPATH}/run_keystoneness.py \
     --chain $UC_CHAIN \
     --study $UC_STUDY \
     --simulation-dt $SIM_DT \
-    --n-days$N_DAYS  \
+    --n-days $N_DAYS  \
     --output-basepath $TAXA_BASEPATH \
     --leave-out-table "${TABLE_BASEPATH}/uc-seed0-taxa.csv" \
     --sep $SEP \
@@ -105,7 +105,7 @@ python ${ERISONE_SCRIPT_BASEPATH}/run_keystoneness.py \
     --chain $UC_CHAIN \
     --study $UC_STUDY \
     --simulation-dt $SIM_DT \
-    --n-days$N_DAYS  \
+    --n-days $N_DAYS  \
     --output-basepath $CLUSTER_BASEPATH \
     --leave-out-table "${TABLE_BASEPATH}/uc-seed0-clusters.csv" \
     --sep $SEP \
