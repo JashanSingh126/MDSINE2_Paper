@@ -120,8 +120,8 @@ if __name__ == '__main__':
     os.makedirs(stderr_loc, exist_ok=True)
 
     # Dispatch keystoneness
-    for leave_out in leave_outs:
-        print("[Submitting job: Leave-out {} of {}]".format(leave_out + 1, nlines))
+    for i, leave_out in enumerate(leave_outs):
+        print("[Submitting job: Leave-out {} ({} of {})]".format(leave_out, i + 1, nlines))
         jobname = study.name + '-keystone-{}'.format(leave_out)
 
         stdout_name = os.path.join(stdout_loc, jobname + '.out')
