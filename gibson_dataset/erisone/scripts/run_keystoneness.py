@@ -84,8 +84,6 @@ if __name__ == '__main__':
         help='This is where you are saving the posterior renderings')
     parser.add_argument('--leave-out-table', type=str, dest='leave_out_table',
         help='Table of which taxa to leave out')
-    parser.add_argument('--curr-path-leave-out-table', type=str, dest='curr_path_table',
-        help='Leave out tables locatin from where this script is called')
     parser.add_argument('--sep', type=str, dest='sep', default=',',
         help='separator for the leave out table')
 
@@ -105,7 +103,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     md2.config.LoggingConfig(level=logging.INFO)
-    curr_path_table = args.curr_path_table
+    curr_path_table = args.leave_out_table
     f = open(curr_path_table, 'r')
     tbl = f.read()
     f.close()
@@ -126,6 +124,7 @@ if __name__ == '__main__':
 
     # Dispatch keystoneness
     for leave_out in leave_outs:
+        print("[Submitting job: Leave-out {} of {}]".format(leave_out, nlines))
         jobname = study.name + '-keystone-{}'.format(leave_out)
 
         stdout_name = os.path.join(stdout_loc, jobname + '.out')
