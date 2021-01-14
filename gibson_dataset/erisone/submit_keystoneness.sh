@@ -19,12 +19,12 @@ LSF_BASEPATH="lsf_files/keystoneness"
 # -----------------------------
 SIM_DT="0.01"
 N_DAYS="60"
-OUTPUT_BASEPATH="output/keystoneness"
+KY_OUTPUT_BASEPATH="${OUTPUT_BASEPATH}/keystoneness"
 SEP=","
 
-TABLE_BASEPATH="${OUTPUT_BASEPATH}/keystoneness/tables"
-CLUSTER_BASEPATH="${OUTPUT_BASEPATH}/keystoneness/clusters"
-TAXA_BASEPATH="${OUTPUT_BASEPATH}/keystoneness/taxa"
+TABLE_BASEPATH="${KY_OUTPUT_BASEPATH}/tables"
+CLUSTER_BASEPATH="${KY_OUTPUT_BASEPATH}/clusters"
+TAXA_BASEPATH="${KY_OUTPUT_BASEPATH}/taxa"
 
 HEALTHY_CHAIN="${OUTPUT_BASEPATH}/mdsine2/healthy-seed0/mcmc.pkl"
 UC_CHAIN="${OUTPUT_BASEPATH}/mdsine2/uc-seed0/mcmc.pkl"
