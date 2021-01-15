@@ -3,6 +3,7 @@
 
 lsfstr = '''#!/bin/bash
 #BSUB -J {jobname}
+#BSUB -g /gibson/keystoneness
 #BSUB -o {stdout_loc}
 #BSUB -e {stderr_loc}
 

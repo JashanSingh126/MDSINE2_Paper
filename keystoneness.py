@@ -210,9 +210,9 @@ if __name__ == '__main__':
             logging.info('Input is an MDSINE2.BaseMCMC object')
             mcmc = md2.BaseMCMC.load(args.input)
 
-            growth = mcmc.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk(mode='r')
-            self_interactions = mcmc.graph[STRNAMES.SELF_INTERACTION_VALUE].get_trace_from_disk(mode='r')
-            interactions = mcmc.graph[STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk(mode='r')
+            growth = mcmc.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk()
+            self_interactions = mcmc.graph[STRNAMES.SELF_INTERACTION_VALUE].get_trace_from_disk()
+            interactions = mcmc.graph[STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk()
             interactions[np.isnan(interactions)] = 0
             self_interactions = -np.absolute(self_interactions)
             for i in range(self_interactions.shape[1]):
