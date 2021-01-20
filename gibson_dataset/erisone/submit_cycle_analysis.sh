@@ -9,21 +9,21 @@ ENVIRONMENT_NAME="mdsine2"
 # Queues, memory, and numpy of cpus
 QUEUE="big-multi"
 MEM="8000"
-N_CPUS="1"
+N_CPUS="4"
 LSF_BASEPATH="lsf_files/cycles"
 
 # Forward simulation parameters
 # -----------------------------
-HEALTHY_CHAIN="output/mdsine2/healthy-seed0-strong-sparse/mcmc.pkl"
-UC_CHAIN="output/mdsine2/uc-seed0-strong-sparse/mcmc.pkl"
-HEALTHY_FIXED_CHAIN="output/mdsine2/fixed_clustering/healthy-seed0-strong-sparse/mcmc.pkl"
-UC_FIXED_CHAIN="output/mdsine2/fixed_clustering/uc-seed0-strong-sparse/mcmc.pkl"
-
-EIGEN_OUTDIR="output/postprocessing/eigenvalues"
-HEALTHY_UNFIXED_DIR="output/postprocessing/cycles/unfixed_clustering/healthy"
-HEALTHY_FIXED_DIR="output/postprocessing/cycles/fixed_clustering/healthy"
-UC_UNFIXED_DIR="output/postprocessing/cycles/unfixed_clustering/uc"
-UC_FIXED_DIR="output/postprocessing/cycles/fixed_clustering/uc"
+SEED_SETTING="seed0-strong-sparse"
+HEALTHY_CHAIN="output/mdsine2/healthy-${SEED_SETTING}/mcmc.pkl"
+UC_CHAIN="output/mdsine2/uc-${SEED_SETTING}/mcmc.pkl"
+HEALTHY_FIXED_CHAIN="output/mdsine2/fixed_clustering/healthy-${SEED_SETTING}/mcmc.pkl"
+UC_FIXED_CHAIN="output/mdsine2/fixed_clustering/uc-${SEED_SETTING}/mcmc.pkl"
+EIGEN_OUTDIR="output/postprocessing/eigenvalues/${SEED_SETTING}"
+HEALTHY_UNFIXED_DIR="output/postprocessing/cycles/unfixed_clustering/healthy-${SEED_SETTING}"
+HEALTHY_FIXED_DIR="output/postprocessing/cycles/fixed_clustering/healthy-${SEED_SETTING}"
+UC_UNFIXED_DIR="output/postprocessing/cycles/unfixed_clustering/uc-${SEED_SETTING}"
+UC_FIXED_DIR="output/postprocessing/cycles/fixed_clustering/uc-${SEED_SETTING}"
 
 
 # Compute eigenvalues

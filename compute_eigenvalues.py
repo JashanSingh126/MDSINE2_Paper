@@ -28,7 +28,13 @@ def parse_args():
 
 def load_matrices(mcmc_path):
     mcmc = md2.BaseMCMC.load(mcmc_path)
-    return mcmc.graph[STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk(section='posterior')
+    si_trace = -np.absolute(mcmc.graph[STRNAMES.SELF_INTERACTION_VALUE].get_trace_from_disk(section='posterior'))
+    interactions = mcmc.graph[STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk(section='posterior')
+
+    interactions[np.isnan(interactions)] = 0
+    for i in range(len(mcmc.graph.data.taxa)):
+        interactions[:,i,i] = si_trace[:,i]
+    return interactions
 
 
 def compute_eigenvalues(matrices, thresh):
