@@ -313,46 +313,46 @@ def main():
         sampled_signs = tokens[3].split(",")
         n_samples = len(sampled_signs)
 
-    # healthy_thresholded_otu_cycles = handle_dataset(
-    #     cycles_path=args.healthy_cycles_taxa,
-    # )
-    # uc_thresholded_otu_cycles = handle_dataset(
-    #     cycles_path=args.uc_cycles_taxa,
-    # )
-    #
-    # axes[1].axis('off')
-    # axes[1]._frameon = False
-    # ax1 = axes[1].inset_axes([0, 0, 0.48, 1.0])
-    # ax2 = axes[1].inset_axes([0.55, 0, 0.5, 1.0])
-    # plot_unsigned_counts(healthy_thresholded_otu_cycles, uc_thresholded_otu_cycles,
-    #                      ax=ax1,
-    #                      do_log=True)
-    # ax1.set_ylabel("ASV-ASV Count")
-    #
-    # plot_signed_counts(n_samples, healthy_thresholded_otu_cycles, uc_thresholded_otu_cycles,
-    #                    ax=ax2,
-    #                    do_log=True)
-    # ax2.set_ylabel("ASV-ASV Count")
-    #
-    #
-    # # ================== Cluster-Cluster ==================
-    # healthy_clustered_cycles = handle_dataset(
-    #     cycles_path=args.healthy_cycles_clusters,
-    # )
-    # uc_clustered_cycles = handle_dataset(
-    #     cycles_path=args.uc_cycles_clusters,
-    # )
-    #
-    # axes[2].axis('off')
-    # axes[2]._frameon = False
-    # ax1 = axes[2].inset_axes([0, 0, 0.48, 1.0])
-    # ax2 = axes[2].inset_axes([0.55, 0, 0.5, 1.0])
-    # plot_unsigned_counts(healthy_clustered_cycles, uc_clustered_cycles,
-    #                      ax=ax1)
-    # ax1.set_ylabel("Cluster-Cluster Count")
-    # plot_signed_counts(n_samples, healthy_clustered_cycles, uc_clustered_cycles,
-    #                    ax=ax2)
-    # ax2.set_ylabel("Cluster-Cluster Count")
+    healthy_thresholded_otu_cycles = handle_dataset(
+        cycles_path=args.healthy_cycles_taxa,
+    )
+    uc_thresholded_otu_cycles = handle_dataset(
+        cycles_path=args.uc_cycles_taxa,
+    )
+
+    axes[1].axis('off')
+    axes[1]._frameon = False
+    ax1 = axes[1].inset_axes([0, 0, 0.48, 1.0])
+    ax2 = axes[1].inset_axes([0.55, 0, 0.5, 1.0])
+    plot_unsigned_counts(healthy_thresholded_otu_cycles, uc_thresholded_otu_cycles,
+                         ax=ax1,
+                         do_log=True)
+    ax1.set_ylabel("ASV-ASV Count")
+
+    plot_signed_counts(n_samples, healthy_thresholded_otu_cycles, uc_thresholded_otu_cycles,
+                       ax=ax2,
+                       do_log=True)
+    ax2.set_ylabel("ASV-ASV Count")
+
+
+    # ================== Cluster-Cluster ==================
+    healthy_clustered_cycles = handle_dataset(
+        cycles_path=args.healthy_cycles_clusters,
+    )
+    uc_clustered_cycles = handle_dataset(
+        cycles_path=args.uc_cycles_clusters,
+    )
+
+    axes[2].axis('off')
+    axes[2]._frameon = False
+    ax1 = axes[2].inset_axes([0, 0, 0.48, 1.0])
+    ax2 = axes[2].inset_axes([0.55, 0, 0.5, 1.0])
+    plot_unsigned_counts(healthy_clustered_cycles, uc_clustered_cycles,
+                         ax=ax1)
+    ax1.set_ylabel("Cluster-Cluster Count")
+    plot_signed_counts(n_samples, healthy_clustered_cycles, uc_clustered_cycles,
+                       ax=ax2)
+    ax2.set_ylabel("Cluster-Cluster Count")
 
 
     # ================ RENDERING TO OUTPUT FILE =============
