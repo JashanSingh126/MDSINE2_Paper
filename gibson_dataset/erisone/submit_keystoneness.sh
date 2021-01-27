@@ -3,7 +3,7 @@
 # ErisOne parameters
 # ------------------
 # Path to MDSINE2_Paper code
-MDSINE2_PAPER_CODE_PATH="/data/cctm/darpa_perturbation_mouse_study/MDSINE2_Paper"
+MDSINE2_PAPER_CODE_PATH=${MDSINE2_PAPER_CODE_PATH:-"/data/cctm/darpa_perturbation_mouse_study/MDSINE2_Paper"}
 SCRIPT_BASEPATH="${MDSINE2_PAPER_CODE_PATH}/gibson_dataset/scripts"
 ERISONE_SCRIPT_BASEPATH="${MDSINE2_PAPER_CODE_PATH}/gibson_dataset/erisone/scripts"
 OUTPUT_BASEPATH="${MDSINE2_PAPER_CODE_PATH}/output"

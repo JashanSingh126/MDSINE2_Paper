@@ -18,6 +18,7 @@ CV_N="1"
 
 # Running parameters
 # NOTE: THESE PATHS MUST BE RELATIVE TO `MDSINE2_PAPER_CODE_PATH`
+CFG_NAME="qpcr_variance_inflated"
 NEGBIN="output/negbin/replicates/mcmc.pkl"
 SEED="0"
 BURNIN="5000"
@@ -37,6 +38,7 @@ PERTURBATION_IND_PRIOR="weak-agnostic"
 # Run healthy for each subject
 # ----------------------------
 python scripts/run_cv.py \
+    --cfg_name $CFG_NAME \
     --dataset $HEALTHY_DATASET \
     --dataset-curr-path $HEALTHY_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \
@@ -61,6 +63,7 @@ python scripts/run_cv.py \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 python scripts/run_cv.py \
+    --cfg_name $CFG_NAME \
     --dataset $HEALTHY_DATASET \
     --dataset-curr-path $HEALTHY_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \
@@ -85,6 +88,7 @@ python scripts/run_cv.py \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 python scripts/run_cv.py \
+    --cfg_name $CFG_NAME \
     --dataset $HEALTHY_DATASET \
     --dataset-curr-path $HEALTHY_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \
@@ -109,6 +113,7 @@ python scripts/run_cv.py \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 python scripts/run_cv.py \
+    --cfg_name $CFG_NAME \
     --dataset $HEALTHY_DATASET \
     --dataset-curr-path $HEALTHY_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \
@@ -135,6 +140,7 @@ python scripts/run_cv.py \
 # Run uc for each subject
 # -----------------------
 python scripts/run_cv.py \
+    --cfg_name $CFG_NAME \
     --dataset $UC_DATASET \
     --dataset-curr-path $UC_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \
@@ -159,6 +165,7 @@ python scripts/run_cv.py \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 python scripts/run_cv.py \
+    --cfg_name $CFG_NAME \
     --dataset $UC_DATASET \
     --dataset-curr-path $UC_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \
@@ -183,6 +190,7 @@ python scripts/run_cv.py \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 python scripts/run_cv.py \
+    --cfg_name $CFG_NAME \
     --dataset $UC_DATASET \
     --dataset-curr-path $UC_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \
@@ -207,6 +215,7 @@ python scripts/run_cv.py \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 python scripts/run_cv.py \
+    --cfg_name $CFG_NAME \
     --dataset $UC_DATASET \
     --dataset-curr-path $UC_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \
@@ -231,6 +240,7 @@ python scripts/run_cv.py \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 python scripts/run_cv.py \
+    --cfg_name $CFG_NAME \
     --dataset $UC_DATASET \
     --dataset-curr-path $UC_DATASET_CURR_PATH \
     --cv-basepath $CV_BASEPATH \

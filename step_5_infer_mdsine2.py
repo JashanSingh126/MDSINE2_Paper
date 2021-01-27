@@ -25,38 +25,62 @@ from mdsine2.names import STRNAMES
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage=__doc__)
-    parser.add_argument('--input', '-i', type=str, dest='input',
-        help='This is the dataset to do inference with.')
-    parser.add_argument('--fixed-clustering', type=str, dest='fixed_clustering',
+    parser.add_argument(
+        '--input', '-i', type=str, dest='input',
+        help='This is the dataset to do inference with.'
+    )
+    parser.add_argument(
+        '--fixed-clustering', type=str, dest='fixed_clustering',
         help='If you are running fixed clustering, this is the location of the chain ' \
-             'that you are setting from.', default=None)
-    parser.add_argument('--negbin', type=str, dest='negbin', nargs='+',
+             'that you are setting from.', default=None
+    )
+    parser.add_argument(
+        '--negbin', type=str, dest='negbin', nargs='+',
         help='If there is a single argument, then this is the MCMC object that was run to ' \
              'learn a0 and a1. If there are two arguments passed, these are the a0 and a1 ' \
              'of the negative binomial dispersion parameters. Example: ' \
              '--negbin /path/to/negbin/mcmc.pkl. Example: ' \
-             '--negbin 0.0025 0.025')
-    parser.add_argument('--seed', '-s', type=int, dest='seed',
-        help='This is the seed to initialize the inference with')
-    parser.add_argument('--burnin', '-nb', type=int, dest='burnin',
-        help='How many burn-in Gibb steps for Markov Chain Monte Carlo (MCMC)')
-    parser.add_argument('--n-samples', '-ns', type=int, dest='n_samples',
-        help='Total number Gibb steps to perform during MCMC inference')
-    parser.add_argument('--checkpoint', '-c', type=int, dest='checkpoint',
+             '--negbin 0.0025 0.025'
+    )
+    parser.add_argument(
+        '--seed', '-s', type=int, dest='seed',
+        help='This is the seed to initialize the inference with'
+    )
+    parser.add_argument(
+        '--burnin', '-nb', type=int, dest='burnin',
+        help='How many burn-in Gibb steps for Markov Chain Monte Carlo (MCMC)'
+    )
+    parser.add_argument(
+        '--n-samples', '-ns', type=int, dest='n_samples',
+        help='Total number Gibb steps to perform during MCMC inference'
+    )
+    parser.add_argument(
+        '--checkpoint', '-c', type=int, dest='checkpoint',
         help='How often to write the posterior to disk. Note that `--burnin` and ' \
              '`--n-samples` must be a multiple of `--checkpoint` (e.g. checkpoint = 100, ' \
-             'n_samples = 600, burnin = 300)')
-    parser.add_argument('--basepath', '--output-basepath','-b', type=str, dest='basepath',
-        help='This is folder to save the output of inference')
-    parser.add_argument('--multiprocessing', '-mp', type=int, dest='mp',
+             'n_samples = 600, burnin = 300)'
+    )
+    parser.add_argument(
+        '--basepath', '--output-basepath','-b', type=str, dest='basepath',
+        help='This is folder to save the output of inference'
+    )
+    parser.add_argument(
+        '--multiprocessing', '-mp', type=int, dest='mp',
         help='If 1, run the inference with multiprocessing. Else run on a single process',
-        default=0)
-    parser.add_argument('--rename-study', type=str, dest='rename_study',
-        help='Specify the name of the study to set', default=None)
-    parser.add_argument('--interaction-ind-prior', '-ip', type=str, dest='interaction_prior',
-        help='Prior of the indicator of the interactions')
-    parser.add_argument('--perturbation-ind-prior', '-pp', type=str, dest='perturbation_prior',
-        help='Prior of the indicator of the perturbations')
+        default=0
+    )
+    parser.add_argument(
+        '--rename-study', type=str, dest='rename_study',
+        help='Specify the name of the study to set', default=None
+                        )
+    parser.add_argument(
+        '--interaction-ind-prior', '-ip', type=str, dest='interaction_prior',
+        help='Prior of the indicator of the interactions'
+    )
+    parser.add_argument(
+        '--perturbation-ind-prior', '-pp', type=str, dest='perturbation_prior',
+        help='Prior of the indicator of the perturbations'
+    )
     args = parser.parse_args()
 
     # 1) load dataset
@@ -124,7 +148,6 @@ if __name__ == '__main__':
     if len(study.taxa) <= 30:
         logging.info('Since there is less than 30 taxa, we set the initialization of the clustering to `no-clusters`')
         params.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value_option'] = 'no-clusters'
-
 
     mcmc = md2.initialize_graph(params=params, graph_name=study.name, subjset=study)
     mdata_fname = os.path.join(params.MODEL_PATH, 'metadata.txt')
