@@ -11,11 +11,6 @@ def load_settings(cfg: md2.config.MDSINE2ModelConfig, study: md2.Study):
     interaction_prior = 'weak-agnostic'
     perturbation_prior = 'weak-agnostic'
 
-    # ====== Negative binomial params ======
-    negbin_a0 = 1e-2
-    negbin_a1 = 1e-4
-    cfg.set_negbin_params(negbin_a0, negbin_a1)
-
     # Set the sparsities
     cfg.INITIALIZATION_KWARGS[STRNAMES.CLUSTER_INTERACTION_INDICATOR_PROB]['hyperparam_option'] = interaction_prior
     cfg.INITIALIZATION_KWARGS[STRNAMES.PERT_INDICATOR_PROB]['hyperparam_option'] = perturbation_prior

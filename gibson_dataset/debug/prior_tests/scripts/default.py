@@ -44,6 +44,10 @@ def parse_args():
         help='If 1, run the inference with multiprocessing. Else run on a single process',
         default=0
     )
+    parser.add_argument(
+        '--negbin', type=str, dest='negbin',
+        help='MCMC object to load a0 and a1 from (for negative binomial)'
+    )
     return parser.parse_args()
 
 
@@ -79,13 +83,17 @@ def main():
     study = md2.Study.load(args.study_path)
     md2.seed(args.seed)
 
+    negbin = md2.BaseMCMC.load(args.negbin)
+    a0 = md2.summary(negbin.graph[STRNAMES.NEGBIN_A0])['mean']
+    a1 = md2.summary(negbin.graph[STRNAMES.NEGBIN_A1])['mean']
+
     # Load the model parameters
     output_basepath = os.path.join(args.basepath, study.name)
     os.makedirs(output_basepath, exist_ok=True)
     md2.config.LoggingConfig(level=logging.INFO, basepath=output_basepath)
     cfg = create_config(output_basepath,
-                        negbin_a1=0.,  # to set in load_settings
-                        negbin_a0=0.,  # to set in load_settings
+                        negbin_a1=a1,  # to set in load_settings
+                        negbin_a0=a0,  # to set in load_settings
                         seed=args.seed,
                         burnin=args.burnin,
                         n_samples=args.n_samples,
