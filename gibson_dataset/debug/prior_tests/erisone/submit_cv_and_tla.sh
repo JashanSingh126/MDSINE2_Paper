@@ -28,7 +28,7 @@ MULTIPROCESSING="0"
 
 PROCESSED_DATA_PATH="${MDSINE2_PAPER_CODE_PATH}/processed_data"
 DSET_BASEPATH="${MDSINE2_PAPER_CODE_PATH}/processed_data/cv"
-CV_BASEPATH="${MDSINE2_PAPER_CODE_PATH}/output/mdsine2/cv"
+CV_BASEPATH="${MDSINE2_PAPER_CODE_PATH}/output/mdsine2/cv_${CFG_NAME}"
 HEALTHY_DATASET="${PROCESSED_DATA_PATH}/gibson_healthy_agg_taxa_filtered.pkl"
 HEALTHY_DATASET_CURR_PATH="${PROCESSED_DATA_PATH}/gibson_healthy_agg_taxa_filtered.pkl"
 UC_DATASET="${PROCESSED_DATA_PATH}/gibson_uc_agg_taxa_filtered.pkl"

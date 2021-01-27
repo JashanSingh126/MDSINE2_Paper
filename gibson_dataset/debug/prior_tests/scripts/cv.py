@@ -85,6 +85,7 @@ if __name__ == '__main__':
         pathlib.Path(os.path.realpath(__file__)).parent,
         "{}.py".format(args.config_name)
     )
+    logging.info("Running script {}.".format(script_path))
 
     logging.info('Run inference')
     command = command_fmt.format(
