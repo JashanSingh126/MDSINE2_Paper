@@ -4,12 +4,8 @@ import default
 import logging
 
 
-def load_settings(cfg: md2.config.MDSINE2ModelConfig, study: md2.Study):
+def load_settings(cfg: md2.config.MDSINE2ModelConfig, study: md2.Study, interaction_prior: str, perturbation_prior: str):
     n_taxa = len(study.taxa)
-
-    # ====== Indicator priors ======
-    interaction_prior = 'weak-agnostic'
-    perturbation_prior = 'weak-agnostic'
 
     # Set the sparsities
     cfg.INITIALIZATION_KWARGS[STRNAMES.CLUSTER_INTERACTION_INDICATOR_PROB]['hyperparam_option'] = interaction_prior

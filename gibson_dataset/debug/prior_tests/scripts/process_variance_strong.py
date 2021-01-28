@@ -4,12 +4,8 @@ import default
 import logging
 
 
-def load_settings(cfg: md2.config.MDSINE2ModelConfig, study: md2.Study):
+def load_settings(cfg: md2.config.MDSINE2ModelConfig, study: md2.Study, interaction_prior: str, perturbation_prior: str):
     n_taxa = len(study.taxa)
-
-    # ====== Indicator priors ======
-    interaction_prior = 'weak-agnostic'
-    perturbation_prior = 'weak-agnostic'
 
     # ====== Negative binomial params ======
     negbin_a0 = 1e-2
