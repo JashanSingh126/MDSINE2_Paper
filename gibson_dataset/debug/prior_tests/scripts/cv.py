@@ -14,7 +14,7 @@ import os
 import pathlib
 import sys
 
-command_fmt = 'python {script} --input {dset} ' \
+command_fmt = 'python {script} --study_path {dset} ' \
               '--negbin {negbin} ' \
               '--seed {seed} ' \
               '--burnin {burnin} ' \

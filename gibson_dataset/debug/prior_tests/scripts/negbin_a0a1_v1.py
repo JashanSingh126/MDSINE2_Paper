@@ -1,6 +1,6 @@
 import mdsine2 as md2
 from mdsine2.names import STRNAMES
-from gibson_dataset.debug.prior_tests.scripts import default
+import default
 import logging
 
 

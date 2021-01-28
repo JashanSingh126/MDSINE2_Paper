@@ -6,7 +6,7 @@
 import os
 import mdsine2 as md2
 from mdsine2.names import STRNAMES
-from gibson_dataset.debug.prior_tests.scripts.base.infer_mdsine2 import create_config, run_mdsine
+from base.infer_mdsine2 import create_config, run_mdsine
 import logging
 import argparse
 
@@ -18,12 +18,12 @@ def parse_args():
         help='Path to the dataset\'s study object (pickle).'
     )
     parser.add_argument(
-        '--seed', type=int, dest='seed', required=True,
-        help='Seed for randomness'
+        '--negbin', type=str, dest='negbin',
+        help='MCMC object to load a0 and a1 from (for negative binomial)'
     )
     parser.add_argument(
-        '--basepath', type=str, dest='basepath', required=True,
-        help='The directory path to output to, not including the study name itself.'
+        '--seed', type=int, dest='seed', required=True,
+        help='Seed for randomness'
     )
     parser.add_argument(
         '--burnin', '-nb', type=int, dest='burnin',
@@ -40,23 +40,27 @@ def parse_args():
              'n_samples = 600, burnin = 300)'
     )
     parser.add_argument(
+        '--basepath', type=str, dest='basepath', required=True,
+        help='The directory path to output to, not including the study name itself.'
+    )
+    parser.add_argument(
         '--multiprocessing', '-mp', type=int, dest='multiprocessing',
         help='If 1, run the inference with multiprocessing. Else run on a single process',
         default=0
     )
     parser.add_argument(
-        '--negbin', type=str, dest='negbin',
-        help='MCMC object to load a0 and a1 from (for negative binomial)'
+        '--interaction-ind-prior', '-ip', type=str, dest='interaction_prior',
+        help='Prior of the indicator of the interactions'
+    )
+    parser.add_argument(
+        '--perturbation-ind-prior', '-pp', type=str, dest='perturbation_prior',
+        help='Prior of the indicator of the perturbations'
     )
     return parser.parse_args()
 
 
-def load_settings(cfg: md2.config.MDSINE2ModelConfig, study: md2.Study):
+def load_settings(cfg: md2.config.MDSINE2ModelConfig, study: md2.Study, interaction_prior: str, perturbation_prior: str):
     n_taxa = len(study.taxa)
-
-    # ====== Indicator priors ======
-    interaction_prior = 'weak-agnostic'
-    perturbation_prior = 'weak-agnostic'
 
     # ====== Negative binomial params ======
     negbin_a0 = 1e-2
@@ -99,7 +103,7 @@ def main():
                         n_samples=args.n_samples,
                         checkpoint=args.checkpoint,
                         multithreaded=args.multiprocessing)
-    load_settings(cfg, study)
+    load_settings(cfg, study, args.interaction_prior, args.perturbation_prior)
 
     # Run inference.
     run_mdsine(cfg, study)
