@@ -1,19 +1,22 @@
 """
 Eigenvalues + Cycle histograms figure.
 """
+import itertools
 import os
 import numpy as np
 from matplotlib.colors import LogNorm
 import matplotlib.pyplot as plt
 
 import argparse
-import pandas as pd
 from collections import defaultdict
 
 import logging
 import mdsine2 as md2
 
 import pickle
+
+import pandas as pd
+import seaborn as sns
 
 
 def parse_args():
@@ -42,85 +45,56 @@ def parse_args():
 
 
 def plot_unsigned_counts(healthy, uc, ax, title="", do_log=False):
+    if do_log:
+        print("[TODO] re-implement this option!")
+
     """ Total (disregarding signs) """
-    num_samples = len(healthy)
+    n_samples = 10000
     lengths = [2, 3, 4]
+    signs = [
+        ['++', '+-', '-+', '--'],
+        ['+++', '++-', "+-+", "-++", "+--", "-+-", "--+", "---"],
+        [''.join(signs) for signs in itertools.product(['+', '-'], repeat=4)]
+    ]
 
     x = np.array(list(range(len(lengths))))
     width = 0.35
 
-    data = []
-    for k in lengths:
-        data.append([
-            np.sum([healthy[i][k + 1][sign] for sign in healthy[i][k + 1].keys()])
-            for i in range(num_samples)
-        ])
+    df = pd.DataFrame(columns=["Value"],
+                      dtype=np.float,
+                      index=pd.MultiIndex.from_product(
+                          [lengths, range(n_samples), ["Healthy", "UC"]],
+                          names=["Length", "Index", "Dataset"]
+                      ))
 
-    means = np.array([np.mean(d) for d in data])
-    medians = np.array([np.median(d) for d in data])
-    lower_q = np.array([np.quantile(d, 0.25) for d in data])
-    upper_q = np.array([np.quantile(d, 0.75) for d in data])
+    for k_idx, k in enumerate(lengths):
+        df.loc[(k, slice(None), "Healthy")] = np.log(np.expand_dims(
+            np.sum(np.array([
+                [healthy[i][k + 1][sign] for sign in signs[k_idx]]
+                for i in range(n_samples)
+            ]), axis=1),
+            axis=1)
+        )
+        df.loc[(k, slice(None), "UC")] = np.log(np.expand_dims(
+            np.sum(np.array([
+                [uc[i][k + 1][sign] for sign in signs[k_idx]]
+                for i in range(n_samples)
+            ]), axis=1),
+            axis=1)
+        )
 
-    ax.bar(
-        x - (width / 2),
-        means,
-        width=width,
-        color='b',
-        alpha=0.5,
-        label='Healthy'
-    )
-    ax.errorbar(
-        x - (width / 2),
-        y=medians,
-        yerr=np.vstack([medians - lower_q, upper_q - medians]),
-        elinewidth=1.0,
-        capsize=1.0,
-        fmt='.',
-        color='b'
-    )
+    df[~np.isfinite(df)] = 0
+    df = df.reset_index()
+    sns.violinplot(x="Length", y="Value", hue="Dataset", data=df, ax=ax, cut=0, split=True, inner="quartile")
 
-    data = []
-    for k in lengths:
-        data.append([
-            np.sum([uc[i][k+1][sign] for sign in uc[i][k+1].keys()])
-            for i in range(num_samples)
-        ])
-    means = np.array([np.mean(d) for d in data])
-    medians = np.array([np.median(d) for d in data])
-    lower_q = np.array([np.quantile(d, 0.25) for d in data])
-    upper_q = np.array([np.quantile(d, 0.75) for d in data])
-
-    ax.set_ylabel("Count")
-    ax.bar(
-        x + (width / 2),
-        means,
-        width=width,
-        color='r',
-        alpha=0.5,
-        label='UC'
-    )
-    ax.errorbar(
-        x + (width / 2),
-        y=medians,
-        yerr=np.vstack([medians - lower_q, upper_q - medians]),
-        elinewidth=1.0,
-        capsize=1.0,
-        fmt='.',
-        color='r'
-    )
-
-    if do_log:
-        ax.set_yscale("log")
     ax.set_xticks(x)
     ax.set_xticklabels(lengths, fontsize=8)
-    ax.set_title(title, x=-0.05, y=1.0, pad=-14)
+    # ax.set_title(title, x=-0.05, y=1.0, pad=-14)
     ax.set_xlabel("Cycle Length")
     ax.legend(loc='upper left')
-    # outpath = os.path.join(out_dir, filename)
-    # plt.savefig(outpath, format='pdf')
 
 
-def plot_signed_counts(n_samples, healthy, uc, ax, title="", do_log=False):
+def plot_signed_counts(healthy, uc, ax, title="", do_log=False):
     # Per sign
     signs = ['(+ +)',
              '(- -)',
@@ -130,10 +104,13 @@ def plot_signed_counts(n_samples, healthy, uc, ax, title="", do_log=False):
              '(+ + -)',
              '(- - +)']
 
-    df = pd.DataFrame(columns=["Healthy", "UC"],
+    n_samples = 10000
+
+    df = pd.DataFrame(columns=["Value"],
                       dtype=np.float,
                       index=pd.MultiIndex.from_product(
-                          [signs, range(n_samples)]
+                          [signs, range(n_samples), ["Healthy", "UC"]],
+                          names=["Sign", "Index", "Dataset"]
                       ))
 
     data_healthy = [
@@ -146,7 +123,7 @@ def plot_signed_counts(n_samples, healthy, uc, ax, title="", do_log=False):
         [healthy[i][4]['--+'] + healthy[i][4]['-+-'] + healthy[i][4]['+--'] for i in range(n_samples)]
     ]
     for sign, arr in zip(signs, data_healthy):
-        df.loc[(sign, slice(None)), "Healthy"] = arr
+        df.loc[(sign, slice(None), "Healthy")] = np.log(np.expand_dims(np.array(arr), axis=1))
 
     data_uc = [
         [uc[i][3]['++'] for i in range(n_samples)],
@@ -158,59 +135,64 @@ def plot_signed_counts(n_samples, healthy, uc, ax, title="", do_log=False):
         [uc[i][4]['--+'] + uc[i][4]['-+-'] + uc[i][4]['+--'] for i in range(n_samples)]
     ]
     for sign, arr in zip(signs, data_uc):
-        df.loc[(sign, slice(None)), "UC"] = arr
+        df.loc[(sign, slice(None), "UC")] = np.log(np.expand_dims(np.array(arr), axis=1))
 
-    width = 0.35
-    width_offset = width / 2
+    df[~np.isfinite(df)] = 0
+    df = df.reset_index()
 
-    def autolabel(rects, ax, values):
-        """
-        Attach a text label above each bar displaying its height
-        """
-        for rect, value in zip(rects, values):
-            height = value
-            if height < 0.05 * ax.get_ylim()[1]:
-                ax.text(rect.get_x() + rect.get_width() / 2., 1.05 * rect.get_height(),
-                        "{:.2f}".format(height),
-                        ha='center', va='bottom', fontsize='x-small')
+    sns.violinplot(x="Sign", y="Value", hue="Dataset", data=df, ax=ax, cut=0, split=True, inner="quartile")
 
-    df_means = df.groupby(level=0).mean()
-    df_lowers = df.groupby(level=0).quantile(0.25)
-    df_medians = df.groupby(level=0).quantile(0.5)
-    df_uppers = df.groupby(level=0).quantile(0.75)
-    for col, offset, color in [('Healthy', -width_offset, 'b'), ('UC', width_offset, 'r')]:
-        means = [df_means.loc[sgn, col].item() for sgn in signs]
-        medians = np.array([df_medians.loc[sgn, col].item() for sgn in signs])
-        lower_q = np.array([df_lowers.loc[sgn, col].item() for sgn in signs])
-        upper_q = np.array([df_uppers.loc[sgn, col].item() for sgn in signs])
-        x = np.arange(0, len(means), 1)
-
-        rects = ax.bar(
-            x + offset,
-            means,
-            width=width,
-            color=color,
-            alpha=0.5,
-            label=col
-        )
-        autolabel(rects, ax, means)
-        ax.errorbar(
-            x + offset,
-            y=medians,
-            yerr=np.vstack([medians - lower_q, upper_q - medians]),
-            elinewidth=1.0,
-            capsize=1.0,
-            fmt='.',
-            color=color
-        )
-
-    if do_log:
-        ax.set_yscale("log")
-    ax.set_xticks(x)
-    ax.set_xticklabels([sgn for sgn in signs], fontsize=8, rotation=45, ha="center")
-    ax.set_title(title, x=-0.05, y=1.0, pad=-14)
-    ax.set_xlabel("Cycle Sign")
-    ax.legend(loc='upper left')
+    # width = 0.35
+    # width_offset = width / 2
+    #
+    # def autolabel(rects, ax, values):
+    #     """
+    #     Attach a text label above each bar displaying its height
+    #     """
+    #     for rect, value in zip(rects, values):
+    #         height = value
+    #         if height < 0.05 * ax.get_ylim()[1]:
+    #             ax.text(rect.get_x() + rect.get_width() / 2., 1.05 * rect.get_height(),
+    #                     "{:.2f}".format(height),
+    #                     ha='center', va='bottom', fontsize='x-small')
+    #
+    # df_means = df.groupby(level=0).mean()
+    # df_lowers = df.groupby(level=0).quantile(0.25)
+    # df_medians = df.groupby(level=0).quantile(0.5)
+    # df_uppers = df.groupby(level=0).quantile(0.75)
+    # for col, offset, color in [('Healthy', -width_offset, 'b'), ('UC', width_offset, 'r')]:
+    #     means = [df_means.loc[sgn, col].item() for sgn in signs]
+    #     medians = np.array([df_medians.loc[sgn, col].item() for sgn in signs])
+    #     lower_q = np.array([df_lowers.loc[sgn, col].item() for sgn in signs])
+    #     upper_q = np.array([df_uppers.loc[sgn, col].item() for sgn in signs])
+    #     x = np.arange(0, len(means), 1)
+    #
+    #     rects = ax.bar(
+    #         x + offset,
+    #         means,
+    #         width=width,
+    #         color=color,
+    #         alpha=0.5,
+    #         label=col
+    #     )
+    #     autolabel(rects, ax, means)
+    #     ax.errorbar(
+    #         x + offset,
+    #         y=medians,
+    #         yerr=np.vstack([medians - lower_q, upper_q - medians]),
+    #         elinewidth=1.0,
+    #         capsize=1.0,
+    #         fmt='.',
+    #         color=color
+    #     )
+    #
+    # if do_log:
+    #     ax.set_yscale("log")
+    # ax.set_xticks(x)
+    # ax.set_xticklabels([sgn for sgn in signs], fontsize=8, rotation=45, ha="center")
+    # ax.set_title(title, x=-0.05, y=1.0, pad=-14)
+    # ax.set_xlabel("Cycle Sign")
+    # ax.legend(loc='upper left')
 
 
 def parse_csv_cycle_counts(filepath):
@@ -306,13 +288,6 @@ def main():
     ax1.get_shared_y_axes().join(ax1, ax2)
     ax2.autoscale()
 
-    # # =================== ASV-ASV ====================
-    with open(args.healthy_cycles_taxa, 'r') as f:
-        line = f.readline()
-        tokens = line.split(";")
-        sampled_signs = tokens[3].split(",")
-        n_samples = len(sampled_signs)
-
     healthy_thresholded_otu_cycles = handle_dataset(
         cycles_path=args.healthy_cycles_taxa,
     )
@@ -327,12 +302,12 @@ def main():
     plot_unsigned_counts(healthy_thresholded_otu_cycles, uc_thresholded_otu_cycles,
                          ax=ax1,
                          do_log=True)
-    ax1.set_ylabel("ASV-ASV Count")
+    ax1.set_ylabel("ASV-ASV Log-Count")
 
-    plot_signed_counts(n_samples, healthy_thresholded_otu_cycles, uc_thresholded_otu_cycles,
+    plot_signed_counts(healthy_thresholded_otu_cycles, uc_thresholded_otu_cycles,
                        ax=ax2,
                        do_log=True)
-    ax2.set_ylabel("ASV-ASV Count")
+    ax2.set_ylabel("ASV-ASV Log-Count")
 
 
     # ================== Cluster-Cluster ==================
@@ -349,10 +324,10 @@ def main():
     ax2 = axes[2].inset_axes([0.55, 0, 0.5, 1.0])
     plot_unsigned_counts(healthy_clustered_cycles, uc_clustered_cycles,
                          ax=ax1)
-    ax1.set_ylabel("Cluster-Cluster Count")
-    plot_signed_counts(n_samples, healthy_clustered_cycles, uc_clustered_cycles,
+    ax1.set_ylabel("Cluster-Cluster Log-Count")
+    plot_signed_counts(healthy_clustered_cycles, uc_clustered_cycles,
                        ax=ax2)
-    ax2.set_ylabel("Cluster-Cluster Count")
+    ax2.set_ylabel("Cluster-Cluster Log-Count")
 
 
     # ================ RENDERING TO OUTPUT FILE =============

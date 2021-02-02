@@ -7,7 +7,7 @@ MDSINE2_PAPER_CODE_PATH=${MDSINE2_PAPER_CODE_PATH:-"/data/cctm/darpa_perturbatio
 # Conda environment
 ENVIRONMENT_NAME="mdsine2"
 # Queues, memory (_MEM), and nodes (_N) for forward simulation (TLA) and cross-validation (CV)
-TLA_QUEUE="short"
+TLA_QUEUE="medium"
 TLA_MEM="4000"
 TLA_N="1"
 
