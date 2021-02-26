@@ -45,10 +45,22 @@ module load anaconda/4.8.2
 source activate {environment_name}
 cd {code_basepath}
 
+{cmd}
+'''
+
+cycle_command='''
 python cycle_count_otu.py \
     --mcmc_path {chain} \
     --out_dir {outdir} \
     --max_path_len {pathlen}
+'''
+
+chain_command='''
+python cycle_count_otu.py \
+    --mcmc_path {chain} \
+    --out_dir {outdir} \
+    --max_path_len {pathlen} \
+    --do_chains
 '''
 
 import mdsine2 as md2
@@ -78,6 +90,7 @@ if __name__ == '__main__':
         help='Number of cpus to reserve on ErisOne')
     parser.add_argument('--lsf-basepath', '-l', type=str, dest='lsf_basepath',
         help='This is the basepath to save the lsf files', default='lsf_files/')
+    parser.add_argument('--do_chains', action="store_true")
     args = parser.parse_args()
 
     md2.config.LoggingConfig(level=logging.INFO)
@@ -95,6 +108,17 @@ if __name__ == '__main__':
     stdout_name = os.path.join(stdout_loc, jobname + '.out')
     stderr_name = os.path.join(stderr_loc, jobname + '.err')
     lsfname = os.path.join(script_path, jobname + '.lsf')
+
+    if args.do_chains:
+        cmd = chain_command
+    else:
+        cmd = cycle_command
+    cmd = cmd.format(
+        chain=args.chain,
+        outdir=args.outdir,
+        pathlen=args.path_len
+    )
+
     f = open(lsfname, 'w')
     f.write(lsfstr.format(
         jobname=jobname, stdout_loc=stdout_name,
@@ -102,9 +126,7 @@ if __name__ == '__main__':
         cpus=args.cpus, mem=args.memory,
         environment_name=args.environment_name,
         code_basepath=args.code_basepath,
-        chain=args.chain,
-        outdir=args.outdir,
-        pathlen=args.path_len
+        cmd=cmd
     ))
     f.close()
     command = 'bsub < {}'.format(lsfname)
