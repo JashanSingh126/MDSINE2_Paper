@@ -45,12 +45,9 @@ def parse_args():
 
 
 def plot_unsigned_counts(healthy, uc, ax, title="", do_log=False):
-    if do_log:
-        print("[TODO] re-implement this option!")
-
     """ Total (disregarding signs) """
     n_samples = 10000
-    lengths = [2, 3, 4]
+    lengths = [2, 3]
     signs = [
         ['++', '+-', '-+', '--'],
         ['+++', '++-', "+-+", "-++", "+--", "-+-", "--+", "---"],
@@ -58,7 +55,6 @@ def plot_unsigned_counts(healthy, uc, ax, title="", do_log=False):
     ]
 
     x = np.array(list(range(len(lengths))))
-    width = 0.35
 
     df = pd.DataFrame(columns=["Value"],
                       dtype=np.float,
@@ -68,24 +64,33 @@ def plot_unsigned_counts(healthy, uc, ax, title="", do_log=False):
                       ))
 
     for k_idx, k in enumerate(lengths):
-        df.loc[(k, slice(None), "Healthy")] = np.log(np.expand_dims(
+        df.loc[(k, slice(None), "Healthy")] = np.expand_dims(
             np.sum(np.array([
                 [healthy[i][k + 1][sign] for sign in signs[k_idx]]
                 for i in range(n_samples)
             ]), axis=1),
-            axis=1)
+            axis=1
         )
-        df.loc[(k, slice(None), "UC")] = np.log(np.expand_dims(
+        df.loc[(k, slice(None), "UC")] = np.expand_dims(
             np.sum(np.array([
                 [uc[i][k + 1][sign] for sign in signs[k_idx]]
                 for i in range(n_samples)
             ]), axis=1),
-            axis=1)
+            axis=1
         )
 
-    df[~np.isfinite(df)] = 0
     df = df.reset_index()
-    sns.violinplot(x="Length", y="Value", hue="Dataset", data=df, ax=ax, cut=0, split=True, inner="quartile")
+
+    if do_log:
+        log_value = np.log(df["Value"].to_numpy())
+        log_value[~np.isfinite(log_value)] = 0
+        df["Value"] = log_value
+        # ax.set_yscale('log')
+
+    sns.boxplot(x="Length", y="Value", data=df, hue="Dataset", ax=ax)
+    sns.swarmplot(x="Length", y="Value", data=df, color=".25", hue="Dataset", ax=ax)
+
+    # sns.violinplot(x="Length", y="Value", hue="Dataset", data=df, ax=ax, cut=0, inner="quartile", bw=0.1)
 
     ax.set_xticks(x)
     ax.set_xticklabels(lengths, fontsize=8)
@@ -123,7 +128,7 @@ def plot_signed_counts(healthy, uc, ax, title="", do_log=False):
         [healthy[i][4]['--+'] + healthy[i][4]['-+-'] + healthy[i][4]['+--'] for i in range(n_samples)]
     ]
     for sign, arr in zip(signs, data_healthy):
-        df.loc[(sign, slice(None), "Healthy")] = np.log(np.expand_dims(np.array(arr), axis=1))
+        df.loc[(sign, slice(None), "Healthy")] = np.expand_dims(np.array(arr), axis=1)
 
     data_uc = [
         [uc[i][3]['++'] for i in range(n_samples)],
@@ -135,64 +140,18 @@ def plot_signed_counts(healthy, uc, ax, title="", do_log=False):
         [uc[i][4]['--+'] + uc[i][4]['-+-'] + uc[i][4]['+--'] for i in range(n_samples)]
     ]
     for sign, arr in zip(signs, data_uc):
-        df.loc[(sign, slice(None), "UC")] = np.log(np.expand_dims(np.array(arr), axis=1))
+        df.loc[(sign, slice(None), "UC")] = np.expand_dims(np.array(arr), axis=1)
 
-    df[~np.isfinite(df)] = 0
     df = df.reset_index()
+    if do_log:
+        log_value = np.log(df["Value"].to_numpy())
+        log_value[~np.isfinite(log_value)] = 0
+        df["Value"] = log_value
+        # ax.set_yscale('log')
 
-    sns.violinplot(x="Sign", y="Value", hue="Dataset", data=df, ax=ax, cut=0, split=True, inner="quartile")
-
-    # width = 0.35
-    # width_offset = width / 2
-    #
-    # def autolabel(rects, ax, values):
-    #     """
-    #     Attach a text label above each bar displaying its height
-    #     """
-    #     for rect, value in zip(rects, values):
-    #         height = value
-    #         if height < 0.05 * ax.get_ylim()[1]:
-    #             ax.text(rect.get_x() + rect.get_width() / 2., 1.05 * rect.get_height(),
-    #                     "{:.2f}".format(height),
-    #                     ha='center', va='bottom', fontsize='x-small')
-    #
-    # df_means = df.groupby(level=0).mean()
-    # df_lowers = df.groupby(level=0).quantile(0.25)
-    # df_medians = df.groupby(level=0).quantile(0.5)
-    # df_uppers = df.groupby(level=0).quantile(0.75)
-    # for col, offset, color in [('Healthy', -width_offset, 'b'), ('UC', width_offset, 'r')]:
-    #     means = [df_means.loc[sgn, col].item() for sgn in signs]
-    #     medians = np.array([df_medians.loc[sgn, col].item() for sgn in signs])
-    #     lower_q = np.array([df_lowers.loc[sgn, col].item() for sgn in signs])
-    #     upper_q = np.array([df_uppers.loc[sgn, col].item() for sgn in signs])
-    #     x = np.arange(0, len(means), 1)
-    #
-    #     rects = ax.bar(
-    #         x + offset,
-    #         means,
-    #         width=width,
-    #         color=color,
-    #         alpha=0.5,
-    #         label=col
-    #     )
-    #     autolabel(rects, ax, means)
-    #     ax.errorbar(
-    #         x + offset,
-    #         y=medians,
-    #         yerr=np.vstack([medians - lower_q, upper_q - medians]),
-    #         elinewidth=1.0,
-    #         capsize=1.0,
-    #         fmt='.',
-    #         color=color
-    #     )
-    #
-    # if do_log:
-    #     ax.set_yscale("log")
-    # ax.set_xticks(x)
-    # ax.set_xticklabels([sgn for sgn in signs], fontsize=8, rotation=45, ha="center")
-    # ax.set_title(title, x=-0.05, y=1.0, pad=-14)
-    # ax.set_xlabel("Cycle Sign")
-    # ax.legend(loc='upper left')
+    sns.boxplot(x="Sign", y="Value", data=df, hue="Dataset", ax=ax)
+    sns.swarmplot(x="Sign", y="Value", data=df, color=".25", hue="Dataset", ax=ax)
+    # sns.violinplot(x="Sign", y="Value", hue="Dataset", data=df, ax=ax, cut=0, inner="quartile", bw=0.1)
 
 
 def parse_csv_cycle_counts(filepath):
@@ -200,13 +159,13 @@ def parse_csv_cycle_counts(filepath):
         for line in f:
             tokens = line.split(";")
             cycle = [int(i) for i in tokens[0].strip().split("->")]
-            count = int(tokens[1].strip())
+            total_count = int(tokens[1].strip())
             bayes = float(tokens[2].strip())
             sampled_signs = tokens[3].split(",") # TODO parse signs and get consensus sign via majority vote.
             for idx, sgn in enumerate(sampled_signs):
                 sgn = sgn.strip()
                 if len(sgn) > 0:
-                    yield idx, cycle, count, sgn
+                    yield idx, cycle, total_count, sgn
 
 def dd2():
     # value for missing len: defaultdict
@@ -223,11 +182,13 @@ def handle_dataset(cycles_path):
     try:
         with open(cache_file, 'rb') as f:
             counts = pickle.load(f)
+            print("Loaded pickle.")
     except Exception:
+        print("Failed to load pickle. Regenerating counts.")
         # sample idx -> LEN -> sign -> count
         counts = defaultdict(dd1)
-        for idx, cycle, count, sign in parse_csv_cycle_counts(cycles_path):
-            counts[idx][len(cycle)][sign] = counts[idx][len(cycle)][sign] + count
+        for idx, cycle, total_count, sign in parse_csv_cycle_counts(cycles_path):
+            counts[idx][len(cycle)][sign] = counts[idx][len(cycle)][sign] + 1
         with open(cache_file, 'wb') as f:
             pickle.dump(counts, f, pickle.HIGHEST_PROTOCOL)
     return counts
@@ -271,22 +232,35 @@ def main():
     FORMAT = args.format
     DPI = args.dpi
 
-    out_path = os.path.join(args.out_dir, "figure6.{}".format(FORMAT))
-    fig, axes = plt.subplots(nrows=3, ncols=1, figsize=(12, 14),
-                             gridspec_kw={'height_ratios': [1.5, 1, 1], 'hspace': 0.4})
+    # out_path = os.path.join(args.out_dir, "figure6.{}".format(FORMAT))
+    # fig, axes = plt.subplots(nrows=3, ncols=1, figsize=(12, 14),
+    #                          gridspec_kw={'height_ratios': [1.5, 1, 1], 'hspace': 0.4})
 
     # ================= Eigenvalues ==================
-    axes[0].axis('off')
-    axes[0]._frameon = False
-    ax1 = axes[0].inset_axes([0, 0, 0.5, 1.0])
-    ax2 = axes[0].inset_axes([0.55, 0, 0.5, 1.0])
-    cbar_ax = axes[0].inset_axes([1.07, 0., 0.01, 1.0])
+    out_path = os.path.join(args.out_dir, "figure6-eig.{}".format(FORMAT))
+    print("Plotting eigenvalues.")
+    # axes[0].axis('off')
+    # axes[0]._frameon = False
+    # ax1 = axes[0].inset_axes([0, 0, 0.5, 1.0])
+    # ax2 = axes[0].inset_axes([0.55, 0, 0.5, 1.0])
+    # cbar_ax = axes[0].inset_axes([1.07, 0., 0.01, 1.0])
+    fig, [ax1, ax2, cbar_ax] = plt.subplots(nrows=1, ncols=3, figsize=(12, 5))
     generate_eigenvalue_figure(fig, ax1, ax2, cbar_ax, args.eig_path)
 
     # Put both plots on same scale.
     ax1.get_shared_x_axes().join(ax1, ax2)
     ax1.get_shared_y_axes().join(ax1, ax2)
     ax2.autoscale()
+
+    # ================ RENDERING TO OUTPUT FILE =============
+    fig.tight_layout()
+    plt.savefig(out_path, format=FORMAT, dpi=DPI)
+    logging.info("Eigenvalue figure saved to {}.".format(out_path))
+
+    # ================= OTU-OTU interactions ==================
+    out_path = os.path.join(args.out_dir, "figure6-otu.{}".format(FORMAT))
+    print("Plotting OTU-OTU interactions.")
+    fig, [ax1, ax2] = plt.subplots(nrows=1, ncols=2, figsize=(15, 10), gridspec_kw={'width_ratios': [1, 3]})
 
     healthy_thresholded_otu_cycles = handle_dataset(
         cycles_path=args.healthy_cycles_taxa,
@@ -295,10 +269,10 @@ def main():
         cycles_path=args.uc_cycles_taxa,
     )
 
-    axes[1].axis('off')
-    axes[1]._frameon = False
-    ax1 = axes[1].inset_axes([0, 0, 0.48, 1.0])
-    ax2 = axes[1].inset_axes([0.55, 0, 0.5, 1.0])
+    # axes[1].axis('off')
+    # axes[1]._frameon = False
+    # ax1 = axes[1].inset_axes([0, 0, 0.48, 1.0])
+    # ax2 = axes[1].inset_axes([0.55, 0, 0.5, 1.0])
     plot_unsigned_counts(healthy_thresholded_otu_cycles, uc_thresholded_otu_cycles,
                          ax=ax1,
                          do_log=True)
@@ -309,8 +283,15 @@ def main():
                        do_log=True)
     ax2.set_ylabel("ASV-ASV Log-Count")
 
+    # ================ RENDERING TO OUTPUT FILE =============
+    fig.tight_layout()
+    plt.savefig(out_path, format=FORMAT, dpi=DPI)
+    logging.info("Eigenvalue figure saved to {}.".format(out_path))
 
     # ================== Cluster-Cluster ==================
+    out_path = os.path.join(args.out_dir, "figure6-cluster.{}".format(FORMAT))
+    print("Plotting cluster-cluster interactions.")
+    fig, [ax1, ax2] = plt.subplots(nrows=1, ncols=2, figsize=(15, 10), gridspec_kw={'width_ratios': [1, 3]})
     healthy_clustered_cycles = handle_dataset(
         cycles_path=args.healthy_cycles_clusters,
     )
@@ -318,17 +299,16 @@ def main():
         cycles_path=args.uc_cycles_clusters,
     )
 
-    axes[2].axis('off')
-    axes[2]._frameon = False
-    ax1 = axes[2].inset_axes([0, 0, 0.48, 1.0])
-    ax2 = axes[2].inset_axes([0.55, 0, 0.5, 1.0])
+    # axes[2].axis('off')
+    # axes[2]._frameon = False
+    # ax1 = axes[2].inset_axes([0, 0, 0.48, 1.0])
+    # ax2 = axes[2].inset_axes([0.55, 0, 0.5, 1.0])
     plot_unsigned_counts(healthy_clustered_cycles, uc_clustered_cycles,
                          ax=ax1)
     ax1.set_ylabel("Cluster-Cluster Log-Count")
     plot_signed_counts(healthy_clustered_cycles, uc_clustered_cycles,
                        ax=ax2)
     ax2.set_ylabel("Cluster-Cluster Log-Count")
-
 
     # ================ RENDERING TO OUTPUT FILE =============
     fig.tight_layout()
