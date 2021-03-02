@@ -2,13 +2,15 @@
 __pycache__
 *.pyc
 *output*
+dockers/
+tmp/
+logs/
 *.csv
 .DS_Store
 *.cpython*
 .vscode*
 *.lprof
-dockers/
 *.err
-tmp/
 lsf_files
 .ipynb_checkpoints
+*.ini
