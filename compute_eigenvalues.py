@@ -7,8 +7,6 @@ import mdsine2 as md2
 from mdsine2.names import STRNAMES
 from tqdm import tqdm
 
-import logging
-
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -51,7 +49,7 @@ def compute_eigenvalues(matrices, thresh):
 
         # Throw out samples where eigenvalues blow up
         if np.sum(np.abs(slice_eigs) > thresh) > 0:
-            logging.info("Threshold {th} passed for sample {i}; skipping.".format(
+            logger.info("Threshold {th} passed for sample {i}; skipping.".format(
                 th=thresh,
                 i=i
             ))
@@ -67,7 +65,6 @@ def save_eigenvalues(healthy, uc, out_path):
 
 def main():
     args = parse_args()
-    md2.config.LoggingConfig(level=logging.INFO)
 
     if not os.path.exists(args.out_dir):
         os.makedirs(args.out_dir)
@@ -90,7 +87,7 @@ def main():
     # ===========================================
 
     save_eigenvalues(healthy_eig, uc_eig, outpath)
-    logging.info("Saved eigenvalues to {}.".format(outpath))
+    logger.info("Saved eigenvalues to {}.".format(outpath))
 
 
 if __name__ == "__main__":

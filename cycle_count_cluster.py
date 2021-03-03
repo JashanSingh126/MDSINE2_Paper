@@ -16,8 +16,7 @@ from typing import List
 from tqdm import tqdm
 import mdsine2 as md2
 from mdsine2.names import STRNAMES
-
-import logging
+from mdsine2.logger import logger
 
 
 def parse_args():
@@ -103,7 +102,7 @@ def freq_cycles(interactions: np.ndarray,
     """ A generator over frequent cycles (count at least count_thresh), implemented as a pruned depth-first-search. """
     N = interactions.shape[1]
 
-    logging.info("Processing graph object...")
+    logger.info("Processing graph object...")
     # Instantiate a graph, associate each edge with a set of indices of matrices which contain the edge.
     start = time.time()
     graph = nx.DiGraph()
@@ -111,8 +110,8 @@ def freq_cycles(interactions: np.ndarray,
     for k, interaction_matrix in tqdm(enumerate(interactions), total=num_samples):
         for (i, j) in np.argwhere(~np.isnan(interaction_matrix)):
             add_idx_to_edge(graph, j, i, k, interaction_matrix[i, j])
-    logging.info("Finished graph pre-processing ({:.2f} sec).".format(time.time() - start))
-    logging.info("Performing depth-first exploration.")
+    logger.info("Finished graph pre-processing ({:.2f} sec).".format(time.time() - start))
+    logger.info("Performing depth-first exploration.")
 
     for src in tqdm(range(N)):
         for path, samples, path_signs in freq_paths_rooted(graph, src,
@@ -388,16 +387,15 @@ def output_clusters(clusters, cluster_path):
 
 def main():
     args = parse_args()
-    md2.config.LoggingConfig(level=logging.INFO)
 
-    logging.info("Loading data from {}.".format(args.mcmc_path))
+    logger.info("Loading data from {}.".format(args.mcmc_path))
     interactions, clusters = load_cluster_interactions(args.mcmc_path)
 
     start = time.time()
 
     if not os.path.exists(args.out_dir):
         os.makedirs(args.out_dir)
-    logging.info("Writing outputs to directory {}.".format(args.out_dir))
+    logger.info("Writing outputs to directory {}.".format(args.out_dir))
 
     output_clusters(clusters, os.path.join(args.out_dir, "clusters.txt"))
     cycle_out_path = os.path.join(args.out_dir, "paths.csv")
@@ -419,7 +417,7 @@ def main():
                 path_signs_str
             ), file=outfile)
 
-    logging.info("Computed cycles in {} min.".format(
+    logger.info("Computed cycles in {} min.".format(
         (time.time() - start) / 60
     ))
 

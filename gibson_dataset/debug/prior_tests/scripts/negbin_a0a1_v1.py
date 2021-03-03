@@ -1,4 +1,5 @@
 import mdsine2 as md2
+from mdsine2.logger import logger
 from mdsine2.names import STRNAMES
 import default
 import logging
@@ -18,7 +19,7 @@ def load_settings(cfg: md2.config.MDSINE2ModelConfig, study: md2.Study, interact
 
     # Change the cluster initialization to no clustering if there are less than 30 taxa
     if n_taxa <= 30:
-        logging.info('Since there are fewer than 30 taxa, we set the initialization of the clustering to `no-clusters`')
+        logger.info('Since there are fewer than 30 taxa, we set the initialization of the clustering to `no-clusters`')
         cfg.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value_option'] = 'no-clusters'
 
     return cfg

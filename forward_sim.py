@@ -35,8 +35,8 @@ the flag `--save-intermediate-times`.
 import argparse
 import mdsine2 as md2
 from mdsine2.names import STRNAMES
+from mdsine2.logger import logger
 import os
-import logging
 import numpy as np
 import pickle
 import time
@@ -108,13 +108,13 @@ def forward_simulate(growth, interactions, perturbations,
         
         startidx = np.searchsorted(times, start)
         if startidx == len(times)-1:
-            logging.warning('Start time is the last timepoint - nothing to forward simulate.')
+            logger.warning('Start time is the last timepoint - nothing to forward simulate.')
             return
 
         end = start + n_days
         if end not in times:
             if not save_intermediate_times:
-                logging.warning('We are not saving intermediate times and the end point ({}) is not ' \
+                logger.warning('We are not saving intermediate times and the end point ({}) is not ' \
                     'contained in the subject times ({}). Ending'.format(end, times))
                 return
 
@@ -129,7 +129,7 @@ def forward_simulate(growth, interactions, perturbations,
                         break
                     endidx = tidx+1
                 if endidx-1 == startidx:
-                    logging.info('`n_days` {} is not large enough from start {} in subject {} ({}). ' \
+                    logger.info('`n_days` {} is not large enough from start {} in subject {} ({}). ' \
                         'Ending'.format(n_days, start, subject.name, subject.times))
                     return
                 end = times[endidx-1]
@@ -142,7 +142,7 @@ def forward_simulate(growth, interactions, perturbations,
 
     initial_conditions = M[:, 0]
     if np.any(initial_conditions == 0):
-        logging.info('{} taxa have a 0 abundance at time {}. Setting to {}'.format(
+        logger.info('{} taxa have a 0 abundance at time {}. Setting to {}'.format(
             np.sum(initial_conditions == 0), start, limit_of_detection))
         initial_conditions[initial_conditions == 0] = limit_of_detection
     initial_conditions = initial_conditions.reshape(-1,1)
@@ -186,7 +186,7 @@ def forward_simulate(growth, interactions, perturbations,
     for gibbstep in range(growth.shape[0]):
 
         if gibbstep % 5 == 0 and gibbstep > 0:
-            logging.info('{}/{} - {}'.format(gibbstep,growth.shape[0], 
+            logger.info('{}/{} - {}'.format(gibbstep,growth.shape[0], 
                 time.time()-start_time))
             start_time = time.time()
 
@@ -267,7 +267,6 @@ if __name__ == '__main__':
         'are doing many time look ahead predictions at various timepoints')
     
     args = parser.parse_args()
-    md2.config.LoggingConfig(level=logging.INFO)
     study = md2.Study.load(args.validation)
     save_intermediate_times = bool(args.save_intermediate_times)
     os.makedirs(args.basepath, exist_ok=True)
@@ -291,7 +290,7 @@ if __name__ == '__main__':
     # --------------------------------
     if '.pkl' in args.input:
         # This is the chain
-        logging.info('Input is an MDSINE2.BaseMCMC object')
+        logger.info('Input is an MDSINE2.BaseMCMC object')
         mcmc = md2.BaseMCMC.load(args.input)
 
         growth = mcmc.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk()
@@ -303,7 +302,7 @@ if __name__ == '__main__':
             interactions[:,i,i] = self_interactions[:, i]
 
         if mcmc.graph.perturbations is not None:
-            logging.info('Perturbations exist')
+            logger.info('Perturbations exist')
             perturbations = {}
             for pert in mcmc.graph.perturbations:
                 perturbations[pert.name] = {}
@@ -311,21 +310,21 @@ if __name__ == '__main__':
                 perturbations[pert.name]['value'][np.isnan(perturbations[pert.name]['value'])] = 0
 
         else:
-            logging.info('Did not find perturbations')
+            logger.info('Did not find perturbations')
             perturbations = None
 
     else:
         # This is a folder
-        logging.info('input is a folder')
+        logger.info('input is a folder')
         growth = np.load(os.path.join(args.input, 'growth.npy'))
         interactions = np.load(os.path.join(args.input, 'interactions.npy'))
         if os.path.isfile(os.path.join(args.input, 'perturbations.pkl')):
-            logging.info('perturbations exist')
+            logger.info('perturbations exist')
             with open(os.path.join(args.input, 'perturbations.pkl'), 'rb') as handle:
                 perturbations = pickle.load(handle)
 
         else:
-            logging.info('Did not find perturbations')
+            logger.info('Did not find perturbations')
             perturbations = None
 
     if start_time is None and n_days_total is None and not save_intermediate_times:
@@ -335,14 +334,14 @@ if __name__ == '__main__':
 
     # Run time lookahead
     for subj in study:
-        logging.info('Subject {}'.format(subj.name))
-        logging.info('{}'.format(subj.times))
+        logger.info('Subject {}'.format(subj.name))
+        logger.info('{}'.format(subj.times))
         if start_time is None:
             start = subj.times[0]
         else:
             start = start_time
         if start not in subj.times:
-            logging.warning('Start time {} not contained in subject {} times ({}). skipping'.format(
+            logger.warning('Start time {} not contained in subject {} times ({}). skipping'.format(
                 start, subj.name, subj.times))
             continue
         if n_days_total is None:

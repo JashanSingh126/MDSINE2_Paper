@@ -2,13 +2,10 @@
 '''
 import ete3
 from ete3 import TreeStyle
-import copy
 import mdsine2 as md2
-from Bio import SeqIO
+from mdsine2.logger import logger
 import argparse
 import os
-import treeswift
-import logging
 import pandas as pd
 import numpy as np
 
@@ -33,24 +30,23 @@ if __name__ == "__main__":
 
     basepath = args.basepath
     os.makedirs(basepath, exist_ok=True)
-    md2.LoggingConfig(level=logging.DEBUG)
     study = md2.Study.load(args.study)
 
     # Get the median phylogenetic distance within each family of the reference seqs
     # ------------------------------------------------------------------------------
     import treeswift
     # Make the distance matrix - this is a 2D dict
-    logging.info('Making distance matrix (this may take a minute)')
+    logger.info('Making distance matrix (this may take a minute)')
     tree = treeswift.read_tree_newick(args.tree)
     M = tree.distance_matrix(leaf_labels=True)
     df_distance_matrix = pd.DataFrame(M)
     node_dict = tree.label_to_node()
 
     # Get the families of the reference trees
-    logging.info('Read sequence info file')
+    logger.info('Read sequence info file')
     df_seqs = pd.read_csv(args.seq_info, sep='\t', index_col=0)
 
-    logging.info('get families of reference seqs')
+    logger.info('get families of reference seqs')
     ref_families = {}
     for i, seq in enumerate(df_seqs.index):
         lineage = df_seqs['Lineage'][seq].split('; ')
@@ -69,7 +65,7 @@ if __name__ == "__main__":
     not_found = set([])
     for i, taxon in enumerate(study.taxa):
         if i % 100 == 0:
-            logging.info('{}/{} - {}'.format(i,len(study.taxa), np.mean(percents)))
+            logger.info('{}/{} - {}'.format(i,len(study.taxa), np.mean(percents)))
             percents = []
 
         if taxon.tax_is_defined('family'):
@@ -78,7 +74,7 @@ if __name__ == "__main__":
                 d[family] = []
 
             if family not in ref_families:
-                logging.debug('{} NOT IN REFERENCE TREE'.format(family))
+                logger.debug('{} NOT IN REFERENCE TREE'.format(family))
                 continue
             refs = ref_families[family]
 
@@ -90,7 +86,7 @@ if __name__ == "__main__":
                     aaa += 1
                 except Exception as e:
                     not_found.add(ref)
-                    # logging.debug('no worked - {}, {}'.format(taxon.name, ref))
+                    # logger.debug('no worked - {}, {}'.format(taxon.name, ref))
                     continue
             percents.append(aaa/len(refs))
         else:
@@ -150,8 +146,8 @@ if __name__ == "__main__":
     for iii, taxon in enumerate(study.taxa):
         if iii >= top:
             break
-        logging.info('\n\nLooking at {}, {}'.format(i,taxon))
-        logging.info('-------------------------')
+        logger.info('\n\nLooking at {}, {}'.format(i,taxon))
+        logger.info('-------------------------')
         
         f.write('{}\n'.format(taxon.name))
         tree = ete3.Tree(args.tree)

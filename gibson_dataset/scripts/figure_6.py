@@ -10,10 +10,8 @@ import matplotlib.pyplot as plt
 import argparse
 from collections import defaultdict
 
-import logging
-import mdsine2 as md2
-
 import pickle
+from mdsine2.logger import logger
 
 import pandas as pd
 import seaborn as sns
@@ -228,7 +226,6 @@ def generate_eigenvalue_figure(fig, ax1, ax2, cbar_ax, eig_path):
 
 def main():
     args = parse_args()
-    md2.config.LoggingConfig(level=logging.INFO)
     FORMAT = args.format
     DPI = args.dpi
 
@@ -255,7 +252,7 @@ def main():
     # ================ RENDERING TO OUTPUT FILE =============
     fig.tight_layout()
     plt.savefig(out_path, format=FORMAT, dpi=DPI)
-    logging.info("Eigenvalue figure saved to {}.".format(out_path))
+    logger.info("Eigenvalue figure saved to {}.".format(out_path))
 
     # ================= OTU-OTU interactions ==================
     out_path = os.path.join(args.out_dir, "figure6-otu.{}".format(FORMAT))
@@ -286,7 +283,7 @@ def main():
     # ================ RENDERING TO OUTPUT FILE =============
     fig.tight_layout()
     plt.savefig(out_path, format=FORMAT, dpi=DPI)
-    logging.info("Eigenvalue figure saved to {}.".format(out_path))
+    logger.info("Eigenvalue figure saved to {}.".format(out_path))
 
     # ================== Cluster-Cluster ==================
     out_path = os.path.join(args.out_dir, "figure6-cluster.{}".format(FORMAT))
@@ -313,7 +310,7 @@ def main():
     # ================ RENDERING TO OUTPUT FILE =============
     fig.tight_layout()
     plt.savefig(out_path, format=FORMAT, dpi=DPI)
-    logging.info("Figure saved to {}.".format(out_path))
+    logger.info("Figure saved to {}.".format(out_path))
 
 
 if __name__ == "__main__":

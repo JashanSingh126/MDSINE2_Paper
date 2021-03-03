@@ -5,7 +5,6 @@ dataset
 '''
 import mdsine2 as md2
 import argparse
-import logging
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage=__doc__)
@@ -16,7 +15,6 @@ if __name__ == '__main__':
     parser.add_argument('--output-basepath', '-o', type=str, dest='path',
         help='Location to save the output')
     args = parser.parse_args()
-    md2.config.LoggingConfig(level=logging.INFO)
 
     replicates = md2.Study.load(args.replicate)
     other = md2.Study.load(args.other)

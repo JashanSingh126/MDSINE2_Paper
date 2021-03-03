@@ -7,9 +7,9 @@ MDSINE2 version: 4.0.6
 '''
 import pandas as pd
 import mdsine2 as md2
+from mdsine2.logger import logger
 import os
 import argparse
-import logging
 
 def parse_rdp(fname, confidence_threshold):
     '''Parse the taxonomic assignment document from RDP with a confidence
@@ -82,13 +82,12 @@ if __name__ == '__main__':
         help='This is where you want to save the parsed dataset.')
     args = parser.parse_args()
 
-    md2.config.LoggingConfig(level=logging.INFO)
 
-    logging.info('Parsing RDP')
+    logger.info('Parsing RDP')
     df = parse_rdp(fname=args.rdp_table, confidence_threshold=args.confidence_threshold)
 
     for dset in ['healthy', 'uc', 'replicates', 'inoculum']:
-        logging.info('Replacing {}'.format(dset))
+        logger.info('Replacing {}'.format(dset))
         study_fname = os.path.join(args.basepath, 'gibson_{dset}_agg.pkl'.format(dset=dset))
         study = md2.Study.load(study_fname)
 

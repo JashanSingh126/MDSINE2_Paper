@@ -64,10 +64,8 @@ python keystoneness.py \
 import mdsine2 as md2
 import argparse
 import os
-import logging
 
 if __name__ == '__main__':
-    md2.LoggingConfig(level=logging.INFO)
 
     parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--chain', '-c', type=str, dest='chain',
@@ -101,7 +99,6 @@ if __name__ == '__main__':
         help='This is the basepath to save the lsf files', default='lsf_files/')
     args = parser.parse_args()
 
-    md2.config.LoggingConfig(level=logging.INFO)
     curr_path_table = args.leave_out_table
     f = open(curr_path_table, 'r')
     tbl = f.read()

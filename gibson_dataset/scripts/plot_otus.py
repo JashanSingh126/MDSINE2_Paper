@@ -2,10 +2,10 @@
 '''
 
 import mdsine2 as md2
+from mdsine2.logger import logger
 import matplotlib.pyplot as plt
 import os
 import argparse
-import logging
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(usage=__doc__)
@@ -23,8 +23,6 @@ if __name__ == "__main__":
     basepath = os.path.join(basepath, study.name)
     os.makedirs(basepath, exist_ok=True)
 
-    md2.LoggingConfig(level=logging.INFO)
-
     if args.top is None:
         top = len(study.taxa)
     else:
@@ -33,13 +31,13 @@ if __name__ == "__main__":
     for subj in study:
         subjpath = os.path.join(basepath, 'Subject {}'.format(subj.name))
         os.makedirs(subjpath, exist_ok=True)
-        logging.info('Subject {}'.format(subj.name))
+        logger.info('Subject {}'.format(subj.name))
         for iii, taxon in enumerate(study.taxa):
             if not md2.isotu(taxon):
                 continue
             if iii >= top:
                 break
-            logging.info('taxon {}/{}'.format(taxon.idx, len(study.taxa)))
+            logger.info('taxon {}/{}'.format(taxon.idx, len(study.taxa)))
             fig = plt.figure(figsize=(10, 5))
             ax = fig.add_subplot(111)
             ax = md2.visualization.aggregate_taxa_abundances(subj=subj, agg=taxon, dtype='rel', ax=ax)

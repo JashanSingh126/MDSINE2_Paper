@@ -18,7 +18,7 @@ arguments `--interaction-ind-prior` and `perturbation-ind-prior`.
 '''
 import argparse
 import mdsine2 as md2
-import logging
+from mdsine2.logger import logger
 import os
 import time
 from mdsine2.names import STRNAMES
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # 1) load dataset
-    logging.info('Loading dataset {}'.format(args.input))
+    logger.info('Loading dataset {}'.format(args.input))
     study = md2.Study.load(args.input)
     if args.rename_study is not None:
         if args.rename_study.lower() != 'none':
@@ -95,7 +95,6 @@ if __name__ == '__main__':
     os.makedirs(args.basepath, exist_ok=True)
     basepath = os.path.join(args.basepath, study.name)
     os.makedirs(basepath, exist_ok=True)
-    md2.config.LoggingConfig(level=logging.INFO, basepath=basepath)
 
     # Load the negative binomial parameters
     if len(args.negbin) == 1:
@@ -110,7 +109,7 @@ if __name__ == '__main__':
         raise ValueError('There must be only 1 or two arguments. use `python ' \
             'step_5_infer_mdsine2.py --help` for options')
 
-    logging.info('Setting a0 = {:.4E}, a1 = {:.4E}'.format(a0,a1))
+    logger.info('Setting a0 = {:.4E}, a1 = {:.4E}'.format(a0,a1))
 
     # 3) Begin inference
     params = md2.config.MDSINE2ModelConfig(
@@ -146,7 +145,7 @@ if __name__ == '__main__':
 
     # Change the cluster initialization to no clustering if there are less than 30 clusters
     if len(study.taxa) <= 30:
-        logging.info('Since there is less than 30 taxa, we set the initialization of the clustering to `no-clusters`')
+        logger.info('Since there is less than 30 taxa, we set the initialization of the clustering to `no-clusters`')
         params.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value_option'] = 'no-clusters'
 
     mcmc = md2.initialize_graph(params=params, graph_name=study.name, subjset=study)

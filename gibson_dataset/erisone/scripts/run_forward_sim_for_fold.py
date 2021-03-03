@@ -61,14 +61,12 @@ python forward_sim.py \
 '''
 
 import mdsine2 as md2
+from mdsine2.logger import logger
 import argparse
 import os
 import numpy as np
-import logging
 
 if __name__ == '__main__':
-    md2.LoggingConfig(level=logging.INFO)
-
     parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--chain', '-c', type=str, dest='chain',
         help='This is the path of the chain for inference or the folder that contains ' \
@@ -107,7 +105,7 @@ if __name__ == '__main__':
     basepath = args.basepath
 
     if args.validation_curr_path is None:
-        logging.info('`validation_curr_path` not passed in. St to the same as validation')
+        logger.info('`validation_curr_path` not passed in. St to the same as validation')
         args.validation_curr_path = args.validation
 
     # Get all the union timepoints within this study object

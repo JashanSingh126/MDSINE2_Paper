@@ -62,7 +62,6 @@ Taxonomy
 '''
 import argparse
 import mdsine2 as md2
-import logging
 
 if __name__ == '__main__':
 
@@ -86,7 +85,6 @@ if __name__ == '__main__':
         help='This is where you want to save the parsed dataset')
     args = parser.parse_args()
 
-    md2.config.LoggingConfig(level=logging.INFO)
     study = md2.dataset.parse(name=args.name, metadata=args.metadata, taxonomy=args.taxonomy,
         reads=args.reads, qpcr=args.qpcr, perturbations=args.perturbations, sep=args.sep)
     study.save(args.outfile)

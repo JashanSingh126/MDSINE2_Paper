@@ -2,10 +2,10 @@
 '''
 
 import mdsine2 as md2
+from mdsine2.logger import logger
 import argparse
 import os
 import numpy as np
-import logging
 
 script_format = 'python ../forward_sim.py --input {chain} ' \
     '--validation {validation} ' \
@@ -36,7 +36,6 @@ if __name__ == '__main__':
     # Make the releveant folders and get items
     basepath = args.basepath
     os.makedirs(basepath, exist_ok=True)
-    md2.LoggingConfig(level=logging.INFO)
 
     # Get all the union timepoints within this study object
     study = md2.Study.load(args.validation)
@@ -50,7 +49,7 @@ if __name__ == '__main__':
         chain=args.chain, validation=args.validation, 
         sim_dt=args.simulation_dt, start=None, n_days=None,
         basepath=basepath, save_inter_times=0)
-    logging.info(command)
+    logger.info(command)
     os.system(command)
 
     # Do time lookahead (do not include last time point)
@@ -59,7 +58,7 @@ if __name__ == '__main__':
             chain=args.chain, validation=args.validation, 
             sim_dt=args.simulation_dt, start=start, n_days=args.n_days,
             basepath=basepath, save_inter_times=1)
-        logging.info(command)
+        logger.info(command)
         os.system(command)
 
     

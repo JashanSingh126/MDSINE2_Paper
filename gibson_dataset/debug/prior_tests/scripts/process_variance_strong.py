@@ -18,7 +18,7 @@ def load_settings(cfg: md2.config.MDSINE2ModelConfig, study: md2.Study, interact
 
     # Change the cluster initialization to no clustering if there are less than 30 taxa
     if n_taxa <= 30:
-        logging.info('Since there are fewer than 30 taxa, we set the initialization of the clustering to `no-clusters`')
+        logger.info('Since there are fewer than 30 taxa, we set the initialization of the clustering to `no-clusters`')
         cfg.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value_option'] = 'no-clusters'
 
     # ====== Initializations of inference variables ======

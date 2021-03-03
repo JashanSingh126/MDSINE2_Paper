@@ -24,13 +24,11 @@ can be found in `paper_files/preprocessing/prefiltered_asvs.fa`.
 
 '''
 import argparse
-import pandas as pd
 from Bio import SeqIO, SeqRecord, Seq
 import numpy as np
-import logging
 import mdsine2 as md2
+from mdsine2.logger import logger
 import os
-import sys
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage=__doc__)
@@ -52,7 +50,6 @@ if __name__ == '__main__':
         help='Maximum number of species assignments to have in the name')
 
     args = parser.parse_args()
-    md2.config.LoggingConfig(level=logging.DEBUG)
     os.makedirs(args.basepath, exist_ok=True)
 
     for dset in ['healthy', 'uc', 'replicates', 'inoculum']:
@@ -61,7 +58,7 @@ if __name__ == '__main__':
             study = md2.dataset.load_gibson(dset=dset, as_df=False, species_assignment='both',
                 max_n_species=args.max_n_species)
         except:
-            logging.warning('Trouble connect to the internet, loading them locally')
+            logger.warning('Trouble connect to the internet, loading them locally')
             study = md2.dataset.load_gibson(dset=dset, as_df=False, species_assignment='both', load_local='../datasets/gibson',
                 max_n_species=args.max_n_species)
 
@@ -69,14 +66,14 @@ if __name__ == '__main__':
         #    Remove all taxa that are not contained in that file
         #    Remove the gaps
         if args.sequences is not None:
-            logging.info('Replacing sequences with the file {}'.format(args.sequences))
+            logger.info('Replacing sequences with the file {}'.format(args.sequences))
             seqs = SeqIO.to_dict(SeqIO.parse(args.sequences, format='fasta'))
             to_delete = []
             for taxon in study.taxa:
                 if taxon.name not in seqs:
                     to_delete.append(taxon.name)
             for name in to_delete:
-                logging.info('Deleting {} because it was not in {}'.format(
+                logger.info('Deleting {} because it was not in {}'.format(
                     name, args.sequences))
             study.pop_taxa(to_delete)
 
@@ -88,7 +85,7 @@ if __name__ == '__main__':
             gaps = M == '-'
             n_gaps = np.sum(gaps, axis=0)
             idxs = np.where(n_gaps == 0)[0]
-            logging.info('There are {} positions where there are no gaps out of {}. Setting those ' \
+            logger.info('There are {} positions where there are no gaps out of {}. Setting those ' \
                 'to the sequences'.format(len(idxs), M.shape[1]))
             M = M[:, idxs]
             for i,taxon in enumerate(study.taxa):
@@ -96,7 +93,7 @@ if __name__ == '__main__':
 
         # Aggregate with specified hamming distance
         if args.hamming_distance is not None:
-            logging.info('Aggregating taxa with a hamming distance of {}'.format(args.hamming_distance))
+            logger.info('Aggregating taxa with a hamming distance of {}'.format(args.hamming_distance))
             study = md2.aggregate_items(subjset=study, hamming_dist=args.hamming_distance)
 
             # Get the maximum distance of all the OTUs
@@ -112,7 +109,7 @@ if __name__ == '__main__':
                             d = md2.diversity.beta.hamming(aseq, bseq)
                             if d > m:
                                 m = d
-            logging.info('Maximum distance within an OTU: {}'.format(m))
+            logger.info('Maximum distance within an OTU: {}'.format(m))
 
         # 3) compute consensus sequences
         if args.sequences is not None:
@@ -121,7 +118,7 @@ if __name__ == '__main__':
                 orig = md2.dataset.load_gibson(dset=dset, as_df=False, species_assignment='both',
                     max_n_species=args.max_n_species)
             except:
-                logging.warning('Trouble connect to the internet, loading them locally')
+                logger.warning('Trouble connect to the internet, loading them locally')
                 orig = md2.dataset.load_gibson(dset=dset, as_df=False, species_assignment='both', load_local='../datasets/gibson',
                     max_n_species=args.max_n_species)
 

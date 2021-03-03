@@ -8,8 +8,8 @@ This script runs inference for each cross validation for a single fold. Specify 
 fold by saying which subject (by name) to leave out
 '''
 import mdsine2 as md2
+from mdsine2.logger import logger
 import argparse
-import logging
 import os
 import pathlib
 import sys
@@ -58,17 +58,16 @@ if __name__ == '__main__':
         help='Prior of the indicator of the perturbations')
     
     args = parser.parse_args()
-    md2.config.LoggingConfig(level=logging.INFO)
 
     input_basepath = args.input_basepath
     os.makedirs(input_basepath, exist_ok=True)
     os.makedirs(args.output_basepath, exist_ok=True)
 
-    logging.info('Loading dataset {}'.format(args.dataset))
+    logger.info('Loading dataset {}'.format(args.dataset))
     study_master = md2.Study.load(args.dataset)
     subj = study_master[args.leave_out_subj]
 
-    logging.info('Leave out {}'.format(subj.name))
+    logger.info('Leave out {}'.format(subj.name))
     study = md2.Study.load(args.dataset)
     val_study = study.pop_subject(subj.name)
     study.name = study.name + '-cv{}'.format(subj.name)
@@ -82,7 +81,7 @@ if __name__ == '__main__':
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'step_5_infer_mdsine2.py')
     path = '"' + path + '"'
 
-    logging.info('Run inference')
+    logger.info('Run inference')
     command = command_fmt.format(
         script=path,
         dset=study_fname, negbin=args.negbin, seed=args.seed, 
@@ -90,5 +89,5 @@ if __name__ == '__main__':
         basepath=args.output_basepath, mp=args.mp,
         interaction_prior=args.interaction_prior,
         perturbation_prior=args.perturbation_prior)
-    logging.info(command)
+    logger.info(command)
     os.system(command)

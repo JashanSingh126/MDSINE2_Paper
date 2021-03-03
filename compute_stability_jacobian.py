@@ -16,8 +16,8 @@ MDSINE2 version: 4.0.6
 import mdsine2 as md2
 import numpy as np
 import argparse
-import logging
 from mdsine2.names import STRNAMES
+from mdsine2.logger import logger
 import time
 
 if __name__ == '__main__':
@@ -30,7 +30,6 @@ if __name__ == '__main__':
         help='Section to plot the variables of. Options: (`posterior`, ' \
             '`burnin`, `entire`)', default='posterior')
     args = parser.parse_args()
-    md2.config.LoggingConfig(level=logging.INFO)
 
     mcmc = md2.BaseMCMC.load(args.chain)
     section = args.section
@@ -65,7 +64,7 @@ if __name__ == '__main__':
     start_time = time.time()
     for gibb in range(interactions.shape[0]):
         if gibb % 5 == 0:
-            logging.info('{}/{} - {}'.format(gibb, 
+            logger.info('{}/{} - {}'.format(gibb, 
                 interactions.shape[0], time.time()-start_time))
             start_time = time.time()
         

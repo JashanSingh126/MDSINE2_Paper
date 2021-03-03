@@ -6,8 +6,8 @@
 import os
 import mdsine2 as md2
 from mdsine2.names import STRNAMES
+from mdsine2.logger import logger
 from base.infer_mdsine2 import create_config, run_mdsine
-import logging
 import argparse
 
 
@@ -73,7 +73,7 @@ def load_settings(cfg: md2.config.MDSINE2ModelConfig, study: md2.Study, interact
 
     # Change the cluster initialization to no clustering if there are less than 30 taxa
     if n_taxa <= 30:
-        logging.info('Since there are fewer than 30 taxa, we set the initialization of the clustering to `no-clusters`')
+        logger.info('Since there are fewer than 30 taxa, we set the initialization of the clustering to `no-clusters`')
         cfg.INITIALIZATION_KWARGS[STRNAMES.CLUSTERING]['value_option'] = 'no-clusters'
 
     return cfg
@@ -83,7 +83,7 @@ def main():
     args = parse_args()
 
     # Load dataset
-    logging.info('Loading dataset {}'.format(args.study_path))
+    logger.info('Loading dataset {}'.format(args.study_path))
     study = md2.Study.load(args.study_path)
     md2.seed(args.seed)
 
@@ -94,7 +94,6 @@ def main():
     # Load the model parameters
     output_basepath = os.path.join(args.basepath, study.name)
     os.makedirs(output_basepath, exist_ok=True)
-    md2.config.LoggingConfig(level=logging.INFO, basepath=output_basepath)
     cfg = create_config(output_basepath,
                         negbin_a1=a1,  # to set in load_settings
                         negbin_a0=a0,  # to set in load_settings

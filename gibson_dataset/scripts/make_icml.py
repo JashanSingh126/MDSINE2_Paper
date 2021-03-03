@@ -5,16 +5,12 @@ import mdsine2 as md2
 import argparse
 import os
 import numpy as np
-import logging
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(usage=__doc__)
     parser.add_argument('--output-basepath', '-o', type=str, dest='basepath',
         help='Where to save the output')
     args = parser.parse_args()
-
-    md2.LoggingConfig(level=logging.INFO)
-
 
     synth = md2.synthetic.Synthetic(name='synth', seed=5)
     synth.icml_dynamics()
@@ -30,11 +26,11 @@ if __name__ == "__main__":
     try:
         os.makedirs(args.basepath, exist_ok=True)
     except FileExistsError:
-        logging.info('File already exists, no nothing')
+        logger.info('File already exists, no nothing')
 
     try:
         study.save(args.basepath)
     except FileExistsError:
-        logging.warning('Overwriting')
+        logger.warning('Overwriting')
         os.remove(args.basepath)
         study.save(args.basepath)

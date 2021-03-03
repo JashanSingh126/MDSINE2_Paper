@@ -1,10 +1,7 @@
 import mdsine2 as md2
 from mdsine2.names import STRNAMES
-import logging
 import numpy as np
 import matplotlib.pyplot as plt
-
-md2.LoggingConfig(level=logging.INFO)
 
 # Make the dynamics
 syn = md2.Synthetic(name='icml', seed=0)

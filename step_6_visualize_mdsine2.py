@@ -11,7 +11,7 @@ Implemented for:
 '''
 import mdsine2 as md2
 from mdsine2.names import STRNAMES
-import logging
+from mdsine2.logger import logger
 import os
 import shutil
 import argparse
@@ -30,7 +30,6 @@ if __name__ == '__main__':
     parser.add_argument('--fixed-clustering', type=int, dest='fixed_clustering',
         help='If 1, plot the posterior with fixed clustering options.')
     args = parser.parse_args()
-    md2.config.LoggingConfig()
     fixed_clustering = args.fixed_clustering == 1
 
     mcmc = md2.BaseMCMC.load(args.chain)
@@ -40,14 +39,14 @@ if __name__ == '__main__':
 
     # Plot Process variance
     # ---------------------
-    logging.info('Process variance')
+    logger.info('Process variance')
     mcmc.graph[STRNAMES.PROCESSVAR].visualize(
         path=os.path.join(basepath, 'processvar.pdf'), section=section)
 
 
     # Plot growth
     # -----------
-    logging.info('Plot growth')
+    logger.info('Plot growth')
     growthpath = os.path.join(basepath, 'growth')
     os.makedirs(growthpath, exist_ok=True)
     dfvalues = mcmc.graph[STRNAMES.GROWTH_VALUE].visualize(basepath=growthpath, 
@@ -62,7 +61,7 @@ if __name__ == '__main__':
 
     # Plot self-interactions
     # ----------------------
-    logging.info('Plot self-interactions')
+    logger.info('Plot self-interactions')
     sipath = os.path.join(basepath, 'self_interactions')
     os.makedirs(sipath, exist_ok=True)
     dfvalues = mcmc.graph[STRNAMES.SELF_INTERACTION_VALUE].visualize(basepath=sipath, 
@@ -77,7 +76,7 @@ if __name__ == '__main__':
 
     # Plot clustering
     # ---------------
-    logging.info('Plot clustering')
+    logger.info('Plot clustering')
     if fixed_clustering:
         f = open(os.path.join(basepath, 'clustering.txt'), 'w')
         f.write('Cluster assignments\n')
@@ -102,7 +101,7 @@ if __name__ == '__main__':
 
     # Plot interactions
     # -----------------
-    logging.info('Plot interactions')
+    logger.info('Plot interactions')
     interactionpath = os.path.join(basepath, 'interactions')
     os.makedirs(interactionpath, exist_ok=True)
     f = open(os.path.join(interactionpath, 'overview.txt'), 'w')
@@ -120,9 +119,9 @@ if __name__ == '__main__':
     # Plot Perturbations
     # ------------------
     if mcmc.graph.data.subjects.perturbations is not None:
-        logging.info('Plot perturbations')
+        logger.info('Plot perturbations')
         for pidx, perturbation in enumerate(mcmc.graph.data.subjects.perturbations):
-            logging.info('Plot {}'.format(perturbation.name))
+            logger.info('Plot {}'.format(perturbation.name))
             perturbationpath = os.path.join(basepath, perturbation.name)
             os.makedirs(perturbationpath, exist_ok=True)
             
@@ -146,7 +145,7 @@ if __name__ == '__main__':
 
     # Plot Filtering
     # --------------
-    logging.info('Plot filtering')
+    logger.info('Plot filtering')
     filteringpath = os.path.join(basepath, 'filtering')
     os.makedirs(filteringpath, exist_ok=True)
     mcmc.graph[STRNAMES.FILTERING].visualize(basepath=filteringpath, 

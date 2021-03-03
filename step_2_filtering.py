@@ -21,7 +21,6 @@ Methodology
 '''
 import argparse
 import mdsine2 as md2
-import logging
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage=__doc__)
@@ -45,7 +44,6 @@ if __name__ == '__main__':
         default=None)
 
     args = parser.parse_args()
-    md2.config.LoggingConfig(level=logging.INFO)
 
     study = md2.Study.load(args.dataset)
     study = md2.consistency_filtering(subjset=study,

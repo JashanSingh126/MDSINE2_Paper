@@ -5,10 +5,10 @@ about permission in HDF5.
 
 import mdsine2 as md2
 from mdsine2.names import STRNAMES
+from mdsine2.logger import logger
 import numpy as np
 import argparse
 import os
-import logging
 import pickle
 
 if __name__ == '__main__':
@@ -24,7 +24,6 @@ if __name__ == '__main__':
         help='This is the folder that we should save the numpy arrays')
     args = parser.parse_args()
 
-    md2.LoggingConfig(level=logging.INFO)
     basepath = args.basepath
     section = args.section
     os.makedirs(basepath, exist_ok=True)
@@ -33,13 +32,13 @@ if __name__ == '__main__':
     mcmc = md2.BaseMCMC.load(args.chain)
 
     # growth
-    logging.info('Loading growth')
+    logger.info('Loading growth')
     growth_trace = mcmc.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk(section=section)
     np.save(os.path.join(basepath, 'growth.npy'), growth_trace)
     growth_trace = None
 
     # interactions
-    logging.info('loading interactions')
+    logger.info('loading interactions')
     si_trace = -np.absolute(mcmc.graph[STRNAMES.SELF_INTERACTION_VALUE].get_trace_from_disk(section=section))
     interactions_trace = mcmc.graph[STRNAMES.INTERACTIONS_OBJ].get_trace_from_disk(section=section)
 
@@ -53,11 +52,11 @@ if __name__ == '__main__':
 
     # perturbations
     if mcmc.graph.perturbations is not None:
-        logging.info('Loading perturbations')
+        logger.info('Loading perturbations')
 
         perts = {}
         for pert in mcmc.graph.perturbations:
-            logging.info('Perturbation {}'.format(pert.name))
+            logger.info('Perturbation {}'.format(pert.name))
             perts[pert.name] = {}
             perts[pert.name]['value'] = pert.get_trace_from_disk()
             perts[pert.name]['value'][np.isnan(perts[pert.name]['value'])] = 0
@@ -67,4 +66,4 @@ if __name__ == '__main__':
             pickle.dump(perts, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     else:
-        logging.info('There are no perturbations')
+        logger.info('There are no perturbations')

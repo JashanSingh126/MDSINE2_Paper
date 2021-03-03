@@ -7,7 +7,6 @@ MDSINE2 version: 4.0.6
 '''
 import argparse
 import mdsine2 as md2
-import logging
 import os
 import matplotlib.pyplot as plt
 from mdsine2.names import STRNAMES
@@ -20,7 +19,6 @@ if __name__ == '__main__':
     parser.add_argument('--output-basepath', '-o', type=str, dest='basepath',
         help='This is the folder to save the output.')
     args = parser.parse_args()
-    md2.config.LoggingConfig(level=logging.INFO)
 
     basepath = args.basepath
     os.makedirs(basepath, exist_ok=True)

@@ -3,10 +3,10 @@ then with a perturbation again
 
 '''
 import numpy as np
-import logging
 import os
 import mdsine2 as md2
 from mdsine2.names import STRNAMES
+from mdsine2.logger import logger
 import argparse
 import pickle
 import time
@@ -49,7 +49,7 @@ def _forward_sim(growth, interactions, perturbation, initial_conditions, dt, sim
     pred_matrix = np.zeros(shape=(growth.shape[0], growth.shape[1], n_steps))
     for gibb in range(growth.shape[0]):
         if gibb % 5 == 0 and gibb > 0:
-            logging.info('{}/{} - {}'.format(gibb,growth.shape[0], time.time()-start_time))
+            logger.info('{}/{} - {}'.format(gibb,growth.shape[0], time.time()-start_time))
             start_time = time.time()
 
         dyn.growth = growth[gibb]
@@ -107,7 +107,6 @@ if __name__ == "__main__":
              'from the steady state', dest='last_unstable_point')
 
     args = parser.parse_args()
-    md2.config.LoggingConfig(level=logging.INFO)
     study = md2.Study.load(args.study)
     basepath = os.path.join(args.basepath, study.name)
     os.makedirs(basepath, exist_ok=True)
@@ -141,14 +140,14 @@ if __name__ == "__main__":
     if leave_out_index is None or leave_out_index == 'none':
         raise ValueError('Must provide an index')
     elif leave_out_index == 'all':
-        logging.info('"all" provided as index. Iterating over each index')
+        logger.info('"all" provided as index. Iterating over each index')
         idxs = np.arange(len(lines))
         idxs = idxs.tolist()
     else:
         try:
             idxs = int(leave_out_index)
         except:
-            logging.critical('--leave-out-index ({}) not recognized as an index'.format(
+            logger.critical('--leave-out-index ({}) not recognized as an index'.format(
                 leave_out_index))
             raise
         idxs = [idxs]
@@ -161,12 +160,12 @@ if __name__ == "__main__":
     # Forward simulate if necessary
     # -----------------------------
     if args.forward_simulate == 1:
-        logging.info('Forward simulating')
+        logger.info('Forward simulating')
         # Get the traces of the parameters
         # --------------------------------
         if '.pkl' in args.input:
             # This is the chain
-            logging.info('Input is an MDSINE2.BaseMCMC object')
+            logger.info('Input is an MDSINE2.BaseMCMC object')
             mcmc = md2.BaseMCMC.load(args.input)
 
             # Check if the respective perturbation is there and load it
@@ -193,7 +192,7 @@ if __name__ == "__main__":
 
         else:
             # This is a folder
-            logging.info('input is a folder')
+            logger.info('input is a folder')
 
             # Check if the respective perturbation is there and load it
             path = os.path.join(args.input, 'perturbations.pkl')
@@ -214,7 +213,7 @@ if __name__ == "__main__":
         # Forward simulate
         for idx in idxs:
             oidxs = [int(ele) for ele in lines[idx].split(args.sep)]
-            logging.info('indexing out {}'.format(oidxs))
+            logger.info('indexing out {}'.format(oidxs))
 
             mask = np.ones(len(initial_conditions_master), dtype=bool)
             mask[oidxs] = False
@@ -237,7 +236,7 @@ if __name__ == "__main__":
 
     
     if args.compute_statistics:
-        logging.info('Make the table')
+        logger.info('Make the table')
         re_find = re.compile(r'^study(.*)-lo(.*)-forward-sims.npy$')
 
         # Get all of the files
@@ -248,10 +247,10 @@ if __name__ == "__main__":
             try:
                 studyname, leaveout = re_find.findall(fname)[0]
             except:
-                logging.warning('{} not recognized as a pattern. skipping'.format(fname))
+                logger.warning('{} not recognized as a pattern. skipping'.format(fname))
                 continue
             if studyname != study.name:
-                logging.warning('{} not the same study as input {}. skipping'.format(
+                logger.warning('{} not the same study as input {}. skipping'.format(
                     studyname, study.name))
                 continue
             leaveout = int(leaveout)

@@ -7,7 +7,6 @@ MDSINE2 version: 4.0.6
 '''
 import mdsine2 as md2
 import argparse
-import logging
 import os
 
 if __name__ == '__main__':
@@ -35,7 +34,6 @@ if __name__ == '__main__':
     os.makedirs(args.basepath, exist_ok=True)
     basepath = os.path.join(args.basepath, study.name)
     os.makedirs(basepath, exist_ok=True)
-    md2.config.LoggingConfig(level=logging.INFO, basepath=basepath)
 
     # 1) Load the parameters    
     params = md2.config.NegBinConfig(seed=args.seed, burnin=args.burnin, n_samples=args.n_samples,

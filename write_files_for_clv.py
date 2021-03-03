@@ -14,7 +14,6 @@ if __name__ == '__main__':
     parser.add_argument('--basepath', '-o', type=str, dest='basepath',
         help='This is the folder you want to save the documents')
     args = parser.parse_args()
-    md2.config.LoggingConfig()
 
     os.makedirs(args.basepath, exist_ok=True)
     study = md2.Study.load(args.dataset)
@@ -65,5 +64,3 @@ if __name__ == '__main__':
     df = pd.DataFrame(data, columns=columns)
     df.to_csv(os.path.join(args.basepath, 'biomass.txt'), 
         sep='\t', index=False, header=True)
-
-    

@@ -54,9 +54,9 @@ To forward simulate, set `--forward-sim 1`. To not forward simulate, set `--forw
 To make the table, set `--make-table 1`. To not make the table, set `--make-table 0`.
 '''
 import mdsine2 as md2
+from mdsine2.logger import logger
 from mdsine2.names import STRNAMES
 import argparse
-import logging
 import numpy as np
 import os
 import time
@@ -77,7 +77,7 @@ def _forward_sim(growth, interactions, initial_conditions, dt, sim_max, n_days):
     pred_matrix = np.zeros(shape=(growth.shape[0], growth.shape[1], len(times)))
     for gibb in range(growth.shape[0]):
         if gibb % 5 == 0 and gibb > 0:
-            logging.info('{}/{} - {}'.format(gibb,growth.shape[0], 
+            logger.info('{}/{} - {}'.format(gibb,growth.shape[0], 
                 time.time()-start_time))
             start_time = time.time()
         dyn.growth = growth[gibb]
@@ -149,7 +149,6 @@ if __name__ == '__main__':
         help='Where to save the output')
     args = parser.parse_args()
 
-    md2.config.LoggingConfig(level=logging.INFO)
     study = md2.Study.load(args.study)
     basepath = os.path.join(args.basepath, study.name)
     os.makedirs(basepath, exist_ok=True)
@@ -181,17 +180,17 @@ if __name__ == '__main__':
     if md2.isstr(leave_out_index):
         leave_out_index = leave_out_index.lower()
     if leave_out_index is None or leave_out_index == 'none':
-        logging.info('No index provided, not indexing out any taxon')
+        logger.info('No index provided, not indexing out any taxon')
         idxs = [None]
     elif leave_out_index == 'all':
-        logging.info('"all" provided as index. Iterating over each index')
+        logger.info('"all" provided as index. Iterating over each index')
         idxs = np.arange(len(lines))
         idxs = [None] + idxs.tolist()
     else:
         try:
             idxs = int(leave_out_index)
         except:
-            logging.critical('--leave-out-index ({}) not recognized as an index'.format(
+            logger.critical('--leave-out-index ({}) not recognized as an index'.format(
                 leave_out_index))
             raise
         idxs = [idxs]
@@ -202,12 +201,12 @@ if __name__ == '__main__':
                 raise ValueError('index {} is out range ({} total)'.format(idx, len(lines)))
 
     if args.forward_simulate == 1:
-        logging.info('Forward simulating')
+        logger.info('Forward simulating')
         # Get the traces of the parameters
         # --------------------------------
         if '.pkl' in args.input:
             # This is the chain
-            logging.info('Input is an MDSINE2.BaseMCMC object')
+            logger.info('Input is an MDSINE2.BaseMCMC object')
             mcmc = md2.BaseMCMC.load(args.input)
 
             growth = mcmc.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk()
@@ -222,7 +221,7 @@ if __name__ == '__main__':
 
         else:
             # This is a folder
-            logging.info('input is a folder')
+            logger.info('input is a folder')
             growth_master = np.load(os.path.join(args.input, 'growth.npy'))
             interactions_master = np.load(os.path.join(args.input, 'interactions.npy'))
 
@@ -230,7 +229,7 @@ if __name__ == '__main__':
         for idx in idxs:
             if idx is not None:
                 oidxs = [int(ele) for ele in lines[idx].split(args.sep)]
-                logging.info('indexing out {}'.format(oidxs))
+                logger.info('indexing out {}'.format(oidxs))
 
                 mask = np.ones(len(initial_conditions_master), dtype=bool)
                 mask[oidxs] = False
@@ -239,7 +238,7 @@ if __name__ == '__main__':
                 interactions = interactions[:, :, mask]
                 initial_conditions = initial_conditions_master[mask]
             else:
-                logging.info('not indexing out anything')
+                logger.info('not indexing out anything')
                 growth = growth_master
                 interactions = interactions_master
                 initial_conditions = initial_conditions_master
@@ -259,7 +258,7 @@ if __name__ == '__main__':
     if args.make_table == 1:
         # Make the table
         # --------------
-        logging.info('Make the table')
+        logger.info('Make the table')
         re_find = re.compile(r'^study(.*)-lo(.*)-forward-sims.npy$')
 
         # Get the steady-state of the base
@@ -283,10 +282,10 @@ if __name__ == '__main__':
             try:
                 studyname, leaveout = re_find.findall(fname)[0]
             except:
-                logging.warning('{} not recognized as a pattern. skipping'.format(fname))
+                logger.warning('{} not recognized as a pattern. skipping'.format(fname))
                 continue
             if studyname != study.name:
-                logging.warning('{} not the same study as input {}. skipping'.format(
+                logger.warning('{} not the same study as input {}. skipping'.format(
                     studyname, study.name))
                 continue
             if leaveout == 'none':

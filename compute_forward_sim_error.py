@@ -88,10 +88,9 @@ The output is a `.tsv` file with the columns:
         This is the magnitude of the error
 '''
 
-import mdsine2 as md2
+from mdsine2.logger import logger
 import numpy as np
 import os
-import logging
 import argparse
 import scipy.stats
 import re
@@ -128,8 +127,8 @@ def _relRMSE_err(pred, truth):
     for i in range(pred.shape[0]):
         relpred = pred[i]/np.sum(pred[i], axis=0)
         errors[i] = np.sqrt(np.mean(np.square(relpred-reltruth)))
-    if logging.root.level == logging.DEBUG:
-        logging.debug('relRMSE: {}'.format(errors))
+    if logger.root.level == logger.DEBUG:
+        logger.debug('relRMSE: {}'.format(errors))
     return np.nanmean(errors)
 
 def _RMSE_err(pred, truth):
@@ -161,8 +160,8 @@ def _RMSE_err(pred, truth):
     errors = np.zeros(pred.shape[0])
     for i in range(pred.shape[0]):
         errors[i] = np.sqrt(np.mean(np.square(pred[i]-truth)))
-    if logging.root.level == logging.DEBUG:
-        logging.debug('RMSE: {}'.format(errors))
+    if logger.root.level == logger.DEBUG:
+        logger.debug('RMSE: {}'.format(errors))
     return np.nanmean(errors)
 
 def _spearman_err(pred, truth):
@@ -197,8 +196,8 @@ def _spearman_err(pred, truth):
         for aidx in range(pred.shape[1]):
             temp[aidx] = scipy.stats.spearmanr(pred[i,aidx,:], truth[aidx,:])[0]
         corr[i] = np.nanmean(temp)
-    if logging.root.level == logging.DEBUG:
-        logging.debug('Spearman Correlation: {}'.format(corr))
+    if logger.root.level == logger.DEBUG:
+        logger.debug('Spearman Correlation: {}'.format(corr))
     return np.nanmean(corr)
 
 if __name__ == "__main__":
@@ -215,7 +214,6 @@ if __name__ == "__main__":
         help='Separator for the output table')
 
     args = parser.parse_args()
-    md2.LoggingConfig(level=logging.DEBUG)
     input_basepath = args.input_basepath
 
     # Check if the input path exists
@@ -246,7 +244,7 @@ if __name__ == "__main__":
         else:
             error_func = _spearman_err
 
-        logging.info('Error {} with function {}'.format(error, error_func.__name__))
+        logger.info('Error {} with function {}'.format(error, error_func.__name__))
 
         for fname in fnames:
             if fname in fnames_used:
@@ -271,7 +269,7 @@ if __name__ == "__main__":
                 try:
                     studyname, subjectname = re_full_pred.findall(pred_fname)[0]
                 except:
-                    logging.warning('{} not recognized as a pattern. skipping'.format(fname))
+                    logger.warning('{} not recognized as a pattern. skipping'.format(fname))
                     continue
                 start = np.nan
                 ndays = np.nan
@@ -285,7 +283,7 @@ if __name__ == "__main__":
                 try:
                     studyname, subjectname, start, ndays = re_tla_pred.findall(pred_fname)[0]
                 except:
-                    logging.warning('{} not recognized as a pattern. skipping'.format(fname))
+                    logger.warning('{} not recognized as a pattern. skipping'.format(fname))
                     continue
 
             truth_fname = os.path.abspath(os.path.join(input_basepath, truth_fname))
@@ -315,7 +313,7 @@ if __name__ == "__main__":
                 raise ValueError('pred shape {} not the same as truth shape {}'.format( 
                     (n_taxa_pred, n_times_pred), (n_taxa_truth, n_times_truth)))
             
-            logging.info('Calculating {}-{}-{}-{}'.format(studyname, subjectname, start, ndays))
+            logger.info('Calculating {}-{}-{}-{}'.format(studyname, subjectname, start, ndays))
 
             err = error_func(pred=pred, truth=truth)
             data.append([studyname, subjectname, start, ndays, error, err])
