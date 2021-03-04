@@ -27,7 +27,7 @@ level=DEBUG
 interval=midnight
 backupCount=5
 formatter=complexFormatter
-args=('logs/run.log',)
+args=(os.getenv("MDSINE_LOG_FILEPATH",default="logs/run.log"),)
 
 # =========== FORMATTERS =============
 [formatters]
