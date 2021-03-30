@@ -19,7 +19,6 @@ HEALTHY_MCMC="output/mdsine2/healthy-${SEED_SETTING}/mcmc.pkl"
 UC_MCMC="output/mdsine2/uc-${SEED_SETTING}/mcmc.pkl"
 HEALTHY_FIXED_MCMC="output/mdsine2/fixed_clustering/healthy-${SEED_SETTING}/mcmc.pkl"
 UC_FIXED_MCMC="output/mdsine2/fixed_clustering/uc-${SEED_SETTING}/mcmc.pkl"
-EIGEN_OUTDIR="output/postprocessing/eigenvalues/${SEED_SETTING}"
 
 CYCLE_HEALTHY_UNFIXED_DIR="output/postprocessing/cycles/unfixed_clustering/healthy-${SEED_SETTING}"
 CYCLE_HEALTHY_FIXED_DIR="output/postprocessing/cycles/fixed_clustering/healthy-${SEED_SETTING}"
@@ -33,20 +32,6 @@ CHAIN_UC_FIXED_DIR="output/postprocessing/chains/fixed_clustering/uc-${SEED_SETT
 
 CYCLE_PATH_LEN=3
 CHAIN_PATH_LEN=1
-
-
-# Compute eigenvalues
-# --------------------
-python scripts/run_eigenvalue_analysis.py \
-    --healthy_chain $HEALTHY_MCMC \
-    --uc_chain $UC_MCMC \
-    --outdir $EIGEN_OUTDIR \
-    --environment-name $ENVIRONMENT_NAME \
-    --code-basepath $MDSINE2_PAPER_CODE_PATH \
-    --queue $QUEUE \
-    --memory $MEM \
-    --n-cpus $N_CPUS \
-    --lsf-basepath $LSF_BASEPATH
 
 
 # Compute cycles

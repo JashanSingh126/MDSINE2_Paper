@@ -49,7 +49,7 @@ def compute_eigenvalues(matrices, thresh):
 
         # Throw out samples where eigenvalues blow up
         if np.sum(np.abs(slice_eigs) > thresh) > 0:
-            logger.info("Threshold {th} passed for sample {i}; skipping.".format(
+            print("Threshold {th} passed for sample {i}; skipping.".format(
                 th=thresh,
                 i=i
             ))
@@ -87,7 +87,7 @@ def main():
     # ===========================================
 
     save_eigenvalues(healthy_eig, uc_eig, outpath)
-    logger.info("Saved eigenvalues to {}.".format(outpath))
+    print("Saved eigenvalues to {}.".format(outpath))
 
 
 if __name__ == "__main__":
