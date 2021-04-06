@@ -95,8 +95,6 @@ def freq_cycles(interactions: np.ndarray,
                 min_thresh: int,
                 max_len: int = 10,
                 do_paths: bool = False,
-                gamma_shape: float = 1e-5,
-                gamma_scale: float = 1e5,
                 beta1: float = 0.5,
                 beta2: float = 0.5):
     """ A generator over frequent cycles (count at least count_thresh), implemented as a pruned depth-first-search. """
@@ -123,16 +121,12 @@ def freq_cycles(interactions: np.ndarray,
                 bayes = bayes_factor_cycle(path,
                                            len(samples),
                                            num_samples,
-                                           gamma_shape=gamma_shape,
-                                           gamma_scale=gamma_scale,
                                            beta1=beta1,
                                            beta2=beta2)
             else:
                 bayes = bayes_factor_chain(path,
                                            len(samples),
                                            num_samples,
-                                           gamma_shape=gamma_shape,
-                                           gamma_scale=gamma_scale,
                                            beta1=beta1,
                                            beta2=beta2)
             yield path, list(samples), bayes, path_signs
@@ -260,111 +254,23 @@ def chinese_restaurant_table_prob(partition, alpha, do_log=False):
     return log_prob if do_log else np.exp(log_prob)
 
 
-def prior_probability_cycle_fixed_alpha(cycle, dirichlet_alpha, beta1, beta2):
+def prior_probability_path(cycle, beta1, beta2):
     # beta_bernoulli_edge_log_prob = np.log(scipy.special.beta(beta1 + 1, beta2) / scipy.special.beta(beta1, beta2))
-    beta_bernoulli_edge_log_prob = np.log(beta1 / (beta1 + beta2))  # Equivalent, but simplified
-
-    if len(cycle)-1 == 2:
-        log_prob = chinese_restaurant_table_prob(partition=(1, 1), alpha=dirichlet_alpha, do_log=True)
-        log_prob += 2 * beta_bernoulli_edge_log_prob
-        return np.exp(log_prob)
-    if len(cycle)-1 == 3:
-        log_prob = chinese_restaurant_table_prob(partition=(1, 1, 1), alpha=dirichlet_alpha, do_log=True)
-        log_prob += 3 * beta_bernoulli_edge_log_prob
-        return np.exp(log_prob)
-    elif len(cycle)-1 == 4:
-        prob_case1 = chinese_restaurant_table_prob(partition=(1, 1, 1, 1), alpha=dirichlet_alpha, do_log=False)
-        prob_case1 += 2 * chinese_restaurant_table_prob(partition=(2, 1, 1), alpha=dirichlet_alpha, do_log=False)  # Either ind. set can be grouped
-        log_prob_case1 = np.log(prob_case1) + 4 * beta_bernoulli_edge_log_prob
-
-        log_prob_case2 = chinese_restaurant_table_prob(partition=(2, 2), alpha=dirichlet_alpha, do_log=True)
-        log_prob_case2 += 2 * beta_bernoulli_edge_log_prob
-        return np.exp(log_prob_case1) + np.exp(log_prob_case2)
-    elif len(cycle)-1 == 5:
-        prob_case1 = chinese_restaurant_table_prob(partition=(1, 1, 1, 1, 1), alpha=dirichlet_alpha, do_log=False)
-        prob_case1 += 5 * chinese_restaurant_table_prob(partition=(2, 1, 1, 1), alpha=dirichlet_alpha, do_log=False)  # One of the five ind. sets
-        log_prob_case1 = np.log(prob_case1) + 5 * beta_bernoulli_edge_log_prob
-
-        log_prob_case2 = 5 * chinese_restaurant_table_prob(partition=(2, 2, 1), alpha=dirichlet_alpha, do_log=True)
-        log_prob_case2 += 4 * beta_bernoulli_edge_log_prob
-        return np.exp(log_prob_case1) + np.exp(log_prob_case2)
-    else:
-        raise RuntimeError("cycle too long!: ", cycle)
+    beta_bernoulli_edge_log_prob = np.log(beta1 / (beta1 + beta2))
+    return (len(cycle) - 1) * beta_bernoulli_edge_log_prob
 
 
-def prior_probability_chain_fixed_alpha(path, dirichlet_alpha, beta1, beta2):
-    # beta_bernoulli_edge_log_prob = np.log(scipy.special.beta(beta1 + 1, beta2) / scipy.special.beta(beta1, beta2))
-    beta_bernoulli_edge_log_prob = np.log(beta1 / (beta1 + beta2))  # Equivalent, but simplified
-
-    if len(path) - 1 == 1:
-        log_prob = chinese_restaurant_table_prob(partition=(1, 1), alpha=dirichlet_alpha, do_log=True)
-        log_prob += beta_bernoulli_edge_log_prob
-        return np.exp(log_prob)
-    if len(path) - 1 == 2:
-        log_prob = chinese_restaurant_table_prob(partition=(1, 1, 1), alpha=dirichlet_alpha, do_log=True)
-        log_prob += chinese_restaurant_table_prob(partition=(2, 1), alpha=dirichlet_alpha, do_log=True)
-        log_prob += 2 * beta_bernoulli_edge_log_prob
-        return np.exp(log_prob)
-    elif len(path) - 1 == 3:
-        prob_case1 = chinese_restaurant_table_prob(partition=(1, 1, 1, 1), alpha=dirichlet_alpha, do_log=False)
-        prob_case1 += 3 * chinese_restaurant_table_prob(partition=(2, 1, 1), alpha=dirichlet_alpha, do_log=False)  # Either ind. set can be grouped
-        log_prob_case1 = np.log(prob_case1) + 3 * beta_bernoulli_edge_log_prob
-
-        log_prob_case2 = chinese_restaurant_table_prob(partition=(2, 2), alpha=dirichlet_alpha, do_log=True)
-        log_prob_case2 += 2 * beta_bernoulli_edge_log_prob
-        return np.exp(log_prob_case1) + np.exp(log_prob_case2)
-    elif len(path) - 1 == 4:
-        cr_11111 = chinese_restaurant_table_prob(partition=(1, 1, 1, 1, 1), alpha=dirichlet_alpha,
-                                                                 do_log=False)
-        cr_2111 = chinese_restaurant_table_prob(partition=(2, 1, 1, 1), alpha=dirichlet_alpha,
-                                                                 do_log=False)
-        cr_221 = chinese_restaurant_table_prob(partition=(2, 2, 1), alpha=dirichlet_alpha,
-                                                                 do_log=False)
-        cr_311 = chinese_restaurant_table_prob(partition=(3, 1, 1), alpha=dirichlet_alpha,
-                                                                 do_log=False)
-        cr_32 = chinese_restaurant_table_prob(partition=(3, 2), alpha=dirichlet_alpha,
-                                                                 do_log=False)
-
-        edge_4 = beta_bernoulli_edge_log_prob * 4
-        edge_3 = beta_bernoulli_edge_log_prob * 3
-        edge_2 = beta_bernoulli_edge_log_prob * 2
-
-        return (np.exp(np.log(cr_11111 + 6 * cr_2111 + 4 * cr_221 + cr_311) + edge_4)
-                + np.exp(np.log(cr_221) + edge_3)
-                + np.exp(np.log(cr_32) + edge_2))
-    else:
-        raise RuntimeError("path too long!: ", path)
-
-
-def prior_probability_cycle(cycle, gamma_shape, gamma_scale, beta1, beta2):
-    alphas = np.linspace(0, 20, num=1000)[1:]
-    integrand = (
-            prior_probability_cycle_fixed_alpha(cycle, alphas, beta1, beta2)
-            * scipy.stats.gamma.pdf(x=alphas, a=gamma_shape, scale=gamma_scale)
-    )
-    return scipy.integrate.trapz(y=integrand, x=alphas)
-
-
-def prior_probability_chain(path, gamma_shape, gamma_scale, beta1, beta2):
-    alphas = np.linspace(0, 20, num=1000)[1:]
-    integrand = (
-            prior_probability_chain_fixed_alpha(path, alphas, beta1, beta2)
-            * scipy.stats.gamma.pdf(x=alphas, a=gamma_shape, scale=gamma_scale)
-    )
-    return scipy.integrate.trapz(y=integrand, x=alphas)
-
-
-def bayes_factor_cycle(cycle, sample_count, total_samples, gamma_shape, gamma_scale, beta1, beta2):
+def bayes_factor_cycle(cycle, sample_count, total_samples, beta1, beta2):
     posterior_prob = sample_count / total_samples
-    prior_prob = prior_probability_cycle(cycle, gamma_shape, gamma_scale, beta1, beta2)
+    prior_prob = prior_probability_path(cycle, beta1, beta2)
     numerator = posterior_prob * (1 - prior_prob)
     denominator = (1 - posterior_prob) * prior_prob
     return numerator / denominator
 
 
-def bayes_factor_chain(path, sample_count, total_samples, gamma_shape, gamma_scale, beta1, beta2):
+def bayes_factor_chain(path, sample_count, total_samples, beta1, beta2):
     posterior_prob = sample_count / total_samples
-    prior_prob = prior_probability_chain(path, gamma_shape, gamma_scale, beta1, beta2)
+    prior_prob = prior_probability_path(path, beta1, beta2)
     numerator = posterior_prob * (1 - prior_prob)
     denominator = (1 - posterior_prob) * prior_prob
     return numerator / denominator
