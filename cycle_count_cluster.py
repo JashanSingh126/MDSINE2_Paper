@@ -257,7 +257,7 @@ def chinese_restaurant_table_prob(partition, alpha, do_log=False):
 def prior_probability_path(cycle, beta1, beta2):
     # beta_bernoulli_edge_log_prob = np.log(scipy.special.beta(beta1 + 1, beta2) / scipy.special.beta(beta1, beta2))
     beta_bernoulli_edge_log_prob = np.log(beta1 / (beta1 + beta2))
-    return (len(cycle) - 1) * beta_bernoulli_edge_log_prob
+    return np.exp((len(cycle) - 1) * beta_bernoulli_edge_log_prob)
 
 
 def bayes_factor_cycle(cycle, sample_count, total_samples, beta1, beta2):
