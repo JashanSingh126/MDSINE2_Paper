@@ -7,9 +7,9 @@ MDSINE2_PAPER_CODE_PATH=${MDSINE2_PAPER_CODE_PATH:-"/data/cctm/darpa_perturbatio
 # Conda environment
 ENVIRONMENT_NAME="mdsine2"
 # Queues, memory, and numpy of cpus
-QUEUE="big-multi"
+QUEUE="big"
 MEM="8000"
-N_CPUS="4"
+N_CPUS="1"
 LSF_BASEPATH="lsf_files/cycles"
 
 # Forward simulation parameters
