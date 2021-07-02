@@ -11,12 +11,12 @@ echo "Only writing the top ${TOP} OTUs."
 
 # Plot the OTU aggregates
 python helpers/plot_otus.py \
-    --study ${TAX_OUT_DIR}/gibson_healthy_agg_taxa.pkl \
+    --study ${PREPROCESS_DIR}/gibson_healthy_agg_taxa.pkl \
     --output-basepath ${PLOTS_OUT_DIR}/aggregate_plots \
     --top $TOP
 
 python helpers/plot_otus.py \
-    --study ${TAX_OUT_DIR}/gibson_uc_agg_taxa.pkl \
+    --study ${PREPROCESS_DIR}/gibson_uc_agg_taxa.pkl \
     --output-basepath ${PLOTS_OUT_DIR}/aggregate_plots \
     --top $TOP
 

@@ -8,8 +8,8 @@ echo "Performing consistency filtering over Study objects."
 
 # ==== Healthy
 python helpers/step_2_filtering.py \
-    --dataset ${TAX_OUT_DIR}/gibson_healthy_agg_taxa.pkl \
-    --outfile ${TAX_OUT_DIR}/gibson_healthy_agg_taxa_filtered.pkl \
+    --dataset ${PREPROCESS_DIR}/gibson_healthy_agg_taxa.pkl \
+    --outfile ${PREPROCESS_DIR}/gibson_healthy_agg_taxa_filtered.pkl \
     --dtype rel \
     --threshold 0.0001 \
     --min-num-consecutive 7 \
@@ -18,8 +18,8 @@ python helpers/step_2_filtering.py \
 
 # ==== UC
 python helpers/step_2_filtering.py \
-    --dataset ${TAX_OUT_DIR}/gibson_uc_agg_taxa.pkl \
-    --outfile ${TAX_OUT_DIR}/gibson_uc_agg_taxa_filtered.pkl \
+    --dataset ${PREPROCESS_DIR}/gibson_uc_agg_taxa.pkl \
+    --outfile ${PREPROCESS_DIR}/gibson_uc_agg_taxa_filtered.pkl \
     --dtype rel \
     --threshold 0.0001 \
     --min-num-consecutive 7 \
@@ -30,8 +30,8 @@ python helpers/step_2_filtering.py \
 # TODO: find out what this does.
 
 python scripts/filter_replicates_like_other_dataset.py \
-    --replicate-dataset ${TAX_OUT_DIR}/gibson_replicates_agg_taxa.pkl \
-    --like-other .${TAX_OUT_DIR}/gibson_healthy_agg_taxa_filtered.pkl \
-    --output-basepath ${TAX_OUT_DIR}/gibson_replicates_agg_taxa_filtered.pkl
+    --replicate-dataset ${PREPROCESS_DIR}/gibson_replicates_agg_taxa.pkl \
+    --like-other .${PREPROCESS_DIR}/gibson_healthy_agg_taxa_filtered.pkl \
+    --output-basepath ${PREPROCESS_DIR}/gibson_replicates_agg_taxa_filtered.pkl
 
 echo "Done."

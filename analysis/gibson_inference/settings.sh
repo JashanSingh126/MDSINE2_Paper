@@ -1,5 +1,7 @@
 export OUT_DIR="files/gibson"
-export TAX_OUT_DIR="${OUT_DIR}/taxonomy"
+export PREPROCESS_DIR="${OUT_DIR}/preprocessed"
+export PHYLOGENY_OUT_DIR="${OUT_DIR}/phylogeny"
+export TAXONOMY_OUT_DIR="${OUT_DIR}/taxonomy"
 export NEGBIN_OUT_DIR="${OUT_DIR}/negbin"
 export MDSINE_OUT_DIR="${OUT_DIR}/mdsine2"
 export MDSINE_FIXED_CLUSTER_OUT_DIR="${OUT_DIR}/mdsine2_fixed_clustering"
