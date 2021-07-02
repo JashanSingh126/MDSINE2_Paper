@@ -1,4 +1,4 @@
-export OUT_DIR="files/gibson"
+export OUT_DIR="output/gibson"
 export PREPROCESS_DIR="${OUT_DIR}/preprocessed"
 export PHYLOGENY_OUT_DIR="${OUT_DIR}/phylogeny"
 export TAXONOMY_OUT_DIR="${OUT_DIR}/taxonomy"
