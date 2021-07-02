@@ -29,7 +29,7 @@ python helpers/step_2_filtering.py \
 #=========================
 # TODO: find out what this does.
 
-python scripts/filter_replicates_like_other_dataset.py \
+python helpers/filter_replicates_like_other_dataset.py \
     --replicate-dataset ${PREPROCESS_DIR}/gibson_replicates_agg_taxa.pkl \
     --like-other .${PREPROCESS_DIR}/gibson_healthy_agg_taxa_filtered.pkl \
     --output-basepath ${PREPROCESS_DIR}/gibson_replicates_agg_taxa_filtered.pkl
