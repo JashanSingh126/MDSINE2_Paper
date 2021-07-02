@@ -241,7 +241,6 @@ if __name__ == "__main__":
 
         # Get all of the files
         fnames = os.listdir(basepath)
-
         
         for fname in fnames:
             try:
@@ -265,6 +264,6 @@ if __name__ == "__main__":
             # matrix of the forward sims
             # shape (n_gibbs, n_taxa, n_steps), n_steps = n_days/dt
             M = np.load(os.path.join(basepath, fname))
-
-
+            pert_start_idx = args.start_pert_day / args.simulation_dt
+            pert_end_idx = args.end_pert_day / args.simulation_dt
     

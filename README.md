@@ -1,24 +1,37 @@
 # Paper for MDSINE2: Microbial Dynamical Systems Inference Engine 2
 
-**For a quick start** exploring the use of MDSINE2. **Note** this is not the full data set. Number of tax and number of Gibbs steps are reduced so that the tutorials run in a reasonable amoutn of time
+## Jupyter Notebook Quickstart
+Follow the link to an interactive run through of MDSINE2. 
+The input is not the full dataset. 
+The number of taxa and number of MCMC iterations are reduced so as to run in a shorter period of time.
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/gerberlab/MDSINE2_Paper/HEAD?filepath=bindertutorials)
 
 
 
 ****************************************High level description of the package
 
-## Installation
-These instructions install MDSINE2 and download the MDSINE2_Paper git repo
+## Setup
+
+This codebase assumes that one has installed the MDSINE2 package, according to the following instructions.
+The recommended setup starts out by creating a new conda environment. 
+The package was developed and tested on python 3.7.3.
 
 ```bash
-conda create -n mdsine2 -c conda-forge python=3.7.3 jupyterlab
+conda create -n mdsine2 -c conda-forge python=3.7.3
 conda activate mdsine2
-python -m ipykernel install --user --name mdsine2 --display-name "mdsine2"
+```
+
+Next, clone and install the MDSINE2 package from this repository.
+
+```bash
 git clone https://github.com/gerberlab/MDSINE2
 pip install MDSINE2/.
+```
+
+Next, clone this repository which contains the scripts which use the above package to produce the analysis.
+
+```bash
 git clone https://github.com/gerberlab/MDSINE2_Paper
-cd MDSINE2_Paper/localtutorials
-jupyter notebook
 ```
 
 ## Tutorials
@@ -53,7 +66,7 @@ tutorial 3 as an example we can run with the data they created, not sure how fea
 
 ## Quick start
 #### Running MDSINE2 with Gibson dataset
-The raw data of the Gibson dataset is in the folder `datasets/gibson`. To run the MDSINE2 model, use the scripts in the the folder `gibson_dataset`. 
+The raw data of the Gibson dataset is in the folder `datasets/gibson`. To run the MDSINE2 model, use the scripts in the the folder `figures_analysis`. 
 
 #### Running MDSINE2 with your own dataset
 *****************************************************Describe the required tables
