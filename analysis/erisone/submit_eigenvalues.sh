@@ -4,6 +4,8 @@
 # ------------------
 # Path to MDSINE2_Paper code
 MDSINE2_PAPER_CODE_PATH=${MDSINE2_PAPER_CODE_PATH:-"/data/cctm/darpa_perturbation_mouse_study/MDSINE2_Paper"}
+MDSINE2_OUTPUT_PATH="/data/cctm/darpa_perturbation_mouse_study/MDSINE_output"
+
 # Conda environment
 ENVIRONMENT_NAME="mdsine2"
 # Queues, memory, and numpy of cpus
@@ -15,9 +17,9 @@ LSF_BASEPATH="lsf_files/eigenvalues"
 # Forward simulation parameters
 # -----------------------------
 SEED_SETTING="seed0-strong-sparse"
-HEALTHY_MCMC="output/mdsine2/healthy-${SEED_SETTING}/mcmc.pkl"
-UC_MCMC="output/mdsine2/uc-${SEED_SETTING}/mcmc.pkl"
-EIGEN_OUTDIR="output/postprocessing/eigenvalues/${SEED_SETTING}"
+HEALTHY_MCMC="${MDSINE2_OUTPUT_PATH}/mdsine2/healthy-${SEED_SETTING}/mcmc.pkl"
+UC_MCMC="${MDSINE2_OUTPUT_PATH}/mdsine2/uc-${SEED_SETTING}/mcmc.pkl"
+EIGEN_OUTDIR="${MDSINE2_OUTPUT_PATH}/postprocessing/eigenvalues/${SEED_SETTING}"
 
 
 # Compute eigenvalues

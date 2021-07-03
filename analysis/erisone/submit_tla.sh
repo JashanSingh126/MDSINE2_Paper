@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "DEPRECATED. use 'submit_cv_and_tla.sh' instead."
+exit 1
+
 # ErisOne parameters
 # ------------------
 # Path to MDSINE2_Paper code

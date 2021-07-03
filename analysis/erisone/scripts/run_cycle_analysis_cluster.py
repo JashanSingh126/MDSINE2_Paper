@@ -49,14 +49,14 @@ cd {code_basepath}
 '''
 
 cycle_command='''
-python cycle_count_cluster.py \
+python analysis/helpers/cycle_count_cluster.py \
     --mcmc_path {chain} \
     --out_dir {outdir} \
     --max_path_len {pathlen}
 '''
 
 chain_command='''
-python cycle_count_cluster.py \
+python analysis/helpers/cycle_count_cluster.py \
     --mcmc_path {chain} \
     --out_dir {outdir} \
     --max_path_len {pathlen} \

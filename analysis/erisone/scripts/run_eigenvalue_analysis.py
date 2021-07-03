@@ -47,7 +47,7 @@ cd {code_basepath}
 echo code_basepath
 
 # Run eigenvalue
-python compute_eigenvalues.py \
+python analysis/helpers/compute_eigenvalues.py \
     --healthy {healthy_chain} \
     --uc {uc_chain} \
     --out_dir {outdir}

@@ -9,6 +9,9 @@
 # ------------------
 # Path to MDSINE2_Paper code
 MDSINE2_PAPER_CODE_PATH=${MDSINE2_PAPER_CODE_PATH:-"/data/cctm/darpa_perturbation_mouse_study/MDSINE2_Paper"}
+MDSINE2_OUTPUT_PATH="/data/cctm/darpa_perturbation_mouse_study/MDSINE_output"
+PREPROCESSED_PATH="${MDSINE2_PAPER_CODE_PATH}/analysis/output/gibson/preprocessed"
+
 # Conda environment
 ENVIRONMENT_NAME="mdsine2"
 # Queues, memory, and numpy of cpus
@@ -21,25 +24,25 @@ DEFAULT_IND_PRIOR="strong-sparse"
 IND_PRIOR=${1:-$DEFAULT_IND_PRIOR}
 
 # NOTE: THESE PATHS MUST BE RELATIVE TO `MDSINE2_PAPER_CODE_PATH`
-NEGBIN="output/negbin/replicates/mcmc.pkl"
+NEGBIN="${MDSINE2_OUTPUT_PATH}/negbin/replicates/mcmc.pkl"
 BURNIN="5000"
 N_SAMPLES="15000"
 CHECKPOINT="100"
 MULTIPROCESSING="0"
 
-HEALTHY_DATASET="processed_data/gibson_healthy_agg_taxa_filtered.pkl"
-UC_DATASET="processed_data/gibson_uc_agg_taxa_filtered.pkl"
+HEALTHY_DATASET="${PREPROCESSED_PATH}/gibson_healthy_agg_taxa_filtered.pkl"
+UC_DATASET="${PREPROCESSED_PATH}/gibson_uc_agg_taxa_filtered.pkl"
 INTERACTION_IND_PRIOR=${IND_PRIOR}
 PERTURBATION_IND_PRIOR=${IND_PRIOR}
 
 if [ "$IND_PRIOR" == "$DEFAULT_IND_PRIOR" ]; then
     echo "Default parameters"
-    BASEPATH="output/mdsine2"
-    FIXED_BASEPATH="output/mdsine2/fixed_clustering"
+    BASEPATH="${MDSINE2_OUTPUT_PATH}/mdsine2"
+    FIXED_BASEPATH="${MDSINE2_OUTPUT_PATH}/mdsine2/fixed_clustering"
 else
     echo "From sensitivity"
-    BASEPATH="output/mdsine2/sensitivity"
-    FIXED_BASEPATH="output/mdsine2/sensitivity/fixed_clustering"
+    BASEPATH="${MDSINE2_OUTPUT_PATH}/mdsine2/sensitivity"
+    FIXED_BASEPATH="${MDSINE2_OUTPUT_PATH}/mdsine2/sensitivity/fixed_clustering"
 fi
 
 # Set the name of the studies if an argument is passed

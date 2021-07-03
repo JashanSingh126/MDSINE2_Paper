@@ -50,7 +50,7 @@ source activate {environment_name}
 cd {code_basepath}
 
 # Run a fold in cross validation
-python run_cross_validation.py \
+python analysis/helpers/run_cross_validation.py \
     --dataset {dset_fileloc} \
     --cv-basepath {cv_basepath} \
     --dset-basepath {dset_basepath} \
@@ -65,20 +65,20 @@ python run_cross_validation.py \
     --perturbation-ind-prior {perturbation_prior}
 
 # Make the posterior as numpy arrays
-python figures_analysis/scripts/convert_trace_to_numpy.py \
+python analysis/helpers/convert_trace_to_numpy.py \
     --chain {chain_path} \
     --output-basepath {numpy_basepath} \
     --section posterior
 
 # Visualize the posterior
-python step_6_visualize_mdsine2.py \
+python analysis/helpers/step_6_visualize_mdsine2.py \
     --chain {chain_path} \
     --section posterior \
     --output-basepath {posterior_basepath} \
     --fixed-clustering 0
 
 # Compute forward simulations for this fold
-python figures_analysis/erisone/scripts/run_forward_sim_for_fold.py \
+python analysis/erisone/scripts/run_forward_sim_for_fold.py \
     --chain {numpy_basepath} \
     --validation {validation_subject} \
     --n-days {max_tla} \
