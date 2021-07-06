@@ -53,12 +53,12 @@ if __name__ == '__main__':
     os.system(command)
 
     # Do time lookahead (do not include last time point)
-    for start in times[:-1]:
-        command = script_format.format(
-            chain=args.chain, validation=args.validation, 
-            sim_dt=args.simulation_dt, start=start, n_days=args.n_days,
-            basepath=basepath, save_inter_times=1)
-        logger.info(command)
-        os.system(command)
+    #for start in times[:-1]:
+    #    command = script_format.format(
+    #        chain=args.chain, validation=args.validation, 
+    #        sim_dt=args.simulation_dt, start=start, n_days=args.n_days,
+    #        basepath=basepath, save_inter_times=1)
+    #    logger.info(command)
+    #    os.system(command)
 
     

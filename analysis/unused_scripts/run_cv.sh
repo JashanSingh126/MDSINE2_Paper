@@ -53,7 +53,7 @@ for heldout in 6 7 8 9 10
 do
 	echo "UC run: heldout subject ${uc}"
 	python ../run_cross_validation.py \
-    --dataset $uc_DATASET \
+    --dataset $UC_DATASET \
     --cv-basepath $CV_OUT_DIR \
     --dset-basepath $CV_DATASET_PATH \
     --negbin $NEGBIN \
