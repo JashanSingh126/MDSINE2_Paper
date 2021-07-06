@@ -5,7 +5,7 @@ This repository contains the analysis pipeline found in our paper, with tutorial
 1. [Analysis in the cloud (Google colab)](#Cloud)  
 2. [Analysis on a local machine](#Local)
     1. [Setup](#LocalSetup)
-    2. [Scripts for analysis](#LocalRun)
+    2. [Scripts for inference](#LocalRun)
 
 <a name="Cloud"/>
 
@@ -56,6 +56,7 @@ git clone https://github.com/gerberlab/MDSINE2_Paper
 
 <a name="LocalRun"/>
 
-### 2.1 Scripts for analysis
+### 2.1 Scripts for inference
 
-Instructions for performing analysis is located in [the analysis subfolder](analysis/README.md).
+Instructions for performing the core MDSINE2 inference, up to and including MCMC on the Healthy and UC datasets,
+ is located in [the analysis subfolder](analysis/README.md).
