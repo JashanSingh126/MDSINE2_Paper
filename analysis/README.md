@@ -75,7 +75,7 @@ bash gibson_inference/inference/run_mdsine2.sh
 ```
 
 Next, using the previous MCMC run as input, we perform the "fixed-clustering" run.
-This performs inference using a "consensus-clustering" run as described in "Methods - Consensus Modules".
+This performs inference using a "consensus-clustering" as described in "Methods - Consensus Modules".
 ```
 bash gibson_inference/inference/run_mdsine2_fixed_clustering.sh
 ```
