@@ -11,7 +11,7 @@ This repository shows you how to use MDSINE2 (https://github.com/gerberlab/MDSIN
 
 <a name="Cloud"/>
 
-## 1. Analysis in the cloud (Google colab)
+## 1. Analysis in the cloud
 Follow the link to an interactive run through of our analysis pipeline using MDSINE2, hosted on binder.
 - [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/gerberlab/MDSINE2_Paper/HEAD?filepath=bindertutorials)
 
