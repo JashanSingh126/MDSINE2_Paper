@@ -12,7 +12,7 @@ We provide pre-processed outputs for this section in the repository.
 
 - The DADA2 outputs are in `../datasets/gibson/`, along with the other input TSV files necessary for inference.
 - The ASV-to-OTU aggregation outputs are in `./output/gibson/preprocessed`.
-- Taxonomic placement of OTUs are in `./files/phylogenetic_placement_OTUs`.
+- Phylogenetic placement of OTUs are in `./files/phylogenetic_placement_OTUs`.
 
 The following subsections can be run to re-generate these outputs from scratch.
 
