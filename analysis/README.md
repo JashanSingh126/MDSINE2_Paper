@@ -8,6 +8,11 @@ cd analysis
 
 # 1. Preprocess the Data
 
+We provide pre-processed outputs for this section in the repository, so this entire section is optional.
+- The DADA2 outputs are in `../datasets/gibson/`, along with the other input TSV files necessary for inference.
+- The ASV-to-OTU aggregation outputs are in `./output/gibson/preprocessed`.
+- Taxonomic placement of OTUs are in `./files/phylogenetic_placement_OTUs`.
+
 ## 1.1 Run DADA2
 
 First, one needs to run DADA2 (https://benjjneb.github.io/dada2/index.html) on the 16S reads, to end up with a list of ASVs and taxonomic assignments 
