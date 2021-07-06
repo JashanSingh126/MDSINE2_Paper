@@ -63,7 +63,7 @@ cd MDSINE2_Paper
 
 ### 2.2 Jupyter Notebook - Short Run
 
-Once the above installation done, one can run a local copy of the jupyter notebooks.
+Once the above installation done, one can run a local copy of the jupyter notebooks found in [Analysis in the cloud](#Cloud).
 ```
 conda install -c conda-forge jupyterlab
 jupyter-notebook
