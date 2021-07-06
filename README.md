@@ -14,6 +14,7 @@ This repository shows you how to use MDSINE2 (https://github.com/gerberlab/MDSIN
 ## 1. Analysis in the cloud (Google colab)
 Follow the link to an interactive run through of our analysis pipeline using MDSINE2, hosted on binder.
 - [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/gerberlab/MDSINE2_Paper/HEAD?filepath=bindertutorials)
+
 This analysis includes the parsing of the raw input and all of the pre-preprocessing steps found in the 
 Methods section of our paper.
 Note that to meet the memory and time budget, the number of taxa and number of MCMC iterations are reduced and does not
@@ -21,9 +22,6 @@ fully reproduce the results in the paper.
 For the full version, refer to [Analysis on a local machine](#Local).
 
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/gerberlab/MDSINE2_Paper/HEAD?filepath=bindertutorials)
-
-(Colab link under construction)
 
 <a name="Local"/>
 
