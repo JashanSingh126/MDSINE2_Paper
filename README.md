@@ -1,8 +1,10 @@
-# MDSINE2: Microbial Dynamical Systems Inference Engine 2
+# Learning microbial dynamics at scale
 
-This repository contains the analysis pipeline found in our paper, with tutorials on how to use it.
 
-1. [Analysis in the cloud (Google colab)](#Cloud)  
+
+This repository shows you how to use MDSINE2 (https://github.com/gerberlab/MDSINE2) with hands on notebooks that can be run in the cloud or locally. It also contains all the scripts to reproduce the figures from our paper (coming shortly).
+
+1. [Analysis in the cloud](#Cloud)  
 2. [Analysis on a local machine](#Local)
     1. [Setup](#LocalSetup)
     2. [Scripts for inference](#LocalRun)
@@ -10,7 +12,8 @@ This repository contains the analysis pipeline found in our paper, with tutorial
 <a name="Cloud"/>
 
 ## 1. Analysis in the cloud (Google colab)
-Follow the link to an interactive run through of our analysis pipeline using MDSINE2, hosted on Google colab.
+Follow the link to an interactive run through of our analysis pipeline using MDSINE2, hosted on binder.
+- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/gerberlab/MDSINE2_Paper/HEAD?filepath=bindertutorials)
 This analysis includes the parsing of the raw input and all of the pre-preprocessing steps found in the 
 Methods section of our paper.
 Note that to meet the memory and time budget, the number of taxa and number of MCMC iterations are reduced and does not
