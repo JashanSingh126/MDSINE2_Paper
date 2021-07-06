@@ -1,81 +1,85 @@
-Subdirectory content:
+# MDSINE2 Inference on Mouse Experiment Dataset
 
+We assume that DADA2 has already been run on the 16S reads so that one has a list of ASVs with taxonomic assignments 
+using RDP (`rdp_species.tsv`) and Silva (`silva_species.tsv`).
+(We did this by running the script ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) TODO referendce DADA2 script here)
 
-- icml_exmaple
+First, go into the `analysis` directory.
 
-- gibson_inference
-    1) preprocessing_agglomeration.sh
-    2) preprocessing_filtering.sh
-    3) learn_negbin.sh
-    4) run_mdsine2.sh
-
-- 
-
-Note: all scripts are meant to be run from the analysis/ directory.
-Example
-```bash
+```
 cd analysis
-bash icml_example/run_icml.sh
 ```
 
-OLD doc:
+# 1. Preprocess the Data
 
-# Replication of MDSINE2 results
+## 1.1 Aggregate ASVs into OTUs
 
-### 1. Preprocess the data (Note that this has already been done for this dataset)
+This step implements the creation of OTUs from DADA2's ASV output, as outlined in
+"Methods - ASV aggregation into OTUs".
+```
+bash gibson_inference/preprocessing/preprocessing_agglomeration.sh
+```
+This script automatically points to the input TSV files containing counts, subject metadata, 
+perturbation windows, qpcr and the DADA2 outputs -- they are located in `../datasets/gibson/`.
 
-Preprocessing and agglomeration. Note that when running data from scratch, manual steps are involved (phylogenetic placement, etc.). All of the outputs from preprocessing are already provided here for you. For information on manual steps see [internal_doc_for_manual_steps.md](internal_doc_for_manual_steps.md) before running the following command:
-```bash
-./preprocessing_agglomeration.sh
+## 1.2 Assign OTU Taxonomy
+
+This step implements the taxonomic assignment of OTUs found in "Methods - ASV aggregation into OTUs".
+```
+bash gibson_inference/preprocessing/assign_consensus_taxonomy.sh
 ```
 
-### 2. Filtering and visualizing the data (the tutorials start here)
-Visualize the OTUs and filter the data 
-```bash
-./assign_consensus_taxonomy.sh
-./plot_aggregates.sh
-./plot_phylogenetic_subtrees.sh
-./preprocessing_filtering.sh
+## 1.3 Filter OTUs from Input
+
+Next, filter out OTUs which don't colonize consistently across the subjects, as explained in 
+"Methods - Filtering to Remove Low Abundance Taxa".
+```
+bash gibson_inference/preprocessing/preprocessing_filtering.sh
 ```
 
-### 3. Learn Negative binomial dispersion parameters
-Learn the negative binomial dispersion parameters
-```bash
-./learn_negbin.sh
-```
-### 4. Learning parameters of MDSINE2
-Order of scripts from start to finish of generating the posteriors
+## Optional 1: Plot the empirical abundances of OTUs and constituent ASVs.
 
-```bash
-./run_mdsine2.sh
-./run_mdsine2_fixed_clustering.sh
+To see how the OTUs' measured abundances compare to their constituent ASVs, generate the time-series plots using raw counts and qPCR:
+
+```
+bash gibson_inference/preprocessing/plot_aggregates.sh
 ```
 
-### 5. Post-processing
-Once `run_mdsine2.sh` has finished running, you can perform keystoneness and the perturbation analysis,
-```bash
-./compute_keystoneness.sh
-./compute_perturbation_analysis.sh
+## Optional 2: Visualize phylogenetic subtrees containing each OTU.
+
+This implements "Methods - Phylogenetic placement of sequences", which performs a multiple alignment and then places each
+sequence at the leaves of a tree:
 ```
-the cycle counting procedure,
-```bash
-./cycle_counting.sh
-```
-and the eigenvalue computation
-```bash
-./compute_eigenvalues.sh
+TODO
 ```
 
-### 6. Cross-validation and forward simulation
-Order of scripts from start to finish of running forward simulation and cross validation:
-```bash
-./run_cv.sh
-./run_tla.sh
-./compute_errors_tla.sh
+We visualize these by using the following command:
+```
+bash gibson_inference/preprocessing/plot_phylogenetic_subtrees.sh
 ```
 
-### 7. Making figures
-Once cross-validation and learning the parameters are done, you can generate the figures used in the paper:
-```bash
-./make_figures.sh
+# 2. Learn Negative Binomial Dispersion Parameters 
+
+Learn the negative binomial dispersion parameters (d0 and d1) from the error model of our paper 
+(See Supplemental Methods for the mathematical description).
 ```
+bash gibson_inference/inference/learn_negbin.sh
+```
+
+# 3. Run MDSINE2's inference
+
+Now, we run the following script, which uses the results of the previous steps to perform the MCMC algorithm described
+in our paper.
+```
+bash gibson_inference/inference/run_mdsine2.sh
+```
+
+Next, using the previous MCMC run as input, we perform the "fixed-clustering" run.
+This performs inference using a "consensus-clustering" run as described in "Methods - Consensus Modules".
+```
+bash gibson_inference/inference/run_mdsine2_fixed_clustering.sh
+```
+
+# 4. Downstream Analyses
+
+(Under construction. Enrichment/cross-validation errors/keystoneness/cycle counting/)
