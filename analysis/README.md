@@ -1,10 +1,6 @@
 # MDSINE2 Inference on Mouse Experiment Dataset
 
-We assume that DADA2 has already been run on the 16S reads so that one has a list of ASVs with taxonomic assignments 
-using RDP (`rdp_species.tsv`) and Silva (`silva_species.tsv`).
-(We did this by running the script ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) TODO referendce DADA2 script here)
-
-First, go into the `analysis` directory.
+To run the scripts in this README, go into the `analysis` directory.
 
 ```
 cd analysis
@@ -12,7 +8,17 @@ cd analysis
 
 # 1. Preprocess the Data
 
-## 1.1 Aggregate ASVs into OTUs
+## 1.1 Run DADA2
+
+First, one needs to run DADA2 (https://benjjneb.github.io/dada2/index.html) on the 16S reads, to end up with a list of ASVs and taxonomic assignments 
+using RDP (`rdp_species.tsv`) and Silva (`silva_species.tsv`).
+To do this, assuming DADA2 is installed, run the following script:
+
+```
+TODO
+```
+
+## 1.2 Aggregate ASVs into OTUs
 
 This step implements the creation of OTUs from DADA2's ASV output, as outlined in
 "Methods - ASV aggregation into OTUs".
@@ -22,14 +28,14 @@ bash gibson_inference/preprocessing/preprocessing_agglomeration.sh
 This script automatically points to the input TSV files containing counts, subject metadata, 
 perturbation windows, qpcr and the DADA2 outputs -- they are located in `../datasets/gibson/`.
 
-## 1.2 Assign OTU Taxonomy
+## 1.3 Assign OTU Taxonomy
 
 This step implements the taxonomic assignment of OTUs found in "Methods - ASV aggregation into OTUs".
 ```
 bash gibson_inference/preprocessing/assign_consensus_taxonomy.sh
 ```
 
-## 1.3 Filter OTUs from Input
+## 1.4 Filter OTUs from Input
 
 Next, filter out OTUs which don't colonize consistently across the subjects, as explained in 
 "Methods - Filtering to Remove Low Abundance Taxa".
