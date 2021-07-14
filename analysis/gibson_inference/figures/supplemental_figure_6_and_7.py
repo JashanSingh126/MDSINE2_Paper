@@ -11,11 +11,10 @@ plots supplemental figure 6 and 7 i.e. the posterior co-clustering probabilities
 
 """
 
-import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import figure_helper
+from . import figure_helper as helper
 import argparse
 import mdsine2 as md2
 import os

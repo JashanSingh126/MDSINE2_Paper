@@ -20,7 +20,7 @@ echo "Writing files to ${MDSINE_OUT_DIR}"
 # --------------
 
 # Seed 0
-python helpers/step_5_infer_mdsine2.py \
+mdsine2 infer \
     --input $HEALTHY_DSET \
     --negbin $NEGBIN \
     --seed 0 \
@@ -40,7 +40,7 @@ python helpers/step_6_visualize_mdsine2.py \
 echo "Finished Healthy (seed 0)."
 
 # Seed 1
-python helpers/step_5_infer_mdsine2.py \
+mdsine2 infer \
     --input $HEALTHY_DSET \
     --negbin $NEGBIN \
     --seed 1 \
@@ -63,7 +63,7 @@ echo "Finished Healthy (seed 1)."
 # UC cohort
 # ---------
 # Seed 0
-python helpers/step_5_infer_mdsine2.py \
+mdsine2 infer \
     --input $UC_DSET \
     --negbin $NEGBIN \
     --seed 0 \
@@ -83,7 +83,7 @@ python helpers/step_6_visualize_mdsine2.py \
 echo "Finished UC (seed 0)."
 
 # Seed 1
-python helpers/step_5_infer_mdsine2.py \
+mdsine2 infer \
     --input $UC_DSET \
     --negbin $NEGBIN \
     --seed 1 \

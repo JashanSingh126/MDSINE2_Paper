@@ -50,7 +50,7 @@ source activate {environment_name}
 cd {code_basepath}
 
 # Run time lookahead
-python analysis/helpers/forward_sim.py \
+python analysis/helpers/forward_sim_validation.py \
     --input {chain} \
     --validation {validation_path} \
     --simulation-dt {sim_dt} \

@@ -33,7 +33,7 @@ This step implements the creation of OTUs from DADA2's ASV output, as outlined i
 ```
 bash gibson_inference/preprocessing/preprocessing_agglomeration.sh
 ```
-This script automatically points to the input TSV files containing counts, subject metadata, 
+This script automatically parses the input TSV files containing counts, subject metadata, 
 perturbation windows, qpcr and the DADA2 outputs -- they are located in `../datasets/gibson/`.
 
 ## 1.3 Assign OTU Taxonomy

@@ -17,7 +17,7 @@ echo "Writing files to ${MDSINE_FIXED_CLUSTER_OUT_DIR}"
 
 # Healthy cohort
 # --------------
-python helpers/step_5_infer_mdsine2.py \
+mdsine2 infer \
     --input ${PREPROCESS_DIR}/gibson_healthy_agg_taxa_filtered.pkl \
     --negbin $NEGBIN \
     --seed $SEED \
@@ -38,7 +38,7 @@ echo "Finished Healthy."
 
 # UC cohort
 # ---------
-python helpers/step_5_infer_mdsine2.py \
+mdsine2 infer \
     --input ${PREPROCESS_DIR}/gibson_uc_agg_taxa_filtered.pkl \
     --negbin $NEGBIN \
     --seed $SEED \

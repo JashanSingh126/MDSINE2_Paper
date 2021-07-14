@@ -7,7 +7,7 @@ import argparse
 import os
 import numpy as np
 
-script_format = 'python ../forward_sim.py --input {chain} ' \
+script_format = 'python forward_sim.py --input {chain} ' \
     '--validation {validation} ' \
     '--simulation-dt {sim_dt} ' \
     '--start {start} ' \
