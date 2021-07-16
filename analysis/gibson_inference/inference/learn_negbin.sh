@@ -14,7 +14,7 @@ mdsine2 infer-negbin \
     --checkpoint 200 \
     --basepath ${NEGBIN_OUT_DIR}
 
-python helpers/step_4_visualize_negbin.py \
+mdsine2 visualize-negbin \
     --chain "${NEGBIN_OUT_DIR}/replicates/mcmc.pkl" \
     --output-basepath "${NEGBIN_OUT_DIR}/replicates/posterior"
 

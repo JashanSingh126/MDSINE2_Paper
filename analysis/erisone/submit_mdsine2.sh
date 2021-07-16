@@ -8,12 +8,12 @@
 # ErisOne parameters
 # ------------------
 # Path to MDSINE2_Paper code
-MDSINE2_PAPER_CODE_PATH=${MDSINE2_PAPER_CODE_PATH:-"/data/cctm/darpa_perturbation_mouse_study/MDSINE2_Paper"}
-MDSINE2_OUTPUT_PATH="/data/cctm/darpa_perturbation_mouse_study/MDSINE_output"
+MDSINE2_PAPER_CODE_PATH=${MDSINE2_PAPER_CODE_PATH:-"/data/cctm/darpa_perturbation_mouse_study/sawal_test/mdsine2_final/MDSINE2_Paper"}
+MDSINE2_OUTPUT_PATH="${MDSINE2_PAPER_CODE_PATH}/analysis/output/gibson"
 PREPROCESSED_PATH="${MDSINE2_PAPER_CODE_PATH}/analysis/output/gibson/preprocessed"
 
 # Conda environment
-ENVIRONMENT_NAME="mdsine2"
+ENVIRONMENT_NAME="mdsine2_"
 # Queues, memory, and numpy of cpus
 QUEUE="vlong"
 MEM="8000"
@@ -25,8 +25,8 @@ IND_PRIOR=${1:-$DEFAULT_IND_PRIOR}
 
 # NOTE: THESE PATHS MUST BE RELATIVE TO `MDSINE2_PAPER_CODE_PATH`
 NEGBIN="${MDSINE2_OUTPUT_PATH}/negbin/replicates/mcmc.pkl"
-BURNIN="5000"
-N_SAMPLES="15000"
+BURNIN="400"
+N_SAMPLES="1200"
 CHECKPOINT="100"
 MULTIPROCESSING="0"
 
