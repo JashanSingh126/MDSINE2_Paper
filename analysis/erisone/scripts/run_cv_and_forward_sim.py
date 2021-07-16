@@ -1,7 +1,7 @@
 '''Make the lsf file for cross validation.
 
 WARNING: THIS FILE ONLY WORKS IF THE OS CONTAINS AN LSF JOB SUBMISSION SYSTEM.
-THIS IS A INTERNAL DOCUMENT. FOR IDENTICAL RESULTS THAT DO NOT REQUIRE RUNNING 
+THIS IS A INTERNAL DOCUMENT. FOR IDENTICAL RESULTS THAT DO NOT REQUIRE RUNNING
 LSF, RUN THE SCRIPT `MDSINE2/figures_analysis/run_cv.sh`.
 '''
 
@@ -14,8 +14,9 @@ lsfstr = '''#!/bin/bash
 #BSUB -n {cv_cpus}
 #BSUB -M {cv_mem}
 #BSUB -R rusage[mem={cv_mem}]
+#BSUB -m bwhpath_hg
 
-# 
+#
 echo '---PROCESS RESOURCE LIMITS---'
 ulimit -a
 echo '---SHARED LIBRARY PATH---'
@@ -45,12 +46,12 @@ echo $TMPDIR
 
 
 # Load the environment
-module load anaconda/4.8.2
+#module load anaconda/4.8.2
 source activate {environment_name}
 cd {code_basepath}
 
 # Run a fold in cross validation
-python analysis/helpers/run_cross_validation.py \
+python analysis/helpers/run_cv_inference.py \
     --dataset {dset_fileloc} \
     --cv-basepath {cv_basepath} \
     --dset-basepath {dset_basepath} \
@@ -71,24 +72,25 @@ python analysis/helpers/convert_trace_to_numpy.py \
     --section posterior
 
 # Visualize the posterior
-python analysis/helpers/step_6_visualize_mdsine2.py \
+mdsine2 visualize-posterior \
     --chain {chain_path} \
     --section posterior \
     --output-basepath {posterior_basepath} \
-    --fixed-clustering 0
 
 # Compute forward simulations for this fold
 python analysis/erisone/scripts/run_forward_sim_for_fold.py \
     --chain {numpy_basepath} \
     --validation {validation_subject} \
     --n-days {max_tla} \
-    --output-basepath {tla_basepath} \
+    --output-basepath {fsim_basepath} \
     --environment-name {environment_name} \
     --code-basepath {code_basepath} \
-    --queue {tla_queue} \
-    --memory {tla_mem} \
-    --n-cpus {tla_cpus} \
-    --lsf-basepath {tla_lsf_basepath}
+    --queue {fsim_queue} \
+    --memory {fsim_mem} \
+    --n-cpus {fsim_cpus} \
+    --lsf-basepath {fsim_lsf_basepath}
+
+
 '''
 
 import mdsine2 as md2
@@ -131,12 +133,12 @@ if __name__ == '__main__':
     parser.add_argument('--perturbation-ind-prior', '-pp', type=str, dest='perturbation_prior',
         help='Prior of the indicator of the perturbations')
 
-    # TLA arguments
+    # Forward sim arguments
     parser.add_argument('--max-tla', type=int, dest='max_tla',
         help='Maximum time for time lookahead')
     parser.add_argument('--simulation-dt', type=float, dest='simulation_dt',
         help='Timesteps we go in during forward simulation', default=0.01)
-    
+
     #ErisOne arguments
     parser.add_argument('--environment-name', dest='environment_name', type=str,
         help='Name of the conda environment to activate when the job starts')
@@ -148,11 +150,11 @@ if __name__ == '__main__':
         help='Amount of memory to reserve on ErisOne for cross-validation')
     parser.add_argument('--cv-n-cpus', type=str, dest='cv_cpus',
         help='Number of cpus to reserve on ErisOne for cross-validation')
-    parser.add_argument('--tla-queue', type=str, dest='tla_queue',
+    parser.add_argument('--fsim-queue', type=str, dest='fsim_queue',
         help='ErisOne queue this job gets submitted to')
-    parser.add_argument('--tla-memory', type=str, dest='tla_memory',
+    parser.add_argument('--fsim-memory', type=str, dest='fsim_memory',
         help='Amount of memory to reserve on ErisOne')
-    parser.add_argument('--tla-n-cpus', type=str, dest='tla_cpus',
+    parser.add_argument('--fsim-n-cpus', type=str, dest='fsim_cpus',
         help='Number of cpus to reserve on ErisOne')
 
     args = parser.parse_args()
@@ -177,32 +179,32 @@ if __name__ == '__main__':
     numpy_basepath = os.path.join(args.output_basepath, jobname, 'numpy_trace')
     posterior_basepath = os.path.join(args.output_basepath, jobname, 'posterior')
     validation_subject = os.path.join(args.input_basepath, jobname + '-validate.pkl')
-    tla_basepath = os.path.join(args.output_basepath, 'forward_sims')
-    tla_lsf_basepath = os.path.join(lsf_basepath, 'tla')
+    fsim_basepath = os.path.join(args.output_basepath, 'forward_sims')
+    fsim_lsf_basepath = os.path.join(os.getcwd(), lsf_basepath, 'fsim')
 
     os.makedirs(numpy_basepath, exist_ok=True)
-    os.makedirs(tla_basepath, exist_ok=True)
-    os.makedirs(tla_lsf_basepath, exist_ok=True)
+    os.makedirs(fsim_basepath, exist_ok=True)
+    os.makedirs(fsim_lsf_basepath, exist_ok=True)
 
     lsfname = os.path.join(script_path, jobname + '.lsf')
     f = open(lsfname, 'w')
     f.write(lsfstr.format(
         jobname=jobname, stdout_loc=stdout_loc, stderr_loc=stderr_loc,
-        environment_name=args.environment_name, 
+        environment_name=args.environment_name,
         cv_queue=args.cv_queue, cv_cpus=args.cv_cpus, cv_mem=args.cv_memory,
         code_basepath=args.code_basepath,
         dset_fileloc=args.dataset, cv_basepath=args.output_basepath,
-        dset_basepath=args.input_basepath, negbin_run=args.negbin, 
+        dset_basepath=args.input_basepath, negbin_run=args.negbin,
         seed=args.seed, burnin=args.burnin, n_samples=args.n_samples,
-        checkpoint=args.checkpoint, mp=args.mp, 
+        checkpoint=args.checkpoint, mp=args.mp,
         leave_out_subject=args.leave_out_subj,
         interaction_prior=args.interaction_prior,
         perturbation_prior=args.perturbation_prior,
         chain_path=chain_path, numpy_basepath=numpy_basepath,
-        posterior_basepath=posterior_basepath, validation_subject=validation_subject, 
-        max_tla=args.max_tla, tla_basepath=tla_basepath, 
-        tla_queue=args.tla_queue, tla_mem=args.tla_memory, 
-        tla_cpus=args.tla_cpus, tla_lsf_basepath=tla_lsf_basepath))
+        posterior_basepath=posterior_basepath, validation_subject=validation_subject,
+        max_tla=args.max_tla, fsim_basepath=fsim_basepath, fsim_queue=args.fsim_queue, 
+        fsim_mem=args.fsim_memory, fsim_cpus=args.fsim_cpus, 
+        fsim_lsf_basepath=fsim_lsf_basepath))
     f.close()
     command = 'bsub < {}'.format(lsfname)
     print(command)

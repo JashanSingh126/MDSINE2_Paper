@@ -14,7 +14,7 @@ import os
 import pathlib
 import sys
 
-command_fmt = 'python {script} --input {dset} ' \
+command_fmt = 'mdsine2 infer --input {dset} ' \
     '--negbin {negbin} ' \
     '--seed {seed} ' \
     '--burnin {burnin} ' \
@@ -23,7 +23,7 @@ command_fmt = 'python {script} --input {dset} ' \
     '--basepath {basepath} ' \
     '--multiprocessing {mp} ' \
     '--interaction-ind-prior {interaction_prior} ' \
-    '--perturbation-ind-prior {perturbation_prior}' 
+    '--perturbation-ind-prior {perturbation_prior}'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage=__doc__)
@@ -56,7 +56,7 @@ if __name__ == '__main__':
         help='Prior of the indicator of the interactions')
     parser.add_argument('--perturbation-ind-prior', '-pp', type=str, dest='perturbation_prior',
         help='Prior of the indicator of the perturbations')
-    
+
     args = parser.parse_args()
 
     input_basepath = args.input_basepath
@@ -78,13 +78,9 @@ if __name__ == '__main__':
     study.save(study_fname)
     val_study.save(os.path.join(input_basepath, val_study.name + '.pkl'))
 
-    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'step_5_infer_mdsine2.py')
-    path = '"' + path + '"'
-
     logger.info('Run inference')
     command = command_fmt.format(
-        script=path,
-        dset=study_fname, negbin=args.negbin, seed=args.seed, 
+        dset=study_fname, negbin=args.negbin, seed=args.seed,
         burnin=args.burnin, n_samples=args.n_samples, checkpoint=args.checkpoint,
         basepath=args.output_basepath, mp=args.mp,
         interaction_prior=args.interaction_prior,

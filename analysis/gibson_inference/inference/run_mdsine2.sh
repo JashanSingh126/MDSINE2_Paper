@@ -33,7 +33,7 @@ mdsine2 infer \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
-python helpers/step_6_visualize_mdsine2.py \
+mdsine2 visualize-posterior \
     --chain  $MDSINE_OUT_DIR/healthy-seed0/mcmc.pkl \
     --output-basepath $MDSINE_OUT_DIR/healthy-seed0/posterior
 
@@ -53,7 +53,7 @@ mdsine2 infer \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
-python helpers/step_6_visualize_mdsine2.py \
+mdsine2 visualize-posterior \
     --chain  $MDSINE_OUT_DIR/healthy-seed1/mcmc.pkl \
     --output-basepath $MDSINE_OUT_DIR/healthy-seed1/posterior
 
@@ -76,7 +76,7 @@ mdsine2 infer \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
-python helpers/step_6_visualize_mdsine2.py \
+mdsine2 visualize-posterior \
     --chain  $MDSINE_OUT_DIR/uc-seed0/mcmc.pkl \
     --output-basepath $MDSINE_OUT_DIR/uc-seed0/posterior
 
@@ -96,7 +96,7 @@ mdsine2 infer \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
-python helpers/step_6_visualize_mdsine2.py \
+mdsine2 visualize-posterior \
     --chain  $MDSINE_OUT_DIR/uc-seed1/mcmc.pkl \
     --output-basepath $MDSINE_OUT_DIR/uc-seed1/posterior
 

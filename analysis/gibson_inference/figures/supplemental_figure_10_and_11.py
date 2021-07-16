@@ -1,5 +1,5 @@
 """
-python supplemental_figure_10_and_11.py -file1 "../files/figures/healthy_coclusters.tsv"\
+python supplemental_figure_10_and_11.py -file1 "../files/figures/healthy_CV_DATASET_PATHs.tsv"\
       -file2 "../files/figures/uc_coclusters.tsv"\
       -file3 "../files/figures/healthy_clusters.tsv"\
       -file4 "../files/figures/uc_clusters.tsv"\

@@ -52,7 +52,7 @@ cd {code_basepath}
 
 # Run the model
 # -------------
-python analysis/helpers/step_5_infer_mdsine2.py \
+mdsine2 infer\
     --input {dset_fileloc} \
     --negbin {negbin_run} \
     --seed {seed} \
@@ -65,15 +65,14 @@ python analysis/helpers/step_5_infer_mdsine2.py \
     --interaction-ind-prior {interaction_prior} \
     --perturbation-ind-prior {perturbation_prior}
 # Plot the posterior
-python analysis/helpers/step_6_visualize_mdsine2.py \
+mdsine2 visualize-posterior \
     --chain {chain_loc} \
     --output-basepath {posterior_path} \
     --section posterior \
-    --fixed-clustering 0
 
 # Run the model that was just learned with fixed clustering
 # ---------------------------------------------------------
-python analysis/helpers/step_5_infer_mdsine2.py \
+mdsine2 infer \
     --input {dset_fileloc} \
     --fixed-clustering {chain_loc} \
     --negbin {negbin_run} \
@@ -87,11 +86,11 @@ python analysis/helpers/step_5_infer_mdsine2.py \
     --interaction-ind-prior {interaction_prior} \
     --perturbation-ind-prior {perturbation_prior}
 # Plot the posterior of fixed clustering
-python analysis/helpers/step_6_visualize_mdsine2.py \
+mdsine2 visualize-posterior \
     --chain {fixed_chain_loc} \
     --output-basepath {fixed_posterior_path} \
     --section posterior \
-    --fixed-clustering 1
+    --is-fixed-clustering 
 '''
 
 import mdsine2 as md2

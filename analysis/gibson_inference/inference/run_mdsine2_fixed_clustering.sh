@@ -29,10 +29,10 @@ mdsine2 infer \
     --fixed-clustering ${MDSINE_OUT_DIR}/healthy-seed0/mcmc.pkl \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
-python helpers/step_6_visualize_mdsine2.py \
+mdsine2 visualize-posterior \
     --chain  "${MDSINE_FIXED_CLUSTER_OUT_DIR}/healthy/mcmc.pkl" \
     --output-basepath "${MDSINE_FIXED_CLUSTER_OUT_DIR}/healthy/posterior" \
-    --fixed-clustering 1
+    --is-fixed-clustering
 
 echo "Finished Healthy."
 
@@ -50,9 +50,9 @@ mdsine2 infer \
     --fixed-clustering ${MDSINE_OUT_DIR}/mdsine2/uc-seed0/mcmc.pkl \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
-python helpers/step_6_visualize_mdsine2.py \
+mdsine2 visualize-posterior \
     --chain "${MDSINE_FIXED_CLUSTER_OUT_DIR}/uc/mcmc.pkl" \
     --output-basepath "${MDSINE_FIXED_CLUSTER_OUT_DIR}/uc/posterior" \
-    --fixed-clustering 1
+    --is-fixed-clustering
 
 echo "Finished UC."

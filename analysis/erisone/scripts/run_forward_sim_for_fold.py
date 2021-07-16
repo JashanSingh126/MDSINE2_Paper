@@ -45,7 +45,7 @@ echo $TMPDIR
 
 
 # Load the environment
-module load anaconda/4.8.2
+#module load anaconda/4.8.2
 source activate {environment_name}
 cd {code_basepath}
 
@@ -125,23 +125,24 @@ if __name__ == '__main__':
     os.makedirs(stderr_loc, exist_ok=True)
 
     # Do time lookahead (do not include last time point)
-    for start in times[:-1]:
-        jobname = study.name + '-{}-{}'.format(start, n_days)
+    #commented out for now since we aren't doing time look ahead forward sim
+    #for start in times[:-1]:
+    #    jobname = study.name + '-{}-{}'.format(start, n_days)
 
-        stdout_name = os.path.join(stdout_loc, jobname + '.out')
-        stderr_name = os.path.join(stderr_loc, jobname + '.err')
-        lsfname = os.path.join(script_path, jobname + '.lsf')
-        f = open(lsfname, 'w')
-        f.write(lsfstr.format(
-            jobname=jobname, stdout_loc=stdout_name, stderr_loc=stderr_name,
-            queue=args.queue, cpus=args.cpus, mem=args.memory,
-            environment_name=args.environment_name, code_basepath=args.code_basepath,
-            chain=args.chain, validation_path=args.validation, sim_dt=args.simulation_dt,
-            start=start, n_days=n_days, basepath=basepath, save_intermed_times=1))
-        f.close()
-        command = 'bsub < {}'.format(lsfname)
-        print(command)
-        os.system(command)
+    #    stdout_name = os.path.join(stdout_loc, jobname + '.out')
+    #    stderr_name = os.path.join(stderr_loc, jobname + '.err')
+    #    lsfname = os.path.join(script_path, jobname + '.lsf')
+    #    f = open(lsfname, 'w')
+    #    f.write(lsfstr.format(
+    #        jobname=jobname, stdout_loc=stdout_name, stderr_loc=stderr_name,
+    #        queue=args.queue, cpus=args.cpus, mem=args.memory,
+    #        environment_name=args.environment_name, code_basepath=args.code_basepath,
+    #        chain=args.chain, validation_path=args.validation, sim_dt=args.simulation_dt,
+    #        start=start, n_days=n_days, basepath=basepath, save_intermed_times=1))
+    #    f.close()
+    #    command = 'bsub < {}'.format(lsfname)
+    #    print(command)
+    #    os.system(command)
 
     # Do full simulation
     jobname = study.name + '-full'

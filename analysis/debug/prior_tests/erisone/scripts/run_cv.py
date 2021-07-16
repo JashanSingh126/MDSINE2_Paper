@@ -72,11 +72,10 @@ python figures_analysis/scripts/convert_trace_to_numpy.py \
     --section posterior
 
 # Visualize the posterior
-python step_6_visualize_mdsine2.py \
+mdsine2 visualize-posterior \
     --chain {chain_path} \
     --section posterior \
-    --output-basepath {posterior_basepath} \
-    --fixed-clustering 0
+    --output-basepath {posterior_basepath}
 
 # Compute forward simulations for this fold
 python figures_analysis/erisone/scripts/run_forward_sim_for_fold.py \
