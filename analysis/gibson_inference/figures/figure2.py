@@ -1,15 +1,17 @@
 #make figure 2
 '''
-python main_figure2.py -file1 "../../processed_data/gibson_healthy_agg_taxa.pkl" \
-       -file2 "../../processed_data/gibson_uc_agg_taxa.pkl" \
-       -file3 "../../processed_data/gibson_inoculum_agg_taxa.pkl"
+python gibson_inference/figures/figure2.py \
+       -file1 "output/gibson/preprocessed/gibson_healthy_agg_taxa.pkl" \
+       -file2 "output/gibson/preprocessed/gibson_uc_agg_taxa.pkl" \
+       -file3 "output/gibson/preprocessed/gibson_inoculum_agg_taxa.pkl"
+
 '''
 
 import mdsine2 as md2
 import pandas as pd
 import numpy as np
 import argparse
-import os 
+import os
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -22,6 +24,7 @@ from matplotlib.ticker import ScalarFormatter, LogFormatter, LogFormatterSciNota
 import matplotlib.patches as patches
 import matplotlib.lines as mlines
 import matplotlib.colors as mcolors
+from matplotlib.lines import Line2D
 # from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 from mpl_toolkits.axes_grid1.inset_locator import TransformedBbox, BboxPatch, BboxConnector
 from matplotlib.patches import Rectangle
@@ -31,6 +34,15 @@ from matplotlib.colors import LogNorm
 import matplotlib.image as mpimg
 from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationBbox
 from matplotlib.gridspec import GridSpec
+import matplotlib.font_manager
+
+from matplotlib import rcParams
+
+# change font
+rcParams['font.family'] = 'DeJavu Serif'
+rcParams['font.serif'] = ['Arial']
+
+
 
 TAXLEVEL = "family"
 TAXLEVEL_PLURALS = {'genus': 'Genera', 'Genus': 'Genera', 'family': 'Families',
@@ -41,10 +53,11 @@ TAXLEVEL_PLURALS = {'genus': 'Genera', 'Genus': 'Genera', 'family': 'Families',
 PERTURBATION_COLOR = "orange"
 TAXLEVEL_INTS = ["species", "genus", "family", "order", "class", "phylum",
                     "kingdom"]
-TAXLEVEL_REV_IDX = {"species" : 0, "genus" : 1, "family" : 2, "order" : 3,                      "class" : 4, "phylum" : 5, "kingdom" : 6}
+TAXLEVEL_REV_IDX = {"species" : 0, "genus" : 1, "family" : 2, "order" : 3,
+                   "class" : 4, "phylum" : 5, "kingdom" : 6}
 
 #Aggregation of abundances below this threhold
-CUTOFF_FRAC_ABUNDANCE = 0.01
+CUTOFF_FRAC_ABUNDANCE = 0.005
 
 def parse_args():
 
@@ -145,6 +158,7 @@ def _get_top(df, cutoff_frac_abundance, taxlevel, taxaname_map=None):
 
 def get_df(subjset):
     """
+       return the relative abundances(over time) of the OTUs as a DataFrame
        @parameters
        subjset : (pl.Subject)
     """
@@ -180,11 +194,6 @@ def get_df(subjset):
               taxlevel=TAXLEVEL)
 
     return df, taxaname_map
-
-def checker(df1, df2):
-
-    sum1 = np.sum(df1.to_numpy(), axis = 0)
-    sum2 = np.sum(df2.to_numpy(), axis = 0)
 
 def set_colors(df, color_idx, color_taxa_dict, color_set):
     """choose the color to represent each tax level"""
@@ -287,16 +296,16 @@ def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axqpcr, axrel, axper
             if lab not in final_labels:
                 final_labels.append(lab)
         labels = final_labels
+
     matrix = df.values
     matrix = np.flipud(matrix)
     times = np.asarray(list(df.columns))
-    #print("shapes", matrix.shape)
     if labels_order is not None:
         new_df = df.reindex(final_labels[::-1])
         matrix = new_df.values
         matrix = np.flipud(matrix)
         times = np.asarray(list(new_df.columns))
-        #print("shapes", matrix.shape)
+
     # Plot relative abundance, Create a stacked bar chart
     offset = np.zeros(matrix.shape[1])
     for row in range(matrix.shape[0]):
@@ -329,6 +338,7 @@ def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axqpcr, axrel, axper
             if t not in qpcr_meas:
                 qpcr_meas[t] = []
             qpcr_meas[t].append(subj.qpcr[t].mean())
+
     #geometric mean of qpcr
     for key in qpcr_meas:
         vals = qpcr_meas[key]
@@ -341,8 +351,10 @@ def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axqpcr, axrel, axper
     vals = np.zeros(len(times_qpcr))
     for iii, t in enumerate(times_qpcr):
         vals[iii] = qpcr_meas[t]
-    axqpcr.plot(np.arange(len(times_qpcr)), vals, marker='o', linestyle='-',
+    #axqpcr.set_xticks(locs)
+    axqpcr.plot(np.arange(0, len(times_qpcr))+0.5, vals, marker='o', linestyle='-',
            color='black')
+
     axqpcr.xaxis.set_major_locator(plt.NullLocator())
     axqpcr.xaxis.set_minor_locator(plt.NullLocator())
     max_qpcr_value = np.max(vals)
@@ -379,6 +391,7 @@ def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axqpcr, axrel, axper
         matrix_inoc = new_df_inoc.values
         matrix_inoc = np.flipud(matrix_inoc)
         matrix_inoc = matrix_inoc / np.sum(matrix_inoc)
+
     #plot the inoclum
     offset_inoc = 0
     for row in range(matrix_inoc.shape[0]):
@@ -443,6 +456,8 @@ def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axqpcr, axrel, axper
 
 def add_expt_figure(ax, subjset, figlabel):
 
+    """add the figure illustrating the experiment"""
+
     times = []
     for subj in subjset:
         times = np.append(times, subj.times)
@@ -501,9 +516,9 @@ def add_expt_figure(ax, subjset, figlabel):
         ends = np.asarray([perturbation.ends[subj_.name]])
         ax.barh(y=[0 for i in range(len(starts))], width=ends-starts, height=0.1,
         left=starts, color='darkgrey')
-    ax.text(0, 0.25, 'Colonization', horizontalalignment = 'center', fontsize=24)
+
     if figlabel is not None:
-        ax.text(x=-0.08, y = 3, s=figlabel, fontsize=25, fontweight='bold',
+        ax.text(x=-0.095, y = 2.5, s=figlabel, fontsize=25, fontweight='bold',
             transform = ax.transAxes)
     xpos = np.max(times)* 1.05
     y = 0.05
@@ -511,6 +526,86 @@ def add_expt_figure(ax, subjset, figlabel):
     ax.text(xpos+1, y, 'Fecal Sample Collection', horizontalalignment='left',
     fontsize = 24, verticalalignment='center')
 
+def plot_legend(axlegend, level, cutoff, color_taxa_dict):
+    """plots the legend"""
+
+    taxidx = TAXLEVEL_REV_IDX[TAXLEVEL]
+    upper_tax = TAXLEVEL_INTS[taxidx+1]
+    lower_tax = TAXLEVEL_INTS[taxidx]
+
+    #print(level, upper_tax, lower_tax)
+    labels = list(color_taxa_dict.keys())
+    labels.sort()
+
+    #others appears last in the legend
+    last_label = None
+    for label in labels:
+        if len(label.split(' ')) > 2:
+            last_label = label
+            break
+    if last_label is not None:
+        labels.remove(last_label)
+        labels.append(last_label)
+
+    ims = []
+    for label in labels:
+        im, = axlegend.bar([0],[0], color= color_taxa_dict[label], label=label)
+        ims.append(im)
+    ims.append(Line2D([0], [0], marker= "x", color="white",
+    markerfacecolor=None, markeredgecolor="black", markersize=11, markeredgewidth=2))
+    #ims.append("x")
+    extra = Rectangle((0, 0), 1, 1, fc="w", fill=False, edgecolor='none',
+    linewidth=0)
+    legend_handle = [extra]
+    legend_handle = legend_handle + ims
+    extra_col = [extra]*(len(ims)+1)
+    legend_handle = legend_handle + extra_col + extra_col
+
+    empty_label = ''
+    legend_labels = [empty_label]* (len(ims)+1) + ['$\\bf{' +
+    upper_tax.capitalize() + '}$']
+    for label in labels[:-1]:
+        l1,_ = label.split(' ')
+        if l1 == 'nan':
+            l1 = 'Uncultured Clone'
+        legend_labels = legend_labels + [l1.capitalize()]
+    legend_labels = legend_labels + ['Other < {}%'.format(CUTOFF_FRAC_ABUNDANCE*100)]
+    legend_labels = legend_labels + ["Taxonomy not defined"]
+    legend_labels = legend_labels + ['$\\bf{' + lower_tax.capitalize() + '}$']
+    #legend_labels = legend_labels + ["NA"]
+
+    for label in labels[:-1]:
+        _,l2 = label.split(' ')
+        l2 = l2.split("_")[0]
+        if l2 == 'NA':
+            l2 = "$\\quad \\quad \\quad \\quad \\times$"
+
+        legend_labels = legend_labels + [l2.capitalize()]
+
+    legend_labels = legend_labels + [" "]
+    legend_labels = legend_labels + [" "]
+
+
+    axlegend.legend(legend_handle, legend_labels, ncol = 3, loc='upper center',
+        fontsize = 21, columnspacing =0.01)
+
+    axlegend = _remove_border(axlegend)
+
+
+def _remove_border(ax):
+
+    ax.spines['top'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.xaxis.set_major_locator(plt.NullLocator())
+    ax.xaxis.set_minor_locator(plt.NullLocator())
+    ax.yaxis.set_major_locator(plt.NullLocator())
+    ax.yaxis.set_minor_locator(plt.NullLocator())
+    ax.set_xlabel('')
+    ax.set_ylabel('')
+
+    return ax
 
 def main():
 
@@ -526,7 +621,6 @@ def main():
 
     DATA_FIGURE_COLORS = {}
     XKCD_COLORS_IDX = 0
-    SAVEPATH = "output_figures/"
 
     args = parse_args()
     subjset_healthy = md2.Study.load(args.healthy_pkl)
@@ -586,7 +680,7 @@ def main():
     for tick in axqpcr2.yaxis.get_major_ticks():
         tick.label.set_fontsize(24)
 
-    ax_experiment =  fig.add_subplot(gs[0, 5 * squeeze : 25 * squeeze],
+    ax_experiment =  fig.add_subplot(gs[0, 4 * squeeze : 36 * squeeze],
                       facecolor='none')
     add_expt_figure(ax_experiment, subjset_healthy, figlabel = 'A')
 
@@ -596,95 +690,18 @@ def main():
     plot_legend(axlegend = axlegend, level = TAXLEVEL, cutoff = CUTOFF_FRAC_ABUNDANCE,
     color_taxa_dict = DATA_FIGURE_COLORS)
 
-    axpert1.spines['top'].set_visible(False)
-    axpert1.spines['bottom'].set_visible(False)
-    axpert1.spines['left'].set_visible(False)
-    axpert1.spines['right'].set_visible(False)
-    axpert1.xaxis.set_major_locator(plt.NullLocator())
-    axpert1.xaxis.set_minor_locator(plt.NullLocator())
-    axpert1.yaxis.set_major_locator(plt.NullLocator())
-    axpert1.yaxis.set_minor_locator(plt.NullLocator())
-
-    axpert2.spines['top'].set_visible(False)
-    axpert2.spines['bottom'].set_visible(False)
-    axpert2.spines['left'].set_visible(False)
-    axpert2.spines['right'].set_visible(False)
-    axpert2.xaxis.set_major_locator(plt.NullLocator())
-    axpert2.xaxis.set_minor_locator(plt.NullLocator())
-    axpert2.yaxis.set_major_locator(plt.NullLocator())
-    axpert2.yaxis.set_minor_locator(plt.NullLocator())
+    axpert1 = _remove_border(axpert1)
+    axpert2 = _remove_border(axpert2)
 
 
-    fig.subplots_adjust(wspace = 0.58, left = 0.05, right = 0.95, top =  0.925,
-    bottom = .075, hspace = 0.8)
+    fig.subplots_adjust(wspace = 0.58, left = 0.05, right = 0.95, top =  0.85,
+    bottom = .005, hspace = 0.8)
 
-    loc = "output_figures/"
+    loc = "gibson_inference/figures/output_figures/"
     if not os.path.exists(loc):
         os.makedirs(loc, exist_ok = True)
-        
-    plt.savefig(loc + "main_figure2.png", dpi = 100, bbox_inches = "tight")
-    plt.savefig(loc + "main_figure2.pdf", dpi = 400, bbox_inches = "tight")
 
-def plot_legend(axlegend, level, cutoff, color_taxa_dict):
-    """plots the legend"""
-
-    taxidx = TAXLEVEL_REV_IDX[TAXLEVEL]
-    upper_tax = TAXLEVEL_INTS[taxidx+1]
-    lower_tax = TAXLEVEL_INTS[taxidx]
-
-    #print(level, upper_tax, lower_tax)
-    labels = list(color_taxa_dict.keys())
-    labels.sort()
-
-    #others appears last in the legend
-    last_label = None
-    for label in labels:
-        if len(label.split(' ')) > 2:
-            last_label = label
-            break
-    if last_label is not None:
-        labels.remove(last_label)
-        labels.append(last_label)
-
-    ims = []
-    for label in labels:
-        im, = axlegend.bar([0],[0], color= color_taxa_dict[label], label=label)
-        ims.append(im)
-
-    extra = Rectangle((0, 0), 1, 1, fc="w", fill=False, edgecolor='none',
-    linewidth=0)
-    legend_handle = [extra]
-    legend_handle = legend_handle + ims
-    extra_col = [extra]*(len(ims)+1)
-    legend_handle = legend_handle + extra_col + extra_col
-
-    empty_label = ''
-    legend_labels = [empty_label]* (len(ims)+1) + ['$\\bf{' +
-    upper_tax.capitalize() + '}$']
-    for label in labels[:-1]:
-        l1,_ = label.split(' ')
-        if l1 == 'nan':
-            l1 = 'Uncultured Clone'
-        legend_labels = legend_labels + [l1.capitalize()]
-    legend_labels = legend_labels + ['Other < {}%'.format(CUTOFF_FRAC_ABUNDANCE*100)]
-    legend_labels = legend_labels + ['$\\bf{' + lower_tax.capitalize() + '}$']
-    for label in labels[:-1]:
-        _,l2 = label.split(' ')
-        if l2 == 'NA':
-            l2 = ''
-        legend_labels = legend_labels + [l2.capitalize()]
-
-    axlegend.legend(legend_handle, legend_labels, ncol = 3, loc='upper center',
-        fontsize = 22, columnspacing =0.01)
-
-    axlegend.spines['top'].set_visible(False)
-    axlegend.spines['bottom'].set_visible(False)
-    axlegend.spines['left'].set_visible(False)
-    axlegend.spines['right'].set_visible(False)
-    axlegend.xaxis.set_major_locator(plt.NullLocator())
-    axlegend.xaxis.set_minor_locator(plt.NullLocator())
-    axlegend.yaxis.set_major_locator(plt.NullLocator())
-    axlegend.yaxis.set_minor_locator(plt.NullLocator())
-
+    plt.savefig(loc + "figure2.png", dpi = 100, bbox_inches = "tight")
+    plt.savefig(loc + "figure2.pdf", dpi = 800, bbox_inches="tight")
 
 main()
