@@ -807,7 +807,6 @@ def _make_cluster_membership_heatmap(chainname, study_pkl, ax, order, binary, fi
     df = df.reindex(order)
 
     cols = np.arange(len(df.columns))
-    df.to_csv(str(count)+".csv", sep=",")
     colnames = df.columns
     newcolnames = []
     for idx in cols:
