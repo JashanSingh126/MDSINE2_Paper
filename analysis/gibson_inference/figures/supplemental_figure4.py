@@ -196,14 +196,32 @@ def plot_module(df, axes, title, ylab, plot_cbar=False, cbar_ax=None, vmax=0.5,
     vmin=0.0005, label_x=False, label_x_gram=False, labels_gram_stain=None,
     tick_right=False):
 
-    cmap_name = sns.color_palette("Blues_r", n_colors=4)
+    cmap = sns.color_palette("Blues", n_colors=5)
+    #cmap = colors.ListedColormap(["darkblue", "blue", "deepskyblue",
+      # "lightskyblue", "white"])
+    np_df = df.to_numpy()
+    np_df = np.where(np_df>0.05, 1.5, np_df)
+    np_df = np.where((0.01<np_df) & (np_df <=0.05), 2.5, np_df)
+    np_df = np.where((0.001<np_df) & (np_df <=0.01), 3.5, np_df)
+    np_df = np.where((0.0001<np_df) & (np_df <=0.001), 4.5, np_df)
+    np_df = np.where(np_df <=0.0001, 5.5, np_df)
+    df_new = pd.DataFrame(np_df, columns=df.columns, index=df.index)
+    #bounds = [-0.5, 1.5, 2.5, 3.5, 4.5]
+    #norm = colors.BoundaryNorm(bounds, cmap.N)
+
+    print(df_new)
+    print(df)
+
+    print()
     if plot_cbar:
-        map_ = sns.heatmap(np.log10(df / 5), ax=axes, cmap=cmap_name,
+        map_ = sns.heatmap(df_new, ax=axes, cmap=cmap,
         linewidths=0.5, yticklabels=True, xticklabels=True,
-        vmax=-1, vmin=-5, cbar_ax=cbar_ax,
-        cbar_kws = {"ticks" : [-4.5, -3.5, -2.5, -1.5]})
+        cbar_ax=cbar_ax,vmax=6, vmin=1, cbar_kws={"ticks":[1.5, 2.5, 3.5,
+        4.5, 5.5]})
         cbar = map_.collections[0].colorbar
-        cbar.set_ticklabels(["p<0.0005", "p<0.005", "p<0.05", "p>0.05"])
+        #cbar.set_ticklabels(["p<0.0005", "p<0.005", "p<0.05", "p>0.05"])
+        cbar.set_ticklabels(["ns",  "$p\\leq0.05$", "$p\\leq0.01$", "$p\\leq0.001$",
+            "$p\\leq0.0001$"])
         cbar = map_.collections[0].colorbar
         cbar.ax.tick_params(labelsize=40, labelleft =False, labelright = True,
             left = False, right = True, length = 20, width = 1)
@@ -212,8 +230,8 @@ def plot_module(df, axes, title, ylab, plot_cbar=False, cbar_ax=None, vmax=0.5,
              fontweight = "bold")
 
     else:
-        sns.heatmap(df, ax=axes, cmap=cmap_name, linewidths=0.5, yticklabels=True,
-        vmax=vmax, vmin=vmin, norm=LogNorm(), cbar=False, xticklabels=True)
+        sns.heatmap(df_new, ax=axes, cmap=cmap, linewidths=0.5, yticklabels=True,
+         cbar=False, xticklabels=True,vmax=6, vmin=1)
 
     axes.set_xlabel("Cluster ID", fontsize=45, fontweight="bold", labelpad=5)
     axes.set_ylabel(ylab, fontsize=35, fontweight="bold", labelpad=25)
@@ -288,8 +306,8 @@ def make_plot(df_healthy_p_order, df_uc_p_order, df_healthy_p_family,
     uc_column_start = 28
     uc_column_end = 44
 
-    cax_row_start = 66
-    cax_row_end = 76
+    cax_row_start = 63
+    cax_row_end = 78
 
     cax_column_start = 21
     cax_column_end = 22
@@ -364,6 +382,7 @@ def make_plot(df_healthy_p_order, df_uc_p_order, df_healthy_p_family,
         ax_healthy_class_abund, "E", False, "Class")
     ax_uc_class_abund = _make_table(df_uc_class_abund,
         ax_uc_class_abund, "F", True, "Class")
+    fig.text(0.025, 0.075, "NA: Taxonomy not available", fontsize=45)
     fig.subplots_adjust(hspace=25)
 
     loc = "gibson_inference/figures/output_figures/"
@@ -422,6 +441,8 @@ if __name__ == "__main__":
 
     healthy_class_abundance = pivot_cluster_membership(mcmc_healthy, "class")
     uc_class_abundance = pivot_cluster_membership(mcmc_uc, "class")
+
+    print(healthy_order_enrichment)
 
 
     healthy_N = healthy_order_abundance.to_numpy().shape[1]
