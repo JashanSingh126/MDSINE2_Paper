@@ -10,13 +10,14 @@ N_SAMPLES="15000"
 CHECKPOINT="100"
 MULTIPROCESSING="0"
 INTERACTION_IND_PRIOR="strong-sparse"
-PERTURBATION_IND_PRIOR="strong-sparse"
+PERTURBATION_IND_PRIOR="weak-agnostic"
 
 echo "Running fixed clustering inference of MDSINE2"
 echo "Writing files to ${MDSINE_FIXED_CLUSTER_OUT_DIR}"
 
 # Healthy cohort
 # --------------
+: '
 mdsine2 infer \
     --input ${PREPROCESS_DIR}/gibson_healthy_agg_taxa_filtered.pkl \
     --negbin $NEGBIN \
@@ -35,7 +36,7 @@ mdsine2 visualize-posterior \
     --is-fixed-clustering
 
 echo "Finished Healthy."
-
+' 
 # UC cohort
 # ---------
 mdsine2 infer \
@@ -47,7 +48,7 @@ mdsine2 infer \
     --checkpoint $CHECKPOINT \
     --multiprocessing $MULTIPROCESSING \
     --basepath ${MDSINE_FIXED_CLUSTER_OUT_DIR} \
-    --fixed-clustering ${MDSINE_OUT_DIR}/mdsine2/uc-seed0/mcmc.pkl \
+    --fixed-clustering ${MDSINE_OUT_DIR}/uc-seed0/mcmc.pkl \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 mdsine2 visualize-posterior \
