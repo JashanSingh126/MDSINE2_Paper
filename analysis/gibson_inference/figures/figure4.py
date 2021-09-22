@@ -11,6 +11,9 @@ import os
 import pandas as pd
 import argparse
 from mdsine2.pylab.inference import BaseMCMC
+import ete3
+from Bio import Phylo
+
 
 import matplotlib.image as mpimg
 from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationBbox
@@ -19,8 +22,8 @@ from matplotlib.lines import Line2D
 import matplotlib.colors as colors
 from matplotlib.collections import PatchCollection
 
-import ete3
-from Bio import Phylo
+from matplotlib import rcParams
+from matplotlib import font_manager
 
 def phylogenetic_heatmap_gram_split(inoc_pkl, healthy_pkl, uc_pkl, chain_healthy,
     chain_uc, outfile, tree_fname, taxa, healthy_filter, uc_filter):
@@ -138,13 +141,13 @@ def phylogenetic_heatmap_gram_split(inoc_pkl, healthy_pkl, uc_pkl, chain_healthy
         gap_inoc*2 + gap + tree_ncols+healthy_ncols+inoc_cols*2:tree_ncols
         +healthy_ncols+uc_ncols
         +inoc_cols*2+gap+ gap_inoc*2])
-    ax_grampos_healthy_inoc = fig.add_subplot(gs[
-        pert_nrows:pert_nrows+grampos_nrows,
-        tree_ncols: tree_ncols+inoc_cols])
-    ax_grampos_uc_inoc = fig.add_subplot(gs[
-        pert_nrows:pert_nrows+grampos_nrows,
-        gap_inoc+gap+tree_ncols+healthy_ncols+ inoc_cols:gap_inoc+
-        tree_ncols+healthy_ncols + gap+inoc_cols*2])
+    #ax_grampos_healthy_inoc = fig.add_subplot(gs[
+    #    pert_nrows:pert_nrows+grampos_nrows,
+    #    tree_ncols: tree_ncols+inoc_cols])
+    #ax_grampos_uc_inoc = fig.add_subplot(gs[
+    #    pert_nrows:pert_nrows+grampos_nrows,
+    #    gap_inoc+gap+tree_ncols+healthy_ncols+ inoc_cols:gap_inoc+
+    #    tree_ncols+healthy_ncols + gap+inoc_cols*2])
 
 
     # gram negative
@@ -174,13 +177,13 @@ def phylogenetic_heatmap_gram_split(inoc_pkl, healthy_pkl, uc_pkl, chain_healthy
         gap+gap_inoc*2+56+tree_ncols+healthy_ncols+inoc_cols*2:56+
         tree_ncols+healthy_ncols+
         uc_ncols+inoc_cols+gap_inoc*2+gap])
-    ax_gramneg_healthy_inoc = fig.add_subplot(gs[
-        pert_nrows:pert_nrows+gramneg_nrows,
-        56+tree_ncols:56+tree_ncols+inoc_cols])
-    ax_gramneg_uc_inoc = fig.add_subplot(gs[
-        pert_nrows:pert_nrows+gramneg_nrows,
-        gap_inoc+gap+56+tree_ncols+healthy_ncols+inoc_cols:gap_inoc+
-        56+tree_ncols+healthy_ncols+inoc_cols*2+gap])
+    #ax_gramneg_healthy_inoc = fig.add_subplot(gs[
+    #    pert_nrows:pert_nrows+gramneg_nrows,
+    #    56+tree_ncols:56+tree_ncols+inoc_cols])
+    #ax_gramneg_uc_inoc = fig.add_subplot(gs[
+    #    pert_nrows:pert_nrows+gramneg_nrows,
+    #    gap_inoc+gap+56+tree_ncols+healthy_ncols+inoc_cols:gap_inoc+
+    #    56+tree_ncols+healthy_ncols+inoc_cols*2+gap])
 
     bayes_rows = 20
     bayes_row_gap = 20
@@ -226,12 +229,12 @@ def phylogenetic_heatmap_gram_split(inoc_pkl, healthy_pkl, uc_pkl, chain_healthy
         min_bayes_factor=10, ax=ax_grampos_uc_pert, colorder=grampos_uc_colorder,
         fig=fig, make_colorbar=False, figlabel='B', render_labels=False)
 
-    ax_grampos_healthy_inoc = _make_inoc_heatmap(pkl=inoc_pkl, subject_name="Healthy",
-        order=grampos_taxaname_order, ax=ax_grampos_healthy_inoc, fig=fig,
-        vmax=max_, vmin=min_, make_colorbar=False)
-    ax_grampos_uc_inoc = _make_inoc_heatmap(pkl=inoc_pkl, subject_name="Ulcerative Colitis",
-        order=grampos_taxaname_order, ax=ax_grampos_uc_inoc, fig=fig,
-        vmax=max_, vmin=min_, make_colorbar=False)
+    #ax_grampos_healthy_inoc = _make_inoc_heatmap(pkl=inoc_pkl, subject_name="Healthy",
+    #    order=grampos_taxaname_order, ax=ax_grampos_healthy_inoc, fig=fig,
+    #    vmax=max_, vmin=min_, make_colorbar=False)
+    #ax_grampos_uc_inoc = _make_inoc_heatmap(pkl=inoc_pkl, subject_name="Ulcerative Colitis",
+    #    order=grampos_taxaname_order, ax=ax_grampos_uc_inoc, fig=fig,
+    #    vmax=max_, vmin=min_, make_colorbar=False)
 
 
     ax_grampos_tree = _remove_border(ax_grampos_tree)
@@ -261,12 +264,12 @@ def phylogenetic_heatmap_gram_split(inoc_pkl, healthy_pkl, uc_pkl, chain_healthy
         min_bayes_factor=10, ax=ax_gramneg_uc_pert, colorder=gramneg_uc_colorder,
         fig=fig, make_colorbar=False, figlabel='D', render_labels=False)
 
-    ax_gramneg_healthy_inoc = _make_inoc_heatmap(pkl=inoc_pkl, subject_name="Healthy",
-        order=gramneg_taxaname_order, ax=ax_gramneg_healthy_inoc, fig=fig,
-        vmax=max_, vmin=min_, make_colorbar=False)
-    ax_gramneg_uc_inoc = _make_inoc_heatmap(pkl=inoc_pkl, subject_name="Ulcerative Colitis",
-        order=gramneg_taxaname_order, ax=ax_gramneg_uc_inoc, fig=fig,
-        vmax=max_, vmin=min_, make_colorbar=False)
+    #ax_gramneg_healthy_inoc = _make_inoc_heatmap(pkl=inoc_pkl, subject_name="Healthy",
+    #    order=gramneg_taxaname_order, ax=ax_gramneg_healthy_inoc, fig=fig,
+    #    vmax=max_, vmin=min_, make_colorbar=False)
+    #ax_gramneg_uc_inoc = _make_inoc_heatmap(pkl=inoc_pkl, subject_name="Ulcerative Colitis",
+    #    order=gramneg_taxaname_order, ax=ax_gramneg_uc_inoc, fig=fig,
+    #    vmax=max_, vmin=min_, make_colorbar=False)
 
     ax_gramneg_tree = _remove_border(ax_gramneg_tree)
     ax_gramneg_pert = _remove_border(ax_gramneg_pert)
@@ -282,7 +285,7 @@ def phylogenetic_heatmap_gram_split(inoc_pkl, healthy_pkl, uc_pkl, chain_healthy
     for taxon in suffix_taxon:
         text += ' {} : {},'.format(suffix_taxon[taxon], taxon)
     text = text[0:-1]
-    fig.text(x=0.51, y=0.42, s=text, fontsize=35)
+    fig.text(x=0.51, y=0.42, s=text, fontsize=40)
 
     fig.subplots_adjust(wspace=0.00, left=0.005, right=0.995, hspace=0.05,
         top=.96, bottom=0.02)
@@ -370,7 +373,7 @@ def generate_plot(counts, bayes_filter, ax, title, pad=0):
     #ax.set_yticklabels(ax.get_yticks(), fontsize=30)
     ax.tick_params(axis="y", labelsize=30)
     ax.set_title(title, fontsize=50, fontweight="bold", pad=pad)
-    ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left', fontsize=25, title_fontsize=30,
+    ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left', fontsize=30, title_fontsize=35,
         title="$\\bf{Sign}$")
     return ax
 
@@ -408,14 +411,14 @@ def _make_inoc_heatmap(pkl, subject_name, ax, order, fig, vmax, vmin, make_color
             ax = ax, norm = LogNorm(vmin=vmin, vmax=vmax), xticklabels=True,
             linewidth = 0.1, linecolor = "grey", cbar=True, cbar_ax=cbaxes)
         cbar = heatmap.collections[0].colorbar
-        cbar.ax.set_title('Relative\nAbundance\n (Inoculum)\n', fontsize=30, fontweight='bold')
+        cbar.ax.set_title('Relative\nAbundance\n (Inoculum)\n', fontsize=35, fontweight='bold')
         cbar.ax.tick_params(labelsize=30)
         cbaxes.set_ylim(1e-1, 1e-6)
     else:
         heatmap = sns.heatmap(df, yticklabels = False, cmap = cmap,
             ax = ax, norm = LogNorm(vmin=vmin, vmax=vmax),xticklabels=True,
             linewidth = 0.1, linecolor = "indianred", cbar=False)
-    ax.set_xticklabels(ax.get_xticklabels(), fontsize = 25,
+    ax.set_xticklabels(ax.get_xticklabels(), fontsize = 30,
     rotation = 90, color="red")
 
     for _, spine in ax.spines.items():
@@ -430,7 +433,7 @@ def _make_phylogenetic_tree(tree_fname, names, taxa, ax, fig, figlabel=None,
     tree = ete3.Tree(tree_fname)
     tree.prune(names, True)
     tree.write(outfile='tmp/temp.nhx')
-    fontsize=19.5
+    fontsize = 23
 
     taxonomies = ['family', 'order', 'class', 'phylum', 'kingdom']
     suffix_taxa = {'genus': '*', 'family': '**', 'order': '***', 'class': '****'
@@ -476,7 +479,7 @@ def _make_phylogenetic_tree(tree_fname, names, taxa, ax, fig, figlabel=None,
         taxonname += ' ' + taxon.name
         taxonname = ' ' + suffix + taxonname
         text._text = taxonname
-        text._text = text._text + '- ' * (95 - len(text._text))
+        text._text = text._text + '- ' * (100 - len(text._text))
         text.set_fontsize(fontsize)
 
     if figlabel is not None:
@@ -545,14 +548,13 @@ def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig,
         render_labels=render_labels, size_scale = 500, size=bvec,
         size_range=[0, 1], y_order=['Gentamicin', 'Vancomycin', 'High Fat Diet'],
         color=np.ravel(np_df), color_range=[-5, 5],
-        palette=sns.diverging_palette(240, 10, n=256)[::-1], marker='o')
+        palette=sns.color_palette("RdBu", n_colors=200), marker='o')
 
         txt=['$\sqrt{10} < K_\mathrm{BF}  \leq 10$',
             '$ 10 < K_\mathrm{BF}\leq 100$', '$K_\mathrm{BF}>100$' ]
-        heatmap(x=[1, 1, 1], y=txt, ax=cax_bf, cax=None, fsize=25,
-        size_scale = 500, size_range=[0,1], size=[.01, .1, 1],
-        y_order=txt, color=[200, 200, 200], color_range=[-5,5],
-        palette=sns.diverging_palette(240, 10, n=100)[::-1], marker='o',
+        heatmap(x=[1, 1, 1], y=txt, ax=cax_bf, cax=None, fsize=30,
+        size_scale = 600, size_range=[0,1], size=[.01, .1, 1],
+        y_order=txt, marker='o',
         render_labels=True, title="Bayes\nFactor\n", tick_right=True)
 
     else:
@@ -560,7 +562,7 @@ def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig,
         render_labels=render_labels, size_scale = 500, size=bvec,
         size_range=[0, 1], y_order=['Gentamicin', 'Vancomycin', 'High Fat Diet'],
         color=np.ravel(np_df), color_range=[-5, 5],
-        palette=sns.diverging_palette(240, 10, n=256)[::-1], marker='o')
+        palette=sns.color_palette("RdBu", n_colors=200), marker='o')
 
     if figlabel is not None:
         ax.set_title(figlabel, fontsize=50, fontweight='bold',
@@ -570,7 +572,7 @@ def _make_perturbation_heatmap(chainname, min_bayes_factor, ax, colorder, fig,
     return ax
 
 def heatmap(x, y, ax, cax=None, render_labels=False, title=None, tick_right=False,
-    fsize=25, **kwargs):
+    fsize=30, **kwargs):
 
     if 'color' in kwargs:
         color = kwargs['color']
@@ -581,8 +583,8 @@ def heatmap(x, y, ax, cax=None, render_labels=False, title=None, tick_right=Fals
         palette = kwargs['palette']
         n_colors = len(palette)
     else:
-        n_colors = 256 # Use 256 colors for the diverging color palette
-        palette = sns.color_palette("Blues", n_colors)
+        n_colors = 100 # Use 256 colors for the diverging color palette
+        palette = sns.color_palette("magma_r", n_colors)
 
     if 'color_range' in kwargs:
         color_min, color_max = kwargs['color_range']
@@ -675,7 +677,7 @@ def heatmap(x, y, ax, cax=None, render_labels=False, title=None, tick_right=Fals
     ax.set_xlabel(kwargs.get('xlabel', ''))
     ax.set_ylabel(kwargs.get('ylabel', ''))
     if title is not None:
-        ax.set_title(title, fontsize=30, fontweight="bold")
+        ax.set_title(title, fontsize=35, fontweight="bold")
     if tick_right:
         ax.yaxis.tick_right()
 
@@ -704,7 +706,7 @@ def heatmap(x, y, ax, cax=None, render_labels=False, title=None, tick_right=Fals
         cax.set_xticks([]) # Remove horizontal ticks
         cax.set_yticks(np.linspace(min(bar_y), max(bar_y), 3)) # Show vertical ticks for min, middle and max
         cax.yaxis.tick_right() # Show vertical ticks on the right
-        cax.set_title('Perturbation\nEffect\n', fontsize=30, fontweight='bold')
+        cax.set_title('Perturbation\nEffect\n', fontsize=35, fontweight='bold')
         cax.tick_params(axis='y', labelsize=30)
 
 def get_scale(name):
@@ -807,6 +809,7 @@ def _make_cluster_membership_heatmap(chainname, study_pkl, ax, order, binary, fi
     df = df.reindex(order)
 
     cols = np.arange(len(df.columns))
+    df.to_csv(str(count)+".csv", sep=",")
     colnames = df.columns
     newcolnames = []
     for idx in cols:
@@ -866,13 +869,13 @@ def _make_cluster_membership_heatmap(chainname, study_pkl, ax, order, binary, fi
     ax.set_yticks(np.arange(0.5, len(df.index), 1), minor=True)
     ax.grid(which='minor', color='black', linestyle='-', linewidth=0.1)
 
-    ax.tick_params(axis='both', which='minor', left=False, bottom=False)
+    ax.tick_params(axis='both', which='minor', left=False, bottom=False, labelsize=30)
 
     if make_colorbar:
         print("Making colorbar cluster")
         cbaxes = fig.add_axes([0.53, 0.45, 0.015, 0.1]) # left, bottom, width, height
         cbar = plt.colorbar(im, cax=cbaxes, orientation='vertical')
-        cbar.ax.set_title('Relative\nAbundance\n', fontsize=30, fontweight='bold')
+        cbar.ax.set_title('Relative\nAbundance\n', fontsize=35, fontweight='bold')
         cbar.ax.tick_params(labelsize=30, length=10, which="major")
         cbar.ax.tick_params(length=0, which="minor")
 
@@ -881,11 +884,11 @@ def _make_cluster_membership_heatmap(chainname, study_pkl, ax, order, binary, fi
         markersize=35), Line2D([0], [0], marker= "s", color="white",
         label= "Did not colonize consistently", markerfacecolor="gray",
         markersize=35), Line2D([0], [0], marker= "s", color="white",
-        label= "Not detected consecutively for 3 \ndays in at least 1 mice",
+        label= "Not detected consecutively for 3 \ntimepoints in at least 1 mice",
         markerfacecolor="silver",
         markersize=35), Line2D([0], [0], marker= "o", color="white",
         label= "Undetected throughout the\nexperiment", markerfacecolor="black",
-        markersize=25)]
+        markersize=11)]
 
         lgd_ax = fig.add_axes([0.875, 0.485, 0.05, 0.05])
         lgd_ax.legend(handles=legend_elements, loc="center", fontsize=30,

@@ -10,17 +10,23 @@ from statsmodels.stats import multitest
 import matplotlib.lines as mlines
 import argparse
 
+from matplotlib import rcParams
+from matplotlib import font_manager
+
 REL_ORDER = ["MDSINE2", "cLV", "LRA", "gLV-RA", "gLV-ridge", "gLV-elastic\n net"]
 ABS_ORDER = ["MDSINE2", "gLV-ridge", "gLV-elastic\n net"]
 
-PAL_REL = {"MDSINE2":"red", "cLV":"orange", "LRA":"brown",
-   "gLV-RA":"yellow", "gLV-ridge":"blue", "gLV-elastic\n net":"green"}
-PAL_ABS = {"MDSINE2":"red", "gLV-ridge":"blue",
-    "gLV-elastic\n net":"green"}
+HEX_REL = sns.color_palette("tab10").as_hex()
+HEX_ABS = sns.color_palette("tab10").as_hex()
+
+PAL_REL = {"MDSINE2":HEX_REL[0], "cLV":HEX_REL[3], "LRA":HEX_REL[4],
+   "gLV-RA":HEX_REL[5], "gLV-ridge":HEX_REL[1], "gLV-elastic\n net":HEX_REL[2]}
+PAL_ABS = {"MDSINE2":HEX_REL[0], "gLV-ridge":HEX_REL[1],
+    "gLV-elastic\n net":HEX_REL[2]}
 
 TITLE_FONTSIZE = 18
-TICK_FONTSIZE = 10.5
-AXES_FONTSIZE = 14
+TICK_FONTSIZE = 12
+AXES_FONTSIZE = 16
 
 def parse_args():
 
@@ -187,8 +193,8 @@ def box_plot(data_df, axes, title, use_log, type_, ylab, pvalues):
         linewidth=0.5, alpha=0.5, ax=axes, palette=palette, order=order) #, color=".3"
 
 
-    axes.set_ylabel(ylab, fontsize=AXES_FONTSIZE)
-    axes.set_xlabel("Model", fontsize=AXES_FONTSIZE, labelpad=3)
+    axes.set_ylabel(ylab, fontsize=AXES_FONTSIZE, fontweight="bold")
+    axes.set_xlabel("Model", fontsize=AXES_FONTSIZE, labelpad=3, fontweight="bold")
     axes.set_xticklabels(axes.get_xticklabels(), rotation=0, fontsize=TICK_FONTSIZE)
     axes.tick_params(axis='y', labelsize=TICK_FONTSIZE)
 
@@ -275,7 +281,7 @@ def main():
     abs_lim=1e5
     ep = 6
 
-    fig = plt.figure(figsize=(21, 4.5))
+    fig = plt.figure(figsize=(22, 4.5))
     spec = gridspec.GridSpec(ncols=33, nrows=1, figure=fig)
 
     ax_he_abs_box = fig.add_subplot(spec[0, 0:5])
@@ -311,13 +317,13 @@ def main():
 
 
     box_plot(healthy_abs_box_df, ax_he_abs_box, "A", use_log, "abs",
-        "RMSE ($\log_{10}$ Abs Abundance)", test_healthy_abs)
+        "RMSE (log Abs Abundance)", test_healthy_abs)
     box_plot(uc_abs_box_df, ax_uc_abs_box, "B", use_log, "abs",
-        "RMSE ($\log_{10}$ Abs Abundance)", test_uc_abs)
+        "RMSE (log Abs Abundance)", test_uc_abs)
     box_plot(healthy_rel_box_df, ax_he_rel_box, "C", use_log, "rel",
-        "RMSE ($\log_{10}$ Rel Abundance)", test_healthy_rel)
+        "RMSE (log Rel Abundance)", test_healthy_rel)
     box_plot(uc_rel_box_df, ax_uc_rel_box, "D", use_log, "rel",
-        "RMSE ($\log_{10}$ Rel Abundance)", test_uc_rel)
+        "RMSE (log Rel Abundance)", test_uc_rel)
 
     os.makedirs(args.output_path, exist_ok=True)
     fig.savefig(args.output_path+"figure3.pdf", bbox_inches="tight",

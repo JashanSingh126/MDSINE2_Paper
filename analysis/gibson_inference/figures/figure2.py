@@ -12,7 +12,11 @@ import pandas as pd
 import numpy as np
 import argparse
 import os
+import matplotlib
+from matplotlib import rcParams
+from matplotlib import font_manager
 
+#import matplotlib.font_manager
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.patches import Rectangle
@@ -34,14 +38,9 @@ from matplotlib.colors import LogNorm
 import matplotlib.image as mpimg
 from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationBbox
 from matplotlib.gridspec import GridSpec
-import matplotlib.font_manager
-
 from matplotlib import rcParams
 
-# change font
-rcParams['font.family'] = 'DeJavu Serif'
-rcParams['font.serif'] = ['Arial']
-
+rcParams['pdf.fonttype'] = 42
 
 
 TAXLEVEL = "family"
@@ -329,7 +328,7 @@ def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axqpcr, axrel, axper
     axrel.yaxis.set_major_locator(plt.NullLocator())
     axrel.yaxis.set_minor_locator(plt.NullLocator())
     for tick in axrel.xaxis.get_major_ticks():
-        tick.label.set_fontsize(24)
+        tick.label.set_fontsize(26)
 
     #plot the absolute abundance
     qpcr_meas = {}
@@ -411,11 +410,11 @@ def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axqpcr, axrel, axper
     axinoculum.set_ylim(bottom=0, top=1)
 
     for tick in axinoculum.yaxis.get_major_ticks():
-        tick.label.set_fontsize(24)
-    axqpcr.set_ylabel('CFUs/g', size=  24, fontweight='bold')
+        tick.label.set_fontsize(26)
+    axqpcr.set_ylabel('CFUs/g', size=  30, fontweight='bold')
     # axqpcr.yaxis.set_label_coords(-0.06, 0.5)
-    axinoculum.set_ylabel('Relative Abundance', size = 24, fontweight='bold')
-    axrel.set_xlabel('Time (d)', size=  24, fontweight='bold')
+    axinoculum.set_ylabel('Relative Abundance', size = 30, fontweight='bold')
+    axrel.set_xlabel('Time (d)', size=30, fontweight='bold')
     # axrel.xaxis.set_label_coords(0.5,-0.1, transform=axrel.transAxes)
     axrel.set_ylim(bottom=0, top=1)
 
@@ -423,7 +422,7 @@ def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axqpcr, axrel, axper
         title = 'Healthy Cohort'
     else:
         title = 'Ulcerative Colitis Cohort'
-    axqpcr.set_title(title, fontsize = 30, fontweight='bold', y=1.3)
+    axqpcr.set_title(title, fontsize = 30, fontweight='bold', y=1.25)
 
     #plot perturbation
     subj_ = ""
@@ -433,7 +432,7 @@ def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axqpcr, axrel, axper
     times_li = list(times)
     axpert.set_xlim(axrel.get_xlim())
     axpert = add_perturbation_label(axpert, subjset.perturbations, subj_, times_li,
-        textsize = 22, alpha=0)
+        textsize = 24, alpha=0)
 
     for perturbation in subjset.perturbations:
         start = times_li.index(perturbation.starts[subj_.name]) - 0.5
@@ -443,13 +442,13 @@ def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axqpcr, axrel, axper
         axpert.axvline(x = end, color='black', linestyle='--', linewidth=2)
 
     if figlabelinoculum is not None:
-        axinoculum.text(0, y = 1.01, s = figlabelinoculum, fontsize = 25,
+        axinoculum.text(-0.25, y = 1.01, s = figlabelinoculum, fontsize = 35,
                   fontweight = "bold", transform = axinoculum.transAxes)
     if figlabelqpcr is not None:
-        axpert.text(0, y = 1.01, s = figlabelqpcr, fontsize = 25,
+        axpert.text(0, y = 1.01, s = figlabelqpcr, fontsize = 35,
                   fontweight = "bold", transform = axpert.transAxes)
     if figlabelrel is not None:
-        axrel.text(0, y = 1.01, s = figlabelrel, fontsize = 25,
+        axrel.text(0, y = 1.01, s = figlabelrel, fontsize = 35,
                   fontweight = "bold", transform = axrel.transAxes)
 
     return max_qpcr_value, color_index, labels, labels_inoc
@@ -491,7 +490,7 @@ def add_expt_figure(ax, subjset, figlabel):
     for i in range(len(labels)):
         label = labels[i]
         xpos = x[i]
-        ax.text(xpos, 0.-.6, label, horizontalalignment='center', fontsize=24)
+        ax.text(xpos, 0.-.6, label, horizontalalignment='center', fontsize=26)
     x = np.arange(0,np.max(times),2)
     for ylim in [0.07, -0.07]:
         y = [ylim for t in x]
@@ -511,22 +510,22 @@ def add_expt_figure(ax, subjset, figlabel):
         name = perturbation.name
         x = (perturbation.ends[subj_.name] + perturbation.starts[subj_.name])/2
         ax.text(x, 0.25, name.capitalize(), horizontalalignment='center',
-            fontsize = 24)
+            fontsize = 26)
         starts = np.asarray([perturbation.starts[subj_.name]])
         ends = np.asarray([perturbation.ends[subj_.name]])
         ax.barh(y=[0 for i in range(len(starts))], width=ends-starts, height=0.1,
         left=starts, color='darkgrey')
 
     if figlabel is not None:
-        ax.text(x=-0.095, y = 2.5, s=figlabel, fontsize=25, fontweight='bold',
+        ax.text(x=-0.095, y = 2.5, s=figlabel, fontsize=35, fontweight='bold',
             transform = ax.transAxes)
     xpos = np.max(times)* 1.05
     y = 0.05
     ax.scatter([xpos], [y], c = 'black', s=25)
     ax.text(xpos+1, y, 'Fecal Sample Collection', horizontalalignment='left',
-    fontsize = 24, verticalalignment='center')
+    fontsize = 26, verticalalignment='center')
 
-def plot_legend(axlegend, level, cutoff, color_taxa_dict):
+def plot_legend(axlegend, level, cutoff, color_taxa_dict, names_union):
     """plots the legend"""
 
     taxidx = TAXLEVEL_REV_IDX[TAXLEVEL]
@@ -535,7 +534,19 @@ def plot_legend(axlegend, level, cutoff, color_taxa_dict):
 
     #print(level, upper_tax, lower_tax)
     labels = list(color_taxa_dict.keys())
+    new_labels = []
+    for lab in labels:
+        if "Families" not in lab:
+            new_labels.append(lab)
+    new_labels.sort()
     labels.sort()
+    labels_str = ", ".join(new_labels)
+
+    file = open("gibson_inference/figures/figure2_files/abundant_species.txt", "w")
+    file.write(labels_str)
+    file.close()
+
+    not_in_labels = sorted(list(set(names_union) - set(labels)))
 
     #others appears last in the legend
     last_label = None
@@ -551,43 +562,64 @@ def plot_legend(axlegend, level, cutoff, color_taxa_dict):
     for label in labels:
         im, = axlegend.bar([0],[0], color= color_taxa_dict[label], label=label)
         ims.append(im)
-    ims.append(Line2D([0], [0], marker= "x", color="white",
-    markerfacecolor=None, markeredgecolor="black", markersize=11, markeredgewidth=2))
+    for label in not_in_labels:
+        im, = axlegend.bar([0],[0], color= "white", label=label)
+        ims.append(im)
+    #ims.append(Line2D([0], [0], marker= "x", color="white",
+    #markerfacecolor=None, markeredgecolor="black", markersize=11, markeredgewidth=2))
     #ims.append("x")
+
     extra = Rectangle((0, 0), 1, 1, fc="w", fill=False, edgecolor='none',
-    linewidth=0)
+        linewidth=0)
+    ims = ims + [extra, extra]
+
     legend_handle = [extra]
     legend_handle = legend_handle + ims
     extra_col = [extra]*(len(ims)+1)
-    legend_handle = legend_handle + extra_col + extra_col
+    legend_handle = legend_handle + extra_col + extra_col + extra_col
 
     empty_label = ''
-    legend_labels = [empty_label]* (len(ims)+1) + ['$\\bf{' +
-    upper_tax.capitalize() + '}$']
+    #legend_labels = [empty_label]* (len(ims)+1) + ['    $\\bf{' +
+    #upper_tax.capitalize() + '}$']
+    legend_labels = [empty_label]* (len(ims)+1) + [upper_tax.capitalize()]
     for label in labels[:-1]:
         l1,_ = label.split(' ')
         if l1 == 'nan':
             l1 = 'Uncultured Clone'
         legend_labels = legend_labels + [l1.capitalize()]
     legend_labels = legend_labels + ['Other < {}%'.format(CUTOFF_FRAC_ABUNDANCE*100)]
-    legend_labels = legend_labels + ["Taxonomy not defined"]
-    legend_labels = legend_labels + ['$\\bf{' + lower_tax.capitalize() + '}$']
+
+    for label in not_in_labels:
+        l1,_ = label.split(" ")
+        legend_labels = legend_labels + [l1.capitalize()]
+    legend_labels = legend_labels + ["\n", "\n"]
+    #legend_labels = legend_labels + ["Taxonomy not defined"]
+    #legend_labels = legend_labels + ['    $\\bf{' + lower_tax.capitalize() + '}$']
+    legend_labels = legend_labels + [lower_tax.capitalize()]
     #legend_labels = legend_labels + ["NA"]
 
     for label in labels[:-1]:
         _,l2 = label.split(' ')
         l2 = l2.split("_")[0]
         if l2 == 'NA':
-            l2 = "$\\quad \\quad \\quad \\quad \\times$"
+            l2 = "$\\times$ (Taxonomy not defined)"
 
         legend_labels = legend_labels + [l2.capitalize()]
-
     legend_labels = legend_labels + [" "]
-    legend_labels = legend_labels + [" "]
+    for label in not_in_labels:
+        _,l2 = label.split(" ")
+        if "_" in l2:
+            l2 = " ".join([i.capitalize() for i in l2.split("_")[:-1]])
 
+        legend_labels = legend_labels + [l2.capitalize()]
+    legend_labels = legend_labels + ["\n", "\n"]
 
-    axlegend.legend(legend_handle, legend_labels, ncol = 3, loc='upper center',
-        fontsize = 21, columnspacing =0.01)
+    legend_labels = legend_labels + ['']
+    legend_labels = legend_labels + [" "*50]*30
+
+    axlegend.legend(legend_handle, legend_labels, ncol = 4, loc='upper center',
+        fontsize=16, columnspacing=0, handletextpad=0.2)
+
 
     axlegend = _remove_border(axlegend)
 
@@ -606,6 +638,26 @@ def _remove_border(ax):
     ax.set_ylabel('')
 
     return ax
+
+def get_deseq_info(loc, donor):
+
+    hfd_names = set(pd.read_csv("{}/{}1.csv".format(loc, donor), index_col=0).index)
+    vanc_names = set(pd.read_csv("{}/{}2.csv".format(loc, donor), index_col=0).index)
+    gent_names = set(pd.read_csv("{}/{}3.csv".format(loc, donor), index_col=0).index)
+
+    names_union = hfd_names.union(vanc_names.union(gent_names))
+    #print(names_union)
+    #print(len(names_union))
+    cleaned_names = []
+    for name in names_union:
+        if "unknown" in name:
+            if name !="unknown unknown":
+                cleaned_names.append(name.replace("unknown", "NA"))
+        else:
+            cleaned_names.append(name)
+
+    print(len(cleaned_names))
+    return set(cleaned_names)
 
 def main():
 
@@ -647,7 +699,7 @@ def main():
     axqpcr = axqpcr1, axrel = axrel1, axpert=axpert1, axinoculum = axinoculum1,
     make_ylabels=True, color_taxa_dict = DATA_FIGURE_COLORS,
     color_index = XKCD_COLORS_IDX, color_set = XKCD_COLORS, figlabelinoculum
-    = 'D', figlabelqpcr='B', figlabelrel='E', make_legend=False,
+    = 'E', figlabelqpcr='B', figlabelrel='F', make_legend=False,
     taxaname_map = taxa_map_healthy, inoc_order = None)
     #print("color index", XKCD_COLORS_IDX)
 
@@ -661,8 +713,8 @@ def main():
     subjset_inoc = subjset_inoc, df = df_uc, dset_type = "uc", axqpcr = axqpcr2,
     axrel = axrel2, axpert=axpert2, axinoculum = axinoculum2, make_ylabels = True,
     color_taxa_dict = DATA_FIGURE_COLORS, color_index = XKCD_COLORS_IDX,
-    color_set = XKCD_COLORS, figlabelinoculum ='F', figlabelqpcr = 'C',
-    figlabelrel='G', make_legend = False, taxaname_map = taxa_map_uc,
+    color_set = XKCD_COLORS, figlabelinoculum ='G', figlabelqpcr = 'C',
+    figlabelrel='H', make_legend = False, taxaname_map = taxa_map_uc,
     labels_order = order_, inoc_order = order_inoc)
 
     #make the qpcr value (absolute value) axis labels consistent in both axes
@@ -674,34 +726,40 @@ def main():
 
     axqpcr1.set_yticks([1e10, 1e11])
     for tick in axqpcr1.yaxis.get_major_ticks():
-        tick.label.set_fontsize(24)
+        tick.label.set_fontsize(26)
 
     axqpcr2.set_yticks([1e10, 1e11])
     for tick in axqpcr2.yaxis.get_major_ticks():
-        tick.label.set_fontsize(24)
+        tick.label.set_fontsize(26)
 
-    ax_experiment =  fig.add_subplot(gs[0, 4 * squeeze : 36 * squeeze],
+    ax_experiment =  fig.add_subplot(gs[0, 1 * squeeze : 31 * squeeze],
                       facecolor='none')
     add_expt_figure(ax_experiment, subjset_healthy, figlabel = 'A')
+    deseq_loc = "gibson_inference/figures/figure2_files"
+
+    uc_names = get_deseq_info(deseq_loc, "uc")
+    healthy_names = get_deseq_info(deseq_loc, "healthy")
+    names_union = uc_names.union(healthy_names)
 
     #make legend
-    axlegend = fig.add_subplot(gs[2 : 8, 33 * squeeze: 39 * squeeze],
+    axlegend = fig.add_subplot(gs[1 : 8, 36 * squeeze: 38 * squeeze],
                 facecolor='none')
     plot_legend(axlegend = axlegend, level = TAXLEVEL, cutoff = CUTOFF_FRAC_ABUNDANCE,
-    color_taxa_dict = DATA_FIGURE_COLORS)
+    color_taxa_dict = DATA_FIGURE_COLORS, names_union=names_union)
+    fig.text(0.7, 0.78, "D", fontsize = 35, fontweight = "bold")
 
     axpert1 = _remove_border(axpert1)
     axpert2 = _remove_border(axpert2)
 
 
-    fig.subplots_adjust(wspace = 0.58, left = 0.05, right = 0.95, top =  0.85,
-    bottom = .005, hspace = 0.8)
+    fig.subplots_adjust(wspace = 0.58, left = 0.06, right = 0.9, top =  0.88,
+    bottom = 0.002, hspace = 0.9)
 
     loc = "gibson_inference/figures/output_figures/"
     if not os.path.exists(loc):
         os.makedirs(loc, exist_ok = True)
 
-    plt.savefig(loc + "figure2.png", dpi = 100, bbox_inches = "tight")
-    plt.savefig(loc + "figure2.pdf", dpi = 800, bbox_inches="tight")
+    plt.savefig(loc + "figure2.png", dpi = 100)
+    plt.savefig(loc + "figure2.pdf", dpi = 100)
 
 main()

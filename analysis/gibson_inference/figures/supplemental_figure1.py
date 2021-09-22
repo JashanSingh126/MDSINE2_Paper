@@ -18,7 +18,7 @@ import seaborn as sns
 
 import numpy as np
 import pickle
-import os 
+import os
 
 from scipy.stats import mannwhitneyu
 from statsmodels.stats.multitest import multipletests, fdrcorrection
@@ -834,10 +834,6 @@ def main():
     subjset_healthy = md2.Study.load(args.healthy_pkl)
     subjset_uc = md2.Study.load(args.uc_pkl)
     subjset_inoc = md2.Study.load(args.inoc_pkl)
-
-    #subjset_healthy = loaddata(True)
-    #subjset_uc = loaddata(False)
-    #subjset_inoc = pl.base.SubjectSet.load('../../processed_data/inoculum_subjectset.pkl')
 
     diversity_plot(subjset_healthy, subjset_uc, subjset_inoc)
 
