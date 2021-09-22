@@ -606,7 +606,7 @@ def main():
         figlabelrel='D', make_legend = False, taxaname_map = taxa_map_uc,
         labels_order = order_, inoc_order = order_inoc)
 
-    deseq_loc = "gibson_inference/figures/figure2_phylum"
+    deseq_loc = "gibson_inference/figures/supplemental_figure2_files"
     axqpcr1.set_title("Healthy Cohort", fontsize=17, fontweight="bold")
     axqpcr2.set_title("Ulcerative Colitis Cohort", fontsize=17, fontweight="bold")
     _remove_border(axqpcr1)
