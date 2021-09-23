@@ -14,3 +14,4 @@ logs/
 lsf_files
 .ipynb_checkpoints
 *.ini
+*.npy
