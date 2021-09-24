@@ -429,13 +429,14 @@ def plot_legend(axlegend, level, cutoff, color_taxa_dict, names_union):
     labels = list(color_taxa_dict.keys());print(color_taxa_dict)
     new_labels = []
     for lab in labels:
-        if "Families" not in lab:
+        if "with" not in lab:
             new_labels.append(lab)
     new_labels.sort()
     labels.sort()
     labels_str = ", ".join(new_labels)
 
-    file = open("gibson_inference/figures/figure2_files/abundant_species_phylum.txt", "w")
+    file = open("gibson_inference/figures/supplemental_figure2_files/"\
+        "abundant_species_phylum.txt", "w")
     file.write(labels_str)
     file.close()
 
