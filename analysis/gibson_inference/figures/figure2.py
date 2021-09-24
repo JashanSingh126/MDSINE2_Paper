@@ -41,6 +41,8 @@ from matplotlib.gridspec import GridSpec
 from matplotlib import rcParams
 
 rcParams['pdf.fonttype'] = 42
+rcParams['font.sans-serif'] = "Arial"
+rcParams['font.family'] = "sans-serif"
 
 
 TAXLEVEL = "family"
