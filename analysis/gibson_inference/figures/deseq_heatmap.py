@@ -4,8 +4,23 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import argparse
+from matplotlib import rcParams
+from matplotlib import font_manager
 
-mpl.rcParams['pdf.fonttype'] = 42
+rcParams['pdf.fonttype'] = 42
+
+font_dirs = ['gibson_inference/figures/arial_fonts']
+font_files = font_manager.findSystemFonts(fontpaths=font_dirs)
+#print(font_files)
+
+for font_file in font_files:
+    #print(font_file)
+    ff = font_file.split("/")[-1]
+    if "._" not in ff:
+        font_manager.fontManager.addfont(font_file)
+
+# change font
+rcParams['font.family'] = 'Arial'
 
 def parse_args():
 

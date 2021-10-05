@@ -28,12 +28,28 @@ import skbio.stats.distance
 import skbio.diversity
 #import pylab as pl
 import argparse
+from matplotlib import rcParams
+from matplotlib import font_manager
+
+rcParams['pdf.fonttype'] = 42
+
+font_dirs = ['gibson_inference/figures/arial_fonts']
+font_files = font_manager.findSystemFonts(fontpaths=font_dirs)
+#print(font_files)
+
+for font_file in font_files:
+    #print(font_file)
+    ff = font_file.split("/")[-1]
+    if "._" not in ff:
+        font_manager.fontManager.addfont(font_file)
+
+# change font
+rcParams['font.family'] = 'Arial'
 
 
 HEALTHY_SUBJECTS = ['2','3','4','5']
 UNHEALTHY_SUBJECTS = ['6','7','8','9','10']
 PERTURBATION_COLOR = 'orange'
-
 
 def parse_args():
 

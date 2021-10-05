@@ -23,7 +23,10 @@ import argparse
 
 from matplotlib import rcParams
 from matplotlib import font_manager
-font_dirs = ['/data/cctm/darpa_perturbation_mouse_study/sawal_test/arial_fonts']
+
+rcParams['pdf.fonttype'] = 42
+
+font_dirs = ['gibson_inference/figures/arial_fonts']
 font_files = font_manager.findSystemFonts(fontpaths=font_dirs)
 #print(font_files)
 

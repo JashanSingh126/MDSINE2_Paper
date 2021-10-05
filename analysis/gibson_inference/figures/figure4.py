@@ -25,6 +25,22 @@ from matplotlib.collections import PatchCollection
 from matplotlib import rcParams
 from matplotlib import font_manager
 
+rcParams['pdf.fonttype'] = 42
+
+font_dirs = ['gibson_inference/figures/arial_fonts']
+font_files = font_manager.findSystemFonts(fontpaths=font_dirs)
+#print(font_files)
+
+for font_file in font_files:
+    #print(font_file)
+    ff = font_file.split("/")[-1]
+    if "._" not in ff:
+        font_manager.fontManager.addfont(font_file)
+
+# change font
+rcParams['font.family'] = 'Arial'
+
+
 def phylogenetic_heatmap_gram_split(inoc_pkl, healthy_pkl, uc_pkl, chain_healthy,
     chain_uc, outfile, tree_fname, taxa, healthy_filter, uc_filter):
     '''Split the phylogenetic tree into gram negative and gram positive side by side.

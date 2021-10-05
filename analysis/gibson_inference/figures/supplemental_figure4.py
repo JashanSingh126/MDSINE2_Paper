@@ -10,9 +10,23 @@ from statsmodels.stats import multitest
 
 import matplotlib.lines as mlines
 import argparse
-
 from matplotlib import rcParams
 from matplotlib import font_manager
+
+rcParams['pdf.fonttype'] = 42
+
+font_dirs = ['gibson_inference/figures/arial_fonts']
+font_files = font_manager.findSystemFonts(fontpaths=font_dirs)
+#print(font_files)
+
+for font_file in font_files:
+    #print(font_file)
+    ff = font_file.split("/")[-1]
+    if "._" not in ff:
+        font_manager.fontManager.addfont(font_file)
+
+# change font
+rcParams['font.family'] = 'Arial'
 
 REL_ORDER = ["MDSINE2", "cLV", "LRA", "gLV-RA", "gLV-ridge", "gLV-elastic\n net"]
 ABS_ORDER = ["MDSINE2", "gLV-ridge", "gLV-elastic\n net"]
