@@ -15,8 +15,9 @@ paper (coming shortly).
 <a name="Cloud"/>
 
 ## 1. Analysis in the cloud
-Follow the link to an interactive run through of our analysis pipeline using MDSINE2, hosted on binder.
-- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/gerberlab/MDSINE2_Paper/HEAD?filepath=bindertutorials)
+Follow the link to an interactive run through of our analysis pipeline using MDSINE2, hosted on Google colab.
+
+<a href="https://colab.research.google.com/github/gerberlab/MDSINE2_Paper/blob/master"><img alt="" src="https://img.shields.io/static/v1?label=Colab&message=Launch%20in%20Google%20Colab&color=orange&logo=googlecolab&style=for-the-badge&logoWidth=10"/></a>
 
 This analysis includes the parsing of the raw input and all of the pre-preprocessing steps found in the 
 Methods section of our paper.
