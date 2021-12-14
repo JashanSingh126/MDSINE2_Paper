@@ -495,7 +495,6 @@ def make_plot(df_healthy_p_order, df_uc_p_order, df_healthy_p_family,
     fig.text(0.255, 0.88, "Healthy", fontsize=55, fontweight="bold")
     fig.text(0.725, 0.88, "Dysbiotic", fontsize=55, fontweight="bold")
     fig.savefig(loc + "supplemental_figure5.pdf", bbox_inches="tight")
-    fig.savefig(loc + "supplemental_figure5.png", bbox_inches="tight")
 
 
 def format_df(df, n_cluster):

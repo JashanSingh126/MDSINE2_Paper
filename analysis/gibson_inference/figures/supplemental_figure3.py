@@ -106,7 +106,7 @@ def make_plot(axes_set, study, start, title_li):
                         used_n = n_taxa
                         print("used:", used_n)
                 #print("subjs:{}, days:{}, n_taxa:{}, thresholds:{}".format(
-                i, d, n_taxa, t))
+                #i, d, n_taxa, t))
             axes.plot(threshold_values, results_n, label="{} consecutive".format(d))
         if study.name=="healthy" and subj_num==3:
             axes.legend(bbox_to_anchor=(1.04, 0), loc=2, fontsize=13,
