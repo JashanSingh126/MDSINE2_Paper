@@ -1,3 +1,6 @@
+#makes the heatmap showing the results of deseq analysis at steady state.
+#heatmap in supplementary figure 2
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -42,29 +45,61 @@ def parse_args():
 
     return parser.parse_args()
 
-def get_deseq_info(loc, donor):
+def get_deseq_info_phylum(loc, donor):
 
-    hfd_names = set(pd.read_csv("{}/{}1.csv".format(loc, donor), index_col=0).index)
-    vanc_names = set(pd.read_csv("{}/{}2.csv".format(loc, donor), index_col=0).index)
-    gent_names = set(pd.read_csv("{}/{}3.csv".format(loc, donor), index_col=0).index)
+    df = pd.read_csv("{}/{}.csv".format(loc, donor), index_col=0)
+    raw_names = df.index
+    np_df = df.to_numpy()
 
-    names_union = hfd_names.union(vanc_names.union(gent_names))
-    #print(names_union)
-    #print(len(names_union))
     cleaned_names = []
-    for name in names_union:
+    names_dict = {}
+    i = 0
 
-        if "unknown" in name:
-            if name !="unknown unknown":
-                cleaned_names.append(name)
-        else:
+    for name in raw_names:
+        p_adj = np_df[i, -1]
+        if not np.isnan(p_adj):
             cleaned_names.append(name)
-    return set(cleaned_names)
+        names_dict[cleaned_names[-1]] = name
+        i += 1
 
-def select_rows(names, df):
+    return set(cleaned_names), names_dict
+
+def get_deseq_info_order(loc, donor):
+
+    df = pd.read_csv("{}/{}.csv".format(loc, donor), index_col=0)
+    raw_names = df.index
+    np_df = df.to_numpy()
+
+    cleaned_names = []
+    names_dict = {}
+    i = 0
+
+    for name in raw_names:
+        name_split = name.split()
+        p_adj = np_df[i, -1]
+        order_family = " ".join(name_split[2:])
+        if not np.isnan(p_adj) and p_adj < 0.05:
+            if "unknown" in order_family:
+                if order_family !="unknown unknown":
+                    cleaned_names.append(order_family.replace("unknown", "unknown"))
+                else:
+                    cleaned_names.append("{},phylum".format(name_split[0]) + " " +
+                        "Phylum")
+            else:
+                cleaned_names.append(order_family)
+            names_dict[cleaned_names[-1]] = name
+        i += 1
+
+    return set(cleaned_names), names_dict
+
+def select_rows(names, names_dict, df):
 
     values = []
-    for name in names:
+    for short_name in names:
+        name = ""
+        if short_name in names_dict:
+            name = names_dict[short_name]
+
         if name in df.index:
             row = df.loc[name]
             p = row["padj"]
@@ -83,53 +118,45 @@ def select_rows(names, df):
 
     return values
 
-def make_df(loc, names, donor):
+def make_df(loc, names, names_dict, donor):
 
-    hfd_df = pd.read_csv("{}/{}1.csv".format(loc, donor), index_col=0)
-    vanc_df = pd.read_csv("{}/{}2.csv".format(loc, donor), index_col=0)
-    gent_df = pd.read_csv("{}/{}3.csv".format(loc, donor), index_col=0)
-
-    dict_df = {"High Fat Diet": [], "Vancomycin":[], "Gentamicin":[]}
-
-    dict_df["High Fat Diet"] = select_rows(names, hfd_df)
-    dict_df["Vancomycin"] = select_rows(names, vanc_df)
-    dict_df["Gentamicin"] = select_rows(names, gent_df)
+    df = pd.read_csv("{}/{}.csv".format(loc, donor), index_col=0)
+    dict_df = {}
+    dict_df["p_ss"] = select_rows(names, names_dict, df)
 
     combined_df = pd.DataFrame.from_dict(dict_df)
     combined_df.index = names
+    if combined_df.empty:
+        dict_df["p_ss"] = [np.nan]
+        combined_df = pd.DataFrame.from_dict(dict_df)
 
     return combined_df
 
-
-def make_plot(df1, df2, abundance, taxonomy, name, loc):
+def make_plot(df, abundance, taxonomy, name, loc):
 
     #3.5, 11
-    fig = plt.figure(figsize=(3.5, 11))
-    gs = fig.add_gridspec(28, 6)
+    fig = "" #plt.figure(figsize=(3.5, 11))
+    gs = "" #fig.add_gridspec(23, 6)
     axes1 = ""
-    axes2 = ""
 
     if taxonomy == "order":
+        fig = plt.figure(figsize=(3.5, 11))
+        gs = fig.add_gridspec(23, 6)
         if abundance == "high":
             axes1 = fig.add_subplot(gs[0:18,  0:3])
-            axes2 = fig.add_subplot(gs[0:18, 3:6])
         elif abundance == "low":
-            axes1 = fig.add_subplot(gs[19:28, 0:3])
-            axes2 = fig.add_subplot(gs[19:28, 3:6])
+            axes1 = fig.add_subplot(gs[19:23, 0:3])
 
     if taxonomy == "phylum":
-        gs = fig.add_gridspec(28, 7)
+        fig = plt.figure()
+        gs = fig.add_gridspec(5, 1)
         if abundance == "high":
-            axes1 = fig.add_subplot(gs[0:18,  0:3])
-            axes2 = fig.add_subplot(gs[0:18, 4:7])
+            axes1 = fig.add_subplot(gs[0:4,  0])
         elif abundance == "low":
-            axes1 = fig.add_subplot(gs[19:28, 0:3])
-            axes2 = fig.add_subplot(gs[19:28, 4:7])
+            axes1 = fig.add_subplot(gs[4:5, 0])
 
 
-    make_heatmap(df1, axes1, False, "Healthy", True)
-    make_heatmap(df2, axes2, False, "UC", False)
-
+    make_heatmap(df, axes1, False, "Healthy", False)
 
     fig.savefig("{}/{}.pdf".format(loc, name), bbox_inches="tight")
     plt.close()
@@ -150,9 +177,6 @@ def make_heatmap(df, axes, label_x=False, title=None, label_y=False):
         axes = sns.heatmap(df, cmap=cmap, cbar=False, yticklabels=label_y,
             linecolor="black", linewidths=1, ax=axes, xticklabels=False, vmin=-2,
             vmax=2)
-
-    #if title is not None:
-    #    axes.set_title(title, fontweight="bold", fontsize=16)
 
     data = df.to_numpy()
     for y in range(data.shape[0]):
@@ -183,33 +207,26 @@ if __name__ =="__main__":
         if "NA" in lab:
             new_lab = lab.replace("NA", "unknown")
         new_labels.append(new_lab)
+    names = ""
+    names_dict = ""
+    if args.taxonomy == "order":
+        names, names_dict = get_deseq_info_order(deseq_loc, "deseq_ss")
+    elif args.taxonomy == "phylum":
+        names, names_dict = get_deseq_info_phylum(deseq_loc, "deseq_ss")
 
-    uc_names = get_deseq_info(deseq_loc, "uc")
-    healthy_names = get_deseq_info(deseq_loc, "healthy")
-    names_union = uc_names.union(healthy_names)
+    names_not_abundant = sorted(list(set(names) - set(new_labels)))
+    df_abundant = make_df(deseq_loc, new_labels, names_dict, "deseq_ss")
 
-    names_not_abundant = sorted(list(set(names_union) - set(new_labels)))
-    #print(names_union)
-    #print()
-    #print(new_labels)
-    #print()
-    #print(names_not_abundant)
-
-    healthy_df_abundant = make_df(deseq_loc, new_labels, "healthy")
-    uc_df_abundant = make_df(deseq_loc, new_labels, "uc")
-
-    print(healthy_df_abundant)
-    print(uc_df_abundant)
-
-    healthy_df_non_abundant = make_df(deseq_loc, names_not_abundant, "healthy")
-    uc_df_non_abundant = make_df(deseq_loc, names_not_abundant, "uc")
-    print(healthy_df_non_abundant)
-    print(uc_df_non_abundant)
+    df_non_abundant = make_df(deseq_loc, names_not_abundant, names_dict,
+        "deseq_ss")
 
 
     if args.abundance == "high":
-        make_plot(healthy_df_abundant, uc_df_abundant, args.abundance,
+        print("Making Heatmap for species with abundance > 0.5%")
+        make_plot(df_abundant, args.abundance,
             args.taxonomy, args.output_name, args.output_loc)
     elif args.abundance == "low":
-        make_plot(healthy_df_non_abundant, uc_df_non_abundant, args.abundance,
+        print("Making Heatmap for species with abundance < 0.5%")
+        make_plot(df_non_abundant, args.abundance,
             args.taxonomy, args.output_name, args.output_loc)
+    print("Done making heatmaps")

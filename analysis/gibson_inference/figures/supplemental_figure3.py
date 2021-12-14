@@ -76,7 +76,7 @@ def make_plot(axes_set, study, start, title_li):
     i = 1
     study_name = "Healthy"
     if study.name != "healthy":
-        study_name = "UC"
+        study_name = "Dysbiotic"
     for subj_num in range(start, n_subjects+start):
         print("subj number:", subj_num)
         axes = axes_set[subj_num]
@@ -84,8 +84,12 @@ def make_plot(axes_set, study, start, title_li):
         axes.set_xlabel("Minimum Rel Abundance", fontweight="bold",
             fontsize=15)
         axes.set_ylabel("# OTUs remaining", fontsize=15, fontweight="bold")
-        axes.set_title("{}, #mice: {}".format(study_name,
-            i), fontsize=18, fontweight="bold", loc="center")
+        if i ==1:
+            axes.set_title("{}, {} mouse".format(study_name,
+                i), fontsize=18, fontweight="bold", loc="center")
+        else:
+            axes.set_title("{}, {} mice".format(study_name,
+                i), fontsize=18, fontweight="bold", loc="center")
         #axes.text(0, 1.1, title_li[i-1], fontweight="bold", fontsize=18, transform = axes.transAxes)
         axes.set_title(title_li[i-1], fontweight="bold", fontsize=18, loc="left")
         axes.ticklabel_format(axis="x", style="sci")
@@ -101,7 +105,7 @@ def make_plot(axes_set, study, start, title_li):
                     if subj_num==2 or subj_num==8:
                         used_n = n_taxa
                         print("used:", used_n)
-                print("subjs:{}, days:{}, n_taxa:{}, thresholds:{}".format(
+                #print("subjs:{}, days:{}, n_taxa:{}, thresholds:{}".format(
                 i, d, n_taxa, t))
             axes.plot(threshold_values, results_n, label="{} consecutive".format(d))
         if study.name=="healthy" and subj_num==3:
@@ -138,9 +142,11 @@ def parse_args():
 
 if __name__ =="__main__":
 
-	args = parse_args()
+    print("Making Supplemental Figure 3")
+    args = parse_args()
 
-	healthy_study = md2.Study.load(args.healthy_study)
-	uc_study = md2.Study.load(args.uc_study)
+    healthy_study = md2.Study.load(args.healthy_study)
+    uc_study = md2.Study.load(args.uc_study)
 
-	run_and_save_filtering_results(healthy_study, uc_study)
+    run_and_save_filtering_results(healthy_study, uc_study)
+    print("Done Making Supplemental Figure 3")

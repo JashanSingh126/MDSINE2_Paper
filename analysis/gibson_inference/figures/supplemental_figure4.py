@@ -113,8 +113,7 @@ def format_alternative_plot_data(subjs, donor, loc_md2, loc_elas, loc_ridge,
     binned_data = {}
     abund_all = []
     epsilon=0
-    print("Formatting {} {} abundance data for alternative-plot".format(donor,
-        type_))
+
     for subj in subjs:
         cv_name = "{0}-cv{1}".format(donor, subj)
         prefix = dict_[cv_name]
@@ -234,6 +233,30 @@ def get_bin_category(bins, df):
 
     return np.asarray(final_bins)
 
+def export_p(order, p_vals, adj_p_vals, x_lab, file_name):
+
+    loc = "gibson_inference/figures/output_figures/supplemental_figure4"
+    os.makedirs(loc, exist_ok=True)
+
+    data = []
+    denom = len(order) // len(x_lab)
+    for i in range(len(p_vals)):
+        c = i // denom
+        o = " ".join(order[i].split("\n"))
+        data.append([x_lab[c][1:-1].replace(",\n", " a "), o, p_vals[i],
+           adj_p_vals[i]])
+
+    df = pd.DataFrame(data)
+    if "rel" in file_name:
+        df.columns = ["log (Mean Rel Abundance)", "Models", "Raw p-value",
+            "BH Adjusted p-value"]
+    else:
+        df.columns = ["log (Mean Abs Abundance)", "Models", "Raw p-value",
+            "BH Adjusted p-value"]
+
+    df.to_csv("{}/{}.csv".format(loc, file_name), sep=",")
+
+
 def alternative_plot(data_df, title1, title2, use_log, bar_df, type_, axes1,
    axes2, y_lab, donor, add_legend=False):
 
@@ -257,13 +280,16 @@ def alternative_plot(data_df, title1, title2, use_log, bar_df, type_, axes1,
     #print("bins:", bins)
     bin_category = get_bin_category(bins, data_df)
     data_df["Bins"] = bin_category
-    order, p_values = signed_rank_test_alt(data_df, donor, type_)
+    order, raw_p, p_values = signed_rank_test_alt(data_df, donor, type_)
+
 
     xtick_labels = ["[{:.1f},\n {:.1f}]".format(bins[i-1], bins[i])
         for i in range(1, len(bins))]
     if type_ =="rel":
         xtick_labels = ["[{:.1f},\n {:.1f}]".format(bins[i-1], bins[i])
             for i in range(1, len(bins))]
+
+    #export_p(order, raw_p, p_values, xtick_labels, donor+"_"+type_)
     palette = PAL_REL
     order = REL_ORDER
     if type_ =="abs":
@@ -389,10 +415,16 @@ def signed_rank_test_alt(data_df, donor, type_):
     ref_key = "MDSINE2"
     p_values = []
     order  = []
+    to_use_order = ""
+    if type_ =="rel":
+        to_use_order = REL_ORDER
+    elif type_ =="abs":
+        to_use_order = ABS_ORDER
+
     for b in sorted(bins_dict.keys()):
         ref_data = bins_dict[b][ref_key]
         #print("bin:", b)
-        for m in bins_dict[b]:
+        for m in to_use_order:
             if m != ref_key:
                 other_data = bins_dict[b][m]
                 order.append("{} and {}".format(ref_key, m))
@@ -400,10 +432,11 @@ def signed_rank_test_alt(data_df, donor, type_):
                 p_values.append(p)
     test = multitest.multipletests(p_values, alpha=0.05, method="fdr_bh")
 
-    return order, test[1]
+    return order, p_values, test[1]
 
 def main():
 
+    print("Making Supplemental Figure 4")
     healthy_subjs = ["2", "3", "4", "5"]
     uc_subjs = ["6", "7", "8", "9", "10"]
     prior = "mixed"
@@ -473,5 +506,6 @@ def main():
     os.makedirs(args.output_path, exist_ok=True)
     fig.savefig(args.output_path+"supplemental_figure4.pdf", bbox_inches="tight",
         dpi=800)
+    print("Done Making Supplemental Figure 4")
 
 main()

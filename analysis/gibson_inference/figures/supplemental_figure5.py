@@ -175,7 +175,63 @@ def run_enrichment(mcmc, hierarchy_level, pivot_name):
     pivoted_df = pivot_df(all_p_li, all_p_info_li, adjusted_p[1], adjusted_p[0],
         pivot_name)
 
+    df_copy = copy.deepcopy(pivoted_df)
+    index = np.sort([int(idx.split()[1]) for idx in df_copy.columns])
+    index = ["Cluster " + str(i) for i in index]
+    df_save = df_copy[index]
+    #export_df(cluster_dict, level_otu_map, all_p_li, all_p_info_li,
+        #adjusted_p[1], pivot_name)
+
+    #loc = "gibson_inference/figures/output_figures/p_supplemental_figure5_"
+    #os.makedirs("{}".format(loc), exist_ok=True)
+    #df_save.to_csv("{}/p_test_{}.csv".format(loc, pivot_name), sep=",")
+
     return pivoted_df
+
+def export_df(cluster_info, level_otu_dict, raw_p, p_info, adj_p, savename):
+
+    array_adj_p = np.ones((len(level_otu_dict), len(cluster_info)))
+    array_p = np.ones((len(level_otu_dict), len(cluster_info)))
+    index_dict = {}
+    i = 0
+    for key in np.sort(list(level_otu_dict.keys())):
+        index_dict[key] = i
+        i += 1
+
+    N = len(raw_p)
+    print("check:", len(raw_p), len(p_info), len(adj_p))
+    for n in range(N):
+        info_row = p_info[n].split()
+        j = int(info_row[1]) - 1
+        i = index_dict[info_row[2]]
+        array_p[i, j] = raw_p[n]
+        array_adj_p[i, j] = adj_p[n]
+    loc = "gibson_inference/figures/output_figures/p_supplemental_figure5"
+    os.makedirs("{}".format(loc), exist_ok=True)
+
+    combined_array = np.ones((len(level_otu_dict), len(cluster_info)*2))
+    j = 0
+    for i in range(len(cluster_info)):
+        combined_array[:, j] = array_p[:, i]
+        combined_array[:, j+1] = array_adj_p[:, i]
+        j += 2
+
+    df_p = pd.DataFrame(array_p)
+    df_p.index = np.sort(list(level_otu_dict.keys()))
+    df_p.columns = ["Cluster " + str(i+1) for i in range(len(cluster_info))]
+
+    df_adj_p = pd.DataFrame(array_adj_p)
+    df_adj_p.index = np.sort(list(level_otu_dict.keys()))
+    df_adj_p.columns = ["Cluster " + str(i+1) for i in range(len(cluster_info))]
+
+    df_combined = pd.DataFrame(combined_array)
+    df_combined.index = np.sort(list(level_otu_dict.keys()))
+    df_combined.columns = ["Raw p-value", "BH adjusted p-value"] * len(cluster_info)
+
+    df_p.to_csv("{}/p_{}.csv".format(loc, savename), sep=",")
+    df_adj_p.to_csv("{}/adj_p_{}.csv".format(loc, savename), sep=",")
+    df_combined.to_csv("{}/combined_p_{}.csv".format(loc, savename), sep=",")
+
 
 def pivot_cluster_membership(mcmc, level):
 
@@ -203,7 +259,7 @@ def pivot_cluster_membership(mcmc, level):
 
     return df
 
-def plot_module(df, axes, title, ylab, plot_cbar=False, cbar_ax=None, vmax=0.5,
+def plot_module(cohort, df, axes, title, ylab, plot_cbar=False, cbar_ax=None, vmax=0.5,
     vmin=0.0005, label_x=False, label_x_gram=False, labels_gram_stain=None,
     tick_right=False):
 
@@ -240,13 +296,20 @@ def plot_module(df, axes, title, ylab, plot_cbar=False, cbar_ax=None, vmax=0.5,
          cbar=False, xticklabels=True,vmax=6, vmin=1)
 
 
-    axes.set_xlabel("Cluster ID", fontsize=45, fontweight="bold", labelpad=5)
+    axes.set_xlabel("Module", fontsize=45, fontweight="bold", labelpad=5)
     axes.set_ylabel(ylab, fontsize=35, fontweight="bold", labelpad=25)
     axes.set_title(title, loc="left", fontsize=50, fontweight="bold")
     axes.set_yticklabels(axes.get_yticklabels(), rotation = 0,
                fontsize = 35)
     axes.tick_params(length=0, axis = "both")
-    axes.set_xticklabels(axes.get_xticklabels(), fontsize = 35, rotation=90)
+    xtick_labels = []
+    cohort_label = "H"
+    if cohort != "healthy":
+        cohort_label = "D"
+    xtick_labels = [cohort_label + str(i) for i in range(1,
+        df.to_numpy().shape[1] + 1)]
+
+    axes.set_xticklabels(xtick_labels, fontsize = 35, rotation=90)
     #if label_x:
     #    axes.set_xticklabels(axes.get_xticklabels(), rotation = 90, fontsize = 50)
     #else:
@@ -261,18 +324,24 @@ def plot_module(df, axes, title, ylab, plot_cbar=False, cbar_ax=None, vmax=0.5,
     axes.set_aspect('equal')
     return axes
 
-def _make_table(table_df, axes, title, tick_right, y_lab):
+def _make_table(cohort, table_df, axes, title, tick_right, y_lab):
 
     map_ = sns.heatmap(table_df, linewidths=1, ax=axes, cmap=ListedColormap(['white']),
         cbar=False, annot=True, linecolor="black",
         annot_kws={"fontsize":30})
+    cohort_label = "H"
+    if cohort != "healthy":
+        cohort_label = "D"
+    xtick_labels = [cohort_label + str(i) for i in range(1,
+        table_df.to_numpy().shape[1] + 1)]
+
     #axes.set_xlabel(x_lab, fontsize=35)
     axes.set_yticklabels(axes.get_yticklabels(), rotation = 0,
                fontsize = 35)
-    axes.set_xticklabels(axes.get_xticklabels(), rotation = 90,
+    axes.set_xticklabels(xtick_labels, rotation = 90,
                fontsize = 35)
     axes.set_ylabel(y_lab, fontsize=35, fontweight="bold", labelpad=25)
-    axes.set_xlabel("Cluster ID", fontsize=45, fontweight="bold", labelpad=5)
+    axes.set_xlabel("Module", fontsize=45, fontweight="bold", labelpad=5)
     axes.set_title(title, loc="left", fontsize=50, fontweight="bold")
 
     if tick_right:
@@ -288,7 +357,7 @@ def make_plot(df_healthy_p_order, df_uc_p_order, df_healthy_p_family,
     df_healthy_family_abund, df_uc_family_abund, df_healthy_class_abund,
     df_uc_class_abund, df_healthy_phylum_abund, df_uc_phylum_abund):
 
-    fig = plt.figure(figsize=(40, 60))
+    fig = plt.figure(figsize=(40, 70))
     spec = GridSpec(ncols=44, nrows= 98, figure=fig)
 
     family_abund_start = 2
@@ -378,51 +447,53 @@ def make_plot(df_healthy_p_order, df_uc_p_order, df_healthy_p_family,
     cax = fig.add_subplot(spec[cax_row_start:cax_row_end,
         cax_column_start:cax_column_end])
 
-    ax_healthy_family_enrich = plot_module(df_healthy_p_family, ax_healthy_family_enrich,
+    ax_healthy_family_enrich = plot_module("healthy", df_healthy_p_family, ax_healthy_family_enrich,
         "I", "Family", plot_cbar=False)
-    ax_uc_family_enrich = plot_module(df_uc_p_family, ax_uc_family_enrich, "J",
+    ax_uc_family_enrich = plot_module("uc", df_uc_p_family, ax_uc_family_enrich, "J",
         "Family", plot_cbar=False, cbar_ax=False, tick_right=True)
 
-    ax_healthy_order_enrich = plot_module(df_healthy_p_order, ax_healthy_order_enrich,
+    ax_healthy_order_enrich = plot_module("healthy",df_healthy_p_order, ax_healthy_order_enrich,
         "K", "Order", plot_cbar=False)
-    ax_uc_order_enrich = plot_module(df_uc_p_order, ax_uc_order_enrich, "L",
+    ax_uc_order_enrich = plot_module("uc", df_uc_p_order, ax_uc_order_enrich, "L",
         "Order", plot_cbar=True, cbar_ax=cax, tick_right=True)
 
-    ax_healthy_class_enrich = plot_module(df_healthy_p_class, ax_healthy_class_enrich,
+    ax_healthy_class_enrich = plot_module("healthy", df_healthy_p_class, ax_healthy_class_enrich,
         "M", "Class", plot_cbar=False)
-    ax_uc_class_enrich = plot_module(df_uc_p_class, ax_uc_class_enrich, "N",
+    ax_uc_class_enrich = plot_module("uc", df_uc_p_class, ax_uc_class_enrich, "N",
         "Class", plot_cbar=False, cbar_ax=None, tick_right=True)
 
-    ax_healthy_phylum_enrich = plot_module(df_healthy_p_phylum, ax_healthy_phylum_enrich,
+    ax_healthy_phylum_enrich = plot_module("healthy", df_healthy_p_phylum, ax_healthy_phylum_enrich,
         "O", "Phylum", plot_cbar=False)
-    ax_uc_phylum_enrich = plot_module(df_uc_p_phylum, ax_uc_phylum_enrich, "P",
+    ax_uc_phylum_enrich = plot_module("uc", df_uc_p_phylum, ax_uc_phylum_enrich, "P",
         "Phylum", plot_cbar=False, cbar_ax=None, tick_right=True)
 
-    ax_healthy_family_abund = _make_table(df_healthy_family_abund,
+    ax_healthy_family_abund = _make_table("healthy", df_healthy_family_abund,
         ax_healthy_family_abund, "A", False, "Family")
-    ax_uc_family_abund = _make_table(df_uc_family_abund,
+    ax_uc_family_abund = _make_table("uc", df_uc_family_abund,
         ax_uc_family_abund, "B", True, "Family")
 
-    ax_healthy_order_abund = _make_table(df_healthy_order_abund,
+    ax_healthy_order_abund = _make_table("healthy", df_healthy_order_abund,
         ax_healthy_order_abund, "C", False, "Order")
-    ax_uc_order_abund = _make_table(df_uc_order_abund,
+    ax_uc_order_abund = _make_table("uc", df_uc_order_abund,
         ax_uc_order_abund, "D", True, "Order")
 
-    ax_healthy_class_abund = _make_table(df_healthy_class_abund,
+    ax_healthy_class_abund = _make_table("healthy", df_healthy_class_abund,
         ax_healthy_class_abund, "E", False, "Class")
-    ax_uc_class_abund = _make_table(df_uc_class_abund,
+    ax_uc_class_abund = _make_table("uc", df_uc_class_abund,
         ax_uc_class_abund, "F", True, "Class")
 
-    ax_healthy_phylum_abund = _make_table(df_healthy_phylum_abund,
+    ax_healthy_phylum_abund = _make_table("healthy", df_healthy_phylum_abund,
         ax_healthy_phylum_abund, "G", False, "Phylum")
-    ax_uc_phylum_abund = _make_table(df_uc_phylum_abund,
+    ax_uc_phylum_abund = _make_table("uc", df_uc_phylum_abund,
         ax_uc_phylum_abund, "H", True, "Phylum")
 
-    fig.text(0.025, 0.075, "NA: Taxonomy not available", fontsize=45)
+    fig.text(0.025, 0.075, "NA: Taxonomy not resolved", fontsize=45)
     fig.subplots_adjust(hspace=25)
 
     loc = "gibson_inference/figures/output_figures/"
     os.makedirs(loc, exist_ok=True)
+    fig.text(0.255, 0.88, "Healthy", fontsize=55, fontweight="bold")
+    fig.text(0.725, 0.88, "Dysbiotic", fontsize=55, fontweight="bold")
     fig.savefig(loc + "supplemental_figure5.pdf", bbox_inches="tight")
     fig.savefig(loc + "supplemental_figure5.png", bbox_inches="tight")
 
@@ -439,6 +510,7 @@ def format_df(df, n_cluster):
     new_df = df[sorted_cols]
     cols = [str(i) for i in range(1, n_cluster + 1)]
     new_df.columns = cols
+
     return new_df
 
 def parse_args():
@@ -456,6 +528,7 @@ def parse_args():
 if __name__ == "__main__":
 
     args = parse_args()
+    print("Making Supplemental Figure 5")
 
     mcmc_healthy = md2.BaseMCMC.load(args.healthy_mcmc_loc + "/mcmc.pkl")
     mcmc_uc = md2.BaseMCMC.load(args.uc_mcmc_loc + "/mcmc.pkl")
@@ -463,11 +536,11 @@ if __name__ == "__main__":
     healthy_order_enrichment = run_enrichment(mcmc_healthy, "order", "healthy_order")
     uc_order_enrichment = run_enrichment(mcmc_uc, "order", "uc_order")
 
-    healthy_family_enrichment = run_enrichment(mcmc_healthy, "family", "healthy_fam")
-    uc_family_enrichment = run_enrichment(mcmc_uc, "family", "uc_fam")
+    healthy_family_enrichment = run_enrichment(mcmc_healthy, "family", "healthy_family")
+    uc_family_enrichment = run_enrichment(mcmc_uc, "family", "uc_family")
 
-    healthy_class_enrichment = run_enrichment(mcmc_healthy, "class", "healthy_order")
-    uc_class_enrichment = run_enrichment(mcmc_uc, "class", "uc_order")
+    healthy_class_enrichment = run_enrichment(mcmc_healthy, "class", "healthy_class")
+    uc_class_enrichment = run_enrichment(mcmc_uc, "class", "uc_class")
 
     healthy_phylum_enrichment = run_enrichment(mcmc_healthy, "phylum", "healthy_phylum")
     uc_phylum_enrichment = run_enrichment(mcmc_uc, "phylum", "uc_phylum")
@@ -502,3 +575,4 @@ if __name__ == "__main__":
         healthy_order_abundance, uc_order_abundance, healthy_family_abundance,
         uc_family_abundance, healthy_class_abundance, uc_class_abundance,
         healthy_phylum_abundance, uc_phylum_abundance)
+    print("Done Making Supplemental Figure 5")

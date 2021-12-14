@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import matplotlib.colors as mcolors
 import matplotlib.patches as patches
+import pandas as pd
 from matplotlib.gridspec import GridSpec
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
@@ -230,6 +231,12 @@ def compute_p_alpha_diversity(alpha_healthy_d, alpha_uc_d, time_li):
     hypothesis_test_result = multipletests(p_vals, alpha = 0.05,
     method = "fdr_bh", is_sorted = False)
 
+    df = pd.DataFrame(np.vstack((p_vals, hypothesis_test_result[1])).T)
+    df.index = time_li
+    df.columns = ["p-values", "BH corrected p-values"]
+    #df.to_csv("gibson_inference/figures/output_figures/p_supp_fig1.csv",
+    #    sep=",")
+
     return hypothesis_test_result
 
 def classify_p_values(time_array, p_details):
@@ -306,6 +313,7 @@ def alpha_diversity_mean_std(subjset_healthy, subjset_uc, subjset_innoc, name,
     means_uc, std_uc = compute_mean_std(alpha_uc, times)
 
     test_results = compute_p_alpha_diversity(alpha_healthy, alpha_uc, times)
+
     sig_times, sig_p, non_sig_times, non_sig_p = classify_p_values(times,
      test_results)
 
@@ -372,7 +380,7 @@ def alpha_diversity_mean_std(subjset_healthy, subjset_uc, subjset_innoc, name,
         linestyle='-', label='Healthy', linewidth = 5)
     handles.append(l)
     l = mlines.Line2D([],[], color=colors_uc,
-        linestyle='-', label='Ulcerative Colitis', linewidth = 5)
+        linestyle='-', label='Dysbiotic', linewidth = 5)
     handles.append(l)
     l = mlines.Line2D([], [], color='black', marker='*',
         label='Inoculum', linestyle='none', markersize=10)
@@ -447,6 +455,7 @@ def reformat_data(subjset):
         else:
             data = np.vstack((data, d))
 
+    #print(labels_float)
     return data, labels, labels_float
 
 def combine_dicts(dict1, dict2):
@@ -486,7 +495,7 @@ def beta_diversity_figure(subjset_healthy, subjset_uc, subjset_innoc, name = Non
        None
     """
 
-    print("Running Beta Diversity")
+    print("Plotting Beta Diversity")
 
     subset_ = []
     for sub in subjset_healthy:
@@ -495,7 +504,6 @@ def beta_diversity_figure(subjset_healthy, subjset_uc, subjset_innoc, name = Non
         subset_.append(sub)
     data, labels, labels_float = reformat_data(subset_)
 
-
     for subj in subjset_innoc:
         labels.append('inoculum {}'.format(subj.name))
         labels_float[labels[-1]] = 1000
@@ -503,7 +511,9 @@ def beta_diversity_figure(subjset_healthy, subjset_uc, subjset_innoc, name = Non
         data = np.vstack((data, m))
 
     bc_dm = skbio.diversity.beta_diversity("braycurtis", data, labels)
+
     bc_pcoa = skbio.stats.ordination.pcoa(bc_dm)
+    #print(bc_pcoa)
 
     data = bc_pcoa.samples.to_numpy()
 
@@ -608,7 +618,7 @@ def beta_diversity_figure(subjset_healthy, subjset_uc, subjset_innoc, name = Non
         linestyle='-', label='Healthy', linewidth=5)
     handles.append(l)
     l = mlines.Line2D([],[], color=colorsuc,
-        linestyle='-', label='Ulcerative Colitis', linewidth=5)
+        linestyle='-', label='Dysbiotic', linewidth=5)
     handles.append(l)
     lgnd2 = axcenter.legend(handles=handles, title='$\\bf{Dataset}$',
         bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.,
@@ -721,42 +731,25 @@ def get_reads(subjset, type_):
        -----------------------------------------------------------------------
        read at each samples (numpy), label names (list), cohort names (list)
     """
-
-    colonization = -1
-
-    reads = []
-    groups = []
+    data = None
     labels = []
-    i = 0
-    for subjidx, subj in enumerate(subjset):
+    cohort = []
+    for subj in subjset:
         for t in subj.times:
-            if t < colonization:
-                continue
-            reads.append(subj.reads[t])
-            cohort = type_
-            if t < subjset.perturbations[0].start:
-                area = 'post colonization'
-            elif t >= subjset.perturbations[0].start and t <=subjset.perturbations[0].end:
-                area = subjset.perturbations[0].name
-            elif t > subjset.perturbations[0].end and t < subjset.perturbations[1].start:
-                area = 'post {}'.format(subjset.perturbations[0].name)
-            elif t >= subjset.perturbations[1].start and t <= subjset.perturbations[1].end:
-                area = subjset.perturbations[1].name
-            elif t > subjset.perturbations[1].end and t < subjset.perturbations[2].start:
-                area = 'post {}'.format(subjset.perturbations[1].name)
-            elif t >= subjset.perturbations[2].start and t <= subjset.perturbations[2].end:
-                area = subjset.perturbations[2].name
-            else:
-                area = 'post {}'.format(subjset.perturbations[2].name)
-            label = '{}-{}-{}'.format(cohort,area,i)
-            i += 1
-            group = '-'.join(label.split('-')[:-1])
-            labels.append(label)
-            groups.append(cohort)
+            ts = str(float(t)).replace('.5', 'PM').replace('.0', 'AM')
+            labels.append('{}-{}'.format(subj.name, ts))
+            cohort.append(type_)
+        d = subj.matrix()["raw"].T
+        if data is None:
+            data = d
+        else:
+            data = np.vstack((data, d))
 
-    return np.asarray(reads), groups, labels
+    #print(labels_float)
+    return data, cohort, labels
 
-def permanova(subjset_healthy, subjset_uc):
+
+def permanova(subjset_healthy, subjset_uc, subjset_inoc):
 
     """
        runs the permanova test and prints the result
@@ -770,16 +763,27 @@ def permanova(subjset_healthy, subjset_uc):
        None
 
     """
-    colonization = 5
-    i = 0
 
     healthy_reads, healthy_group, healthy_labels = get_reads(subjset_healthy, "healthy")
     uc_reads, uc_group, uc_labels = get_reads(subjset_uc, "uc")
+
     reads = np.vstack((healthy_reads, uc_reads))
+
     grouping = healthy_group + uc_group
     labels = healthy_labels + uc_labels
+
+    for subj in subjset_inoc:
+        labels.append('inoculum {}'.format(subj.name))
+        if subj.name == "Healthy":
+            grouping.append("healthy")
+        else:
+            grouping.append("uc")
+        m = subj.matrix()['raw'].T
+        reads = np.vstack((reads, m))
+
     bc_dm = skbio.diversity.beta_diversity(counts = reads, ids = labels ,
     metric="braycurtis")
+
     test_result = skbio.stats.distance.permanova(distance_matrix = bc_dm, grouping = grouping)
     print("Permanova Test Result")
     print(test_result)
@@ -815,8 +819,6 @@ def diversity_plot(subjset_healthy, subjset_uc, subjset_innoc, name = None):
 
     fig.savefig(loc + "supplemental_figure1.pdf", bbox_inches = "tight",
     dpi = 400)
-    fig.savefig(loc + "supplemental_figure1.png", bbox_inches = "tight",
-    dpi = 400)
     plt.close()
 
 def loaddata(healthy):
@@ -846,11 +848,14 @@ def loaddata(healthy):
 
 def main():
 
+    print("Making Supplemental Figure 1")
     args = parse_args()
     subjset_healthy = md2.Study.load(args.healthy_pkl)
     subjset_uc = md2.Study.load(args.uc_pkl)
     subjset_inoc = md2.Study.load(args.inoc_pkl)
 
     diversity_plot(subjset_healthy, subjset_uc, subjset_inoc)
+    permanova(subjset_healthy, subjset_uc, subjset_inoc)
+    print("Done Making Supplemental Figure 1")
 
 main()

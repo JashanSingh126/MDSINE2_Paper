@@ -282,8 +282,23 @@ def signed_rank_test_box(data_dict, ref_key, donor, type_):
             p_vals.append(p)
 
     test = multitest.multipletests(p_vals, alpha=0.05, method="fdr_bh")
+    #if type_ =="abs":
+    #    export_df(ABS_ORDER, p_vals, list(test[1]), donor+"_abs")
+    #else:
+    #    export_df(REL_ORDER, p_vals, list(test[1]), donor+"_rel")
 
     return list(test[1])
+
+def export_df(order, p_values, p_values_adjusted, name):
+
+
+    loc = "gibson_inference/figures/output_figures/p_fig3"
+    os.makedirs(loc, exist_ok=True)
+    order_li = ["{}-{}".format(order[0], order[i]) for i in range(1, len(order))]
+    df = pd.DataFrame(np.vstack((p_values, p_values_adjusted)).T)
+    df.columns = ["Raw p-value", "BH adjusted p-value"]
+    df.index = order_li
+    df.to_csv("{}/{}.csv".format(loc, name), sep=",")
 
 def main():
 
@@ -295,6 +310,7 @@ def main():
     abs_lim=1e5
     ep = 6
 
+    print("Making Figure 3")
     fig = plt.figure(figsize=(22, 4.5))
     spec = gridspec.GridSpec(ncols=33, nrows=1, figure=fig)
 
@@ -329,7 +345,6 @@ def main():
     uc_rel_box_df, test_uc_rel  = format_box_plot_data(uc_subjs, "uc", mdsine_path,
         clv_elas_path, clv_ridge_path, dict_cv, "rel", rel_lim, True)
 
-
     box_plot(healthy_abs_box_df, ax_he_abs_box, "A", use_log, "abs",
         "RMSE (log Abs Abundance)", test_healthy_abs)
     box_plot(uc_abs_box_df, ax_uc_abs_box, "B", use_log, "abs",
@@ -342,5 +357,7 @@ def main():
     os.makedirs(args.output_path, exist_ok=True)
     fig.savefig(args.output_path+"figure3.pdf", bbox_inches="tight",
         dpi=800)
+
+    print("Done Making Figure 3")
 
 main()

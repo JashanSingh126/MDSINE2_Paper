@@ -77,6 +77,7 @@ def plot(x, y1, y2, p5, p95, x_lab, y_lab, title, leg1, leg2, savename):
 
 def main():
 
+    print("Making Figure 5")
     args = parse_args()
     thresh_pd = pd.read_csv(args.thresholds, index_col = 0)
     mdsine2_pd = pd.read_csv(args.mdsine2_corr, index_col = 0)
@@ -96,6 +97,7 @@ def main():
     plot(thresh_np * 100, mdsine2_np, null_mean, percentile_5, percentile_95,
     "Percent Identity", "Mean Spearman Correlation", args.thresholds.split("/")[0],
     "Observed", "Null Distribution", output_loc+"figure5")
+    print("Done Making Figure 5")
 
 
 main()

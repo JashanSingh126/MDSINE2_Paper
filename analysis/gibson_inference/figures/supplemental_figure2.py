@@ -5,6 +5,8 @@ import pandas as pd
 import numpy as np
 import argparse
 import os
+import deseq_process
+
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -246,14 +248,7 @@ def add_perturbation_label(ax, perturbations, subj, times, textcolor='black',
         ax2 = ax.twiny()
 
         # # Set the visibility of the twin axis to see through
-        ax2.spines['top'].set_visible(False)
-        ax2.spines['bottom'].set_visible(False)
-        ax2.spines['left'].set_visible(False)
-        ax2.spines['right'].set_visible(False)
-        ax2.xaxis.set_major_locator(plt.NullLocator())
-        ax2.xaxis.set_minor_locator(plt.NullLocator())
-        ax2.yaxis.set_major_locator(plt.NullLocator())
-        ax2.yaxis.set_minor_locator(plt.NullLocator())
+        _remove_border(ax2)
 
         left,right = ax.get_xlim()
         ax2.set_xlim(ax.get_xlim())
@@ -332,7 +327,7 @@ def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axrel, axpert,
     axrel.yaxis.set_major_locator(plt.NullLocator())
     axrel.yaxis.set_minor_locator(plt.NullLocator())
     for tick in axrel.xaxis.get_major_ticks():
-        tick.label.set_fontsize(14)
+        tick.label.set_fontsize(21)
 
 
     inoc = None
@@ -387,17 +382,17 @@ def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axrel, axpert,
     axinoculum.set_ylim(bottom=0, top=1)
 
     for tick in axinoculum.yaxis.get_major_ticks():
-        tick.label.set_fontsize(14)
+        tick.label.set_fontsize(21)
     # axqpcr.yaxis.set_label_coords(-0.06, 0.5)
-    axinoculum.set_ylabel('Relative Abundance', size = 15, fontweight='bold')
-    axrel.set_xlabel('Time (d)', size=  15, fontweight='bold')
+    axinoculum.set_ylabel('Relative Abundance', size = 25, fontweight='bold')
+    axrel.set_xlabel('Time (d)', size=  25, fontweight='bold')
     # axrel.xaxis.set_label_coords(0.5,-0.1, transform=axrel.transAxes)
     axrel.set_ylim(bottom=0, top=1)
 
     if dset_type == 'healthy':
-        title = 'Healthy Cohort'
+        title = 'Healthy'
     else:
-        title = 'Ulcerative Colitis Cohort'
+        title = 'Dysbiotic'
 
     #plot perturbation
     subj_ = ""
@@ -407,7 +402,7 @@ def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axrel, axpert,
     times_li = list(times)
     axpert.set_xlim(axrel.get_xlim())
     axpert = add_perturbation_label(axpert, subjset.perturbations, subj_, times_li,
-        textsize = 11, alpha=0)
+        textsize = 16, alpha=0)
 
     for perturbation in subjset.perturbations:
         start = times_li.index(perturbation.starts[subj_.name]) - 0.5
@@ -417,19 +412,19 @@ def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axrel, axpert,
         axpert.axvline(x = end, color='black', linestyle='--', linewidth=1)
 
     if figlabelinoculum is not None:
-        axinoculum.text(0, y = 1.01, s = figlabelinoculum, fontsize = 17,
+        axinoculum.text(0, y = 1.01, s = figlabelinoculum, fontsize = 27,
                   fontweight = "bold", transform = axinoculum.transAxes)
     if figlabelqpcr is not None:
-        axpert.text(0, y = 1.01, s = figlabelqpcr, fontsize = 17,
+        axpert.text(0, y = 1.01, s = figlabelqpcr, fontsize = 27,
                   fontweight = "bold", transform = axpert.transAxes)
     if figlabelrel is not None:
-        axrel.text(0, y = 1.01, s = figlabelrel, fontsize = 17,
+        axrel.text(0, y = 1.01, s = figlabelrel, fontsize = 27,
                   fontweight = "bold", transform = axrel.transAxes)
 
     return color_index, labels, labels_inoc
 
 
-def plot_legend(axlegend, level, cutoff, color_taxa_dict, names_union):
+def plot_legend_phylum(axlegend, level, cutoff, color_taxa_dict, names_union):
     """plots the legend"""
 
     taxidx = TAXLEVEL_REV_IDX[TAXLEVEL]
@@ -437,7 +432,7 @@ def plot_legend(axlegend, level, cutoff, color_taxa_dict, names_union):
     lower_tax = TAXLEVEL_INTS[taxidx]
 
     #print(level, upper_tax, lower_tax)
-    labels = list(color_taxa_dict.keys());print(color_taxa_dict)
+    labels = list(color_taxa_dict.keys())
     new_labels = []
     for lab in labels:
         if "with" not in lab:
@@ -467,42 +462,24 @@ def plot_legend(axlegend, level, cutoff, color_taxa_dict, names_union):
         labels.append(last_label)
 
     ims = []
+    extra = Rectangle((0, 0), 1, 1, fc="w", fill=False, edgecolor='none',
+         linewidth=0)
     for label in labels:
         im, = axlegend.bar([0],[0], color= color_taxa_dict[label], label=label)
+        if "0.5" in label:
+            ims.append(extra)
+            ims.append(extra)
         ims.append(im)
 
-    #ims.append(Line2D([0], [0], marker= "x", color="white",
-    #markerfacecolor=None, markeredgecolor="black", markersize=11, markeredgewidth=2))
-    #ims.append("x")
-
-    extra = Rectangle((0, 0), 1, 1, fc="w", fill=False, edgecolor='none',
-        linewidth=0)
-    ims = ims + [extra, extra, extra]
+    ims = ims + [extra, extra]
 
     legend_handle = [extra]
     legend_handle = legend_handle + ims
     extra_col = [extra]*(len(ims)+1)
-    legend_handle = legend_handle + extra_col + extra_col + extra_col
+    legend_handle = legend_handle + extra_col
 
     empty_label = ''
-    #legend_labels = [empty_label]* (len(ims)+1) + ['    $\\bf{' +
-    #upper_tax.capitalize() + '}$']
     legend_labels = [empty_label]* (len(ims)+1) + [lower_tax.capitalize()]
-    #for label in labels[:-1]:
-    #    l1,_ = label.split(' ')
-    #    if l1 == 'nan':
-    #        l1 = 'Uncultured Clone'
-    #    legend_labels = legend_labels + [l1.capitalize()]
-
-
-    #for label in not_in_labels:
-    #    l1,_ = label.split(" ")
-    #    legend_labels = legend_labels + [l1.capitalize()]
-    #legend_labels = legend_labels + ["\n", "\n", "\n"]
-    #legend_labels = legend_labels + ["Taxonomy not defined"]
-    #legend_labels = legend_labels + ['    $\\bf{' + lower_tax.capitalize() + '}$']
-    #legend_labels = legend_labels + [lower_tax.capitalize()]
-    #legend_labels = legend_labels + ["NA"]
 
     for label in labels[:-1]:
         _,l2 = label.split(' ')
@@ -511,7 +488,9 @@ def plot_legend(axlegend, level, cutoff, color_taxa_dict, names_union):
             l2 = "$\\times$ (Taxonomy not defined)"
 
         legend_labels = legend_labels + [l2.capitalize()]
-    legend_labels = legend_labels + ['Other < {}%'.format(CUTOFF_FRAC_ABUNDANCE*100)]
+    legend_labels = legend_labels + [' ', " "]
+    legend_labels = legend_labels + ['Other < {}%'.format(CUTOFF_FRAC_ABUNDANCE
+       *100)]
     for label in not_in_labels:
         _,l2 = label.split(" ")
         if "_" in l2:
@@ -521,10 +500,10 @@ def plot_legend(axlegend, level, cutoff, color_taxa_dict, names_union):
     legend_labels = legend_labels + ["\n", "\n"]
 
     legend_labels = legend_labels + ['']
-    legend_labels = legend_labels + [" "*50]*6
+    legend_labels = legend_labels + [" "*50]*8
 
-    axlegend.legend(legend_handle, legend_labels, ncol = 3, loc='upper center',
-        fontsize=11, columnspacing=0, handletextpad=0.2)
+    axlegend.legend(legend_handle, legend_labels, ncol = 2, loc='upper center',
+        fontsize=16, columnspacing=0, handletextpad=0.2)
 
     axlegend = _remove_border(axlegend)
 
@@ -544,28 +523,61 @@ def _remove_border(ax):
 
     return ax
 
-def get_deseq_info(loc, donor):
+def add_order_legend(ax, names_union, names_dict, species_file_name):
 
-    hfd_names = set(pd.read_csv("{}/{}1.csv".format(loc, donor), index_col=0).index)
-    vanc_names = set(pd.read_csv("{}/{}2.csv".format(loc, donor), index_col=0).index)
-    gent_names = set(pd.read_csv("{}/{}3.csv".format(loc, donor), index_col=0).index)
+    def get_name_from_file(name):
+        file = open("gibson_inference/figures/supplemental_figure2_files/{}"\
+            ".txt".format(species_file_name))
+        text_li = file.readlines()[0].split(", ")
+        names = []
+        max_len = 0
+        for name in text_li:
+            refined_name = name.split("_")[0]
+            if len(refined_name.split()[0]) > max_len:
+                max_len = len(refined_name.split()[0])
+            names.append(refined_name)
+        return names, max_len
 
-    names_union = hfd_names.union(vanc_names.union(gent_names))
-    #print(names_union)
-    #print(len(names_union))
-    cleaned_names = []
-    for name in names_union:
-        if "unknown" in name:
-            if name !="unknown unknown":
-                cleaned_names.append(name.replace("unknown", "NA"))
+    abundant_species_li, N = get_name_from_file(species_file_name)
+
+    text = ""
+    for t in abundant_species_li:
+        split_t = t.split()
+        d  = N - len(split_t[0]) + 5
+        if "NA" in t:
+            text = text + split_t[0] + " " * d + split_t[1].replace("NA",
+               "not resolved to family") + "\n"
         else:
-            cleaned_names.append(name)
+            text = text + split_t[0] + " " * d + split_t[1] + "\n"
+    text = text + "\n" + "\n" + "Others < 0.5%" + "\n"
+    for key in sorted(names_dict.keys()):
+        if key not in abundant_species_li:
 
-    print(len(cleaned_names))
-    return set(cleaned_names)
+            refined_key = key
+            if "_" in key:
+                refined_key = "_".join(key.split("_")[0:-1])
+
+            split_key = refined_key.split()
+            d  = N - len(split_key[0]) + 7
+            if "phylum" in key:
+                d  = N - len(split_key[0].split(",")[0]) + 7 -2
+                line = "(" + split_key[0].split(",")[0] + ")" + " " * d +\
+                    "(not resolved below Phylum)"
+            elif "NA" in refined_key:
+                line = split_key[0] + " " * d + split_key[1].replace("NA",
+                   "not resolved to family")
+            else:
+                line = split_key[0] + " " * d + split_key[1].replace("_",
+                    " ")
+            text = text + line + "\n"
+
+    #print(text)
+    #ax.text(0,0.35, s= text, transform = ax.transAxes, fontsize=14)
+
 
 def main():
 
+    print("Making Supplemental Figure 2")
     XKCD_COLORS1 = sns.color_palette('muted', n_colors=10)
     XKCD_COLORS2 = sns.color_palette("dark", n_colors=10)
 
@@ -589,12 +601,12 @@ def main():
     XKCD_COLORS_IDX = set_colors(df_healthy, XKCD_COLORS_IDX,
                       DATA_FIGURE_COLORS, XKCD_COLORS)
 
-    fig = plt.figure(figsize=(18,5))
+    fig = plt.figure(figsize=(25,16))
     squeeze = 2
-    gs = fig.add_gridspec(9,40 * squeeze, hspace = 0.75)
+    gs = fig.add_gridspec(15,45 * squeeze, hspace = 0.75)
 
-    axqpcr1 = fig.add_subplot(gs[0, 1*squeeze:14*squeeze])
-    axrel1 = fig.add_subplot(gs[1:7,1*squeeze:14*squeeze])
+    axqpcr1 = fig.add_subplot(gs[0, 1*squeeze:15*squeeze])
+    axrel1 = fig.add_subplot(gs[1:7,1*squeeze:15*squeeze])
     axinoculum1 = fig.add_subplot(gs[1:7,0])
 
     #print("color index", XKCD_COLORS_IDX)
@@ -606,9 +618,9 @@ def main():
         = 'A',figlabelrel='B', make_legend=False,
         taxaname_map = taxa_map_healthy, inoc_order = None)
     #print("color index", XKCD_COLORS_IDX)
-    axqpcr2 = fig.add_subplot(gs[0, 17*squeeze:30*squeeze])
-    axrel2 = fig.add_subplot(gs[1 : 7, 17 * squeeze : 30 * squeeze])
-    axinoculum2 = fig.add_subplot(gs[1 : 7, 16 * squeeze])
+    axqpcr2 = fig.add_subplot(gs[0, 18*squeeze:32*squeeze])
+    axrel2 = fig.add_subplot(gs[1 : 7, 18 * squeeze : 32 * squeeze])
+    axinoculum2 = fig.add_subplot(gs[1 : 7, 17 * squeeze])
 
     XKCD_COLORS_IDX, order_, order_inoc = plot_rel_and_qpcr(subjset_uc,
         subjset_inoc = subjset_inoc, df = df_uc, dset_type = "uc",
@@ -619,29 +631,49 @@ def main():
         labels_order = order_, inoc_order = order_inoc)
 
     deseq_loc = "gibson_inference/figures/supplemental_figure2_files"
-    axqpcr1.set_title("Healthy Cohort", fontsize=17, fontweight="bold")
-    axqpcr2.set_title("Ulcerative Colitis Cohort", fontsize=17, fontweight="bold")
+    axqpcr1.set_title("Healthy", fontsize=27, fontweight="bold")
+    axqpcr2.set_title("Dysbiotic", fontsize=27, fontweight="bold")
     _remove_border(axqpcr1)
     _remove_border(axqpcr2)
 
-    uc_names = get_deseq_info(deseq_loc, "uc")
-    healthy_names = get_deseq_info(deseq_loc, "healthy")
-    names_union = uc_names.union(healthy_names)
+    uc_phylum_names = deseq_process.get_deseq_info_phylum(deseq_loc, "uc")
+    healthy_phylum_names = deseq_process.get_deseq_info_phylum(deseq_loc, "healthy")
+    phylum_names_union = uc_phylum_names.union(healthy_phylum_names)
 
-    #make legend
-    axlegend = fig.add_subplot(gs[1 : 7, 34 * squeeze: 39 * squeeze],
+    uc_order_names, uc_names_dict = deseq_process.get_deseq_info_order(
+        deseq_loc, "uc_order")
+    healthy_order_names, healthy_names_dict = deseq_process.get_deseq_info_order(
+        deseq_loc, "healthy_order")
+    order_names_union = uc_phylum_names.union(healthy_order_names)
+    order_names_dict = {}
+    for key in uc_names_dict:
+        if key not in order_names_dict:
+            order_names_dict[key] = uc_names_dict[key]
+
+    for key in healthy_names_dict:
+        if key not in order_names_dict:
+            order_names_dict[key] = healthy_names_dict[key]
+
+    #make phylum legend
+    axlegend_phylum = fig.add_subplot(gs[1 : 8, int(32.5 * squeeze): 38 * squeeze],
                 facecolor='none')
-    plot_legend(axlegend = axlegend, level = TAXLEVEL, cutoff = CUTOFF_FRAC_ABUNDANCE,
-    color_taxa_dict = DATA_FIGURE_COLORS, names_union=names_union)
+    plot_legend_phylum(axlegend = axlegend_phylum, level = TAXLEVEL,
+        cutoff = CUTOFF_FRAC_ABUNDANCE,color_taxa_dict = DATA_FIGURE_COLORS,
+        names_union=phylum_names_union)
 
-    fig.subplots_adjust(wspace = 0.6, left = 0.05, right = 0.92, top =  0.85,
+    #axlegend_order = fig.add_subplot(gs[5 : 15, 33 * squeeze: 40 * squeeze],
+    #            facecolor='none')
+    #add_order_legend(axlegend_order, order_names_union, order_names_dict,
+    #   "abundant_species_order")
+
+    fig.subplots_adjust(wspace = 0.6, left = 0.05, right = 0.92, top =  0.95,
     bottom = .005, hspace = 0.8)
 
     loc = "gibson_inference/figures/output_figures/"
     if not os.path.exists(loc):
         os.makedirs(loc, exist_ok = True)
 
-    plt.savefig(loc + "supplemental_figure2.png", dpi = 100)
     plt.savefig(loc + "supplemental_figure2.pdf", dpi = 100)
+    print("Done Making Supplemental Figure 2")
 
 main()
