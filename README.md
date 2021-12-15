@@ -3,13 +3,12 @@
 
 **Abstract**: Despite the importance of microbial dysbiosis in human disease, the phenomenon remains poorly understood. We provide the first comprehensive and predictive model of dysbiosis at ecosystem-scale, leveraging our new machine learning method for efficiently inferring compact and interpretable dynamical systems models. Coupling this approach with the most densely temporally sampled interventional study of the microbiome to date, using microbiota from healthy and dysbiotic human donors that we transplanted into mice subjected to antibiotic and dietary interventions, we demonstrate superior predictive performance of our method over state-of-the-art techniques. Moreover, we demonstrate that our approach uncovers intrinsic dynamical properties of dysbiosis driven by destabilizing competitive cycles, in contrast to stabilizing interaction chains in the healthy microbiome, which have implications for restoration of the microbiome to treat disease.
 
-
-Important links to understand pre-print and 'MDSINE2'
+Important links
 - (Pre-print): ["Intrinsic instability of the dysbiotic microbiome revealed through dynamical systems inference at scale"]()<br />
   <a href="https://"><img alt="" src="https://img.shields.io/badge/DOI-addmelater-blue?style=flat"/></a>
-- [Google Colab tutorials exploring the model, data and paper](https://github.com/gerberlab/MDSINE2_Paper/tree/master/google_colab)<br /><a href="https://colab.research.google.com/github/gerberlab/MDSINE2_Paper/tree/master/google_colab">
+- Folder containing [Google Colab tutorials exploring the model, data and paper](https://github.com/gerberlab/MDSINE2_Paper/tree/master/google_colab) or open directly in colab using button below<br /><a href="https://colab.research.google.com/github/gerberlab/MDSINE2_Paper/tree/master/google_colab">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
-- Associated GitHub repo for MDSINE2: <br />
+- Associated GitHub repo for MDSINE2 <br />
   <a href="https://github.com/gerberlab/MDSINE2"><img alt="" src="https://img.shields.io/badge/GitHub-MDSINE2-blue?style=flat&logo=github"/></a>
 
 References
