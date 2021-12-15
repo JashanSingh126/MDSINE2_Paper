@@ -6,7 +6,7 @@
 Important links
 - (Pre-print): ["Intrinsic instability of the dysbiotic microbiome revealed through dynamical systems inference at scale"]()<br />
   <a href="https://"><img alt="" src="https://img.shields.io/badge/DOI-addmelater-blue?style=flat"/></a>
-- Folder containing [Google Colab tutorials exploring the model, data and paper](https://github.com/gerberlab/MDSINE2_Paper/tree/master/google_colab) or open directly in colab using button below<br /><a href="https://colab.research.google.com/github/gerberlab/MDSINE2_Paper/tree/master/google_colab">
+- Folder containing [Google Colab tutorials exploring the model, data and paper](https://github.com/gerberlab/MDSINE2_Paper/tree/master/google_colab) or open directly in colab using button below<br /><a href="https://colab.research.google.com/github/gerberlab/MDSINE2_Paper/blob/master/">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
 - Associated GitHub repo for MDSINE2 <br />
   <a href="https://github.com/gerberlab/MDSINE2"><img alt="" src="https://img.shields.io/badge/GitHub-MDSINE2-blue?style=flat&logo=github"/></a>
