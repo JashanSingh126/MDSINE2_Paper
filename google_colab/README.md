@@ -1,1 +1,2 @@
-This folder contains the google colab version of the notebooks. Binder versions are contained in the other folder.
+<a href="https://colab.research.google.com/github/gerberlab/MDSINE2_Paper/tree/master/google_colab">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
