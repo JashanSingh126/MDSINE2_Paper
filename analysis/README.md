@@ -61,14 +61,11 @@ bash gibson_inference/preprocessing/plot_aggregates.sh
 
 ## Optional 2: Visualize phylogenetic subtrees containing each OTU.
 
-This implements "Methods - Phylogenetic placement of sequences", which performs a multiple alignment and then places each
-sequence at the leaves of a tree:
+We perform phylogenetic placement of the sequences via multiple alignment. 
+The document `./internal_doc_for_manual_steps.md` outlines what was done.
 
-```
-TODO
-```
-
-We visualize these by using the following command:
+We included pre-processed tree files (.nhx extension) in `files/phylogenetic_placement_OTUS`, which can be visualized 
+via:
 ```
 bash gibson_inference/preprocessing/plot_phylogenetic_subtrees.sh
 ```
