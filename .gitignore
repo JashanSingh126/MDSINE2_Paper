@@ -5,7 +5,6 @@ __pycache__
 dockers/
 tmp/
 logs/
-*.csv
 .DS_Store
 *.cpython*
 .vscode*
