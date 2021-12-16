@@ -11,34 +11,28 @@ Important links
 - Associated GitHub repo for MDSINE2 <br />
   <a href="https://github.com/gerberlab/MDSINE2"><img alt="" src="https://img.shields.io/badge/GitHub-MDSINE2-blue?style=flat&logo=github"/></a>
 
-References
+
+- Main Paper (Pre-print): ["Intrinsic instability of the dysbiotic microbiome revealed through dynamical systems inference at scale"](https://doi.org/10.1101/2021.12.14.469105)<br />
+  <a href="https://doi.org/10.1101/2021.12.14.469105"><img alt="" src="https://img.shields.io/badge/bioRχiv%20DOI-10.1101/2021.12.14.46910-blue?style=flat"/></a>
+- Associated GitHub repo for the paper: ["MDSINE2"](https://github.com/gerberlab/MDSINE2)<br />
+  <a href="https://github.com/gerberlab/MDSINE2"><img alt="" src="https://img.shields.io/badge/GitHub-MDSINE2%20Paper-blue?style=flat&logo=github"/></a>
+- Folder containing [tutorials as notebooks exploring the model, data and paper](https://github.com/gerberlab/MDSINE2_Paper/tree/master/google_colab) that can be opened directly in Google Colab<br />
+<a href="https://github.com/gerberlab/MDSINE2_Paper/tree/master/google_colab"><img alt="" src="https://img.shields.io/badge/Jupyter Notebooks-MDSINE2%20Tutorials-blue?style=flat&logo=jupyter"/></a>
+>
+
+### References
+Pre-print
+```bibtex
+@article {Gibson2021.12.14.469105,
+	author = {Gibson, Travis E and Kim, Younhun and Acharya, Sawal and Kaplan, David E and DiBenedetto, Nicholas and Lavin, Richard and Berger, Bonnie and Allegretti, Jessica R and Bry, Lynn and Gerber, Georg K},
+	title = {Intrinsic instability of the dysbiotic microbiome revealed through dynamical systems inference at scale},
+	year = {2021},
+	doi = {10.1101/2021.12.14.469105},
+	publisher = {Cold Spring Harbor Laboratory},
+	URL = {https://www.biorxiv.org/content/early/2021/12/16/2021.12.14.469105},
+	journal = {bioRxiv}}
 ```
-@InProceedings{pmlr-v80-gibson18a,
-  title = 	 {Robust and Scalable Models of Microbiome Dynamics},
-  author =       {Gibson, Travis and Gerber, Georg},
-  booktitle = 	 {Proceedings of the 35th International Conference on Machine Learning},
-  pages = 	 {1763--1772},
-  year = 	 {2018},
-  editor = 	 {Dy, Jennifer and Krause, Andreas},
-  volume = 	 {80},
-  series = 	 {Proceedings of Machine Learning Research},
-  month = 	 {10--15 Jul},
-  publisher =    {PMLR},
-  url = 	 {https://proceedings.mlr.press/v80/gibson18a.html},
-}
-```
 
-
-
-
-
-1. [Analysis in the cloud](#Cloud)  
-2. [Analysis on a local machine](#Local)
-    1. [Setup](#LocalSetup)
-    2. [Jupyter Notebook - Short Run](#LocalJupyter)
-    3. [Local Scripts - Full Run](#LocalFullRun)
-
-<a name="Cloud"/>
 
 ## 1. Analysis in the cloud
 Follow the link to an interactive run through of our analysis pipeline using MDSINE2, hosted on Google colab.
