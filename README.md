@@ -24,11 +24,7 @@ Pre-print
 
 
 ## Analysis in the cloud
-Follow the link for interacitve notebooks that run through of our analysis pipeline using MDSINE2, which can be run in Google Colab.
-
-<a href="https://colab.research.google.com/github/gerberlab/MDSINE2_Paper/blob/master"><img alt="" src="https://img.shields.io/static/v1?label=Colab&message=Launch%20in%20Google%20Colab&color=orange&logo=googlecolab&style=for-the-badge&logoWidth=10"/></a>
-
-This analysis includes the parsing of raw and pre-preprocessed data, performing inference with our model, and reproducing the manuscript figures from pickle files.
+We have provided interactive notebooks for parsing of raw and pre-preprocessed data, performing inference with our model, and reproducing the manuscript figures from pickle files containing posterior samples from full inference runs. Simply go to [google_colab/](google_colab/) and the notebooks can be launched directly into Google Colab
 
 ## Analysis on a local machine
 
