@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+source gibson_inference/settings.sh
+
 #Plot figure3 supplement
 python gibson_inference/figures/supplemental_figure4.py \
     --mdsine_path "/data/cctm/darpa_perturbation_mouse_study/sawal_test/forward_sim_incomplete/cv_mixed/forward_sims/"\

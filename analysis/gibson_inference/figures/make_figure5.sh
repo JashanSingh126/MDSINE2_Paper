@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+source gibson_inference/settings.sh
+
 #Plot figure3
 python gibson_inference/figures/figure5.py \
     -file1 "/data/cctm/darpa_perturbation_mouse_study/sawal_test/coarsening/healthy_seed0_mixed_uc_seed0_mixed/distance.csv" \

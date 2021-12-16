@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+source gibson_inference/settings.sh
+
 
 echo "HeatMap figure 2 deseq"
 python gibson_inference/figures/deseq_heatmap_order.py \
@@ -8,7 +11,7 @@ python gibson_inference/figures/deseq_heatmap_order.py \
     -txt "abundant_species_order" \
     -taxo "order" \
     -o "mat_order_high" \
-    -o_loc "gibson_inference/figures/output_figures"
+    -o_loc "${PLOTS_OUT_DIR}"
 
 
 python gibson_inference/figures/deseq_heatmap_order.py \
@@ -17,4 +20,4 @@ python gibson_inference/figures/deseq_heatmap_order.py \
     -txt "abundant_species_order" \
     -taxo "order" \
     -o "mat_order_low" \
-    -o_loc "gibson_inference/figures/output_figures"
+    -o_loc "${PLOTS_OUT_DIR}"
