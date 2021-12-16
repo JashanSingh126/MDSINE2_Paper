@@ -24,23 +24,15 @@ Pre-print
 
 
 ## Analysis in the cloud
-Follow the link to an interactive run through of our analysis pipeline using MDSINE2, hosted on Google colab.
+Follow the link for interacitve notebooks that run through of our analysis pipeline using MDSINE2, which can be run in Google Colab.
 
 <a href="https://colab.research.google.com/github/gerberlab/MDSINE2_Paper/blob/master"><img alt="" src="https://img.shields.io/static/v1?label=Colab&message=Launch%20in%20Google%20Colab&color=orange&logo=googlecolab&style=for-the-badge&logoWidth=10"/></a>
 
-This analysis includes the parsing of the raw input and all of the pre-preprocessing steps found in the 
-Methods section of our paper.
-Note that to meet the memory and time budget, the number of taxa and number of MCMC iterations are reduced and does not
-fully reproduce the results in the paper.
-For the full version, refer to [Local Scripts - Full Run](#LocalFullRun).
-
-
-
+This analysis includes the parsing of raw and pre-preprocessed data, performing inference with our model, and reproducing the manuscript figures from pickle files.
 
 ## Analysis on a local machine
 
 This section outlines how to run MDSINE2 analysis on our dataset in full, with `bash`, `conda` and `git`.
-
 
 ### Setup
 
@@ -67,8 +59,6 @@ git clone https://github.com/gerberlab/MDSINE2_Paper
 cd MDSINE2_Paper
 ```
 
-### 2Jupyter Notebook 
-
 Once the above installation done, one can run a local copy of the jupyter notebooks found in [google_colab/](google_colab/).
 ```
 conda install -c conda-forge jupyterlab
@@ -77,10 +67,8 @@ jupyter-notebook
 Navigate to `google_colab/` to access the notebooks.
 
 
-<a name="LocalFullRun"/>
+### Full Run
 
-### 2.3 Local Scripts - Full Run
-
-The run coded into the jupyter notebooks are miniature versions which do not reproduce the results in the paper.
+The inference performed in the jupyter notebooks are miniature versions (so as to execute in a reasonable amount of time). 
 For the full run, assuming that the MDSINE2 core package is installed, follow the instructions located 
 in [the analysis subfolder](analysis/README.md).
