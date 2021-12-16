@@ -1,6 +1,6 @@
 # MDSINE2 Inference on Mouse Experiment Dataset
 
-(Last updated: 2021 Sept. 23)
+(Last updated: 2021 Dec. 16)
 
 To run the scripts in this README, go into the `analysis` directory.
 
