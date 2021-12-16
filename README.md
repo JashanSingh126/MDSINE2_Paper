@@ -23,7 +23,7 @@ Pre-print
 ```
 
 
-## 1. Analysis in the cloud
+## Analysis in the cloud
 Follow the link to an interactive run through of our analysis pipeline using MDSINE2, hosted on Google colab.
 
 <a href="https://colab.research.google.com/github/gerberlab/MDSINE2_Paper/blob/master"><img alt="" src="https://img.shields.io/static/v1?label=Colab&message=Launch%20in%20Google%20Colab&color=orange&logo=googlecolab&style=for-the-badge&logoWidth=10"/></a>
@@ -36,15 +36,13 @@ For the full version, refer to [Local Scripts - Full Run](#LocalFullRun).
 
 
 
-<a name="Local"/>
 
-## 2. Analysis on a local machine
+## Analysis on a local machine
 
 This section outlines how to run MDSINE2 analysis on our dataset in full, with `bash`, `conda` and `git`.
 
-<a name="LocalSetup"/>
 
-### 2.1 Setup
+### Setup
 
 One must first install the MDSINE2 package, according to the following instructions.
 The recommended setup starts out by creating a new conda environment. 
@@ -69,16 +67,14 @@ git clone https://github.com/gerberlab/MDSINE2_Paper
 cd MDSINE2_Paper
 ```
 
-<a name="LocalJupyter"/>
+### 2Jupyter Notebook 
 
-### 2.2 Jupyter Notebook - Short Run
-
-Once the above installation done, one can run a local copy of the jupyter notebooks found in [Analysis in the cloud](#Cloud).
+Once the above installation done, one can run a local copy of the jupyter notebooks found in [google_colab/](google_colab/).
 ```
 conda install -c conda-forge jupyterlab
 jupyter-notebook
 ```
-Navigate to `bindertutorials/` to access the notebooks.
+Navigate to `google_colab/` to access the notebooks.
 
 
 <a name="LocalFullRun"/>
