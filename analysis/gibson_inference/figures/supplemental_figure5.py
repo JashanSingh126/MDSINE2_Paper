@@ -5,7 +5,6 @@ from scipy.special import comb
 from scipy.stats import hypergeom
 from statsmodels.stats import multitest as mtest
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
 import seaborn as sns
 import matplotlib.colors as colors
 from matplotlib.colors import LogNorm
@@ -15,7 +14,6 @@ import mdsine2 as md2
 import math
 from mdsine2.names import STRNAMES
 from matplotlib.gridspec import GridSpec
-from IPython.display import display
 from pandas.plotting import table
 from matplotlib.colors import ListedColormap
 import argparse

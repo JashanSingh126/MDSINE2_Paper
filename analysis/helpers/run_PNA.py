@@ -209,6 +209,27 @@ def get_names(subjset_healthy, subjset_uc, union):
         taxa_names_li.append(taxa_names[keys])
     return taxa_names
 
+def simple_plot(d, sp_null, sp_md2, loc):
+
+    fig = plt.figure()
+    axes = fig.add_subplot(1, 1, 1)
+    axes.set_xlabel("Percent Identity")
+    axes.set_ylabel("Mean Spearman Correlation")
+
+    sp_null_mean = np.mean(sp_null, axis = 1)
+    axes.plot(d, sp_null_mean, label="Null Distribution", color="blue")
+    axes.plot(d, sp_md2, label="Observed", color="red")
+
+    sp_null5 = np.percentile(sp_null, 2.5, axis=1)
+    sp_null95 = np.percentile(sp_null, 97.5, axis=1)
+    axes.fill_between(d, sp_null5, sp_null95, color="blue", alpha=0.2)
+    axes.set_xticklabels([100 - x1 for x1 in axes.get_xticks()])
+    axes.legend(loc=2)
+
+    name = "coarsening_plot"
+
+    fig.savefig("{}/{}.pdf".format(loc, name))
+
 if __name__ == "__main__":
 
     args = parse_arguments()
@@ -307,6 +328,10 @@ if __name__ == "__main__":
             rho_null_mean.append(np.mean(rho_null_K))
             rho_null_std.append(np.std(rho_null_K))
 
+    #make the plot
+    simple_plot(np.array(distance_all), rho_null_all, rho_data_all, loc)
+
+    #save the data frame
     pd.DataFrame(rho_data_all).to_csv(loc + "/" + "mdsine2_sp.csv")
     pd.DataFrame(rho_null_all).to_csv(loc + "/" + "null_distribution_sp.csv")
     pd.DataFrame(distance_all).to_csv(loc + "/" + "agg_distance_threshold.csv")
