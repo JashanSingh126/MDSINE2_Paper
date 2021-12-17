@@ -4,6 +4,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import argparse
+import os
+
 from matplotlib import rcParams
 from matplotlib import font_manager
 
@@ -130,7 +132,7 @@ def make_plot(df1, df2, abundance, taxonomy, name, loc):
     make_heatmap(df1, axes1, False, "Healthy", False)
     make_heatmap(df2, axes2, False, "UC", False)
 
-
+    os.makedirs(loc, exist_ok=True)
     fig.savefig("{}/{}.pdf".format(loc, name), bbox_inches="tight")
     plt.close()
 

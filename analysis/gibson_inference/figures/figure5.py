@@ -41,6 +41,8 @@ def parse_args():
     parser.add_argument("-file3", "--null_corr", required = "True",
         help = ".tsv Spearman Correlation between UC and Healthy agglomeration"\
         " vectors in the null model")
+    parser.add_argument("-o_loc", "--output_loc", required="True",
+        help = "directory(folder name) where the output figure is saved")
 
     return parser.parse_args()
 
@@ -91,12 +93,12 @@ def main():
     percentile_5 = np.percentile(null_np, 2.5, axis = 1)
     percentile_95 = np.percentile(null_np, 97.5, axis = 1)
 
-    output_loc = "gibson_inference/figures/output_figures/"
+    output_loc = args.output_loc
     os.makedirs(output_loc, exist_ok=True)
 
     plot(thresh_np * 100, mdsine2_np, null_mean, percentile_5, percentile_95,
     "Percent Identity", "Mean Spearman Correlation", args.thresholds.split("/")[0],
-    "Observed", "Null Distribution", output_loc+"figure5")
+    "Observed", "Null Distribution", output_loc+"/figure5")
     print("Done Making Figure 5")
 
 

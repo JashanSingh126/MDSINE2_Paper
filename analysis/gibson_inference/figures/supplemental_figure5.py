@@ -355,7 +355,7 @@ def make_plot(df_healthy_p_order, df_uc_p_order, df_healthy_p_family,
     df_uc_p_family, df_healthy_p_class, df_uc_p_class, df_healthy_p_phylum,
     df_uc_p_phylum, df_healthy_order_abund, df_uc_order_abund,
     df_healthy_family_abund, df_uc_family_abund, df_healthy_class_abund,
-    df_uc_class_abund, df_healthy_phylum_abund, df_uc_phylum_abund):
+    df_uc_class_abund, df_healthy_phylum_abund, df_uc_phylum_abund, loc):
 
     fig = plt.figure(figsize=(40, 70))
     spec = GridSpec(ncols=44, nrows= 98, figure=fig)
@@ -490,11 +490,10 @@ def make_plot(df_healthy_p_order, df_uc_p_order, df_healthy_p_family,
     fig.text(0.025, 0.075, "NA: Taxonomy not resolved", fontsize=45)
     fig.subplots_adjust(hspace=25)
 
-    loc = "gibson_inference/figures/output_figures/"
     os.makedirs(loc, exist_ok=True)
     fig.text(0.255, 0.88, "Healthy", fontsize=55, fontweight="bold")
     fig.text(0.725, 0.88, "Dysbiotic", fontsize=55, fontweight="bold")
-    fig.savefig(loc + "supplemental_figure5.pdf", bbox_inches="tight")
+    fig.savefig(loc + "/supplemental_figure5.pdf", bbox_inches="tight")
 
 
 def format_df(df, n_cluster):
@@ -520,7 +519,8 @@ def parse_args():
        help = "a pl.BaseMCMC pkl file for healthy runs")
     parser.add_argument("-loc2", "--uc_mcmc_loc", required = "True",
        help = "a pl.BaseMCMC pkl file for UC runs")
-
+    parser.add_argument("-o_loc", "--output_loc", required="True",
+        help = "directory(folder name) where the output figure is saved")
 
     return parser.parse_args()
 
@@ -529,8 +529,8 @@ if __name__ == "__main__":
     args = parse_args()
     print("Making Supplemental Figure 5")
 
-    mcmc_healthy = md2.BaseMCMC.load(args.healthy_mcmc_loc + "/mcmc.pkl")
-    mcmc_uc = md2.BaseMCMC.load(args.uc_mcmc_loc + "/mcmc.pkl")
+    mcmc_healthy = md2.BaseMCMC.load(args.healthy_mcmc_loc)
+    mcmc_uc = md2.BaseMCMC.load(args.uc_mcmc_loc)
 
     healthy_order_enrichment = run_enrichment(mcmc_healthy, "order", "healthy_order")
     uc_order_enrichment = run_enrichment(mcmc_uc, "order", "uc_order")
@@ -573,5 +573,6 @@ if __name__ == "__main__":
         healthy_phylum_enrichment, uc_phylum_enrichment,
         healthy_order_abundance, uc_order_abundance, healthy_family_abundance,
         uc_family_abundance, healthy_class_abundance, uc_class_abundance,
-        healthy_phylum_abundance, uc_phylum_abundance)
+        healthy_phylum_abundance, uc_phylum_abundance, args.output_loc)
+
     print("Done Making Supplemental Figure 5")

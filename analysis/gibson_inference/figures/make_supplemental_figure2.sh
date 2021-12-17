@@ -8,4 +8,5 @@ source gibson_inference/settings.sh
 python gibson_inference/figures/supplemental_figure2.py \
     -file1 "${PREPROCESS_TIME0_DIR}/gibson_healthy_agg_taxa.pkl" \
     -file2 "${PREPROCESS_TIME0_DIR}/gibson_uc_agg_taxa.pkl" \
-    -file3 "${PREPROCESS_TIME0_DIR}/gibson_inoculum_agg_taxa.pkl"
+    -file3 "${PREPROCESS_TIME0_DIR}/gibson_inoculum_agg_taxa.pkl" \
+    -o_loc "${PLOTS_OUT_DIR}"

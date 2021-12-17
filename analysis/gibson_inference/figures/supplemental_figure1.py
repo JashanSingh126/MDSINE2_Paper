@@ -62,6 +62,8 @@ def parse_args():
         help = "pickled pl.base.Study file for UC subjects")
     parser.add_argument("-file3", "--inoc_pkl", required = "True",
         help = "pickled pl.base.Study file for inoculum")
+    parser.add_argument("-o_loc", "--output_loc", required="True",
+        help = "directory(folder name) where the output figure is saved")
 
     return parser.parse_args()
 
@@ -788,7 +790,7 @@ def permanova(subjset_healthy, subjset_uc, subjset_inoc):
     print("Permanova Test Result")
     print(test_result)
 
-def diversity_plot(subjset_healthy, subjset_uc, subjset_innoc, name = None):
+def diversity_plot(subjset_healthy, subjset_uc, subjset_innoc, loc, name = None):
 
     """
        plots the alpha and beta diversity together
@@ -813,12 +815,12 @@ def diversity_plot(subjset_healthy, subjset_uc, subjset_innoc, name = None):
     alpha_diversity_mean_std(subjset_healthy, subjset_uc, subjset_innoc,
     name = name, ax = ax1, axlegend = ax1)
 
-    loc = "gibson_inference/figures/output_figures/"
+
     if not os.path.exists(loc):
         os.makedirs(loc, exist_ok = True)
 
-    fig.savefig(loc + "supplemental_figure1.pdf", bbox_inches = "tight",
-    dpi = 400)
+    fig.savefig(loc + "/supplemental_figure1.pdf", bbox_inches = "tight",
+        dpi = 400)
     plt.close()
 
 def loaddata(healthy):
@@ -853,8 +855,9 @@ def main():
     subjset_healthy = md2.Study.load(args.healthy_pkl)
     subjset_uc = md2.Study.load(args.uc_pkl)
     subjset_inoc = md2.Study.load(args.inoc_pkl)
+    output_loc = args.output_loc
 
-    diversity_plot(subjset_healthy, subjset_uc, subjset_inoc)
+    diversity_plot(subjset_healthy, subjset_uc, subjset_inoc, output_loc)
     permanova(subjset_healthy, subjset_uc, subjset_inoc)
     print("Done Making Supplemental Figure 1")
 

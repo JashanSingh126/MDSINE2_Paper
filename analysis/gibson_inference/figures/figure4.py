@@ -941,7 +941,7 @@ def parse_args():
         help="pl.Base.Study file for consistently detected OTUs in healthy")
     parser.add_argument("-study5", "--detected_study_uc", required=True,
         help="pl.Base.Study file for consistently detected OTUs in UC")
-    parser.add_argument("-o", "--output_loc", required = "True",
+    parser.add_argument("-o_loc", "--output_loc", required = "True",
         help = "path to the folder where the output is saved")
 
     return parser.parse_args()

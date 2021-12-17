@@ -4,7 +4,6 @@ python gibson_inference/figures/figure2.py \
        -file1 "output/gibson/preprocessed/gibson_healthy_agg_taxa.pkl" \
        -file2 "output/gibson/preprocessed/gibson_uc_agg_taxa.pkl" \
        -file3 "output/gibson/preprocessed/gibson_inoculum_agg_taxa.pkl"
-
 '''
 
 import mdsine2 as md2
@@ -82,6 +81,8 @@ def parse_args():
         help = "pickled pl.base.Study file for UC subjects")
     parser.add_argument("-file3", "--inoc_pkl", required = "True",
         help = "pickled pl.base.Study file for inoculum")
+    parser.add_argument("-o_loc", "--output_loc", required="True",
+        help = "directory(folder name) where the output figure is saved")
 
     return parser.parse_args()
 
@@ -707,6 +708,7 @@ def main():
     subjset_healthy = md2.Study.load(args.healthy_pkl)
     subjset_uc = md2.Study.load(args.uc_pkl)
     subjset_inoc = md2.Study.load(args.inoc_pkl)
+    loc = args.output_loc
 
     df_healthy, taxa_map_healthy = get_df(subjset_healthy)
     df_uc, taxa_map_uc = get_df(subjset_uc)
@@ -779,15 +781,13 @@ def main():
     axpert1 = _remove_border(axpert1)
     axpert2 = _remove_border(axpert2)
 
-
     fig.subplots_adjust(wspace = 0.58, left = 0.06, right = 0.9, top =  0.88,
     bottom = 0.002, hspace = 0.9)
 
-    loc = "gibson_inference/figures/output_figures/"
     if not os.path.exists(loc):
         os.makedirs(loc, exist_ok = True)
 
-    plt.savefig(loc + "figure2.pdf", dpi = 100)
+    plt.savefig(loc + "/figure2.pdf", dpi = 100)
 
     print("Done Making Figure 2")
 

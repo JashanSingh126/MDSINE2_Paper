@@ -40,7 +40,7 @@ def filter(study, dtype, threshold, min_num_consecutive, min_num_subjects,
     #print('{} taxa left in {}, n_days = {}'.format(len(study.taxa), study.name))
     return len(study.taxa)
 
-def run_and_save_filtering_results(study_healthy, study_uc):
+def run_and_save_filtering_results(study_healthy, study_uc, loc):
     fig = plt.figure(figsize=(15, 20))
     axes_set = {}
     i = 1
@@ -56,10 +56,10 @@ def run_and_save_filtering_results(study_healthy, study_uc):
     make_plot(axes_set, study_healthy, 1, ["A", "B", "C", "D"])
     make_plot(axes_set, study_uc, 7, ["E", "F", "G", "H", "I"])
     fig.subplots_adjust(hspace=0.3)
-    loc = "gibson_inference/figures/output_figures/"
     os.makedirs(loc, exist_ok=True)
     fig.subplots_adjust(wspace=0.25)
-    fig.savefig(loc + "supplemental_figure3.pdf", bbox_inches="tight")
+
+    fig.savefig(loc + "/supplemental_figure3.pdf", bbox_inches="tight")
 
 
 def make_plot(axes_set, study, start, title_li):
@@ -136,7 +136,8 @@ def parse_args():
        help = "pl.base.Study for Healthy data in pkl format")
     parser.add_argument("-file2", "--uc_study", required = "True",
        help = ".pl.base.Study for UC data in pkl format")
-
+    parser.add_argument("-o_loc", "--output_loc", required="True",
+        help = "directory(folder name) where the output figure is saved")
 
     return parser.parse_args()
 
@@ -147,6 +148,7 @@ if __name__ =="__main__":
 
     healthy_study = md2.Study.load(args.healthy_study)
     uc_study = md2.Study.load(args.uc_study)
+    output_loc = args.output_loc
 
-    run_and_save_filtering_results(healthy_study, uc_study)
+    run_and_save_filtering_results(healthy_study, uc_study, output_loc)
     print("Done Making Supplemental Figure 3")

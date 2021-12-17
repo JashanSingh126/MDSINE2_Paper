@@ -74,9 +74,10 @@ def parse_args():
         help = "pickled pl.base.Study file for UC subjects")
     parser.add_argument("-file3", "--inoc_pkl", required = "True",
         help = "pickled pl.base.Study file for inoculum")
+    parser.add_argument("-o_loc", "--output_path", required="True",
+        help = "directory(folder name) where the output figure is saved")
 
     return parser.parse_args()
-
 
 def _cnt_times(df, times, times_cnts, t2idx):
     """counts the number of times data at a given point were collected"""
@@ -571,9 +572,6 @@ def add_order_legend(ax, names_union, names_dict, species_file_name):
                     " ")
             text = text + line + "\n"
 
-    #print(text)
-    #ax.text(0,0.35, s= text, transform = ax.transAxes, fontsize=14)
-
 
 def main():
 
@@ -595,6 +593,7 @@ def main():
     subjset_healthy = md2.Study.load(args.healthy_pkl)
     subjset_uc = md2.Study.load(args.uc_pkl)
     subjset_inoc = md2.Study.load(args.inoc_pkl)
+    loc = args.output_path
 
     df_healthy, taxa_map_healthy = get_df(subjset_healthy)
     df_uc, taxa_map_uc = get_df(subjset_uc)
@@ -661,19 +660,15 @@ def main():
         cutoff = CUTOFF_FRAC_ABUNDANCE,color_taxa_dict = DATA_FIGURE_COLORS,
         names_union=phylum_names_union)
 
-    #axlegend_order = fig.add_subplot(gs[5 : 15, 33 * squeeze: 40 * squeeze],
-    #            facecolor='none')
-    #add_order_legend(axlegend_order, order_names_union, order_names_dict,
-    #   "abundant_species_order")
 
     fig.subplots_adjust(wspace = 0.6, left = 0.05, right = 0.92, top =  0.95,
     bottom = .005, hspace = 0.8)
 
-    loc = "gibson_inference/figures/output_figures/"
+
     if not os.path.exists(loc):
         os.makedirs(loc, exist_ok = True)
 
-    plt.savefig(loc + "supplemental_figure2.pdf", dpi = 100)
+    plt.savefig(loc + "/supplemental_figure2.pdf", dpi = 100)
     print("Done Making Supplemental Figure 2")
 
 main()
