@@ -110,7 +110,7 @@ def format_box_plot_data(subjs, donor, loc_md2, loc_elas, loc_ridge, dict_,
         times = np.load(loc_md2  + "{}-cv{}-validate-{}-full-times"\
         ".npy".format(donor, subj, subj))#[1:]
 
-        pred_abund_median = np.nanmedian(pred_abund, axis=0)
+        pred_abund_median = np.median(pred_abund, axis=0)
 
         if type_ =="abs":
             pred_glv_elastic = pkl.load(open(loc_elas + prefix + "glv-abs",
@@ -140,7 +140,7 @@ def format_box_plot_data(subjs, donor, loc_md2, loc_elas, loc_ridge, dict_,
         elif type_ =="rel":
             rel_true_abund = true_abund / np.sum(true_abund, axis=0,
                 keepdims=True)
-            rel_pred_abund_median = pred_abund_median / np.nansum(pred_abund_median,
+            rel_pred_abund_median = pred_abund_median / np.sum(pred_abund_median,
                 axis=0, keepdims=True)
             rel_true_abund = np.where(rel_true_abund<1e-6, 1e-6, rel_true_abund)
             rel_pred_abund_median = np.where(rel_pred_abund_median<1e-6, 1e-6,
