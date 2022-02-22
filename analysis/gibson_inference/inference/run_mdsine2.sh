@@ -34,7 +34,7 @@ mdsine2 infer \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 mdsine2 visualize-posterior \
-    --chain  $MDSINE_OUT_DIR/healthy-seed0/mcmc.pkl \
+    --chain $MDSINE_OUT_DIR/healthy-seed0/mcmc.pkl \
     --output-basepath $MDSINE_OUT_DIR/healthy-seed0/posterior
 
 echo "Finished Healthy (seed 0)."
@@ -54,7 +54,7 @@ mdsine2 infer \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 mdsine2 visualize-posterior \
-    --chain  $MDSINE_OUT_DIR/healthy-seed1/mcmc.pkl \
+    --chain $MDSINE_OUT_DIR/healthy-seed1/mcmc.pkl \
     --output-basepath $MDSINE_OUT_DIR/healthy-seed1/posterior
 
 echo "Finished Healthy (seed 1)."
@@ -77,7 +77,7 @@ mdsine2 infer \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 mdsine2 visualize-posterior \
-    --chain  $MDSINE_OUT_DIR/uc-seed0/mcmc.pkl \
+    --chain $MDSINE_OUT_DIR/uc-seed0/mcmc.pkl \
     --output-basepath $MDSINE_OUT_DIR/uc-seed0/posterior
 
 echo "Finished UC (seed 0)."
@@ -97,7 +97,7 @@ mdsine2 infer \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 
 mdsine2 visualize-posterior \
-    --chain  $MDSINE_OUT_DIR/uc-seed1/mcmc.pkl \
+    --chain $MDSINE_OUT_DIR/uc-seed1/mcmc.pkl \
     --output-basepath $MDSINE_OUT_DIR/uc-seed1/posterior
 
 echo "Finished UC (seed 1)."

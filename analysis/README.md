@@ -1,6 +1,6 @@
 # MDSINE2 Inference on Mouse Experiment Dataset
 
-(Last updated: 2021 Sept. 23)
+(Last updated: 2021 Dec. 16)
 
 To run the scripts in this README, go into the `analysis` directory.
 
@@ -20,13 +20,11 @@ The following subsections can be run to re-generate these outputs from scratch.
 
 ## 1.1 Run DADA2
 
-First, one needs to run DADA2 (https://benjjneb.github.io/dada2/index.html) on the 16S reads, to end up with a list of ASVs and taxonomic assignments 
-using RDP (`rdp_species.tsv`) and Silva (`silva_species.tsv`).
-To do this, assuming DADA2 is installed, run the following script:
+If starting with the raw 16S reads (fasta files), one needs to run DADA2 (https://benjjneb.github.io/dada2/index.html), 
+to end up with a list of ASVs and taxonomic assignments using RDP (`rdp_species.tsv`) and 
+Silva (`silva_species.tsv`).
 
-```
-TODO
-```
+We have provided the R script used to perform this procedure, located at (relative to this directory) `./dada/dada2_script.R`.
 
 ## 1.2 Aggregate ASVs into OTUs
 
@@ -63,13 +61,11 @@ bash gibson_inference/preprocessing/plot_aggregates.sh
 
 ## Optional 2: Visualize phylogenetic subtrees containing each OTU.
 
-This implements "Methods - Phylogenetic placement of sequences", which performs a multiple alignment and then places each
-sequence at the leaves of a tree:
-```
-TODO
-```
+We perform phylogenetic placement of the sequences via multiple alignment. 
+The document `./internal_doc_for_manual_steps.md` outlines what was done.
 
-We visualize these by using the following command:
+We included pre-processed tree files (.nhx extension) in `files/phylogenetic_placement_OTUS`, which can be visualized 
+via:
 ```
 bash gibson_inference/preprocessing/plot_phylogenetic_subtrees.sh
 ```
@@ -98,4 +94,55 @@ bash gibson_inference/inference/run_mdsine2_fixed_clustering.sh
 
 # 4. Downstream Analyses
 
-(Under construction. Enrichment/cross-validation errors/keystoneness/cycle counting/)
+## 4.1. Enrichment Analysis
+
+Sawal TODO
+
+## 4.2 Simulated-based Stability Analysis
+
+First, run the necessary forward simulations. This script runs many forward simulations for a variety of randomly
+sampled conditions, and thus takes some time. It is not parallelized across the configurations, 
+though we ran a parallelization script (not included here) for our private compute servers.
+
+```
+bash gibson_inference/downstream_analysis/stability/evaluate_stability_simulated.sh
+```
+
+The results of the forward simulations (the steady states) are collectively compiled and saved to dataframes.
+Render the plots using the following script:
+
+```
+bash gibson_inference/downstream_analysis/stability/plot_stability.sh
+```
+
+## 4.3 Eigenvalues
+
+Plot a histogram of the positive real parts of eigenvalues across all the MCMC samples:
+
+```
+bash gibson_inference/downstream_analysis/eigenvalues/plot_eigenvalues.sh
+```
+
+## 4.4 Cycle counting
+
+Plot the counts of all module-to-module cycles of fixed MDSINE2 runs for Healthy and Dysbiotic cohorts:
+
+```
+bash gibson_inference/downstream_analysis/cycles/plot_cycles.sh
+```
+
+## 4.5 Keystoneness
+
+First, run the necessary forward simulations. For each choice of module from a fixed-cluster MDSINE2 run,
+initialize it to zero (all other OTUs are initialized to their respective day-20 levels).
+
+```
+bash gibson_inference/downstream_analysis/keystoneness/evaluate_keystoneness.sh
+```
+
+The results of the forward simulations (the steady states) are collectively compiled and saved to dataframes.
+Render the plots using the following script:
+
+```
+bash gibson_inference/downstream_analysis/keystoneness/plot_keystoneness.sh
+```
