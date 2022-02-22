@@ -1,55 +1,101 @@
-'''
-#plots the raw data
-to : run
-python supplemental_figure2.py -filter1 "../files/figures/healthy_7.txt"\
-        -filter2 "../files/figures/uc_7.txt"\
-        -file1 "../../processed_data/gibson_healthy_agg_taxa.pkl"\
-        -file2 "../../processed_data/gibson_uc_agg_taxa.pkl"
+#make figure 2
 
-'''
-
-import numpy as np
-import seaborn as sns
-import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-from matplotlib.colors import LogNorm
-import pylab as pl
 import mdsine2 as md2
+import pandas as pd
+import numpy as np
 import argparse
-import os 
+import os
+import deseq_process
 
-PERTURBATION_COLOR = 'orange'
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+from matplotlib.patches import Rectangle
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.ticker as plticker
+from matplotlib.ticker import ScalarFormatter, LogFormatter, LogFormatterSciNotation, FixedLocator
+import matplotlib.patches as patches
+import matplotlib.lines as mlines
+import matplotlib.colors as mcolors
+from matplotlib.lines import Line2D
+# from mpl_toolkits.axes_grid1.inset_locator import mark_inset
+from mpl_toolkits.axes_grid1.inset_locator import TransformedBbox, BboxPatch, BboxConnector
+from matplotlib.patches import Rectangle
+from matplotlib.collections import PatchCollection
+import matplotlib.legend as mlegend
+from matplotlib.colors import LogNorm
+import matplotlib.image as mpimg
+from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationBbox
+from matplotlib.gridspec import GridSpec
+
+from matplotlib import rcParams
+from matplotlib import font_manager
+
+rcParams['pdf.fonttype'] = 42
+
+font_dirs = ['gibson_inference/figures/arial_fonts']
+font_files = font_manager.findSystemFonts(fontpaths=font_dirs)
+#print(font_files)
+
+for font_file in font_files:
+    #print(font_file)
+    ff = font_file.split("/")[-1]
+    if "._" not in ff:
+        font_manager.fontManager.addfont(font_file)
+
+# change font
+rcParams['font.family'] = 'Arial'
+
+
+TAXLEVEL = "phylum"
+TAXLEVEL_PLURALS = {'genus': 'Genera', 'Genus': 'Genera', 'family': 'Families',
+                'Family': 'Families', 'order': 'Orders', 'Order': 'Orders',
+                'class': 'Classes', 'Class': 'Classes', 'phylum': 'Phyla',
+                'Phylum': 'Phyla', 'kingdom': 'Kingdoms', 'Kingdom': 'Kingdoms'}
+
+PERTURBATION_COLOR = "orange"
+TAXLEVEL_INTS = ["species", "genus", "family", "order", "class", "phylum",
+                    "kingdom"]
+TAXLEVEL_REV_IDX = {"species" : 0, "genus" : 1, "family" : 2, "order" : 3,
+                   "class" : 4, "phylum" : 5, "kingdom" : 6}
+
+#Aggregation of abundances below this threhold
+CUTOFF_FRAC_ABUNDANCE = 0.005
 
 def parse_args():
 
     parser = argparse.ArgumentParser(description = "files needed for making"\
-    "supplemental figure 2")
-    parser.add_argument("-filter1", "--healthy_filter", required = "True",
-    help = ".txt file containing names of OTUs that pass filtering in Healthy")
-    parser.add_argument("-filter2", "--uc_filter", required = "True",
-    help = ".txt file containing names of OTUs that pass filtering in UC")
+    "main figure 2")
     parser.add_argument("-file1", "--healthy_pkl", required = "True",
-        help = "pickled md2.base.Study file for healthy subjects")
+        help = "pickled pl.base.Study file for healthy subjects")
     parser.add_argument("-file2", "--uc_pkl", required = "True",
-        help = "pickled md2.base.Study file for UC subjects")
+        help = "pickled pl.base.Study file for UC subjects")
+    parser.add_argument("-file3", "--inoc_pkl", required = "True",
+        help = "pickled pl.base.Study file for inoculum")
+    parser.add_argument("-o_loc", "--output_path", required="True",
+        help = "directory(folder name) where the output figure is saved")
 
     return parser.parse_args()
 
-def count_times(df, times, times_cnts, t2idx):
-    """
-    count the number of times data is collected at a given sample time point
-    """
+def _cnt_times(df, times, times_cnts, t2idx):
+    """counts the number of times data at a given point were collected"""
 
-    for col in df.columns :
+    for col in df.columns:
         if col in times:
             times_cnts[t2idx[col]] += 1
+    #print(times_cnts)
 
     return times_cnts
 
-def add_unequal_col_dataframes(df, dfother, times, times_cnts, t2idx):
+def _add_unequal_col_dataframes(df, dfother, times, times_cnts, t2idx):
+    '''
+    Add the contents of both the dataframes. This controls for the
+    columns in the dataframes `df` and `dfother` being different.
+    '''
 
-    times_cnts = count_times(dfother, times, times_cnts, t2idx)
+    times_cnts = _cnt_times(dfother, times, times_cnts, t2idx)
     if df is None:
         return dfother, times_cnts
 
@@ -69,148 +115,106 @@ def add_unequal_col_dataframes(df, dfother, times, times_cnts, t2idx):
         pd.DataFrame(np.zeros(shape=(len(dfother.index), len(cols_toadd_dfother))),
             index=dfother.index, columns=cols_toadd_dfother)], axis=1)
 
-
     return dfother.reindex(df.index) + df, times_cnts
 
-def combine_dfs(subjset, dtype):
+def _get_top(df, cutoff_frac_abundance, taxlevel, taxaname_map=None):
+    """
+       selects the data associated with taxon (at taxlevel) whose abundace is
+       greater than the cutoff_frac_abundance
+    """
+    matrix = df.values
+    abunds = np.sum(matrix, axis=1)
+    namemap = {}
 
+    a = abunds / abunds.sum()
+    a = np.sort(a)[::-1]
+
+    cutoff_num = None
+    for i in range(len(a)):
+        if a[i] < cutoff_frac_abundance:
+            cutoff_num = i
+            break
+    if cutoff_num is None:
+        raise ValueError('Error')
+    #Number of taxa whose abundance is greater than the threshold
+    #print('Cutoff Num:', cutoff_num)
+
+    idxs = np.argsort(abunds)[-cutoff_num:][::-1]
+    dfnew = df.iloc[idxs, :]
+
+    if taxaname_map is not None:
+        indexes = df.index
+        for idx in idxs:
+            namemap[indexes[idx]] = taxaname_map[indexes[idx]]
+
+    # Add everything else as 'Other'
+    vals = None
+    for idx in range(len(df.index)):
+        if idx not in idxs:
+            if vals is None:
+                vals = df.values[idx, :]
+            else:
+                vals += df.values[idx, :]
+
+    dfother = pd.DataFrame([vals], columns=df.columns, index=['{} with <{}% total abund'.format(
+        TAXLEVEL_PLURALS[taxlevel], cutoff_frac_abundance*100)])
+    df = dfnew.append(dfother)
+
+    return df
+
+def get_df(subjset):
+    """
+       return the relative abundances(over time) of the OTUs as a DataFrame
+       @parameters
+       subjset : (pl.Subject)
+    """
+    taxidx = TAXLEVEL_REV_IDX[TAXLEVEL]
+    upper_tax = TAXLEVEL_INTS[taxidx+1]
+    lower_tax = TAXLEVEL_INTS[taxidx]
+
+    df = None
     times = []
     for subj in subjset:
         times = np.append(times, subj.times)
-    times = np.sort(np.unique(times))
+
+    times = np.sort(np.unique(times))#the times at which samples were collected
     t2idx = {}
-    for i, t in enumerate(times):
+    for i,t in enumerate(times):
         t2idx[t] = i
-    times_cnts = np.zeros(len(times))
+    times_cnts = np.zeros(len(times)) #the times at which samples were taken
 
-    df = None
+    #update the data frame for each subject
     for subj in subjset:
-        dfnew = subj.df()[dtype]
-        df, times_cnts = add_unequal_col_dataframes(df = df, dfother = dfnew,
-        times = times, times_cnts = times_cnts, t2idx = t2idx)
-    df = df / times_cnts
-    return df
+        dfnew, taxaname_map = subj.cluster_by_taxlevel(dtype='abs',
+        taxlevel=TAXLEVEL, index_formatter='%({})s %({})s'.format(upper_tax,
+        lower_tax), smart_unspec=False)
 
-def get_top_abundance_data(subjset_he, subjset_uc):
-    """
-       obtains the name of the top 400 most abundant species
+        df, times_cnts = _add_unequal_col_dataframes(df=df, dfother=dfnew,
+             times=times, times_cnts=times_cnts, t2idx=t2idx)
 
-       @parameters
-       ------------------------------------------------------------------------
-       subjset1 : mdsine2.base.SubjectSet
+    df = df / df.sum(axis=0)
 
-       @returns
-       ------------------------------------------------------------------------
-       [str] : List containing the names of 400 most abundance species
-    """
-    subjset = []
-    for subj in subjset_he:
-        subjset.append(subj)
+    # Only plot the OTUs that have a totol percent abundance over a threshold
+    if CUTOFF_FRAC_ABUNDANCE is not None:
+        df = _get_top(df, cutoff_frac_abundance=CUTOFF_FRAC_ABUNDANCE,
+              taxlevel=TAXLEVEL)
 
-    for subj in subjset_uc:
-        subjset.append(subj)
+    return df, taxaname_map
 
-    top_ = 210
-    combined_df = combine_dfs(subjset, "abs")
-    df_np = combined_df.to_numpy()
-    total_abund = df_np.sum(axis = 1)
-    idxs = np.argsort(total_abund)[::-1]
-    top_idxs = idxs[0 : top_]
-    sorted_idxs = np.sort(top_idxs)
-    final_li = ["OTU_" + str(i + 1) for i in sorted_idxs]
+def set_colors(df, color_idx, color_taxa_dict, color_set):
+    """choose the color to represent each tax level"""
 
-    np_healthy_200 = combine_dfs(subjset_he, "abs").to_numpy()[sorted_idxs]
-    np_uc_200 = combine_dfs(subjset_uc, "abs").to_numpy()[sorted_idxs]
+    M = df.to_numpy()
+    a = np.sum(M, axis = 1)
+    idxs = np.argsort(a)[::-1]
+    for idx in idxs:
+        #print("color:", color_idx)
+        label = df.index[idx]
+        color = color_set[color_idx]
+        color_idx += 1
+        color_taxa_dict[label] = color
 
-    df_uc = pd.DataFrame(np_uc_200, index = final_li,
-            columns = combined_df.columns)
-    df_healthy = pd.DataFrame(np_healthy_200, index = final_li,
-            columns = combined_df.columns)
-
-    return df_healthy, df_uc
-
-def get_filtered_otu_names(filename):
-    """
-    reads the .txt (filename) file containing the names of OTUs that passed
-    the filter and returns the names as a list
-    """
-
-    pass_filter = {}
-    file = open(filename, "r")
-    rank = 0
-    final_li = []
-    for line in file:
-        if len(line) != 0:
-            pass_filter[line.strip()] = rank
-            rank += 1
-            final_li.append(line.strip())
-
-    return final_li
-
-def get_max(data1, data2):
-    """
-       returns the maximum of data1 and data2
-    """
-
-    max_ = 0
-    if np.amax(data1) > np.amax(data2):
-        max_ = np.amax(data1)
-    else:
-        max_ = np.amax(data2)
-
-    return max_
-
-def get_mask1(df, filter_):
-    """
-       obtains the mask (boolean array) for asvs that pass the filter
-
-       @parameters
-       ------------------------------------------------------------------------
-       df : (pandas DataFrame)
-       filter_ : ([str]) a list containing names of ASVs that pass the filter
-
-       @returns
-       ------------------------------------------------------------------------
-       (pd.DataFrame)
-    """
-    mask_array = []
-    np_df = df.to_numpy()
-    index = df.index
-    shape = np_df.shape
-    for i in range(len(index)):
-        otu_name = index[i].split(",")[0].replace(" ", "_")
-        if otu_name in filter_:
-            mask_array.append([True] * shape[1])
-        else:
-            mask_array.append([False] * shape[1])
-
-    return np.asarray(mask_array)
-
-def get_mask2(df):
-    """
-       obtains the mask (boolean array) for asvs for which abundance is 0
-
-       @parameters
-       ------------------------------------------------------------------------
-       df : (pandas DataFrame)
-
-       @returns
-       ------------------------------------------------------------------------
-       (pd.DataFrame)
-    """
-    mask_array = []
-    np_df = df.to_numpy()
-    row_sum = np.sum(np_df, axis = 1)
-    shape = np_df.shape
-    format_array = []
-    for i in range(len(row_sum)):
-        if row_sum[i] == 0:
-            mask_array.append([False] * shape[1])
-        else:
-            mask_array.append([True] * shape[1])
-        format_array.append(["x"] * shape[1])
-
-    return np.asarray(mask_array), np.asarray(format_array)
+    return color_idx
 
 def add_perturbation_label(ax, perturbations, subj, times, textcolor='black',
      textsize=None, alpha=0.25, label=True):
@@ -233,7 +237,6 @@ def add_perturbation_label(ax, perturbations, subj, times, textcolor='black',
             xmax = perturbation.ends[subj],
             facecolor = PERTURBATION_COLOR,
             alpha=alpha, zorder=-10000)
-
         pert_locs.append((times.index(perturbation.ends[subj]) +
         times.index(perturbation.starts[subj])) / 2)
         name = perturbation.name
@@ -244,6 +247,9 @@ def add_perturbation_label(ax, perturbations, subj, times, textcolor='black',
     if label:
         # Set the names on the top x-axis
         ax2 = ax.twiny()
+
+        # # Set the visibility of the twin axis to see through
+        _remove_border(ax2)
 
         left,right = ax.get_xlim()
         ax2.set_xlim(ax.get_xlim())
@@ -260,185 +266,409 @@ def add_perturbation_label(ax, perturbations, subj, times, textcolor='black',
 
     return ax
 
-def draw_heatmap(data_healthy, data_uc, uc_filter, healthy_filter, max_, min_,
-    name, subjset, times, leg_text, title_healthy, title_uc):
-
-    print("Making Heatmap")
-    subj = ""
-    for subj_ in subjset:
-        subj = subj_
-
-    log_norm1 = LogNorm(vmax = max_, vmin = min_)
-    times_li = list(times)
-
-    fig = plt.figure(figsize = (55, 70))
-    spec = gridspec.GridSpec(ncols = 4, nrows = 6, figure = fig,
-        width_ratios = [11, 11, 1, 1])
-    axes1 = fig.add_subplot(spec[0 : 6, 0])
-    axes2 = fig.add_subplot(spec[0 : 6, 1])
-    cax1 = fig.add_subplot(spec[1 : 5, 2])
-    cax2 = fig.add_subplot(spec[1 : 5, 3])
-
-    cmap1 = sns.color_palette("Blues", as_cmap=True)
-
-    map1 = sns.heatmap(data_healthy, cmap = cmap1, ax = axes1, yticklabels = True,
-    xticklabels = True, cbar_ax = cax1, vmax = max_, vmin = min_, norm = log_norm1,
-    linewidth = 0.1, cbar_kws = {"shrink" : 0.75, "fraction" : 0.075})
-
-    map2 = sns.heatmap(data_uc, cmap = cmap1, ax = axes2, yticklabels = True,
-    xticklabels = True, vmax = max_, vmin = min_, norm = log_norm1,
-    linewidth = 0.1, cbar = False)
-
-    cbar1 = map1.collections[0].colorbar
-    cax1.set_title("CFUs/g \n (pass filter) \n", fontweight = "bold",
-         fontsize = "30")
-    cax1.tick_params(labelsize = 35, length = 10, which = "major")
-    cax1.tick_params(length = 5, which = "minor")
-
-    axes1 = add_perturbation_label(axes1, subjset.perturbations,subj, times_li,
-            alpha=0, textsize = 35)
-    for perturbation in subjset.perturbations:
-        axes1.axvline(x = times_li.index(perturbation.starts[subj.name]),
-        color = "black", linestyle = '-', lw=2.5)
-        axes1.axvline(x = times_li.index(perturbation.ends[subj.name]) + 1,
-        color = "black", linestyle = '-', lw=2.5)
-
-    axes2 = add_perturbation_label(axes2, subjset.perturbations, subj, times_li,
-            alpha=0, textsize = 35)
-    for perturbation in subjset.perturbations:
-        axes2.axvline(x = times_li.index(perturbation.starts[subj.name]),
-        color = "black", linestyle = '-', lw=2.5)
-        axes2.axvline(x = times_li.index(perturbation.ends[subj.name]) + 1,
-        color = "black", linestyle = '-', lw=2.5)
-
-    uc_mask1 = get_mask1(data_uc, uc_filter)
-    healthy_mask1 = get_mask1(data_healthy, healthy_filter)
-    cmap2 = sns.color_palette("Greys", as_cmap=True)
-
-    map3 = sns.heatmap(data_healthy, cmap = cmap2, ax = axes1, yticklabels = True,
-    xticklabels = True, cbar_ax = cax2, vmax = max_, vmin = min_, norm = log_norm1,
-    mask = healthy_mask1, linewidth = 0.1, cbar_kws = {"shrink" : 0.75,
-    "fraction" : 0.075})
-
-    map4 = sns.heatmap(data_uc, cmap = cmap2, ax = axes2, yticklabels = True,
-    xticklabels = True,  vmax = max_, vmin = min_, norm = log_norm1,
-    mask = uc_mask1, linewidth = 0.1, cbar = False)
-
-    cbar2 = map3.collections[0].colorbar #colorbar for p-values
-    cax2.set_title("CFUs/g \n (not pass filter)\n", fontweight = "bold",
-    fontsize = "30")
-    cax2.tick_params(labelsize = 35, length = 10, which = "major")
-    cax2.tick_params(length = 5, which = "minor")
-
-    uc_mask2, uc_format = get_mask2(data_uc)
-    healthy_mask2, healthy_format = get_mask2(data_healthy)
-
-    cmap3 = sns.color_palette("seismic", as_cmap=True)
-
-    map1 = sns.heatmap(data_healthy, annot = healthy_format, fmt = "", cmap = cmap3,
-    xticklabels = True, cbar = False, vmax = 1, vmin = -1, ax = axes1, yticklabels = True,
-    mask = healthy_mask2, linewidth = 0.1, annot_kws = {"fontsize": 20})
-
-    map2 = sns.heatmap(data_uc, annot = uc_format, fmt = "", cmap = cmap3,
-    xticklabels = True, cbar = False,vmax = 1, vmin = -1, ax = axes2, yticklabels = True,
-    mask = uc_mask2, linewidth = 0.1, annot_kws = {"fontsize": 22.5})
-
-    axes1.set_xlabel("Days", fontweight = "bold", fontsize = 27.5)
-    axes1.set_xticklabels(axes1.get_xticklabels(), fontsize = 20)
-    axes1.set_yticklabels(axes1.get_yticklabels(), fontsize = 17)
-
-    axes2.set_xlabel("Days", fontweight = "bold", fontsize = 27.5)
-    axes2.set_xticklabels(axes2.get_xticklabels(), fontsize = 20)
-    axes2.set_yticklabels(axes2.get_yticklabels(), fontsize = 17)
-
-    axes1.set_title(title_healthy, fontsize = 45, fontweight = "bold", loc = "left")
-    axes2.set_title(title_uc, fontsize = 45, fontweight = "bold", loc = "left")
-
-
-    fig.text(0, -0.05, leg_text, fontsize = 40, fontweight = "bold", transform =
-    axes1.transAxes)
-
-    loc = "output_figures/"
-    if not os.path.exists(loc):
-        os.makedirs(loc, exist_ok = True)
-
-    plt.savefig(loc + name + ".pdf", bbox_inches = "tight", dpi = 100)
-    plt.savefig(loc + name + ".png", bbox_inches = "tight", dpi = 100)
-
-
-def get_hierarchy(taxo):
+def plot_rel_and_qpcr(subjset, subjset_inoc, df, dset_type, axrel, axpert,
+    axinoculum, taxaname_map, color_taxa_dict, color_index, color_set,
+    figlabelinoculum = None, figlabelqpcr = None, figlabelrel = None,
+    make_legend = False, make_ylabels = True, labels_order = None,
+    inoc_order = None):
     """
-       returns the lowest defined hierarchy
-       @parameters
-       taxo : (pl.Taxon)
+    plots the relative abundance and perturbation
     """
 
-    name = ""
-    if taxo["species"] != "NA":
-        return taxo["genus"].split("_")[0] + " " + taxo["species"]
-    elif taxo["genus"] != "NA":
-        return "* " +  taxo["genus"]
-    elif taxo["family"] != "NA":
-        return "** " + taxo["family"]
-    elif taxo["order"] != "NA":
-        return "*** " + taxo["order"]
-    elif taxo["class"] != "NA":
-        return "**** " + taxo["class"]
-    elif taxo["phylum"] != "NA":
-        return "***** " + taxo["phylum"]
+    taxidx = TAXLEVEL_REV_IDX[TAXLEVEL]
+    upper_tax = TAXLEVEL_INTS[taxidx+1]
+    lower_tax = TAXLEVEL_INTS[taxidx]
+
+    final_labels = []
+    labels = None
+    if labels_order is None:
+        labels = np.asarray(list(df.index))
+        labels = labels[::-1]
     else:
-        return "****** " + taxo["kingdom"]
+        labels = np.asarray(list(df.index))
+        labels = labels[::-1]
+        for lab in labels_order:
+            if lab in labels:
+                final_labels.append(lab)
 
-def get_names(df, subjset):
-    """
-    get the names of OTU in the df
+        for lab in labels:
+            if lab not in final_labels:
+                final_labels.append(lab)
+        labels = final_labels
 
-    @return
-    -------------------------------------------------------------------------
-    (dict) : (str) otu_id -> (str) otu name
+    matrix = df.values
+    matrix = np.flipud(matrix)
+    times = np.asarray(list(df.columns))
+    if labels_order is not None:
+        new_df = df.reindex(final_labels[::-1])
+        matrix = new_df.values
+        matrix = np.flipud(matrix)
+        times = np.asarray(list(new_df.columns))
 
-    """
+    # Plot relative abundance, Create a stacked bar chart
+    offset = np.zeros(matrix.shape[1])
+    for row in range(matrix.shape[0]):
+        label = labels[row]
+        if label in color_taxa_dict:
+            color = color_taxa_dict[label]
+        else:
+            color = color_set[color_index]
+            color_index += 1
+            color_taxa_dict[label] = color
 
-    taxa = subjset.taxa
-    index_old = df.index
-    names_dict = {}
-    for otu in index_old:
-        taxonomy = taxa[otu]
-        hierarchy = get_hierarchy(taxonomy)
-        names_dict[otu] = otu.replace("_", " ") + ", " + hierarchy
+        axrel.bar(np.arange(len(times)), matrix[row,:], bottom=offset,
+        color=color, label=label, width=1, linewidth = 1)
+        offset = offset + matrix[row,:]
 
-    return names_dict
+    #set the xlabels
+    locs = np.arange(0, len(times), step = 10)
+    ticklabels = times[locs]
+    axrel.set_xticks(locs)
+    axrel.set_xticklabels(ticklabels)
+    axrel.yaxis.set_major_locator(plt.NullLocator())
+    axrel.yaxis.set_minor_locator(plt.NullLocator())
+    for tick in axrel.xaxis.get_major_ticks():
+        tick.label.set_fontsize(21)
+
+
+    inoc = None
+    if dset_type == "healthy":
+        inoc = subjset_inoc["Healthy"]
+    else:
+        inoc = subjset_inoc["Ulcerative Colitis"]
+
+    #print("Adding inoculum")
+    df_inoc, taxa_map_inoc = inoc.cluster_by_taxlevel(dtype='raw',
+            taxlevel=TAXLEVEL, index_formatter='%({})s %({})s'.format(upper_tax,
+            lower_tax), smart_unspec=False)
+    df_inoc = _get_top(df_inoc, cutoff_frac_abundance=CUTOFF_FRAC_ABUNDANCE,
+        taxlevel=TAXLEVEL, taxaname_map = taxa_map_inoc)
+
+    matrix_inoc = df_inoc.to_numpy()
+    matrix_inoc = np.flipud(matrix_inoc)
+    matrix_inoc = matrix_inoc / np.sum(matrix_inoc)
+    labels_inoc = np.asarray(list(df_inoc.index))
+    labels_inoc = labels_inoc[::-1]
+    final_inoc_labels = []
+    if inoc_order is not None:
+        for lab in inoc_order:
+            if lab in labels_inoc:
+                final_inoc_labels.append(lab)
+        for lab in labels_inoc:
+            if lab not in final_inoc_labels:
+                final_inoc_labels.append(lab)
+        labels_inoc = final_inoc_labels
+    if inoc_order is not None:
+        new_df_inoc = df_inoc.reindex(final_inoc_labels[::-1])
+        matrix_inoc = new_df_inoc.values
+        matrix_inoc = np.flipud(matrix_inoc)
+        matrix_inoc = matrix_inoc / np.sum(matrix_inoc)
+
+    #plot the inoclum
+    offset_inoc = 0
+    for row in range(matrix_inoc.shape[0]):
+        label = labels_inoc[row]
+        if label in color_taxa_dict:
+            color = color_taxa_dict[label]
+        else:
+            color = color_set[color_index]
+            color_index += 1
+            color_taxa_dict[label] = color
+        axinoculum.bar([0], matrix_inoc[row], bottom=[offset_inoc],
+        label = labels_inoc, width=1, color=color)
+        offset_inoc += matrix_inoc[row,0]
+
+    axinoculum.xaxis.set_major_locator(plt.NullLocator())
+    axinoculum.xaxis.set_minor_locator(plt.NullLocator())
+    axinoculum.set_ylim(bottom=0, top=1)
+
+    for tick in axinoculum.yaxis.get_major_ticks():
+        tick.label.set_fontsize(21)
+    # axqpcr.yaxis.set_label_coords(-0.06, 0.5)
+    axinoculum.set_ylabel('Relative Abundance', size = 25, fontweight='bold')
+    axrel.set_xlabel('Time (d)', size=  25, fontweight='bold')
+    # axrel.xaxis.set_label_coords(0.5,-0.1, transform=axrel.transAxes)
+    axrel.set_ylim(bottom=0, top=1)
+
+    if dset_type == 'healthy':
+        title = 'Healthy'
+    else:
+        title = 'Dysbiotic'
+
+    #plot perturbation
+    subj_ = ""
+    for sub in subjset:
+        subj_ = sub
+        break
+    times_li = list(times)
+    axpert.set_xlim(axrel.get_xlim())
+    axpert = add_perturbation_label(axpert, subjset.perturbations, subj_, times_li,
+        textsize = 16, alpha=0)
+
+    for perturbation in subjset.perturbations:
+        start = times_li.index(perturbation.starts[subj_.name]) - 0.5
+        end = times_li.index(perturbation.ends[subj_.name]) + 0.5
+        #print(start, end)
+        axpert.axvline(x = start, color='black', linestyle='--', lw=1)
+        axpert.axvline(x = end, color='black', linestyle='--', linewidth=1)
+
+    if figlabelinoculum is not None:
+        axinoculum.text(0, y = 1.01, s = figlabelinoculum, fontsize = 27,
+                  fontweight = "bold", transform = axinoculum.transAxes)
+    if figlabelqpcr is not None:
+        axpert.text(0, y = 1.01, s = figlabelqpcr, fontsize = 27,
+                  fontweight = "bold", transform = axpert.transAxes)
+    if figlabelrel is not None:
+        axrel.text(0, y = 1.01, s = figlabelrel, fontsize = 27,
+                  fontweight = "bold", transform = axrel.transAxes)
+
+    return color_index, labels, labels_inoc
+
+
+def plot_legend_phylum(axlegend, level, cutoff, color_taxa_dict, names_union):
+    """plots the legend"""
+
+    taxidx = TAXLEVEL_REV_IDX[TAXLEVEL]
+    upper_tax = TAXLEVEL_INTS[taxidx+1]
+    lower_tax = TAXLEVEL_INTS[taxidx]
+
+    #print(level, upper_tax, lower_tax)
+    labels = list(color_taxa_dict.keys())
+    new_labels = []
+    for lab in labels:
+        if "with" not in lab:
+            new_labels.append(lab)
+    new_labels.sort()
+    labels.sort()
+    labels_str = ", ".join(new_labels)
+
+    file = open("gibson_inference/figures/supplemental_figure2_files/"\
+        "abundant_species_phylum.txt", "w")
+    file.write(labels_str)
+    file.close()
+
+    names_union = {"Bacteria " + phylum for phylum in names_union}
+
+    not_in_labels = sorted(list(set(names_union) - set(labels)))
+
+
+    #others appears last in the legend
+    last_label = None
+    for label in labels:
+        if len(label.split(' ')) > 2:
+            last_label = label
+            break
+    if last_label is not None:
+        labels.remove(last_label)
+        labels.append(last_label)
+
+    ims = []
+    extra = Rectangle((0, 0), 1, 1, fc="w", fill=False, edgecolor='none',
+         linewidth=0)
+    for label in labels:
+        im, = axlegend.bar([0],[0], color= color_taxa_dict[label], label=label)
+        if "0.5" in label:
+            ims.append(extra)
+            ims.append(extra)
+        ims.append(im)
+
+    ims = ims + [extra, extra]
+
+    legend_handle = [extra]
+    legend_handle = legend_handle + ims
+    extra_col = [extra]*(len(ims)+1)
+    legend_handle = legend_handle + extra_col
+
+    empty_label = ''
+    legend_labels = [empty_label]* (len(ims)+1) + [lower_tax.capitalize()]
+
+    for label in labels[:-1]:
+        _,l2 = label.split(' ')
+        l2 = l2.split("_")[0]
+        if l2 == 'NA':
+            l2 = "$\\times$ (Taxonomy not defined)"
+
+        legend_labels = legend_labels + [l2.capitalize()]
+    legend_labels = legend_labels + [' ', " "]
+    legend_labels = legend_labels + ['Other < {}%'.format(CUTOFF_FRAC_ABUNDANCE
+       *100)]
+    for label in not_in_labels:
+        _,l2 = label.split(" ")
+        if "_" in l2:
+            l2 = " ".join([i.capitalize() for i in l2.split("_")[:-1]])
+
+        legend_labels = legend_labels + [l2.capitalize()]
+    legend_labels = legend_labels + ["\n", "\n"]
+
+    legend_labels = legend_labels + ['']
+    legend_labels = legend_labels + [" "*50]*8
+
+    axlegend.legend(legend_handle, legend_labels, ncol = 2, loc='upper center',
+        fontsize=16, columnspacing=0, handletextpad=0.2)
+
+    axlegend = _remove_border(axlegend)
+
+
+def _remove_border(ax):
+
+    ax.spines['top'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.xaxis.set_major_locator(plt.NullLocator())
+    ax.xaxis.set_minor_locator(plt.NullLocator())
+    ax.yaxis.set_major_locator(plt.NullLocator())
+    ax.yaxis.set_minor_locator(plt.NullLocator())
+    ax.set_xlabel('')
+    ax.set_ylabel('')
+
+    return ax
+
+def add_order_legend(ax, names_union, names_dict, species_file_name):
+
+    def get_name_from_file(name):
+        file = open("gibson_inference/figures/supplemental_figure2_files/{}"\
+            ".txt".format(species_file_name))
+        text_li = file.readlines()[0].split(", ")
+        names = []
+        max_len = 0
+        for name in text_li:
+            refined_name = name.split("_")[0]
+            if len(refined_name.split()[0]) > max_len:
+                max_len = len(refined_name.split()[0])
+            names.append(refined_name)
+        return names, max_len
+
+    abundant_species_li, N = get_name_from_file(species_file_name)
+
+    text = ""
+    for t in abundant_species_li:
+        split_t = t.split()
+        d  = N - len(split_t[0]) + 5
+        if "NA" in t:
+            text = text + split_t[0] + " " * d + split_t[1].replace("NA",
+               "not resolved to family") + "\n"
+        else:
+            text = text + split_t[0] + " " * d + split_t[1] + "\n"
+    text = text + "\n" + "\n" + "Others < 0.5%" + "\n"
+    for key in sorted(names_dict.keys()):
+        if key not in abundant_species_li:
+
+            refined_key = key
+            if "_" in key:
+                refined_key = "_".join(key.split("_")[0:-1])
+
+            split_key = refined_key.split()
+            d  = N - len(split_key[0]) + 7
+            if "phylum" in key:
+                d  = N - len(split_key[0].split(",")[0]) + 7 -2
+                line = "(" + split_key[0].split(",")[0] + ")" + " " * d +\
+                    "(not resolved below Phylum)"
+            elif "NA" in refined_key:
+                line = split_key[0] + " " * d + split_key[1].replace("NA",
+                   "not resolved to family")
+            else:
+                line = split_key[0] + " " * d + split_key[1].replace("_",
+                    " ")
+            text = text + line + "\n"
 
 
 def main():
 
-    args = parse_args()
+    print("Making Supplemental Figure 2")
+    XKCD_COLORS1 = sns.color_palette('muted', n_colors=10)
+    XKCD_COLORS2 = sns.color_palette("dark", n_colors=10)
 
-    save_path = "output_figures/"
+    #get more colors
+    XKCD_COLORS = []
+    for lst in [XKCD_COLORS1, XKCD_COLORS2]:
+        # lst = lst[::-1]
+        for c in lst:
+            XKCD_COLORS.append(c)
+
+    DATA_FIGURE_COLORS = {}
+    XKCD_COLORS_IDX = 0
+
+    args = parse_args()
     subjset_healthy = md2.Study.load(args.healthy_pkl)
     subjset_uc = md2.Study.load(args.uc_pkl)
+    subjset_inoc = md2.Study.load(args.inoc_pkl)
+    loc = args.output_path
 
-    times = []
-    for subj in subjset_uc:
-        times = np.append(times, subj.times)
-    times = np.sort(np.unique(times))
+    df_healthy, taxa_map_healthy = get_df(subjset_healthy)
+    df_uc, taxa_map_uc = get_df(subjset_uc)
+    XKCD_COLORS_IDX = set_colors(df_healthy, XKCD_COLORS_IDX,
+                      DATA_FIGURE_COLORS, XKCD_COLORS)
 
-    df_healthy, df_uc = get_top_abundance_data(subjset_healthy, subjset_uc)
+    fig = plt.figure(figsize=(25,16))
+    squeeze = 2
+    gs = fig.add_gridspec(15,45 * squeeze, hspace = 0.75)
 
-    names_uc = get_names(df_uc, subjset_uc)
-    names_healthy = get_names(df_healthy, subjset_healthy)
+    axqpcr1 = fig.add_subplot(gs[0, 1*squeeze:15*squeeze])
+    axrel1 = fig.add_subplot(gs[1:7,1*squeeze:15*squeeze])
+    axinoculum1 = fig.add_subplot(gs[1:7,0])
 
-    uc_pass_filtering = get_filtered_otu_names(args.uc_filter)
-    healthy_pass_filtering = get_filtered_otu_names(args.healthy_filter)
+    #print("color index", XKCD_COLORS_IDX)
+    XKCD_COLORS_IDX, order_, order_inoc = plot_rel_and_qpcr(subjset_healthy,
+        subjset_inoc = subjset_inoc, df = df_healthy, dset_type = "healthy",
+        axrel = axrel1, axpert=axrel1, axinoculum = axinoculum1,
+        make_ylabels=True, color_taxa_dict = DATA_FIGURE_COLORS,
+        color_index = XKCD_COLORS_IDX, color_set = XKCD_COLORS, figlabelinoculum
+        = 'A',figlabelrel='B', make_legend=False,
+        taxaname_map = taxa_map_healthy, inoc_order = None)
+    #print("color index", XKCD_COLORS_IDX)
+    axqpcr2 = fig.add_subplot(gs[0, 18*squeeze:32*squeeze])
+    axrel2 = fig.add_subplot(gs[1 : 7, 18 * squeeze : 32 * squeeze])
+    axinoculum2 = fig.add_subplot(gs[1 : 7, 17 * squeeze])
 
-    max_ = get_max(df_uc.to_numpy(), df_healthy.to_numpy())
-    min_ = 1e4
-    legend = "Taxonomy Key \n* Genus, ** : Family, *** : Order, **** : Class,"\
-              " ***** : Phylum, ****** : Kingdom"
+    XKCD_COLORS_IDX, order_, order_inoc = plot_rel_and_qpcr(subjset_uc,
+        subjset_inoc = subjset_inoc, df = df_uc, dset_type = "uc",
+        axrel = axrel2, axpert=axrel2, axinoculum = axinoculum2, make_ylabels = True,
+        color_taxa_dict = DATA_FIGURE_COLORS, color_index = XKCD_COLORS_IDX,
+        color_set = XKCD_COLORS, figlabelinoculum ='C',
+        figlabelrel='D', make_legend = False, taxaname_map = taxa_map_uc,
+        labels_order = order_, inoc_order = order_inoc)
 
-    draw_heatmap(df_healthy, df_uc, uc_pass_filtering,
-                 healthy_pass_filtering, max_, min_, "supplemental_figure2",
-                 subjset_uc, times, legend, "A", "B")
+    deseq_loc = "gibson_inference/figures/supplemental_figure2_files"
+    axqpcr1.set_title("Healthy", fontsize=27, fontweight="bold")
+    axqpcr2.set_title("Dysbiotic", fontsize=27, fontweight="bold")
+    _remove_border(axqpcr1)
+    _remove_border(axqpcr2)
 
-if __name__ == "__main__":
-    main()
+    uc_phylum_names = deseq_process.get_deseq_info_phylum(deseq_loc, "uc")
+    healthy_phylum_names = deseq_process.get_deseq_info_phylum(deseq_loc, "healthy")
+    phylum_names_union = uc_phylum_names.union(healthy_phylum_names)
+
+    uc_order_names, uc_names_dict = deseq_process.get_deseq_info_order(
+        deseq_loc, "uc_order")
+    healthy_order_names, healthy_names_dict = deseq_process.get_deseq_info_order(
+        deseq_loc, "healthy_order")
+    order_names_union = uc_phylum_names.union(healthy_order_names)
+    order_names_dict = {}
+    for key in uc_names_dict:
+        if key not in order_names_dict:
+            order_names_dict[key] = uc_names_dict[key]
+
+    for key in healthy_names_dict:
+        if key not in order_names_dict:
+            order_names_dict[key] = healthy_names_dict[key]
+
+    #make phylum legend
+    axlegend_phylum = fig.add_subplot(gs[1 : 8, int(32.5 * squeeze): 38 * squeeze],
+                facecolor='none')
+    plot_legend_phylum(axlegend = axlegend_phylum, level = TAXLEVEL,
+        cutoff = CUTOFF_FRAC_ABUNDANCE,color_taxa_dict = DATA_FIGURE_COLORS,
+        names_union=phylum_names_union)
+
+
+    fig.subplots_adjust(wspace = 0.6, left = 0.05, right = 0.92, top =  0.95,
+    bottom = .005, hspace = 0.8)
+
+
+    if not os.path.exists(loc):
+        os.makedirs(loc, exist_ok = True)
+
+    plt.savefig(loc + "/supplemental_figure2.pdf", dpi = 100)
+    print("Done Making Supplemental Figure 2")
+
+main()

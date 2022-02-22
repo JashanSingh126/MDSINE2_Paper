@@ -47,7 +47,7 @@ mdsine2 infer \
     --checkpoint $CHECKPOINT \
     --multiprocessing $MULTIPROCESSING \
     --basepath ${MDSINE_FIXED_CLUSTER_OUT_DIR} \
-    --fixed-clustering ${MDSINE_OUT_DIR}/mdsine2/uc-seed0/mcmc.pkl \
+    --fixed-clustering ${MDSINE_OUT_DIR}/uc-seed0/mcmc.pkl \
     --interaction-ind-prior $INTERACTION_IND_PRIOR \
     --perturbation-ind-prior $PERTURBATION_IND_PRIOR
 mdsine2 visualize-posterior \

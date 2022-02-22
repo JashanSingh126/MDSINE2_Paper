@@ -1,5 +1,6 @@
 export OUT_DIR="output/gibson"
 export PREPROCESS_DIR="${OUT_DIR}/preprocessed"
+export PREPROCESS_TIME0_DIR="${OUT_DIR}/preprocessed_time0"
 export PHYLOGENY_OUT_DIR="${OUT_DIR}/phylogeny"
 export TAXONOMY_OUT_DIR="${OUT_DIR}/taxonomy"
 export NEGBIN_OUT_DIR="${OUT_DIR}/negbin"
