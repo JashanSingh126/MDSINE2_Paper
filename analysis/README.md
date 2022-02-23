@@ -133,10 +133,12 @@ bash gibson_inference/downstream_analysis/cycles/plot_cycles.sh
 
 ## 4.5 Keystoneness
 
-First, run the necessary forward simulations. For each choice of module from a fixed-cluster MDSINE2 run,
-initialize it to zero (all other OTUs are initialized to their respective day-20 levels).
-The results of the forward simulations (the steady states) are collectively compiled and saved to dataframes.
-The keystoneness values (as in Figure 7) are computed and rendered via the script:
+The following script is designed to compute keystoneness values (as in Figure 7) and render them into a single plot.
+The script's job can be described in a few steps. 
+First, it runs the necessary forward simulations: for each choice of module from a fixed-cluster MDSINE2 run,
+initialize it to zero (all other OTUs are initialized to their respective day-20 levels), and each model from the 
+posterior is forward-simulated with zero noise.
+Second, the results of the forward simulations (the steady states) are collectively compiled and saved to dataframes.
 
 ```
 bash gibson_inference/downstream_analysis/keystoneness/evaluate_keystoneness.sh
