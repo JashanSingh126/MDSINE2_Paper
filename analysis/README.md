@@ -96,7 +96,14 @@ bash gibson_inference/inference/run_mdsine2_fixed_clustering.sh
 
 ## 4.1. Enrichment Analysis
 
-Sawal TODO
+Performs taxonomic enrichment analysis at the Family, Order, Class and Phylum level for Healthy and Dysbiotic cohorts. The resulting plot contains:
+   1. table listing the number of OTUs in a dynamic cluster that is associated with a given taxonomy 
+   2. heatmap illustrating the (adjusted) p-values obtained by running hypergeometric test followed by Benjamini-Hochberg procedure for multiple comparison.
+
+```
+bash gibson_inference/downstream_analysis/run_enrichment.sh
+```
+
 
 ## 4.2 Simulated-based Stability Analysis
 
