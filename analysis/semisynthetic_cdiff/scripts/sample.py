@@ -17,11 +17,21 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('-m', '--mdsine_result_path', type=str, required=True,
                         help='<Required> The path to the MDSINE BVS output file (V7.3 .mat/.hdf5 format, from MATLAB)')
     parser.add_argument('-n', '--num_subjects', type=int, required=True,
-                        help='<Required> ')
-    # num_subjects
-    # process_var (default 0.1**2 ??)
-    # sim_dt (default 0.01 ??)
-    # out_dir
+                        help='<Required> The number of subjecs to simulate to lump into a single cohort.')
+    parser.add_argument('-o', '--out_dir', type=str, required=True,
+                        help='<Required> The directory to output the sampled subject to.')
+    parser.add_argument('-s', '--seed', type=int, required=True,
+                        help='<Required> The seed to use for random sampling.')
+
+    # Optional parameters
+    parser.add_argument('-p', '--process_var', type=float, required=False, default=0.01)
+    parser.add_argument('-dt', '--sim_dt', type=float, required=False, default=0.01)
+    parser.add_argument('-a0', '--negbin_a0', type=float, required=False, default=1e-10)
+    parser.add_argument('-a1', '--negbin_a1', type=float, required=False, default=0.05)
+    parser.add_argument('-r', '--read_depth', type=int, required=False, default=50000)
+    parser.add_argument('--low_noise', type=float, required=False, default=0.01)
+    parser.add_argument('--medium_noise', type=float, required=False, default=0.1)
+    parser.add_argument('--high_noise', type=float, required=False, default=0.2)
     return parser.parse_args()
 
 
@@ -125,9 +135,9 @@ def main():
     )
 
     noise_levels = {
-        'low': 0.01,
-        'medium': 0.1,
-        'high': 0.2
+        'low': args.low_noise,
+        'medium': args.medium_noise,
+        'high': args.high_noise
     }
 
     out_dir = Path(args.out_dir)
@@ -135,10 +145,10 @@ def main():
     for noise_level_name, noise_level in noise_levels.items():
         # Simulate noise.
         study = synthetic.simulateMeasurementNoise(
-            a0=1e-10,
-            a1=0.05,
+            a0=args.negbin_a0,
+            a1=args.negbin_a1,
             qpcr_noise_scale=noise_level,
-            approx_read_depth=50000,
+            approx_read_depth=args.read_depth,
             name=f'cdiff-semisynth-noise-{noise_level_name}'
         )
         study.save(out_dir / f'subjset_{noise_level_name}.pkl')
