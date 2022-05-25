@@ -57,8 +57,8 @@ class MDSINEResultBVS(object):
                 sampled_values = obj[:]
                 assert isinstance(sampled_values, np.ndarray)
 
-                growth_rates = sampled_values[:, 0]
-                interactions = sampled_values[:, 1:]
+                growth_rates = sampled_values[0, :]
+                interactions = sampled_values[1:, :]
                 yield growth_rates, interactions
 
     def interaction_indicators(self) -> np.ndarray:
@@ -69,9 +69,11 @@ class MDSINEResultBVS(object):
         growth_rates = []
         interactions = []
 
+        # TODO: instead of conditioning on indicators, instead just mask the posterior average with indicators.
         indicators = self.interaction_indicators()
         for growth_rate_sample, interaction_sample in self.model_samples():
-            if np.sum((indicators > 0) != (interaction_sample > 0)) == 0:
+            n_agreements = np.sum(np.equal((indicators > 0), (interaction_sample > 0)))
+            if n_agreements == indicators.shape[0] * indicators.shape[1]:
                 growth_rates.append(growth_rate_sample)
                 interactions.append(interaction_sample)
 
@@ -112,7 +114,7 @@ def make_synthetic(
 
 def main():
     args = parse_args()
-    bvs_result = MDSINEResultBVS(Path(args.bvs_path))
+    bvs_result = MDSINEResultBVS(Path(args.mdsine_result_path))
     growth_rates, interactions, interaction_indicators = bvs_result.glv_params()
     seed = args.seed
 
